@@ -1,5 +1,7 @@
 # QMS - Quilts Management System 🛏️
 
+**[English](README.md) | [中文](README_zh.md)**
+
 > **Enhanced Intelligent Inventory Management for Home Bedding**
 
 A sophisticated web application that transforms simple Excel-based quilt tracking into an intelligent inventory management system with seasonal recommendations, usage analytics, and predictive insights.
