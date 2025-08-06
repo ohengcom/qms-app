@@ -2,3 +2,9 @@ fastapi
 uvicorn[standard]
 sqlalchemy
 pydantic
+databases
+python-multipart
+pandas
+openpyxl
+xlrd
+python-dateutil
