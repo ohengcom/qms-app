@@ -1,7 +1,10 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, status
+from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from .routers.quilts import quilts
 from .routers.enhanced_quilts import router as enhanced_router
+from .routers import users
 
 app = FastAPI(
     title="Quilts Management System",
@@ -19,6 +22,7 @@ app.add_middleware(
 )
 
 # Register routers
+app.include_router(users.router)
 app.include_router(quilts.router, tags=["Legacy API"])  # Keep old API for backward compatibility
 app.include_router(enhanced_router, tags=["Enhanced API"])
 
@@ -35,6 +39,13 @@ async def root():
             "Storage optimization"
         ]
     }
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content={"detail": exc.errors(), "body": exc.body},
+    )
 
 @app.get("/health")
 async def health_check():

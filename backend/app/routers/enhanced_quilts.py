@@ -12,7 +12,13 @@ from ..migration.excel_importer import ExcelImporter
 # Initialize database
 models.Base.metadata.create_all(bind=engine)
 
-router = APIRouter(prefix="/api", tags=["Enhanced Quilts API"])
+from . import users as auth_users
+
+router = APIRouter(
+    prefix="/api",
+    tags=["Enhanced Quilts API"],
+    dependencies=[Depends(auth_users.get_current_user)]
+)
 
 # Database dependency
 def get_db():

@@ -8,3 +8,7 @@ pandas
 openpyxl
 xlrd
 python-dateutil
+pytest
+httpx
+psycopg2-binary
+python-dotenv

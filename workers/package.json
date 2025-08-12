@@ -1,0 +1,33 @@
+{
+  "name": "qms-workers",
+  "version": "1.0.0",
+  "description": "QMS Cloudflare Workers API with Hono.js",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "deploy:testing": "wrangler deploy --env testing",
+    "deploy:production": "wrangler deploy --env production",
+    "d1:create": "wrangler d1 create qms-local",
+    "d1:create:testing": "wrangler d1 create qms-testing",
+    "d1:create:production": "wrangler d1 create qms-production",
+    "d1:migrate": "wrangler d1 execute DB --local --file=schema.sql",
+    "d1:migrate:testing": "wrangler d1 execute DB --env testing --file=schema.sql",
+    "d1:migrate:production": "wrangler d1 execute DB --env production --file=schema.sql"
+  },
+  "dependencies": {
+    "hono": "^4.0.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240512.0",
+    "wrangler": "^3.57.0"
+  },
+  "keywords": [
+    "cloudflare-workers",
+    "hono",
+    "qms",
+    "quilts-management"
+  ],
+  "author": "",
+  "license": "ISC"
+}

@@ -35,7 +35,17 @@ class QuiltBase(BaseModel):
     notes: Optional[str] = None
 
 class QuiltCreate(QuiltBase):
-    pass
+    @validator('weight_grams')
+    def weight_must_be_positive(cls, v):
+        if v is not None and v <= 0:
+            raise ValueError('Weight must be positive')
+        return v
+
+    @validator('length_cm', 'width_cm')
+    def dimensions_must_be_positive(cls, v):
+        if v is not None and v <= 0:
+            raise ValueError('Dimensions must be positive')
+        return v
 
 class QuiltUpdate(BaseModel):
     group_id: Optional[int] = None
@@ -196,3 +206,24 @@ class QuiltUsage(QuiltUsageBase):
 
     class Config:
         from_attributes = True
+
+# User and Token Schemas
+class UserBase(BaseModel):
+    username: str
+
+class UserCreate(UserBase):
+    password: str
+
+class User(UserBase):
+    id: int
+    is_active: bool
+
+    class Config:
+        from_attributes = True
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    username: Optional[str] = None
