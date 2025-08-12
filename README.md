@@ -195,6 +195,11 @@ The system supports Excel files with these columns:
 - `POST /api/migration/excel-import` - Import from Excel
 - `GET /api/export/excel` - Export to Excel
 
+#### Authentication
+- `POST /auth/token` - Login and get access token
+- `POST /auth/users/` - Register a new user
+- `GET /auth/users/me/` - Get current user details
+
 ## 🛠️ Development
 
 ### Technology Stack
@@ -260,23 +265,23 @@ npm run test:e2e
 - [x] Excel data migration
 - [x] Vue.js frontend foundation
 
-### Phase 2: Core Features (In Progress)
-- [ ] Complete dashboard UI
-- [ ] Quilt management forms
-- [ ] Search and filtering UI
-- [ ] Usage tracking interface
+### Phase 2: Core Features ✅
+- [x] Complete dashboard UI
+- [x] Quilt management forms
+- [x] Search and filtering UI
+- [x] Usage tracking interface
 
-### Phase 3: Advanced Features
-- [ ] Predictive analytics
-- [ ] Maintenance scheduling
-- [ ] Storage optimization
-- [ ] Mobile app (PWA)
+### Phase 3: Advanced Features ✅
+- [x] Predictive analytics
+- [x] Maintenance scheduling
+- [x] Storage optimization
+- [x] Mobile app (PWA)
 
-### Phase 4: Production
-- [ ] Comprehensive testing
-- [ ] Performance optimization
-- [ ] Security hardening
-- [ ] Deployment automation
+### Phase 4: Production ✅
+- [x] Comprehensive testing
+- [x] Performance optimization
+- [x] Security hardening
+- [x] Deployment automation
 
 ## 🤝 Contributing
 

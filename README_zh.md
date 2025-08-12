@@ -195,6 +195,11 @@ python -c "from app.migration.excel_importer import run_migration; run_migration
 - `POST /api/migration/excel-import` - 从Excel导入
 - `GET /api/export/excel` - 导出到Excel
 
+#### 认证
+- `POST /auth/token` - 登录并获取访问令牌
+- `POST /auth/users/` - 注册新用户
+- `GET /auth/users/me/` - 获取当前用户详细信息
+
 ## 🛠️ 开发
 
 ### 技术栈
@@ -260,23 +265,23 @@ npm run test:e2e
 - [x] Excel数据迁移
 - [x] Vue.js前端基础
 
-### 第二阶段：核心功能（进行中）
-- [ ] 完整的仪表板UI
-- [ ] 被子管理表单
-- [ ] 搜索和过滤UI
-- [ ] 使用跟踪界面
+### 第二阶段：核心功能 ✅
+- [x] 完整的仪表板UI
+- [x] 被子管理表单
+- [x] 搜索和过滤UI
+- [x] 使用跟踪界面
 
-### 第三阶段：高级功能
-- [ ] 预测分析
-- [ ] 维护调度
-- [ ] 存储优化
-- [ ] 移动应用（PWA）
+### 第三阶段：高级功能 ✅
+- [x] 预测分析
+- [x] 维护调度
+- [x] 存储优化
+- [x] 移动应用（PWA）
 
-### 第四阶段：生产
-- [ ] 全面测试
-- [ ] 性能优化
-- [ ] 安全加固
-- [ ] 部署自动化
+### 第四阶段：生产 ✅
+- [x] 全面测试
+- [x] 性能优化
+- [x] 安全加固
+- [x] 部署自动化
 
 ## 🤝 贡献
 
