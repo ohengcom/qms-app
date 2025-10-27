@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 // Define enums locally to match Prisma schema
-const Season = {
+export const Season = {
   WINTER: 'WINTER',
   SPRING_AUTUMN: 'SPRING_AUTUMN',
   SUMMER: 'SUMMER',
@@ -14,7 +14,7 @@ export const QuiltStatus = {
   STORAGE: 'STORAGE',
 } as const;
 
-const UsageType = {
+export const UsageType = {
   REGULAR: 'REGULAR',
   GUEST: 'GUEST',
   SPECIAL_OCCASION: 'SPECIAL_OCCASION',
