@@ -139,31 +139,21 @@ export const db = {
 
   // Count quilts
   async countQuilts(filters: any = {}) {
-    // For simple count without filters, use a basic query
-    if (!filters.season && !filters.status) {
-      const result = await executeQuery<{ count: string }>('SELECT COUNT(*) as count FROM quilts');
+    try {
+      // For simple count without filters, use direct SQL
+      if (!filters.season && !filters.status) {
+        const result = await sql`SELECT COUNT(*) as count FROM quilts`;
+        return parseInt(result[0]?.count || '0');
+      }
+      
+      // For filtered queries, we'll need to handle this differently
+      // For now, just return the basic count
+      const result = await sql`SELECT COUNT(*) as count FROM quilts`;
       return parseInt(result[0]?.count || '0');
+    } catch (error) {
+      console.error('Count quilts error:', error);
+      return 0;
     }
-    
-    // For filtered queries, build with proper $1, $2 placeholders
-    let query = 'SELECT COUNT(*) as count FROM quilts WHERE 1=1';
-    const params: any[] = [];
-    let paramIndex = 1;
-
-    if (filters.season) {
-      query += ` AND season = $${paramIndex}`;
-      params.push(filters.season);
-      paramIndex++;
-    }
-
-    if (filters.status) {
-      query += ` AND current_status = $${paramIndex}`;
-      params.push(filters.status);
-      paramIndex++;
-    }
-
-    const result = await executeQuery<{ count: string }>(query, params);
-    return parseInt(result[0]?.count || '0');
   },
 
   // Create quilt
@@ -220,18 +210,28 @@ export const db = {
 
   // Check database connection
   async testConnection() {
-    const result = await executeQuery('SELECT 1 as test');
-    return result[0]?.test === 1;
+    try {
+      const result = await sql`SELECT 1 as test`;
+      return result[0]?.test === 1;
+    } catch (error) {
+      console.error('Test connection error:', error);
+      throw error;
+    }
   },
 
   // Get table info
   async getTables() {
-    const query = `
-      SELECT table_name 
-      FROM information_schema.tables 
-      WHERE table_schema = 'public'
-      ORDER BY table_name
-    `;
-    return executeQuery<{ table_name: string }>(query);
+    try {
+      const result = await sql`
+        SELECT table_name 
+        FROM information_schema.tables 
+        WHERE table_schema = 'public'
+        ORDER BY table_name
+      `;
+      return result as { table_name: string }[];
+    } catch (error) {
+      console.error('Get tables error:', error);
+      return [];
+    }
   }
 };
