@@ -83,7 +83,7 @@ qms-app/                        # 生产就绪的Next.js应用程序
 │   │   ├── api/routers/       # tRPC API路由
 │   │   └── services/          # 业务逻辑服务
 │   └── styles/                # 全局和移动样式
-├── prisma/                    # 数据库模式和迁移
+├── src/lib/neon.ts           # Neon Serverless Driver数据库操作
 ├── monitoring/                # Prometheus、Grafana配置
 ├── nginx/                     # 反向代理配置
 ├── scripts/                   # 部署和维护脚本
@@ -199,30 +199,38 @@ cp .env.production .env.local
 
 ## 🎯 数据模型
 
-### 被子实体（Prisma模式）
-```typescript
-model Quilt {
-  id: String (主键)
-  groupId: String (Excel Group分类)
-  itemNumber: String (唯一项目编号)
-  name: String (描述性名称)
-  season: Season (冬季/春秋/夏季)
-  lengthCm: Int (长度，厘米)
-  widthCm: Int (宽度，厘米)
-  weightGrams: Int (季节推荐重量)
-  fillMaterial: String (主要材料)
-  materialDetails: String (详细成分)
-  color: String (颜色描述)
-  brand: String (制造商)
-  purchaseDate: DateTime (生命周期跟踪的购买日期)
-  location: String (存储位置)
-  packagingInfo: String (包装详情)
-  currentStatus: Status (available/in_use/maintenance/storage)
-  notes: String (附加备注)
-  createdAt: DateTime
-  updatedAt: DateTime
-  usageRecords: UsageRecord[]
-}
+### 被子实体（数据库模式）
+```sql
+CREATE TABLE quilts (
+  id TEXT PRIMARY KEY,
+  group_id TEXT,
+  item_number TEXT UNIQUE,
+  name TEXT NOT NULL,
+  season TEXT CHECK (season IN ('Winter', 'Spring-Autumn', 'Summer')),
+  length_cm INTEGER,
+  width_cm INTEGER,
+  weight_grams INTEGER,
+  fill_material TEXT,
+  material_details TEXT,
+  color TEXT,
+  brand TEXT,
+  purchase_date TIMESTAMP,
+  location TEXT,
+  packaging_info TEXT,
+  current_status TEXT CHECK (current_status IN ('available', 'in_use', 'maintenance', 'storage')),
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE usage_records (
+  id TEXT PRIMARY KEY,
+  quilt_id TEXT REFERENCES quilts(id),
+  start_date TIMESTAMP,
+  end_date TIMESTAMP,
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 ```
 
 ### 使用跟踪
@@ -269,7 +277,7 @@ model Quilt {
 
 #### 核心技术
 - **前端**: Next.js 14, React 19, TypeScript, Tailwind CSS
-- **后端**: tRPC, Prisma ORM, PostgreSQL
+- **后端**: tRPC, Neon Serverless Driver, PostgreSQL
 - **UI组件**: Radix UI, Lucide Icons, 自定义组件
 - **移动端**: PWA, Service Workers, 触摸手势, 离线支持
 - **监控**: Prometheus, Grafana, 结构化日志
@@ -278,7 +286,7 @@ model Quilt {
 #### 开发工具
 - **代码质量**: ESLint, Prettier, TypeScript
 - **测试**: Vitest, Jest, Playwright（计划实现）
-- **数据库**: Prisma Studio, 数据库迁移
+- **数据库**: Neon控制台, 直接SQL操作
 - **构建**: Next.js构建系统, Docker多阶段构建
 - **CI/CD**: GitHub Actions
 
@@ -294,11 +302,9 @@ npm run lint                   # 运行ESLint
 npm run type-check            # TypeScript检查
 
 # 数据库管理
-npm run db:generate           # 生成Prisma客户端
-npm run db:migrate            # 运行数据库迁移
-npm run db:migrate:deploy     # 部署迁移到生产环境
+npm run db:setup             # 初始化数据库模式
 npm run db:seed              # 用示例数据填充数据库
-npm run db:studio            # 打开Prisma Studio
+npm run db:test              # 测试数据库连接
 
 # 生产和部署
 npm run docker:build         # 构建Docker镜像
@@ -412,7 +418,7 @@ npm run lint
 ## 📋 开发路线图
 
 ### 第一阶段：基础 ✅
-- [x] 使用Prisma的增强数据库模式
+- [x] 使用Neon PostgreSQL的增强数据库模式
 - [x] 使用tRPC的全面API层
 - [x] Excel数据迁移和导入/导出
 - [x] Vue.js原型和Next.js生产应用
@@ -485,7 +491,7 @@ npm run lint
 
 ### 🔧 **开发资源**
 - **API文档**: 运行时在`/api/docs`可用
-- **数据库模式**: [qms-app/prisma/schema.prisma](qms-app/prisma/schema.prisma)
+- **数据库操作**: [qms-app/src/lib/neon.ts](qms-app/src/lib/neon.ts)
 - **组件库**: Radix UI + `qms-app/src/components/ui/`中的自定义组件
 
 ### 🏗️ **项目结构概览**

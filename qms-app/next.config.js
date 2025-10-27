@@ -4,7 +4,7 @@ const nextConfig = {
   output: 'standalone',
   
   // Server external packages (moved from experimental)
-  serverExternalPackages: ['@prisma/client'],
+  serverExternalPackages: [],
   
   // Turbopack configuration
   turbopack: {},

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Season, QuiltStatus } from '@prisma/client';
+import { Season, QuiltStatus } from '@/lib/validations/quilt';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

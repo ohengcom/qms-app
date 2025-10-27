@@ -26,8 +26,7 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED 1
 ENV NODE_ENV production
 
-# Generate Prisma client
-RUN npx prisma generate
+# Prisma removed - using Neon Serverless Driver
 
 # Build the application
 RUN yarn build
@@ -55,9 +54,7 @@ RUN chown nextjs:nodejs .next
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Copy Prisma files
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+# Prisma files removed - using Neon Serverless Driver
 
 USER nextjs
 

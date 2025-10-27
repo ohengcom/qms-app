@@ -1,33 +1,28 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { neon } from '@neondatabase/serverless';
 
 // Simple metrics collection for Prometheus
 export async function GET() {
   try {
     const startTime = Date.now();
     
-    // Collect application metrics
+    // Collect application metrics using Neon
+    const sql = neon(process.env.DATABASE_URL!);
+    
     const [
-      totalQuilts,
-      activeUsage,
-      totalUsers,
-      recentActivity
+      totalQuiltsResult,
+      activeUsageResult,
+      recentActivityResult
     ] = await Promise.all([
-      prisma.quilt.count(),
-      prisma.usagePeriod.count({
-        where: {
-          endDate: null // Currently in use
-        }
-      }),
-      prisma.user.count(),
-      prisma.usagePeriod.count({
-        where: {
-          startDate: {
-            gte: new Date(Date.now() - 24 * 60 * 60 * 1000) // Last 24 hours
-          }
-        }
-      })
+      sql`SELECT COUNT(*) as count FROM quilts`,
+      sql`SELECT COUNT(*) as count FROM quilts WHERE current_status = 'in_use'`,
+      sql`SELECT COUNT(*) as count FROM usage_records WHERE created_at >= NOW() - INTERVAL '24 hours'`
     ]);
+
+    const totalQuilts = Number(totalQuiltsResult[0]?.count || 0);
+    const activeUsage = Number(activeUsageResult[0]?.count || 0);
+    const recentActivity = Number(recentActivityResult[0]?.count || 0);
+    const totalUsers = 1; // Placeholder - no user system yet
 
     // Database connection time
     const dbResponseTime = Date.now() - startTime;

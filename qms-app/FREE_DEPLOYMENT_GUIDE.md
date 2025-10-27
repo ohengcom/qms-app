@@ -48,7 +48,7 @@ Your app will be live at `https://your-project-name.vercel.app`
 ## 💡 Free Tier Tips
 
 ### Database Optimization
-- **Use connection pooling**: Already configured in your Prisma setup
+- **Use connection pooling**: Built-in with Neon Serverless Driver
 - **Limit concurrent connections**: Free databases have connection limits
 - **Use database indexes**: Your schema already has them
 
@@ -138,8 +138,7 @@ You'll know it's time to upgrade when:
 ### Quick Fixes
 ```bash
 # Test database connection locally
-npm run db:generate
-npm run db:push
+npm run db:test
 
 # Check build locally
 npm run build

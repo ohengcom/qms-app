@@ -46,7 +46,7 @@ This document summarizes the files and directories that were removed during the 
 - All React components and pages in `src/app/` and `src/components/`
 - All API routes and server logic in `src/server/`
 - All hooks that are actually used in `src/hooks/`
-- Database schema and migrations in `prisma/`
+- Database operations using Neon Serverless Driver in `src/lib/neon.ts`
 - Configuration files (Next.js, TypeScript, Tailwind, ESLint, Prettier)
 
 ### Production Deployment
@@ -78,7 +78,7 @@ qms-app/
 ├── docker-compose.*.yml        # Docker configurations
 ├── monitoring/                 # Monitoring configurations (Prometheus, Grafana)
 ├── nginx/                      # Reverse proxy config
-├── prisma/                     # Database schema and migrations
+├── src/lib/neon.ts            # Neon Serverless Driver database operations
 ├── public/                     # Static assets (manifest, service worker)
 ├── scripts/                    # Essential deployment scripts
 ├── src/                        # Application source code

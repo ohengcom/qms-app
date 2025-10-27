@@ -1,6 +1,6 @@
 # Enhanced Quilt Management System (QMS)
 
-A modern, intelligent quilt inventory management system built with Next.js 14, tRPC, and Prisma.
+A modern, intelligent quilt inventory management system built with Next.js 14, tRPC, and Neon Serverless Driver.
 
 ## Features
 
@@ -16,7 +16,7 @@ A modern, intelligent quilt inventory management system built with Next.js 14, t
 
 - **Frontend**: Next.js 14 with App Router, TypeScript, TailwindCSS
 - **Backend**: tRPC for type-safe APIs
-- **Database**: PostgreSQL with Prisma ORM
+- **Database**: PostgreSQL with Neon Serverless Driver
 - **UI Components**: Shadcn/ui with Radix UI primitives
 - **State Management**: TanStack Query (React Query)
 - **Validation**: Zod schemas
@@ -46,8 +46,8 @@ A modern, intelligent quilt inventory management system built with Next.js 14, t
 
 4. Set up the database:
    ```bash
-   npm run db:push
-   npm run db:generate
+   npm run db:setup
+   npm run db:seed
    ```
 
 5. Start the development server:
@@ -64,10 +64,9 @@ A modern, intelligent quilt inventory management system built with Next.js 14, t
 - `npm run start` - Start production server
 - `npm run lint` - Run ESLint with auto-fix
 - `npm run type-check` - Run TypeScript type checking
-- `npm run db:generate` - Generate Prisma client
-- `npm run db:push` - Push schema changes to database
-- `npm run db:migrate` - Run database migrations
-- `npm run db:studio` - Open Prisma Studio
+- `npm run db:setup` - Initialize database schema
+- `npm run db:seed` - Seed database with sample data
+- `npm run db:test` - Test database connection
 
 ## Project Structure
 

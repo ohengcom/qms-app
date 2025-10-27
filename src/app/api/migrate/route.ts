@@ -23,7 +23,7 @@ export async function POST() {
       console.log('No tables found, schema needs to be created');
       return NextResponse.json({
         status: 'error',
-        message: 'Database schema not found. Please run "prisma db push" or check Vercel build logs.',
+        message: 'Database schema not found. Please run database setup or check Neon console.',
         tables: [],
       }, { status: 500 });
     }

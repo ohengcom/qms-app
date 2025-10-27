@@ -2,7 +2,9 @@
 
 ## Overview
 
-This design document outlines the approach for upgrading the QMS application's technology stack to the latest stable versions. The upgrade focuses on four main dependencies that have available updates: Prisma (6.17.1 → 6.18.0), TypeScript (5.x → 5.9.3), @types/node (20.19.23 → 24.9.1), and superjson (2.2.2 → 2.2.3).
+This design document outlines the approach for upgrading the QMS application's technology stack to the latest stable versions. The upgrade focuses on three main dependencies that have available updates: TypeScript (5.x → 5.9.3), @types/node (20.19.23 → 24.9.1), and superjson (2.2.2 → 2.2.3).
+
+**Note**: Prisma has been completely removed from the project and replaced with Neon Serverless Driver for direct PostgreSQL access.
 
 The upgrade strategy prioritizes minimal disruption while ensuring all code remains type-safe and functional. We'll perform incremental updates, testing after each major change.
 
@@ -22,7 +24,6 @@ The upgrade follows a phased approach:
 ### Risk Assessment
 
 **Low Risk Updates:**
-- Prisma 6.17.1 → 6.18.0 (minor version bump, typically backward compatible)
 - superjson 2.2.2 → 2.2.3 (patch version, bug fixes only)
 
 **Medium Risk Updates:**
@@ -69,18 +70,15 @@ The upgrade follows a phased approach:
 - tRPC context and middleware (`src/server/api/trpc.ts`)
 - Service layer (`src/server/services/**/*.ts`)
 
-### 4. Prisma Client
+### 4. Database Layer
 
-**Component**: Database ORM
-**Changes Required**:
-- Regenerate Prisma client with version 6.18.0
-- Verify generated types are compatible
-- Test database operations
+**Component**: Database Access
+**Current State**: Using Neon Serverless Driver (Prisma removed)
+**Changes Required**: None - Neon Serverless Driver is already up to date
 
 **Affected Files**:
-- `prisma/schema.prisma`
-- Generated Prisma client (node_modules/@prisma/client)
-- All files using Prisma client
+- `src/lib/neon.ts` - Database connection and operations
+- All files using database operations
 
 ### 5. Type Definitions Across Codebase
 
@@ -99,7 +97,7 @@ The upgrade follows a phased approach:
 
 ## Data Models
 
-No changes to data models are required. The Prisma schema remains unchanged, and the upgrade to Prisma 6.18.0 maintains backward compatibility with existing schemas.
+No changes to data models are required. The database schema is managed directly through Neon PostgreSQL and remains unchanged.
 
 ## Breaking Changes Analysis
 
@@ -139,9 +137,9 @@ No changes to data models are required. The Prisma schema remains unchanged, and
    - **Impact**: Easier debugging but may show more errors initially
    - **Solution**: Address errors systematically
 
-### Prisma 6.18.0
+### Database Layer (Neon)
 
-**Changes**:
+**Changes**: None required - Prisma has been removed
 - Bug fixes and performance improvements
 - No breaking changes expected
 - Enhanced type generation
@@ -193,7 +191,7 @@ If critical issues arise:
 **Steps**:
 1. Run `npm run type-check` - verify TypeScript compilation
 2. Run `npm run lint:check` - verify ESLint passes
-3. Run `npm run db:generate` - verify Prisma client generation
+3. Run `npm run db:test` - verify database connection
 
 **Success Criteria**: All commands complete without errors
 
@@ -230,7 +228,7 @@ If critical issues arise:
 3. **Usage Tracking**: Record and view usage history
 4. **Import/Export**: Test file operations
 5. **Seasonal Features**: Verify seasonal recommendations
-6. **Database**: Verify all Prisma operations work
+6. **Database**: Verify all Neon database operations work
 
 **Success Criteria**: All features function as expected
 
@@ -254,9 +252,9 @@ If critical issues arise:
 - Run npm install
 - Verify installation succeeds
 
-### Step 2: Regenerate Prisma Client
-- Run `npm run db:generate`
-- Verify client generation succeeds
+### Step 2: Verify Database Connection
+- Run `npm run db:test`
+- Verify database connection succeeds
 - Check for any warnings
 
 ### Step 3: Type Check and Fix Errors
@@ -311,7 +309,7 @@ Verify compatibility matrix:
 - React 19.2.0 ✓ (already latest)
 - Next.js 16.0.0 ✓ (already latest)
 - TypeScript 5.9.3 ✓ (compatible with all packages)
-- Prisma 6.18.0 ✓ (compatible with @prisma/client)
+- Neon Serverless Driver ✓ (already integrated)
 
 ### Transitive Dependencies
 
@@ -325,7 +323,7 @@ Monitor for:
 ### Expected Improvements
 
 1. **TypeScript 5.9.3**: Faster compilation times
-2. **Prisma 6.18.0**: Query performance improvements
+2. **Neon Serverless Driver**: Already optimized for serverless environments
 3. **superjson 2.2.3**: Bug fixes may improve serialization
 
 ### Potential Regressions
@@ -400,7 +398,7 @@ Monitor for:
 
 - Plan for React 20.x when released
 - Monitor Next.js 17.x roadmap
-- Watch for Prisma 7.x announcements
+- Monitor Neon platform updates and features
 - Stay informed about TypeScript releases
 
 ### Automation Opportunities

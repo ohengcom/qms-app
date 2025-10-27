@@ -44,8 +44,7 @@ jobs:
       - name: Run linting
         run: npm run lint:check
 
-      - name: Generate Prisma client
-        run: npm run db:generate
+      # Prisma generation removed - using Neon Serverless Driver
 
       - name: Build application
         run: npm run build
@@ -182,9 +181,8 @@ jobs:
             echo "Waiting for services to start..."
             sleep 30
             
-            # Run database migrations
-            echo "Running database migrations..."
-            docker-compose -f docker-compose.prod.yml exec -T qms-app npx prisma migrate deploy
+            # Database migrations removed - using Neon Serverless Driver
+            echo "Database migrations not needed with Neon..."
             
             # Health check
             echo "Performing health check..."

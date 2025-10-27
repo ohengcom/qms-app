@@ -22,7 +22,7 @@ build/
 # Database
 *.db
 *.db-journal
-prisma/dev.db*
+# Prisma removed - using Neon
 
 # IDE
 .vscode/

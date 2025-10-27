@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
-import { Season } from '@prisma/client';
+import { Season } from '@/lib/validations/quilt';
 import { cn } from '@/lib/utils';
 import {
   Cloud,

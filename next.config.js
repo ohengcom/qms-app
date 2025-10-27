@@ -4,7 +4,7 @@ const nextConfig = {
   // output: 'standalone',
   
   // Server external packages (moved from experimental)
-  serverExternalPackages: ['@prisma/client'],
+  serverExternalPackages: [],
   
   // Turbopack configuration
   turbopack: {},
@@ -92,10 +92,7 @@ const nextConfig = {
   
   // Webpack configuration
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
-    // Prisma configuration for Vercel
-    if (isServer) {
-      config.externals.push('@prisma/client');
-    }
+    // No external packages needed for Neon Serverless Driver
     
     // Production optimizations
     if (!dev) {

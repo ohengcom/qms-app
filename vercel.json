@@ -1,5 +1,14 @@
 {
-  "buildCommand": "npm run build",
+  "buildCommand": "npm run vercel-build",
   "installCommand": "npm install",
-  "framework": "nextjs"
+  "framework": "nextjs",
+  "functions": {
+    "app/**/*.ts": {
+      "runtime": "nodejs20.x"
+    }
+  },
+  "env": {
+    "CACHE_BUST": "2025-10-27-neon-migration-v2",
+    "FORCE_REBUILD": "true"
+  }
 }

@@ -89,9 +89,8 @@ deploy() {
     log "Waiting for services to be ready..."
     sleep 30
     
-    # Run database migrations
-    log "Running database migrations..."
-    docker-compose -f "$COMPOSE_FILE" run --rm qms-app npx prisma migrate deploy
+    # Database migrations removed - using Neon Serverless Driver
+    log "Database migrations not needed with Neon..."
     
     # Start all services
     log "Starting all services..."

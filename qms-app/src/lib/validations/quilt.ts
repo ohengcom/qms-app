@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-// Define enums locally to match Prisma schema
+// Define enums locally for type safety
 export const Season = {
   WINTER: 'WINTER',
   SPRING_AUTUMN: 'SPRING_AUTUMN',
@@ -20,6 +20,11 @@ export const UsageType = {
   SPECIAL_OCCASION: 'SPECIAL_OCCASION',
   SEASONAL_ROTATION: 'SEASONAL_ROTATION',
 } as const;
+
+// Export types for the enums
+export type Season = typeof Season[keyof typeof Season];
+export type QuiltStatus = typeof QuiltStatus[keyof typeof QuiltStatus];
+export type UsageType = typeof UsageType[keyof typeof UsageType];
 
 // Base Quilt Schema
 export const createQuiltSchema = z.object({

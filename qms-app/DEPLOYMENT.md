@@ -157,13 +157,16 @@ ls -la backups/
 ./scripts/restore.sh qms_backup_20231201_020000.sql.gz
 ```
 
-### Database Migrations
+### Database Schema Management
 ```bash
-# Run pending migrations
-docker-compose -f docker-compose.prod.yml exec qms-app npx prisma migrate deploy
+# Initialize database schema (first deployment only)
+npm run db:setup
 
-# Reset database (CAUTION: This will delete all data)
-docker-compose -f docker-compose.prod.yml exec qms-app npx prisma migrate reset --force
+# Test database connection
+npm run db:test
+
+# Schema changes are handled directly through SQL or Neon console
+# No migration files needed with Neon Serverless Driver
 ```
 
 ## Monitoring Setup (Optional)
@@ -245,7 +248,7 @@ docker-compose -f docker-compose.prod.yml logs qms-app
 docker-compose -f docker-compose.prod.yml exec qms-app env
 
 # Verify database connection
-docker-compose -f docker-compose.prod.yml exec qms-app npx prisma db pull
+curl http://localhost:3000/api/db-test
 ```
 
 #### 2. Database Connection Issues
@@ -253,11 +256,11 @@ docker-compose -f docker-compose.prod.yml exec qms-app npx prisma db pull
 # Check database status
 docker-compose -f docker-compose.prod.yml exec postgres pg_isready
 
-# Check database logs
-docker-compose -f docker-compose.prod.yml logs postgres
+# Test database connection
+curl http://localhost:3000/api/db-test
 
-# Test connection
-docker-compose -f docker-compose.prod.yml exec postgres psql -U qms_user -d qms_production -c "SELECT 1;"
+# Check database status via Neon console
+# Visit your Neon dashboard to monitor database health
 ```
 
 #### 3. SSL Certificate Issues

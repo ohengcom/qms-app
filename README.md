@@ -88,7 +88,7 @@ qms-app/                        # Production-ready Next.js application
 │   │   ├── api/routers/       # tRPC API routes
 │   │   └── services/          # Business logic services
 │   └── styles/                # Global and mobile styles
-├── prisma/                    # Database schema and migrations
+├── src/lib/neon.ts           # Neon Serverless Driver database operations
 ├── monitoring/                # Prometheus, Grafana configuration
 ├── nginx/                     # Reverse proxy configuration
 ├── scripts/                   # Deployment and maintenance scripts
@@ -204,30 +204,38 @@ The system supports Excel files with these columns:
 
 ## 🎯 Data Model
 
-### Quilt Entity (Prisma Schema)
-```typescript
-model Quilt {
-  id: String (Primary key)
-  groupId: String (Excel Group classification)
-  itemNumber: String (Unique item number)
-  name: String (Descriptive name)
-  season: Season (Winter/Spring-Autumn/Summer)
-  lengthCm: Int (Length in centimeters)
-  widthCm: Int (Width in centimeters)
-  weightGrams: Int (Weight for seasonal recommendations)
-  fillMaterial: String (Primary material)
-  materialDetails: String (Detailed composition)
-  color: String (Color description)
-  brand: String (Manufacturer)
-  purchaseDate: DateTime (Purchase date for lifecycle tracking)
-  location: String (Storage location)
-  packagingInfo: String (Packaging details)
-  currentStatus: Status (available/in_use/maintenance/storage)
-  notes: String (Additional notes)
-  createdAt: DateTime
-  updatedAt: DateTime
-  usageRecords: UsageRecord[]
-}
+### Quilt Entity (Database Schema)
+```sql
+CREATE TABLE quilts (
+  id TEXT PRIMARY KEY,
+  group_id TEXT,
+  item_number TEXT UNIQUE,
+  name TEXT NOT NULL,
+  season TEXT CHECK (season IN ('Winter', 'Spring-Autumn', 'Summer')),
+  length_cm INTEGER,
+  width_cm INTEGER,
+  weight_grams INTEGER,
+  fill_material TEXT,
+  material_details TEXT,
+  color TEXT,
+  brand TEXT,
+  purchase_date TIMESTAMP,
+  location TEXT,
+  packaging_info TEXT,
+  current_status TEXT CHECK (current_status IN ('available', 'in_use', 'maintenance', 'storage')),
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE usage_records (
+  id TEXT PRIMARY KEY,
+  quilt_id TEXT REFERENCES quilts(id),
+  start_date TIMESTAMP,
+  end_date TIMESTAMP,
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 ```
 
 ### Usage Tracking
@@ -274,7 +282,7 @@ The application uses **tRPC** for type-safe API communication. All API endpoints
 
 #### Core Technologies
 - **Frontend**: Next.js 14, React 19, TypeScript, Tailwind CSS
-- **Backend**: tRPC, Prisma ORM, PostgreSQL
+- **Backend**: tRPC, Neon Serverless Driver, PostgreSQL
 - **UI Components**: Radix UI, Lucide Icons, Custom Components
 - **Mobile**: PWA, Service Workers, Touch Gestures, Offline Support
 - **Monitoring**: Prometheus, Grafana, Structured Logging
@@ -283,7 +291,7 @@ The application uses **tRPC** for type-safe API communication. All API endpoints
 #### Development Tools
 - **Code Quality**: ESLint, Prettier, TypeScript
 - **Testing**: Vitest, Jest, Playwright (when implemented)
-- **Database**: Prisma Studio, Database migrations
+- **Database**: Neon Console, Direct SQL operations
 - **Build**: Next.js build system, Docker multi-stage builds
 - **CI/CD**: GitHub Actions
 
@@ -299,11 +307,9 @@ npm run lint                   # Run ESLint
 npm run type-check            # TypeScript checking
 
 # Database Management
-npm run db:generate           # Generate Prisma client
-npm run db:migrate            # Run database migrations
-npm run db:migrate:deploy     # Deploy migrations to production
+npm run db:setup             # Initialize database schema
 npm run db:seed              # Seed database with sample data
-npm run db:studio            # Open Prisma Studio
+npm run db:test              # Test database connection
 
 # Production & Deployment
 npm run docker:build         # Build Docker image
@@ -417,7 +423,7 @@ npm run lint
 ## 📋 Development Roadmap
 
 ### Phase 1: Foundation ✅
-- [x] Enhanced database schema with Prisma
+- [x] Enhanced database schema with Neon PostgreSQL
 - [x] Comprehensive API layer with tRPC
 - [x] Excel data migration and import/export
 - [x] Vue.js prototype and Next.js production app
@@ -490,7 +496,7 @@ For questions or support, please open an issue on GitHub or contact the developm
 
 ### 🔧 **Development Resources**
 - **API Documentation**: Available at `/api/docs` when running
-- **Database Schema**: [qms-app/prisma/schema.prisma](qms-app/prisma/schema.prisma)
+- **Database Operations**: [qms-app/src/lib/neon.ts](qms-app/src/lib/neon.ts)
 - **Component Library**: Radix UI + Custom components in `qms-app/src/components/ui/`
 
 ### 🏗️ **Project Structure Overview**

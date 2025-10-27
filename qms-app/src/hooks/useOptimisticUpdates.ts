@@ -2,7 +2,7 @@
 
 import { useCallback } from 'react';
 import { api } from '@/lib/trpc';
-// Simple Quilt type definition to replace Prisma import
+// Simple Quilt type definition for optimistic updates
 type Quilt = {
   id: string;
   itemNumber: number;

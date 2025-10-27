@@ -123,6 +123,4 @@ __tests__/
 test/
 tests/
 
-# Prisma
-prisma/migrations/
-!prisma/schema.prisma
+# Prisma removed - using Neon Serverless Driver

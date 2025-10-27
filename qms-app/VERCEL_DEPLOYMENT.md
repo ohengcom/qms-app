@@ -56,7 +56,7 @@ In Vercel dashboard, add these environment variables:
 ## Build Configuration
 
 The project is configured with:
-- **Build Command**: `prisma generate && next build`
+- **Build Command**: `next build`
 - **Install Command**: `npm install`
 - **Output Directory**: `.next`
 - **Root Directory**: `qms-app` (if deploying from monorepo)
@@ -64,21 +64,23 @@ The project is configured with:
 ## Database Migration
 
 After first deployment:
-1. Go to Vercel dashboard → Functions tab
-2. Or use Vercel CLI:
+1. Initialize your database schema through Neon console or API
+2. Or use the setup API endpoint:
 ```bash
-npx vercel env pull .env.local
-npm run db:push
-npm run db:seed  # Optional: seed with sample data
+# Initialize database schema
+curl -X POST https://your-app.vercel.app/api/setup
+
+# Test database connection
+curl https://your-app.vercel.app/api/db-test
 ```
 
 ## Troubleshooting
 
 ### Common Issues:
 
-1. **Build Fails - Prisma Generate**
+1. **Build Fails - Database Connection**
    - Ensure `DATABASE_URL` is set in environment variables
-   - Check that PostgreSQL connection string is valid
+   - Check that Neon PostgreSQL connection string is valid
 
 2. **Database Connection Issues**
    - Verify `DATABASE_URL` format: `postgresql://user:password@host:port/database`
@@ -96,8 +98,8 @@ npm run db:seed  # Optional: seed with sample data
 ### Performance Optimization:
 
 1. **Database Connection Pooling**
-   - Use connection pooling for better performance
-   - Consider Prisma Data Proxy for serverless
+   - Neon Serverless Driver provides built-in connection pooling
+   - Optimized for serverless environments with automatic scaling
 
 2. **Static Generation**
    - Use `getStaticProps` where possible
