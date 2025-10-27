@@ -7,7 +7,7 @@ const Season = {
   SUMMER: 'SUMMER',
 } as const;
 
-const QuiltStatus = {
+export const QuiltStatus = {
   AVAILABLE: 'AVAILABLE',
   IN_USE: 'IN_USE',
   MAINTENANCE: 'MAINTENANCE',

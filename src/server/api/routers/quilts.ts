@@ -8,6 +8,7 @@ import {
   createCurrentUsageSchema,
   endCurrentUsageSchema,
   createMaintenanceRecordSchema,
+  QuiltStatus,
 } from '@/lib/validations/quilt';
 import { db } from '@/lib/neon';
 
