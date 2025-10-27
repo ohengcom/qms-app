@@ -1,24 +1,26 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/server/db';
+import { neon } from '@neondatabase/serverless';
 
 export async function POST() {
   try {
-    console.log('Starting database migration...');
+    console.log('Starting database schema check...');
+    
+    const sql = neon(process.env.DATABASE_URL!);
     
     // First, let's check if we can connect
-    await db.$queryRaw`SELECT 1`;
+    await sql`SELECT 1`;
     console.log('Database connection successful');
     
     // Check current schema
-    const tables = await db.$queryRaw`
+    const tables = await sql`
       SELECT table_name 
       FROM information_schema.tables 
       WHERE table_schema = 'public'
-    ` as any[];
+    `;
     
     console.log('Current tables:', tables.map(t => t.table_name));
     
-    // If no tables exist, we need to push the schema
+    // If no tables exist, we need to create the schema
     if (tables.length === 0) {
       console.log('No tables found, schema needs to be created');
       return NextResponse.json({
@@ -40,7 +42,8 @@ export async function POST() {
     }
     
     // Test quilt table access
-    const quiltCount = await db.quilt.count();
+    const quiltCountResult = await sql`SELECT COUNT(*) as count FROM quilts`;
+    const quiltCount = Number(quiltCountResult[0]?.count || 0);
     console.log('Quilt count:', quiltCount);
     
     return NextResponse.json({
@@ -51,7 +54,7 @@ export async function POST() {
     });
     
   } catch (error) {
-    console.error('Migration check error:', error);
+    console.error('Schema check error:', error);
     
     return NextResponse.json({
       status: 'error',
