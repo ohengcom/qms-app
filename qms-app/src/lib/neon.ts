@@ -10,34 +10,15 @@ export const sql = neon(process.env.DATABASE_URL);
 // Helper function to execute queries with error handling
 export async function executeQuery<T = any>(queryText: string, params: any[] = []): Promise<T[]> {
   try {
-    // Neon serverless driver only supports tagged template literals
-    // We need to manually construct the query with parameters
-    let processedQuery = queryText;
-    
-    // Replace $1, $2, etc. with actual parameter values
-    params.forEach((param, index) => {
-      const placeholder = `$${index + 1}`;
-      let escapedParam: string;
-      
-      if (param === null || param === undefined) {
-        escapedParam = 'NULL';
-      } else if (typeof param === 'string') {
-        // Escape single quotes and wrap in quotes
-        escapedParam = `'${param.replace(/'/g, "''")}'`;
-      } else if (param instanceof Date) {
-        escapedParam = `'${param.toISOString()}'`;
-      } else if (typeof param === 'boolean') {
-        escapedParam = param ? 'TRUE' : 'FALSE';
-      } else {
-        escapedParam = String(param);
-      }
-      
-      processedQuery = processedQuery.replace(new RegExp(`\\${placeholder}\\b`, 'g'), escapedParam);
-    });
-    
-    // Use tagged template literal syntax
-    const result = await sql([processedQuery] as any);
-    return result as T[];
+    // Use sql.query() for parameterized queries as recommended by Neon
+    if (params.length > 0) {
+      const result = await sql.query(queryText, params);
+      return result as T[];
+    } else {
+      // Use tagged template literal for queries without parameters
+      const result = await sql`${queryText}`;
+      return result as T[];
+    }
   } catch (error) {
     console.error('Database query error:', error);
     throw error;
