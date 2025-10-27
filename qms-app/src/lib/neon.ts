@@ -139,6 +139,13 @@ export const db = {
 
   // Count quilts
   async countQuilts(filters: any = {}) {
+    // For simple count without filters, use a basic query
+    if (!filters.season && !filters.status) {
+      const result = await executeQuery<{ count: string }>('SELECT COUNT(*) as count FROM quilts');
+      return parseInt(result[0]?.count || '0');
+    }
+    
+    // For filtered queries, build with proper $1, $2 placeholders
     let query = 'SELECT COUNT(*) as count FROM quilts WHERE 1=1';
     const params: any[] = [];
     let paramIndex = 1;
