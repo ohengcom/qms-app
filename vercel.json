@@ -1,5 +1,6 @@
 {
   "buildCommand": "prisma generate && prisma db push && npm run build",
   "installCommand": "npm install",
-  "framework": "nextjs"
+  "framework": "nextjs",
+  "rootDirectory": "./qms-app"
 }
