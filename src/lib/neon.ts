@@ -63,22 +63,22 @@ export const db = {
     offset?: number;
   } = {}) {
     try {
-      // For now, return all quilts without filtering to get basic functionality working
-      // We can add filtering back later once the basic query works
+      console.log('Executing getQuilts query...');
+      
+      // First, let's try a simple query to see what columns exist
       const result = await sql`
-        SELECT q.*, 
-               cu.id as current_usage_id,
-               cu.started_at as current_usage_started,
-               cu.usage_type as current_usage_type,
-               cu.notes as current_usage_notes
-        FROM quilts q
-        LEFT JOIN current_usage cu ON q.id = cu.quilt_id
-        ORDER BY q.updated_at DESC
-        LIMIT 50
+        SELECT * FROM quilts 
+        ORDER BY created_at DESC 
+        LIMIT 20
       `;
+      
+      console.log('Query result:', result);
+      console.log('Number of records:', result?.length || 0);
+      
       return result;
     } catch (error) {
       console.error('Get quilts error:', error);
+      console.error('Error details:', error);
       return [];
     }
   },
