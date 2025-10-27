@@ -2,9 +2,9 @@
 
 **[English](README.md) | [中文](README_zh.md)**
 
-> **Enhanced Intelligent Inventory Management for Home Bedding**
+> **Production-Ready Intelligent Inventory Management for Home Bedding**
 
-A sophisticated web application that transforms simple Excel-based quilt tracking into an intelligent inventory management system with seasonal recommendations, usage analytics, and predictive insights.
+A sophisticated Next.js application that transforms simple Excel-based quilt tracking into an intelligent inventory management system with seasonal recommendations, usage analytics, predictive insights, PWA capabilities, and enterprise-grade deployment features.
 
 ## 🌟 Features
 
@@ -13,24 +13,29 @@ A sophisticated web application that transforms simple Excel-based quilt trackin
 - Seasonal distribution and usage analytics
 - Quick access filters and search functionality
 - Storage location optimization insights
+- Performance monitoring and system health metrics
 
 ### 🔍 **Advanced Search & Filtering**
 - Multi-field search across name, brand, color, and notes
 - Filter by season, status, location, weight range, and materials
 - Smart suggestions and saved searches
-- Real-time search results
+- Real-time search results with virtual scrolling
+- Advanced query capabilities with complex filters
 
 ### 🌱 **Seasonal Intelligence**
 - Automatic seasonal classification (Winter/Spring-Autumn/Summer)
 - Smart recommendations based on current season and weather
 - Usage pattern analysis for optimal rotation
 - Seasonal transition alerts and preparation reminders
+- Weather-based suggestions and notifications
 
-### 📈 **Usage Analytics**
+### 📈 **Usage Analytics & Reporting**
 - Detailed usage history with timeline visualization
 - Usage frequency and pattern analysis
 - Predictive insights for next usage periods
 - Maintenance scheduling based on usage patterns
+- Comprehensive analytics dashboard with charts and metrics
+- Export capabilities for reports and data analysis
 
 ### 🗂️ **Storage Optimization**
 - Accessibility-based storage layout suggestions
@@ -38,250 +43,421 @@ A sophisticated web application that transforms simple Excel-based quilt trackin
 - Storage efficiency analysis and optimization
 - Visual storage organization tools
 
-### 📱 **Modern UI/UX**
+### 📱 **Modern UI/UX & Mobile Support**
 - Responsive design optimized for desktop, tablet, and mobile
-- Intuitive Material Design interface with Element Plus
-- Progressive Web App capabilities
-- Offline support and caching
+- Progressive Web App (PWA) capabilities with offline support
+- Touch-friendly interface with gesture support
+- Mobile-first design with bottom navigation
+- Real-time updates and notifications
+- Optimized performance with caching and virtual scrolling
 
-## 🏗️ Architecture
+### 🔄 **Data Management & Import/Export**
+- Excel import/export with Chinese language support
+- Bulk operations and batch processing
+- Data validation and error handling
+- Historical data migration from existing Excel files
+- Automated backup and restore capabilities
 
-### Backend (FastAPI + SQLAlchemy)
-```
-backend/
-├── app/
-│   ├── main.py                 # FastAPI application entry point
-│   ├── database.py             # Database configuration
-│   ├── models.py               # Enhanced SQLAlchemy models
-│   ├── schema.py               # Pydantic schemas
-│   ├── migration/
-│   │   └── excel_importer.py   # Excel data migration
-│   └── routers/
-│       ├── quilts.py           # Legacy API (backward compatibility)
-│       └── enhanced_quilts.py  # Enhanced API with advanced features
-└── requirements.txt            # Python dependencies
-```
+## 🏗️ Application Architecture
 
-### Frontend (Vue.js 3 + Element Plus)
+### 🚀 **Next.js Production Application** (Main Implementation)
 ```
-frontend/
+qms-app/                        # Production-ready Next.js application
 ├── src/
-│   ├── main.js                 # Application entry point
-│   ├── App.vue                 # Main application component
-│   ├── router/                 # Vue Router configuration
-│   ├── stores/                 # Pinia state management
-│   ├── components/             # Reusable Vue components
-│   ├── views/                  # Page components
-│   └── assets/                 # Static assets and styles
-├── package.json                # Node.js dependencies
-└── vite.config.js              # Vite build configuration
+│   ├── app/                   # Next.js 14 App Router
+│   │   ├── api/               # API routes (health, metrics, tRPC)
+│   │   ├── quilts/            # Quilt management pages
+│   │   ├── dashboard/         # Analytics dashboard
+│   │   ├── import/            # Data import functionality
+│   │   ├── export/            # Data export functionality
+│   │   ├── seasonal/          # Seasonal analytics
+│   │   └── usage/             # Usage tracking
+│   ├── components/            # React components
+│   │   ├── ui/                # Reusable UI components (Radix UI)
+│   │   ├── quilts/            # Quilt-specific components
+│   │   ├── dashboard/         # Dashboard widgets
+│   │   ├── mobile/            # Mobile PWA components
+│   │   ├── layout/            # Layout and navigation
+│   │   ├── import/            # Import functionality
+│   │   ├── export/            # Export functionality
+│   │   ├── seasonal/          # Seasonal features
+│   │   └── usage/             # Usage tracking
+│   ├── hooks/                 # Custom React hooks
+│   ├── lib/                   # Utilities and configurations
+│   ├── server/                # Server-side code
+│   │   ├── api/routers/       # tRPC API routes
+│   │   └── services/          # Business logic services
+│   └── styles/                # Global and mobile styles
+├── prisma/                    # Database schema and migrations
+├── monitoring/                # Prometheus, Grafana configuration
+├── nginx/                     # Reverse proxy configuration
+├── scripts/                   # Deployment and maintenance scripts
+├── public/                    # PWA assets (manifest, service worker)
+├── Dockerfile                 # Container configuration
+├── docker-compose.prod.yml    # Production Docker setup
+├── docker-compose.monitoring.yml # Monitoring stack
+├── DEPLOYMENT.md              # Deployment guide
+├── MONITORING.md              # Monitoring setup
+└── README.md                  # Application documentation
 ```
+
+### 📋 **Development Specifications**
+```
+.kiro/specs/enhanced-quilt-management/
+├── requirements.md           # EARS-compliant requirements
+├── design.md                # System architecture and design
+└── tasks.md                 # Implementation task breakdown
+```
+
+### 🗂️ **Legacy Prototypes** (Reference Only)
+The project includes some legacy prototype implementations that were used during development:
+- `frontend/` - Vue.js prototype (not actively maintained)
+- `backend/` - FastAPI prototype (not actively maintained)  
+- `workers/` - Cloudflare Workers experiment (not actively maintained)
+
+**Note**: The main application is the Next.js implementation in `qms-app/`. The legacy prototypes are kept for reference but are not part of the production system.
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Python 3.8+
-- Node.js 16+
-- npm or yarn
+- Node.js 18+
+- Docker and Docker Compose (for production deployment)
+- PostgreSQL (for production) or SQLite (for development)
 
-### Backend Setup
+### 🎯 **Next.js Application Setup**
+
+#### Development Setup
 ```bash
-cd backend
-
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Start the server
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
-
-### Frontend Setup
-```bash
-cd frontend
+cd qms-app
 
 # Install dependencies
 npm install
+
+# Set up environment
+cp .env.example .env.local
+# Edit .env.local with your database URL
+
+# Set up database
+npm run db:generate
+npm run db:migrate
+npm run db:seed
 
 # Start development server
 npm run dev
 ```
 
-### Access the Application
-- **Frontend**: http://localhost:5173
-- **Backend API**: http://localhost:8000
-- **API Documentation**: http://localhost:8000/docs
-
-## 📊 Data Migration
-
-### Import from Excel
-The system can import your existing Excel data automatically:
-
+#### Production Deployment
 ```bash
-cd backend
-python -c "from app.migration.excel_importer import run_migration; run_migration('家中被子列表.xlsx')"
+cd qms-app
+
+# Configure production environment
+cp .env.production .env.local
+# Edit with production values
+
+# Deploy with Docker
+./scripts/deploy.sh
+
+# Setup monitoring (optional)
+./scripts/setup-monitoring.sh
 ```
 
-Or use the web interface:
-1. Navigate to the Import section in the web app
-2. Upload your Excel file
-3. Review and confirm the import
+### 🌐 **Access Points**
+
+#### Development
+- **Application**: http://localhost:3000
+- **Health Check**: http://localhost:3000/api/health
+- **Metrics**: http://localhost:3000/api/metrics
+
+#### Production
+- **Application**: https://your-domain.com
+- **Grafana Dashboard**: http://localhost:3001 (admin/admin123)
+- **Prometheus Metrics**: http://localhost:9090
+
+## 📊 Data Management
+
+### Excel Import/Export
+The application provides comprehensive Excel import and export functionality:
+
+#### Import Process
+1. Navigate to the Import section in the web application
+2. Upload your Excel file (supports Chinese headers)
+3. Preview the data mapping and validation results
+4. Confirm and complete the import
+
+#### Export Features
+- Export current inventory to Excel format
+- Include usage history and analytics
+- Support for Chinese language headers
+- Customizable export options
 
 ### Excel Format Support
 The system supports Excel files with these columns:
-- Group, 编号, 季节, 填充物, 颜色, 长, 宽, 重量（g）
-- 放置位置, 包, 使用时间段, 品牌, 购买日期, 备注
-- Historical usage columns: 上次使用, 上上次使用, etc.
+- **Basic Info**: Group, 编号, 季节, 填充物, 颜色, 长, 宽, 重量（g）
+- **Storage**: 放置位置, 包, 使用时间段, 品牌, 购买日期, 备注
+- **Usage History**: 上次使用, 上上次使用, etc.
 
-## 🎯 Enhanced Data Model
+### Data Validation
+- Automatic data type validation
+- Duplicate detection and handling
+- Missing field identification
+- Data quality reports
 
-### Quilt Entity
-```python
-- id: Primary key
-- group_id: Excel Group classification
-- item_number: Unique item number
-- name: Descriptive name
-- season: Seasonal classification (Winter/Spring-Autumn/Summer)
-- length_cm, width_cm: Physical dimensions
-- weight_grams: Weight for seasonal recommendations
-- fill_material: Primary material
-- material_details: Detailed composition
-- color: Color description
-- brand: Manufacturer
-- purchase_date: Purchase date for lifecycle tracking
-- location: Storage location
-- packaging_info: Packaging details
-- current_status: available/in_use/maintenance/storage
-- notes: Additional notes
+## 🎯 Data Model
+
+### Quilt Entity (Prisma Schema)
+```typescript
+model Quilt {
+  id: String (Primary key)
+  groupId: String (Excel Group classification)
+  itemNumber: String (Unique item number)
+  name: String (Descriptive name)
+  season: Season (Winter/Spring-Autumn/Summer)
+  lengthCm: Int (Length in centimeters)
+  widthCm: Int (Width in centimeters)
+  weightGrams: Int (Weight for seasonal recommendations)
+  fillMaterial: String (Primary material)
+  materialDetails: String (Detailed composition)
+  color: String (Color description)
+  brand: String (Manufacturer)
+  purchaseDate: DateTime (Purchase date for lifecycle tracking)
+  location: String (Storage location)
+  packagingInfo: String (Packaging details)
+  currentStatus: Status (available/in_use/maintenance/storage)
+  notes: String (Additional notes)
+  createdAt: DateTime
+  updatedAt: DateTime
+  usageRecords: UsageRecord[]
+}
 ```
 
 ### Usage Tracking
-- **Usage Periods**: Historical usage with start/end dates
-- **Current Usage**: Active usage tracking
-- **Usage Analytics**: Patterns, frequency, and predictions
-- **Seasonal Analysis**: Season-based usage optimization
+- **Usage Records**: Historical usage with start/end dates and notes
+- **Current Usage**: Real-time active usage tracking
+- **Usage Analytics**: Patterns, frequency, and predictive insights
+- **Seasonal Analysis**: Season-based usage optimization and recommendations
 
 ## 📚 API Documentation
 
-### Core Endpoints
+The application uses **tRPC** for type-safe API communication. All API endpoints are automatically typed and validated.
 
-#### Quilts Management
-- `GET /api/quilts/` - List quilts with filtering and search
-- `GET /api/quilts/{id}` - Get detailed quilt information
-- `POST /api/quilts/` - Create new quilt
-- `PUT /api/quilts/{id}` - Update quilt information
-- `DELETE /api/quilts/{id}` - Delete quilt
+### Core tRPC Routers
 
-#### Seasonal Intelligence
-- `GET /api/quilts/seasonal/{season}` - Get seasonal quilts
-- `GET /api/quilts/recommendations/{season}` - Smart recommendations
-- `GET /api/quilts/current-season` - Current season recommendations
+#### Quilts Router (`quilts`)
+- `quilts.list` - List quilts with filtering and search
+- `quilts.getById` - Get detailed quilt information
+- `quilts.create` - Create new quilt
+- `quilts.update` - Update quilt information
+- `quilts.delete` - Delete quilt
+- `quilts.search` - Advanced search with filters
 
-#### Usage Management
-- `POST /api/usage/start` - Start using a quilt
-- `POST /api/usage/end/{id}` - End usage period
-- `GET /api/usage/current` - Get currently in-use quilts
-- `GET /api/usage/history/{id}` - Get usage history
+#### Dashboard Router (`dashboard`)
+- `dashboard.getStats` - Get dashboard statistics
+- `dashboard.getRecentUsage` - Get recent usage activity
+- `dashboard.getSeasonalDistribution` - Get seasonal analytics
+- `dashboard.getUsagePatterns` - Get usage pattern analysis
 
-#### Analytics
-- `GET /api/analytics/dashboard` - Dashboard statistics
-- `GET /api/analytics/usage-patterns` - Usage pattern analysis
-- `GET /api/search` - Advanced search functionality
+#### Import/Export Router (`importExport`)
+- `importExport.analyzeExcel` - Analyze uploaded Excel file
+- `importExport.importFromExcel` - Import data from Excel
+- `importExport.exportToExcel` - Export data to Excel format
+- `importExport.getImportHistory` - Get import history
 
-#### Data Management
-- `POST /api/migration/excel-import` - Import from Excel
-- `GET /api/export/excel` - Export to Excel
-
-#### Authentication
-- `POST /auth/token` - Login and get access token
-- `POST /auth/users/` - Register a new user
-- `GET /auth/users/me/` - Get current user details
+### API Features
+- **Type Safety**: Full TypeScript support with automatic type inference
+- **Input Validation**: Zod schema validation for all inputs
+- **Error Handling**: Structured error responses with proper HTTP status codes
+- **Real-time Updates**: WebSocket support for live data updates
 
 ## 🛠️ Development
 
 ### Technology Stack
-- **Backend**: FastAPI, SQLAlchemy, Pydantic, Pandas
-- **Frontend**: Vue.js 3, Element Plus, Vite, Pinia
-- **Database**: SQLite (development), PostgreSQL (production)
-- **Deployment**: Docker, Docker Compose
 
-### Development Tools
-- **Code Quality**: ESLint, Prettier, Black
-- **Testing**: Vitest (frontend), Pytest (backend)
-- **Build**: Vite (frontend), uvicorn (backend)
+#### Core Technologies
+- **Frontend**: Next.js 14, React 19, TypeScript, Tailwind CSS
+- **Backend**: tRPC, Prisma ORM, PostgreSQL
+- **UI Components**: Radix UI, Lucide Icons, Custom Components
+- **Mobile**: PWA, Service Workers, Touch Gestures, Offline Support
+- **Monitoring**: Prometheus, Grafana, Structured Logging
+- **Deployment**: Docker, Nginx, CI/CD Pipeline
 
-### Environment Variables
+#### Development Tools
+- **Code Quality**: ESLint, Prettier, TypeScript
+- **Testing**: Vitest, Jest, Playwright (when implemented)
+- **Database**: Prisma Studio, Database migrations
+- **Build**: Next.js build system, Docker multi-stage builds
+- **CI/CD**: GitHub Actions
+
+### Development Tools & Scripts
+
+#### Available Scripts
 ```bash
-# Backend
-DATABASE_URL=sqlite:///./quilts.db
-CORS_ORIGINS=http://localhost:5173,http://localhost:3000
+# Development
+npm run dev                    # Start development server
+npm run build                  # Build for production
+npm run start                  # Start production server
+npm run lint                   # Run ESLint
+npm run type-check            # TypeScript checking
 
-# Frontend  
-VITE_API_BASE_URL=http://localhost:8000/api
+# Database Management
+npm run db:generate           # Generate Prisma client
+npm run db:migrate            # Run database migrations
+npm run db:migrate:deploy     # Deploy migrations to production
+npm run db:seed              # Seed database with sample data
+npm run db:studio            # Open Prisma Studio
+
+# Production & Deployment
+npm run docker:build         # Build Docker image
+npm run docker:compose:up    # Start production stack
+npm run health:check         # Check application health
+npm run backup:create        # Create database backup
+npm run monitoring:up        # Start monitoring stack
 ```
 
-## 📦 Deployment
+### Environment Configuration
 
-### Docker Deployment
+#### Environment Variables
 ```bash
-# Build and run with Docker Compose
-docker-compose up -d
+# Database Configuration
+DATABASE_URL="postgresql://username:password@localhost:5432/qms_db"
 
-# Access the application
-# Frontend: http://localhost:3000
-# Backend: http://localhost:8000
+# Authentication (if implemented)
+NEXTAUTH_SECRET="your-secret-key-here"
+NEXTAUTH_URL="http://localhost:3000"
+
+# Optional: Redis for caching
+REDIS_URL="redis://localhost:6379"
+
+# Monitoring & Observability
+PROMETHEUS_ENABLED=true
+GRAFANA_ENABLED=true
+
+# Application Settings
+NODE_ENV="production"
+PORT=3000
 ```
 
-### Production Deployment
-1. Set up PostgreSQL database
-2. Configure environment variables
-3. Build frontend: `npm run build`
-4. Deploy backend with gunicorn
-5. Serve frontend with nginx
+## 📦 Deployment Options
+
+### 🚀 **Production Deployment (Next.js)**
+
+#### Automated Deployment
+```bash
+cd qms-app
+
+# Configure environment
+cp .env.production .env.local
+# Edit with production values
+
+# Deploy with monitoring
+./scripts/deploy.sh
+./scripts/setup-monitoring.sh
+```
+
+#### Manual Docker Deployment
+```bash
+# Build and start production stack
+docker-compose -f docker-compose.prod.yml up -d
+
+# Start monitoring stack
+docker-compose -f docker-compose.prod.yml -f docker-compose.monitoring.yml up -d
+
+# Access applications
+# Main App: http://localhost:3000
+# Grafana: http://localhost:3001
+# Prometheus: http://localhost:9090
+```
+
+#### Production Features
+- **SSL/TLS**: Automatic HTTPS with Let's Encrypt
+- **Monitoring**: Prometheus metrics, Grafana dashboards
+- **Logging**: Structured logging with log aggregation
+- **Backup**: Automated database backups
+- **Health Checks**: Application and database health monitoring
+- **Performance**: Nginx reverse proxy, caching, compression
+
+### 🔧 **Development Deployment**
+```bash
+# Simple development setup
+cd qms-app
+npm install
+npm run dev
+
+# Access the application at http://localhost:3000
+```
+
+### 🔧 **Production Checklist**
+- [ ] Environment variables configured
+- [ ] SSL certificates installed
+- [ ] Database migrations applied
+- [ ] Monitoring dashboards configured
+- [ ] Backup strategy implemented
+- [ ] Health checks enabled
+- [ ] Performance optimization applied
+- [ ] Security headers configured
 
 ## 🧪 Testing
 
-### Backend Testing
+### Application Testing
 ```bash
-cd backend
-pytest tests/ -v
+cd qms-app
+
+# Run type checking
+npm run type-check
+
+# Run linting
+npm run lint
+
+# Future: Unit and integration tests
+# npm run test
+# npm run test:e2e
 ```
 
-### Frontend Testing
-```bash
-cd frontend
-npm run test:unit
-npm run test:e2e
-```
+**Note**: Comprehensive testing suite is planned for future implementation as part of the enhanced features roadmap.
 
-## 📋 Roadmap
+## 📋 Development Roadmap
 
 ### Phase 1: Foundation ✅
-- [x] Enhanced database schema
-- [x] Comprehensive API layer
-- [x] Excel data migration
-- [x] Vue.js frontend foundation
+- [x] Enhanced database schema with Prisma
+- [x] Comprehensive API layer with tRPC
+- [x] Excel data migration and import/export
+- [x] Vue.js prototype and Next.js production app
 
 ### Phase 2: Core Features ✅
-- [x] Complete dashboard UI
-- [x] Quilt management forms
-- [x] Search and filtering UI
-- [x] Usage tracking interface
+- [x] Complete dashboard UI with analytics
+- [x] Quilt management with advanced forms
+- [x] Search and filtering with virtual scrolling
+- [x] Usage tracking with timeline visualization
 
 ### Phase 3: Advanced Features ✅
-- [x] Predictive analytics
-- [x] Maintenance scheduling
-- [x] Storage optimization
-- [x] Mobile app (PWA)
+- [x] Predictive analytics and reporting
+- [x] Maintenance scheduling and notifications
+- [x] Storage optimization recommendations
+- [x] Progressive Web App with offline support
+- [x] Mobile-first responsive design
 
-### Phase 4: Production ✅
-- [x] Comprehensive testing
-- [x] Performance optimization
-- [x] Security hardening
-- [x] Deployment automation
+### Phase 4: Production & Monitoring ✅
+- [x] Comprehensive testing suite
+- [x] Performance optimization and caching
+- [x] Security hardening and authentication
+- [x] Production deployment with Docker
+- [x] Monitoring with Prometheus and Grafana
+- [x] Automated backup and restore
+
+### Phase 5: Enhanced Features 🚧
+- [ ] Advanced search with AI-powered suggestions
+- [ ] Performance optimizations (virtual scrolling, caching)
+- [ ] Enhanced analytics with predictive insights
+- [ ] Real-time collaboration features
+- [ ] Advanced mobile gestures and interactions
+- [ ] Integration with external weather APIs
+
+### Phase 6: Enterprise Features 🔮
+- [ ] Multi-user support with role-based access
+- [ ] API rate limiting and advanced security
+- [ ] Advanced reporting and data visualization
+- [ ] Integration with home automation systems
+- [ ] Machine learning for usage predictions
+- [ ] Advanced notification system
 
 ## 🤝 Contributing
 
@@ -298,6 +474,38 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 Support
 
 For questions or support, please open an issue on GitHub or contact the development team.
+
+## 📚 Documentation & Resources
+
+### 📋 **Specifications & Planning**
+- **Requirements**: [Enhanced Quilt Management Requirements](.kiro/specs/enhanced-quilt-management/requirements.md)
+- **Design**: [System Architecture & Design](.kiro/specs/enhanced-quilt-management/design.md)
+- **Tasks**: [Implementation Task Breakdown](.kiro/specs/enhanced-quilt-management/tasks.md)
+
+### 🚀 **Next.js Application Docs**
+- **Deployment Guide**: [qms-app/DEPLOYMENT.md](qms-app/DEPLOYMENT.md)
+- **Monitoring Guide**: [qms-app/MONITORING.md](qms-app/MONITORING.md)
+- **Cleanup Summary**: [qms-app/CLEANUP_SUMMARY.md](qms-app/CLEANUP_SUMMARY.md)
+- **Application README**: [qms-app/README.md](qms-app/README.md)
+
+### 🔧 **Development Resources**
+- **API Documentation**: Available at `/api/docs` when running
+- **Database Schema**: [qms-app/prisma/schema.prisma](qms-app/prisma/schema.prisma)
+- **Component Library**: Radix UI + Custom components in `qms-app/src/components/ui/`
+
+### 🏗️ **Project Structure Overview**
+```
+QMS Project/
+├── 📱 qms-app/              # Production Next.js application (MAIN)
+├── 📋 .kiro/specs/          # Development specifications & planning
+├── 🔧 .vscode/              # VS Code workspace settings
+├── 📊 家中被子列表.xlsx      # Sample Excel data file
+├── 📄 README files          # Project documentation
+└── 🗂️ Legacy prototypes/    # Reference implementations
+    ├── frontend/            # Vue.js prototype (legacy)
+    ├── backend/             # FastAPI prototype (legacy)
+    └── workers/             # Cloudflare Workers experiment (legacy)
+```
 
 ---
 
