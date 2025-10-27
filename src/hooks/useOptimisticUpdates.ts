@@ -12,7 +12,7 @@ export function useOptimisticQuiltUpdates() {
   const optimisticUpdate = useCallback(
     (quiltId: string, updater: (quilt: Quilt) => Partial<Quilt>) => {
       // Update the specific quilt in cache optimistically
-      utils.quilts.getById.setData({ id: quiltId }, (oldData) => {
+      utils.quilts.getById.setData({ id: quiltId }, (oldData: any) => {
         if (!oldData) return oldData;
         return { ...oldData, ...updater(oldData as any) };
       });

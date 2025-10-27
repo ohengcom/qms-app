@@ -6,11 +6,6 @@ const nextConfig = {
   // Server external packages (moved from experimental)
   serverExternalPackages: ['@prisma/client'],
   
-  // Experimental features for Vercel
-  experimental: {
-    serverComponentsExternalPackages: ['@prisma/client'],
-  },
-  
   // Turbopack configuration
   turbopack: {},
   
