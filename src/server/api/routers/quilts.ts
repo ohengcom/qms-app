@@ -22,14 +22,20 @@ export const quiltsRouter = createTRPCRouter({
         // Import db here to avoid circular imports
         const { db } = await import('@/lib/neon');
         
+        console.log('Fetching quilts from database...');
+        
         // Get quilts from database with basic parameters
         const quilts = await db.getQuilts({
           limit: 20,
           offset: 0,
         });
         
+        console.log('Quilts fetched:', quilts?.length || 0, 'records');
+        
         // Get total count
         const total = await db.countQuilts();
+        
+        console.log('Total count:', total);
 
         return {
           quilts: quilts || [],
