@@ -1,33 +1,58 @@
 'use client';
 
+import { useDashboardStats } from '@/hooks/useDashboard';
+import { Loading } from '@/components/ui/loading';
+
 export default function DashboardPage() {
+  const { data: stats, isLoading, error } = useDashboardStats();
+  
+  if (isLoading) {
+    return (
+      <div className="p-8">
+        <Loading />
+      </div>
+    );
+  }
+  
+  if (error) {
+    return (
+      <div className="p-8">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <p className="text-red-800">Error loading dashboard: {error.message}</p>
+        </div>
+      </div>
+    );
+  }
+  
+  const overview = stats?.overview || {};
+  
   return (
     <div className="p-8">
       <h1 className="text-3xl font-bold text-gray-900 mb-4">QMS Dashboard</h1>
-      <p className="text-gray-600 mb-8">Quilt Management System - Minimal Version</p>
+      <p className="text-gray-600 mb-8">Quilt Management System</p>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-lg font-semibold text-gray-900">Total Quilts</h3>
-          <p className="text-3xl font-bold text-blue-600 mt-2">6</p>
+          <p className="text-3xl font-bold text-blue-600 mt-2">{overview.totalQuilts || 0}</p>
           <p className="text-sm text-gray-500 mt-1">In your collection</p>
         </div>
         
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-lg font-semibold text-gray-900">In Use</h3>
-          <p className="text-3xl font-bold text-green-600 mt-2">1</p>
+          <p className="text-3xl font-bold text-green-600 mt-2">{overview.inUseCount || 0}</p>
           <p className="text-sm text-gray-500 mt-1">Currently being used</p>
         </div>
         
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-lg font-semibold text-gray-900">Available</h3>
-          <p className="text-3xl font-bold text-purple-600 mt-2">4</p>
+          <p className="text-3xl font-bold text-purple-600 mt-2">{overview.availableCount || 0}</p>
           <p className="text-sm text-gray-500 mt-1">Ready to use</p>
         </div>
         
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-lg font-semibold text-gray-900">In Storage</h3>
-          <p className="text-3xl font-bold text-orange-600 mt-2">1</p>
+          <p className="text-3xl font-bold text-orange-600 mt-2">{overview.storageCount || 0}</p>
           <p className="text-sm text-gray-500 mt-1">Stored away</p>
         </div>
       </div>

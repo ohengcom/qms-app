@@ -32,6 +32,7 @@ export const quiltsRouter = createTRPCRouter({
         
         console.log('tRPC: Quilts fetched:', quilts?.length || 0, 'records');
         console.log('tRPC: First quilt:', quilts?.[0]);
+        console.log('tRPC: Sample quilt data structure:', JSON.stringify(quilts?.[0], null, 2));
         
         // Get total count
         const total = await db.countQuilts();

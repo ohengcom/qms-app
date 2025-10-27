@@ -10,18 +10,26 @@ export const dashboardRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       // Caching disabled for now - using direct data
 
-      // Basic counts - simplified for Neon (temporarily hardcoded)
-      const totalQuilts = 0; // TODO: Implement with Neon
-      const inUseCount = 0; // TODO: Implement with Neon
-      const availableCount = 0; // TODO: Implement with Neon
-      const storageCount = 0; // TODO: Implement with Neon
-      const maintenanceCount = 0; // TODO: Implement with Neon
+      // Get real data from Neon database
+      const { db } = await import('@/lib/neon');
+      
+      // Get total quilts count
+      const totalQuilts = await db.countQuilts();
+      
+      // Get all quilts to calculate status counts
+      const allQuilts = await db.getQuilts({ limit: 1000 }); // Get all quilts
+      
+      // Calculate status counts
+      const inUseCount = allQuilts.filter(q => q.currentStatus === 'IN_USE').length;
+      const availableCount = allQuilts.filter(q => q.currentStatus === 'AVAILABLE').length;
+      const storageCount = allQuilts.filter(q => q.currentStatus === 'STORAGE').length;
+      const maintenanceCount = allQuilts.filter(q => q.currentStatus === 'MAINTENANCE').length;
 
-      // Seasonal distribution - TODO: Implement with Neon
+      // Calculate seasonal distribution
       const seasonalStats = {
-        WINTER: 0,
-        SPRING_AUTUMN: 0,
-        SUMMER: 0,
+        WINTER: allQuilts.filter(q => q.season === 'WINTER').length,
+        SPRING_AUTUMN: allQuilts.filter(q => q.season === 'SPRING_AUTUMN').length,
+        SUMMER: allQuilts.filter(q => q.season === 'SUMMER').length,
       };
 
       // Get recent activity - TODO: Implement with Neon
