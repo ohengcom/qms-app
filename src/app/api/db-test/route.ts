@@ -14,11 +14,17 @@ export async function GET() {
     const tables = await db.getTables();
     console.log('Available tables:', tables);
     
-    // Try to count quilts
+    // Try to count quilts and get sample data
     let quiltCount = 0;
+    let sampleQuilts = [];
     try {
       quiltCount = await db.countQuilts();
       console.log('Quilt count:', quiltCount);
+      
+      // Get all quilts to see what's actually in the database
+      sampleQuilts = await db.getQuilts({ limit: 50 });
+      console.log('Sample quilts:', sampleQuilts?.length, 'records');
+      console.log('First few quilts:', sampleQuilts?.slice(0, 3));
     } catch (error) {
       console.log('Quilt table error:', error);
     }
@@ -29,6 +35,8 @@ export async function GET() {
       driver: 'Neon Serverless Driver',
       tables: tables.map(t => t.table_name),
       quiltCount: quiltCount,
+      sampleQuilts: sampleQuilts?.slice(0, 5), // First 5 quilts for inspection
+      totalQuiltsFound: sampleQuilts?.length || 0,
       databaseUrl: process.env.DATABASE_URL ? 'Set' : 'Not set',
     });
     
