@@ -60,11 +60,9 @@ A sophisticated Next.js application that transforms simple Excel-based quilt tra
 
 ## 🏗️ Application Architecture
 
-> **⚠️ IMPORTANT FOR DEPLOYMENT**: This is a monorepo project. The main application is located in the `qms-app/` directory. When deploying to Vercel or other platforms, set the **Root Directory** to `qms-app`.
-
 ### 🚀 **Next.js Production Application** (Main Implementation)
 ```
-qms-app/                        # Production-ready Next.js application (SET AS ROOT DIRECTORY)
+qms/                            # Production-ready Next.js application
 ├── src/
 │   ├── app/                   # Next.js 14 App Router
 │   │   ├── api/               # API routes (health, metrics, tRPC)
@@ -130,8 +128,6 @@ The project includes some legacy prototype implementations that were used during
 
 #### Development Setup
 ```bash
-cd qms-app
-
 # Install dependencies
 npm install
 
@@ -145,13 +141,12 @@ npm run dev
 
 #### Deployment Configuration
 **For Vercel/Netlify/Other Platforms:**
-1. Set **Root Directory** to `qms-app` in your deployment settings
+1. Leave **Root Directory** blank (uses project root)
 2. The platform will automatically detect the Next.js application
 3. Configure environment variables in your platform's dashboard
 
 **For Docker:**
 ```bash
-cd qms-app
 docker build -t qms-app .
 docker run -p 3000:3000 qms-app
 ```
