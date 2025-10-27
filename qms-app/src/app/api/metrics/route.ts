@@ -1,33 +1,16 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { db } from '@/lib/neon';
 
 // Simple metrics collection for Prometheus
 export async function GET() {
   try {
     const startTime = Date.now();
     
-    // Collect application metrics
-    const [
-      totalQuilts,
-      activeUsage,
-      totalUsers,
-      recentActivity
-    ] = await Promise.all([
-      prisma.quilt.count(),
-      prisma.usagePeriod.count({
-        where: {
-          endDate: null // Currently in use
-        }
-      }),
-      prisma.user.count(),
-      prisma.usagePeriod.count({
-        where: {
-          startDate: {
-            gte: new Date(Date.now() - 24 * 60 * 60 * 1000) // Last 24 hours
-          }
-        }
-      })
-    ]);
+    // Collect application metrics - TODO: Implement with Neon
+    const totalQuilts = 0; // await db.countQuilts();
+    const activeUsage = 0; // TODO: Implement with Neon
+    const totalUsers = 0; // TODO: Implement with Neon  
+    const recentActivity = 0; // TODO: Implement with Neon
 
     // Database connection time
     const dbResponseTime = Date.now() - startTime;
