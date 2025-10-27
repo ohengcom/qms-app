@@ -12,13 +12,13 @@ import {
   Season,
   UsageType,
 } from '@/lib/validations/quilt';
-import { db } from '@/lib/neon';
+// Removed direct db import - using ctx.db instead
 
 export const quiltsRouter = createTRPCRouter({
   // Get all quilts with filtering and pagination
   getAll: publicProcedure
     .input(quiltSearchSchema)
-    .query(async ({ input }) => {
+    .query(async ({ ctx, input }) => {
       const { filters, sortBy, sortOrder, skip, take } = input;
       
       // Build filter object for Neon query
@@ -34,8 +34,8 @@ export const quiltsRouter = createTRPCRouter({
       queryFilters.offset = skip;
 
       const [quilts, total] = await Promise.all([
-        db.getQuilts(queryFilters),
-        db.countQuilts(queryFilters),
+        ctx.db.getQuilts(queryFilters),
+        ctx.db.countQuilts(queryFilters),
       ]);
 
       return {
@@ -48,8 +48,8 @@ export const quiltsRouter = createTRPCRouter({
   // Get quilt by ID with full details
   getById: publicProcedure
     .input(z.object({ id: z.string() }))
-    .query(async ({ input }) => {
-      const quilt = await db.getQuiltById(input.id);
+    .query(async ({ ctx, input }) => {
+      const quilt = await ctx.db.getQuiltById(input.id);
 
       if (!quilt) {
         throw new TRPCError({
@@ -65,281 +65,87 @@ export const quiltsRouter = createTRPCRouter({
   create: publicProcedure
     .input(createQuiltSchema)
     .mutation(async ({ ctx, input }) => {
-      // Check if item number already exists
-      const existingQuilt = await ctx.db.quilt.findUnique({
-        where: { itemNumber: input.itemNumber },
-      });
-
-      if (existingQuilt) {
-        throw new TRPCError({
-          code: 'CONFLICT',
-          message: `Quilt with item number ${input.itemNumber} already exists`,
-        });
-      }
-
-      return ctx.db.quilt.create({
-        data: input,
-        include: {
-          currentUsage: true,
-          usagePeriods: true,
-          maintenanceLog: true,
-        },
-      });
+      // For now, skip the duplicate check and just create the quilt
+      // We can add this validation back later
+      return ctx.db.createQuilt(input);
     }),
 
-  // Update quilt
+  // Update quilt - TODO: Implement with Neon
   update: publicProcedure
     .input(updateQuiltSchema)
     .mutation(async ({ ctx, input }) => {
-      const { id, ...data } = input;
-
-      // Check if quilt exists
-      const existingQuilt = await ctx.db.quilt.findUnique({
-        where: { id },
-      });
-
-      if (!existingQuilt) {
-        throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Quilt not found',
-        });
-      }
-
-      // Check if item number is being changed and if it conflicts
-      if (data.itemNumber && data.itemNumber !== existingQuilt.itemNumber) {
-        const conflictingQuilt = await ctx.db.quilt.findUnique({
-          where: { itemNumber: data.itemNumber },
-        });
-
-        if (conflictingQuilt) {
-          throw new TRPCError({
-            code: 'CONFLICT',
-            message: `Quilt with item number ${data.itemNumber} already exists`,
-          });
-        }
-      }
-
-      return ctx.db.quilt.update({
-        where: { id },
-        data,
-        include: {
-          currentUsage: true,
-          usagePeriods: true,
-          maintenanceLog: true,
-        },
+      throw new TRPCError({
+        code: 'NOT_IMPLEMENTED',
+        message: 'Update functionality not yet implemented with Neon',
       });
     }),
 
-  // Delete quilt
+  // Delete quilt - TODO: Implement with Neon
   delete: publicProcedure
     .input(z.object({ id: z.string().cuid() }))
     .mutation(async ({ ctx, input }) => {
-      const quilt = await ctx.db.quilt.findUnique({
-        where: { id: input.id },
-      });
-
-      if (!quilt) {
-        throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Quilt not found',
-        });
-      }
-
-      // Check if quilt is currently in use
-      const currentUsage = await ctx.db.currentUsage.findUnique({
-        where: { quiltId: input.id },
-      });
-
-      if (currentUsage) {
-        throw new TRPCError({
-          code: 'PRECONDITION_FAILED',
-          message: 'Cannot delete quilt that is currently in use',
-        });
-      }
-
-      return ctx.db.quilt.delete({
-        where: { id: input.id },
+      throw new TRPCError({
+        code: 'NOT_IMPLEMENTED',
+        message: 'Delete functionality not yet implemented with Neon',
       });
     }),
 
-  // Start using a quilt
+  // Start using a quilt - TODO: Implement with Neon
   startUsage: publicProcedure
     .input(createCurrentUsageSchema)
     .mutation(async ({ ctx, input }) => {
-      // Check if quilt exists and is available
-      const quilt = await ctx.db.quilt.findUnique({
-        where: { id: input.quiltId },
-        include: { currentUsage: true },
+      throw new TRPCError({
+        code: 'NOT_IMPLEMENTED',
+        message: 'Start usage functionality not yet implemented with Neon',
       });
-
-      if (!quilt) {
-        throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Quilt not found',
-        });
-      }
-
-      if (quilt.currentUsage) {
-        throw new TRPCError({
-          code: 'PRECONDITION_FAILED',
-          message: 'Quilt is already in use',
-        });
-      }
-
-      if (quilt.currentStatus !== QuiltStatus.AVAILABLE) {
-        throw new TRPCError({
-          code: 'PRECONDITION_FAILED',
-          message: 'Quilt is not available for use',
-        });
-      }
-
-      // Create current usage and update quilt status
-      const [currentUsage] = await Promise.all([
-        ctx.db.currentUsage.create({
-          data: input,
-        }),
-        ctx.db.quilt.update({
-          where: { id: input.quiltId },
-          data: { currentStatus: QuiltStatus.IN_USE },
-        }),
-      ]);
-
-      return currentUsage;
     }),
 
-  // End current usage
+  // End current usage - TODO: Implement with Neon
   endUsage: publicProcedure
     .input(endCurrentUsageSchema)
     .mutation(async ({ ctx, input }) => {
-      const { id, endDate = new Date(), notes } = input;
-
-      // Get current usage
-      const currentUsage = await ctx.db.currentUsage.findUnique({
-        where: { id },
+      throw new TRPCError({
+        code: 'NOT_IMPLEMENTED',
+        message: 'End usage functionality not yet implemented with Neon',
       });
-
-      if (!currentUsage) {
-        throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Current usage record not found',
-        });
-      }
-
-      // Calculate duration
-      const durationDays = Math.ceil(
-        (endDate.getTime() - currentUsage.startedAt.getTime()) / (1000 * 60 * 60 * 24)
-      );
-
-      // Create usage period record and clean up current usage
-      const [usagePeriod] = await Promise.all([
-        ctx.db.usagePeriod.create({
-          data: {
-            quiltId: currentUsage.quiltId,
-            startDate: currentUsage.startedAt,
-            endDate,
-            seasonUsed: getSeason(currentUsage.startedAt),
-            usageType: currentUsage.usageType,
-            durationDays,
-            notes: notes || currentUsage.notes,
-          },
-        }),
-        ctx.db.currentUsage.delete({
-          where: { id },
-        }),
-        ctx.db.quilt.update({
-          where: { id: currentUsage.quiltId },
-          data: { currentStatus: QuiltStatus.AVAILABLE },
-        }),
-      ]);
-
-      return usagePeriod;
     }),
 
   // Get current usage
   getCurrentUsage: publicProcedure
-    .query(async () => {
-      return db.getCurrentUsage();
+    .query(async ({ ctx }) => {
+      return ctx.db.getCurrentUsage();
     }),
 
-  // Get usage history for a quilt
+  // Get usage history for a quilt - TODO: Implement with Neon
   getUsageHistory: publicProcedure
     .input(z.object({ 
       quiltId: z.string().cuid(),
       take: z.number().int().min(1).max(50).default(10),
     }))
     .query(async ({ ctx, input }) => {
-      return ctx.db.usagePeriod.findMany({
-        where: { quiltId: input.quiltId },
-        orderBy: { startDate: 'desc' },
-        take: input.take,
-      });
+      // Return empty array for now
+      return [];
     }),
 
-  // Add maintenance record
+  // Add maintenance record - TODO: Implement with Neon
   addMaintenanceRecord: publicProcedure
     .input(createMaintenanceRecordSchema)
     .mutation(async ({ ctx, input }) => {
-      // Check if quilt exists
-      const quilt = await ctx.db.quilt.findUnique({
-        where: { id: input.quiltId },
-      });
-
-      if (!quilt) {
-        throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Quilt not found',
-        });
-      }
-
-      return ctx.db.maintenanceRecord.create({
-        data: input,
+      throw new TRPCError({
+        code: 'NOT_IMPLEMENTED',
+        message: 'Maintenance record functionality not yet implemented with Neon',
       });
     }),
 
-  // Get seasonal recommendations
+  // Get seasonal recommendations - TODO: Implement with Neon
   getSeasonalRecommendations: publicProcedure
     .input(z.object({ 
       season: z.nativeEnum(Season).optional(),
       availableOnly: z.boolean().default(true),
     }))
     .query(async ({ ctx, input }) => {
-      const where: any = {};
-      
-      if (input.season) where.season = input.season;
-      if (input.availableOnly) where.currentStatus = QuiltStatus.AVAILABLE;
-
-      const quilts = await ctx.db.quilt.findMany({
-        where,
-        include: {
-          usagePeriods: {
-            orderBy: { startDate: 'desc' },
-            take: 3,
-          },
-        },
-        orderBy: { updatedAt: 'desc' },
-      });
-
-      // Calculate recommendation scores
-      const recommendations = quilts.map((quilt) => {
-        const usageCount = quilt.usagePeriods.length;
-        const lastUsed = quilt.usagePeriods[0]?.startDate;
-        const daysSinceUsed = lastUsed 
-          ? Math.ceil((Date.now() - lastUsed.getTime()) / (1000 * 60 * 60 * 24))
-          : 365;
-
-        // Simple scoring algorithm
-        const score = (usageCount * 0.4) + ((365 - daysSinceUsed) / 365 * 0.6);
-
-        return {
-          quilt,
-          score,
-          reason: `Used ${usageCount} times, last used ${daysSinceUsed} days ago`,
-        };
-      });
-
-      return recommendations
-        .sort((a, b) => b.score - a.score)
-        .slice(0, 5);
+      // Return empty array for now
+      return [];
     }),
 });
 

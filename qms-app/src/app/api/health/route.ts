@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/server/db';
+import { db } from '@/lib/neon';
 
 export async function GET() {
   try {
     // Check database connection
-    await db.$queryRaw`SELECT 1`;
+    await db.testConnection();
     
     // Check Redis connection (if using Redis)
     // You can add Redis health check here if needed

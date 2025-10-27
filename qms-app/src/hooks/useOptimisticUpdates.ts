@@ -2,9 +2,16 @@
 
 import { useCallback } from 'react';
 import { api } from '@/lib/trpc';
-import type { Quilt as PrismaQuilt } from '@prisma/client';
-
-type Quilt = PrismaQuilt;
+// Simple Quilt type definition to replace Prisma import
+type Quilt = {
+  id: string;
+  itemNumber: number;
+  name: string;
+  season: string;
+  currentStatus: string;
+  updatedAt: Date;
+  [key: string]: any; // Allow additional properties
+};
 
 export function useOptimisticQuiltUpdates() {
   const utils = api.useUtils();

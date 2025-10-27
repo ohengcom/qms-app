@@ -17,83 +17,25 @@ export const dashboardRouter = createTRPCRouter({
         return cachedData;
       }
 
-      // Basic counts
-      const [
-        totalQuilts,
-        inUseCount,
-        availableCount,
-        storageCount,
-        maintenanceCount,
-      ] = await Promise.all([
-        ctx.db.quilt.count(),
-        ctx.db.quilt.count({ where: { currentStatus: 'IN_USE' } }),
-        ctx.db.quilt.count({ where: { currentStatus: 'AVAILABLE' } }),
-        ctx.db.quilt.count({ where: { currentStatus: 'STORAGE' } }),
-        ctx.db.quilt.count({ where: { currentStatus: 'MAINTENANCE' } }),
-      ]);
+      // Basic counts - simplified for Neon
+      const totalQuilts = await ctx.db.countQuilts();
+      const inUseCount = 0; // TODO: Implement with Neon
+      const availableCount = 0; // TODO: Implement with Neon
+      const storageCount = 0; // TODO: Implement with Neon
+      const maintenanceCount = 0; // TODO: Implement with Neon
 
-      // Seasonal distribution
-      const seasonalDistribution = await ctx.db.quilt.groupBy({
-        by: ['season'],
-        _count: { season: true },
-      });
-
-      // Process seasonal distribution
+      // Seasonal distribution - TODO: Implement with Neon
       const seasonalStats = {
-        WINTER: seasonalDistribution.find(item => item.season === 'WINTER')?._count.season || 0,
-        SPRING_AUTUMN: seasonalDistribution.find(item => item.season === 'SPRING_AUTUMN')?._count.season || 0,
-        SUMMER: seasonalDistribution.find(item => item.season === 'SUMMER')?._count.season || 0,
+        WINTER: 0,
+        SPRING_AUTUMN: 0,
+        SUMMER: 0,
       };
 
-      // Get recent activity (simplified)
-      const recentActivity = await ctx.db.usagePeriod.findMany({
-        include: {
-          quilt: {
-            select: {
-              id: true,
-              name: true,
-              itemNumber: true,
-              season: true,
-            },
-          },
-        },
-        orderBy: { createdAt: 'desc' },
-        take: 10,
-      });
+      // Get recent activity - TODO: Implement with Neon
+      const recentActivity: any[] = [];
 
-      // Get top used quilts (simplified)
-      const topUsedQuilts = await ctx.db.quilt.findMany({
-        include: {
-          usagePeriods: true,
-          currentUsage: true,
-        },
-        take: 5,
-      });
-
-      const topUsedWithStats = topUsedQuilts
-        .map(quilt => ({
-          quilt: {
-            id: quilt.id,
-            name: quilt.name,
-            itemNumber: quilt.itemNumber,
-            season: quilt.season,
-            currentStatus: quilt.currentStatus,
-          },
-          stats: {
-            totalUsageDays: quilt.usagePeriods.reduce((total, period) => {
-              return total + (period.durationDays || 0);
-            }, 0),
-            usageCount: quilt.usagePeriods.length,
-            lastUsedDate: quilt.usagePeriods
-              .sort((a, b) => b.startDate.getTime() - a.startDate.getTime())[0]?.startDate || null,
-            averageUsageDuration: quilt.usagePeriods.length > 0 
-              ? quilt.usagePeriods.reduce((total, period) => total + (period.durationDays || 0), 0) / quilt.usagePeriods.length 
-              : 0,
-            isCurrentlyInUse: !!quilt.currentUsage,
-          },
-        }))
-        .sort((a, b) => b.stats.usageCount - a.stats.usageCount)
-        .slice(0, 5);
+      // Get top used quilts - TODO: Implement with Neon
+      const topUsedWithStats: any[] = [];
 
       const result = {
         overview: {
