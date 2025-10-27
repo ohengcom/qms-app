@@ -33,7 +33,7 @@ yarn-error.log*
 # Vercel
 .vercel
 
-# Prisma
+# Database (using Neon - no local files)
 dev.db
 dev.db-journal
 

@@ -22,7 +22,7 @@ This document outlines the requirements for upgrading the QMS (Quilt Management 
 #### Acceptance Criteria
 
 1. WHEN the package.json file is updated, THE QMS Application SHALL use the latest stable versions of all major dependencies
-2. THE QMS Application SHALL upgrade Prisma from version 6.17.1 to version 6.18.0
+2. ~~THE QMS Application SHALL upgrade Prisma from version 6.17.1 to version 6.18.0~~ (OBSOLETE - Prisma removed)
 3. THE QMS Application SHALL upgrade TypeScript from version 5.x to version 5.9.3
 4. THE QMS Application SHALL upgrade @types/node from version 20.19.23 to version 24.9.1
 5. THE QMS Application SHALL upgrade superjson from version 2.2.2 to version 2.2.3
@@ -47,7 +47,7 @@ This document outlines the requirements for upgrading the QMS (Quilt Management 
 
 1. WHEN the upgrade is complete, THE QMS Application SHALL compile successfully with TypeScript 5.9.3
 2. THE QMS Application SHALL pass all ESLint checks without errors
-3. THE QMS Application SHALL generate Prisma client successfully with version 6.18.0
+3. ~~THE QMS Application SHALL generate Prisma client successfully with version 6.18.0~~ (OBSOLETE - using Neon)
 4. THE QMS Application SHALL start the development server without errors
 5. THE QMS Application SHALL build for production without errors
 
@@ -72,7 +72,7 @@ This document outlines the requirements for upgrading the QMS (Quilt Management 
 1. WHEN @types/node is upgraded to version 24.x, THE QMS Application SHALL update all API route handlers to use compatible type definitions
 2. THE QMS Application SHALL update server-side code to handle changes in Node.js types
 3. THE QMS Application SHALL update tRPC router definitions to accommodate type changes
-4. THE QMS Application SHALL update Prisma service methods to use updated types
+4. ~~THE QMS Application SHALL update Prisma service methods to use updated types~~ (OBSOLETE - Prisma removed)
 5. THE QMS Application SHALL maintain backward compatibility with existing API contracts
 
 ### Requirement 6
@@ -85,7 +85,7 @@ This document outlines the requirements for upgrading the QMS (Quilt Management 
 2. THE QMS Application SHALL successfully build for production
 3. THE QMS Application SHALL load all pages without runtime errors
 4. THE QMS Application SHALL execute all tRPC procedures without errors
-5. THE QMS Application SHALL interact with the database successfully using Prisma 6.18.0
+5. THE QMS Application SHALL interact with the database successfully using Neon Serverless Driver
 
 ### Requirement 7
 
