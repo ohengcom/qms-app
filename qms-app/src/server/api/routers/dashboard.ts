@@ -1,21 +1,13 @@
 import { z } from 'zod';
 import { createTRPCRouter, publicProcedure } from '@/server/api/trpc';
 import { dashboardStatsSchema } from '@/lib/validations/quilt';
-import { CacheService, CacheKeys } from '@/server/services/CacheService';
 
 export const dashboardRouter = createTRPCRouter({
   // Get comprehensive dashboard statistics with caching
   getStats: publicProcedure
     .input(dashboardStatsSchema.optional().default({ includeAnalytics: true, includeTrends: false }))
     .query(async ({ ctx, input }) => {
-      const cache = CacheService.getInstance();
-      const cacheKey = CacheKeys.dashboardStats(input.includeAnalytics);
-      
-      // Try to get from cache first
-      const cachedData = cache.get(cacheKey);
-      if (cachedData) {
-        return cachedData;
-      }
+      // Caching disabled for now - using direct data
 
       // Basic counts - simplified for Neon (temporarily hardcoded)
       const totalQuilts = 0; // TODO: Implement with Neon
