@@ -1,5 +1,7 @@
 {
   "framework": "nextjs",
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
   "env": {
     "CACHE_BUST": "2025-10-27-neon-migration-v3",
     "FORCE_REBUILD": "true"
