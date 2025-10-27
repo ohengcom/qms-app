@@ -19,40 +19,70 @@ export const quiltsRouter = createTRPCRouter({
   getAll: publicProcedure
     .input(quiltSearchSchema)
     .query(async ({ ctx, input }) => {
-      const { filters, sortBy, sortOrder, skip, take } = input;
-      
-      // Build filter object for Neon query
-      const queryFilters: any = {};
-      
-      if (filters.season) queryFilters.season = filters.season;
-      if (filters.status) queryFilters.status = filters.status;
-      if (filters.location) queryFilters.location = filters.location;
-      if (filters.brand) queryFilters.brand = filters.brand;
-      if (filters.search) queryFilters.search = filters.search;
-      
-      queryFilters.limit = take;
-      queryFilters.offset = skip;
+      try {
+        const { filters, sortBy, sortOrder, skip, take } = input;
+        
+        // Import db here to avoid circular imports
+        const { db } = await import('@/lib/neon');
+        
+        // Get quilts from database
+        const quilts = await db.getQuilts({
+          season: filters.season,
+          status: filters.status,
+          location: filters.location,
+          brand: filters.brand,
+          search: filters.search,
+          limit: take,
+          offset: skip,
+        });
+        
+        // Get total count
+        const total = await db.countQuilts(filters);
 
-      // TODO: Implement with Neon - temporarily return empty data for build
-      const quilts: any[] = [];
-      const total = 0;
-
-      return {
-        quilts,
-        total,
-        hasMore: skip + take < total,
-      };
+        return {
+          quilts: quilts || [],
+          total: total || 0,
+          hasMore: skip + take < (total || 0),
+        };
+      } catch (error) {
+        console.error('Error fetching quilts:', error);
+        
+        // Return empty data instead of throwing error to prevent UI crashes
+        return {
+          quilts: [],
+          total: 0,
+          hasMore: false,
+        };
+      }
     }),
 
   // Get quilt by ID with full details
   getById: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-      // TODO: Implement with Neon - temporarily return null for build
-      throw new TRPCError({
-        code: 'NOT_FOUND',
-        message: 'Quilt not found - Neon implementation pending',
-      });
+      try {
+        const { db } = await import('@/lib/neon');
+        const quilt = await db.getQuiltById(input.id);
+        
+        if (!quilt) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Quilt not found',
+          });
+        }
+        
+        return quilt;
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+        
+        console.error('Error fetching quilt by ID:', error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to fetch quilt',
+        });
+      }
     }),
 
   // Create new quilt
@@ -109,8 +139,14 @@ export const quiltsRouter = createTRPCRouter({
   // Get current usage
   getCurrentUsage: publicProcedure
     .query(async ({ ctx }) => {
-      // TODO: Implement with Neon - temporarily return empty array for build
-      return [];
+      try {
+        const { db } = await import('@/lib/neon');
+        const currentUsage = await db.getCurrentUsage();
+        return currentUsage || [];
+      } catch (error) {
+        console.error('Error fetching current usage:', error);
+        return [];
+      }
     }),
 
   // Get usage history for a quilt - TODO: Implement with Neon

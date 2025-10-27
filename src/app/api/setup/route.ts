@@ -3,12 +3,68 @@ import { db } from '@/lib/neon';
 
 export async function POST() {
   try {
+    // First, create the database schema if it doesn't exist
+    const { sql } = await import('@/lib/neon');
+    
+    // Create quilts table
+    await sql`
+      CREATE TABLE IF NOT EXISTS quilts (
+        id TEXT PRIMARY KEY,
+        item_number INTEGER,
+        group_id INTEGER,
+        name TEXT NOT NULL,
+        season TEXT CHECK (season IN ('WINTER', 'SPRING_AUTUMN', 'SUMMER')),
+        length_cm INTEGER,
+        width_cm INTEGER,
+        weight_grams INTEGER,
+        fill_material TEXT,
+        material_details TEXT,
+        color TEXT,
+        brand TEXT,
+        purchase_date TIMESTAMP,
+        location TEXT,
+        packaging_info TEXT,
+        current_status TEXT CHECK (current_status IN ('AVAILABLE', 'IN_USE', 'MAINTENANCE', 'STORAGE')) DEFAULT 'AVAILABLE',
+        notes TEXT,
+        image_url TEXT,
+        thumbnail_url TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // Create usage_records table
+    await sql`
+      CREATE TABLE IF NOT EXISTS usage_records (
+        id TEXT PRIMARY KEY,
+        quilt_id TEXT REFERENCES quilts(id) ON DELETE CASCADE,
+        start_date TIMESTAMP,
+        end_date TIMESTAMP,
+        season_used TEXT,
+        usage_type TEXT CHECK (usage_type IN ('REGULAR', 'GUEST', 'SPECIAL_OCCASION', 'SEASONAL_ROTATION')) DEFAULT 'REGULAR',
+        notes TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    // Create current_usage table
+    await sql`
+      CREATE TABLE IF NOT EXISTS current_usage (
+        id TEXT PRIMARY KEY,
+        quilt_id TEXT REFERENCES quilts(id) ON DELETE CASCADE,
+        started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        expected_end_date TIMESTAMP,
+        usage_type TEXT CHECK (usage_type IN ('REGULAR', 'GUEST', 'SPECIAL_OCCASION', 'SEASONAL_ROTATION')) DEFAULT 'REGULAR',
+        notes TEXT
+      )
+    `;
+
     // Check if database is already set up
     const quiltCount = await db.countQuilts();
     
     if (quiltCount > 0) {
       return NextResponse.json({ 
-        message: 'Database already initialized', 
+        message: 'Database schema created, already has data', 
         quilts: quiltCount 
       });
     }
