@@ -16,7 +16,7 @@ export async function GET() {
     
     // Try to count quilts and get sample data
     let quiltCount = 0;
-    let sampleQuilts = [];
+    let sampleQuilts: any[] = [];
     try {
       quiltCount = await db.countQuilts();
       console.log('Quilt count:', quiltCount);
