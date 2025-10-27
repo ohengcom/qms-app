@@ -53,31 +53,11 @@ export function useOptimisticQuiltUpdates() {
     (quiltId: string) => {
       optimisticStatusUpdate(quiltId, 'IN_USE');
       
-      // Update current usage cache
-      utils.quilts.getCurrentUsage.setData(undefined, (oldData: any) => {
-        if (!oldData) return [];
-        
-        // Add optimistic current usage (we don't have all the data, so this is minimal)
-        return [
-          ...oldData,
-          {
-            id: `temp-${quiltId}`,
-            quiltId,
-            startedAt: new Date(),
-            usageType: 'REGULAR' as any,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            quilt: {
-              id: quiltId,
-              name: 'Loading...',
-              itemNumber: 0,
-              season: 'SPRING_AUTUMN' as any,
-              color: '',
-              location: '',
-            },
-          } as any,
-        ];
-      });
+      // Update current usage cache - disabled for now since we're using mock data
+      // utils.quilts.getCurrentUsage.setData(undefined, (oldData: any) => {
+      //   if (!oldData) return [];
+      //   return [...oldData, { /* optimistic usage */ }];
+      // });
     },
     [optimisticStatusUpdate, utils]
   );
@@ -86,11 +66,11 @@ export function useOptimisticQuiltUpdates() {
     (quiltId: string, usageId: string) => {
       optimisticStatusUpdate(quiltId, 'AVAILABLE');
       
-      // Remove from current usage cache
-      utils.quilts.getCurrentUsage.setData(undefined, (oldData: any) => {
-        if (!oldData) return [];
-        return oldData.filter((usage: any) => usage.id !== usageId);
-      });
+      // Remove from current usage cache - disabled for now since we're using mock data
+      // utils.quilts.getCurrentUsage.setData(undefined, (oldData: any) => {
+      //   if (!oldData) return [];
+      //   return oldData.filter((usage: any) => usage.id !== usageId);
+      // });
     },
     [optimisticStatusUpdate, utils]
   );
