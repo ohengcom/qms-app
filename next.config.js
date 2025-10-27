@@ -97,6 +97,11 @@ const nextConfig = {
   
   // Webpack configuration
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
+    // Prisma configuration for Vercel
+    if (isServer) {
+      config.externals.push('@prisma/client');
+    }
+    
     // Production optimizations
     if (!dev) {
       // Minimize bundle size
