@@ -4,13 +4,8 @@ import { api } from '@/lib/trpc';
 import type { QuiltSearchInput } from '@/lib/validations/quilt';
 
 export function useQuilts(searchParams?: QuiltSearchInput) {
-  return api.quilts.getAll.useQuery(searchParams || {
-    filters: {},
-    sortBy: 'itemNumber',
-    sortOrder: 'asc',
-    skip: 0,
-    take: 20,
-  });
+  // For now, ignore search params since we simplified the API
+  return api.quilts.getAll.useQuery();
 }
 
 export function useQuilt(id: string) {
@@ -87,8 +82,6 @@ export function useCurrentUsage() {
 }
 
 export function useSeasonalRecommendations(season?: any, availableOnly = true) {
-  return api.quilts.getSeasonalRecommendations.useQuery({
-    season,
-    availableOnly,
-  });
+  // Simplified to not pass parameters for now
+  return api.quilts.getSeasonalRecommendations.useQuery();
 }

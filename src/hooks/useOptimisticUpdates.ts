@@ -25,7 +25,7 @@ export function useOptimisticQuiltUpdates() {
       });
       
       // Update the quilt in the list cache
-      utils.quilts.getAll.setData({ filters: {}, sortBy: 'itemNumber', sortOrder: 'asc', skip: 0, take: 50 }, (oldData: any) => {
+      utils.quilts.getAll.setData(undefined, (oldData: any) => {
         if (!oldData || !oldData.quilts || !Array.isArray(oldData.quilts)) return oldData;
         
         return {
