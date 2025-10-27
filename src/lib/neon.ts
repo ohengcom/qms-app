@@ -1,0 +1,198 @@
+import { neon } from '@neondatabase/serverless';
+
+if (!process.env.DATABASE_URL) {
+  throw new Error('DATABASE_URL is not set');
+}
+
+// Create Neon serverless connection
+export const sql = neon(process.env.DATABASE_URL);
+
+// Helper function to execute queries with error handling
+export async function executeQuery<T = any>(query: string, params: any[] = []): Promise<T[]> {
+  try {
+    const result = await sql(query, params);
+    return result as T[];
+  } catch (error) {
+    console.error('Database query error:', error);
+    throw error;
+  }
+}
+
+// Helper functions for common operations
+export const db = {
+  // Get all quilts with optional filtering
+  async getQuilts(filters: {
+    season?: string;
+    status?: string;
+    location?: string;
+    brand?: string;
+    search?: string;
+    limit?: number;
+    offset?: number;
+  } = {}) {
+    let query = `
+      SELECT q.*, 
+             cu.id as current_usage_id,
+             cu.started_at as current_usage_started,
+             cu.usage_type as current_usage_type,
+             cu.notes as current_usage_notes
+      FROM quilts q
+      LEFT JOIN current_usage cu ON q.id = cu.quilt_id
+      WHERE 1=1
+    `;
+    const params: any[] = [];
+    let paramIndex = 1;
+
+    if (filters.season) {
+      query += ` AND q.season = $${paramIndex}`;
+      params.push(filters.season);
+      paramIndex++;
+    }
+
+    if (filters.status) {
+      query += ` AND q.current_status = $${paramIndex}`;
+      params.push(filters.status);
+      paramIndex++;
+    }
+
+    if (filters.location) {
+      query += ` AND q.location ILIKE $${paramIndex}`;
+      params.push(`%${filters.location}%`);
+      paramIndex++;
+    }
+
+    if (filters.brand) {
+      query += ` AND q.brand ILIKE $${paramIndex}`;
+      params.push(`%${filters.brand}%`);
+      paramIndex++;
+    }
+
+    if (filters.search) {
+      query += ` AND (q.name ILIKE $${paramIndex} OR q.color ILIKE $${paramIndex} OR q.fill_material ILIKE $${paramIndex})`;
+      params.push(`%${filters.search}%`);
+      paramIndex++;
+    }
+
+    query += ` ORDER BY q.updated_at DESC`;
+
+    if (filters.limit) {
+      query += ` LIMIT $${paramIndex}`;
+      params.push(filters.limit);
+      paramIndex++;
+    }
+
+    if (filters.offset) {
+      query += ` OFFSET $${paramIndex}`;
+      params.push(filters.offset);
+    }
+
+    return executeQuery(query, params);
+  },
+
+  // Get quilt by ID
+  async getQuiltById(id: string) {
+    const query = `
+      SELECT q.*, 
+             cu.id as current_usage_id,
+             cu.started_at as current_usage_started,
+             cu.usage_type as current_usage_type,
+             cu.notes as current_usage_notes
+      FROM quilts q
+      LEFT JOIN current_usage cu ON q.id = cu.quilt_id
+      WHERE q.id = $1
+    `;
+    const result = await executeQuery(query, [id]);
+    return result[0] || null;
+  },
+
+  // Count quilts
+  async countQuilts(filters: any = {}) {
+    let query = 'SELECT COUNT(*) as count FROM quilts WHERE 1=1';
+    const params: any[] = [];
+    let paramIndex = 1;
+
+    if (filters.season) {
+      query += ` AND season = $${paramIndex}`;
+      params.push(filters.season);
+      paramIndex++;
+    }
+
+    if (filters.status) {
+      query += ` AND current_status = $${paramIndex}`;
+      params.push(filters.status);
+      paramIndex++;
+    }
+
+    const result = await executeQuery<{ count: string }>(query, params);
+    return parseInt(result[0]?.count || '0');
+  },
+
+  // Create quilt
+  async createQuilt(data: any) {
+    const query = `
+      INSERT INTO quilts (
+        id, item_number, group_id, name, season, length_cm, width_cm, weight_grams,
+        fill_material, material_details, color, brand, purchase_date, location,
+        packaging_info, current_status, notes, created_at, updated_at
+      ) VALUES (
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19
+      ) RETURNING *
+    `;
+    
+    const id = crypto.randomUUID();
+    const now = new Date().toISOString();
+    
+    const params = [
+      id,
+      data.itemNumber,
+      data.groupId || null,
+      data.name,
+      data.season,
+      data.lengthCm,
+      data.widthCm,
+      data.weightGrams,
+      data.fillMaterial,
+      data.materialDetails || null,
+      data.color,
+      data.brand || null,
+      data.purchaseDate || null,
+      data.location,
+      data.packagingInfo || null,
+      data.currentStatus || 'AVAILABLE',
+      data.notes || null,
+      now,
+      now
+    ];
+
+    const result = await executeQuery(query, params);
+    return result[0];
+  },
+
+  // Get current usage
+  async getCurrentUsage() {
+    const query = `
+      SELECT cu.*, q.name as quilt_name, q.color as quilt_color
+      FROM current_usage cu
+      JOIN quilts q ON cu.quilt_id = q.id
+      ORDER BY cu.started_at DESC
+    `;
+    return executeQuery(query);
+  },
+
+  // Check database connection
+  async testConnection() {
+    const result = await executeQuery('SELECT 1 as test');
+    return result[0]?.test === 1;
+  },
+
+  // Get table info
+  async getTables() {
+    const query = `
+      SELECT table_name 
+      FROM information_schema.tables 
+      WHERE table_schema = 'public'
+      ORDER BY table_name
+    `;
+    return executeQuery<{ table_name: string }>(query);
+  }
+};

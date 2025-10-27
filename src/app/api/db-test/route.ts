@@ -1,27 +1,23 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/server/db';
+import { db } from '@/lib/neon';
 
 export async function GET() {
   try {
     // Test basic database connection
-    console.log('Testing database connection...');
+    console.log('Testing Neon database connection...');
     
-    // Try a simple query
-    const result = await db.$queryRaw`SELECT 1 as test`;
-    console.log('Database connection successful:', result);
+    // Try a simple connection test
+    const connectionTest = await db.testConnection();
+    console.log('Database connection successful:', connectionTest);
     
     // Check if tables exist
-    const tables = await db.$queryRaw`
-      SELECT table_name 
-      FROM information_schema.tables 
-      WHERE table_schema = 'public'
-    `;
+    const tables = await db.getTables();
     console.log('Available tables:', tables);
     
     // Try to count quilts
     let quiltCount = 0;
     try {
-      quiltCount = await db.quilt.count();
+      quiltCount = await db.countQuilts();
       console.log('Quilt count:', quiltCount);
     } catch (error) {
       console.log('Quilt table error:', error);
@@ -29,8 +25,9 @@ export async function GET() {
     
     return NextResponse.json({
       status: 'success',
-      connection: 'Database connected successfully',
-      tables: tables,
+      connection: 'Neon database connected successfully',
+      driver: 'Neon Serverless Driver',
+      tables: tables.map(t => t.table_name),
       quiltCount: quiltCount,
       databaseUrl: process.env.DATABASE_URL ? 'Set' : 'Not set',
     });

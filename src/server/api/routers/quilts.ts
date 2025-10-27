@@ -9,106 +9,44 @@ import {
   endCurrentUsageSchema,
   createMaintenanceRecordSchema,
 } from '@/lib/validations/quilt';
-import { Season, QuiltStatus } from '@prisma/client';
+import { db } from '@/lib/neon';
 
 export const quiltsRouter = createTRPCRouter({
-  // Get all quilts with filtering and pagination (with caching)
+  // Get all quilts with filtering and pagination
   getAll: publicProcedure
     .input(quiltSearchSchema)
-    .query(async ({ ctx, input }) => {
-      // Create cache key based on search parameters
-      const cacheKey = `quilts:getAll:${JSON.stringify(input)}`;
-      
-      // Try to get from cache first
-      try {
-        const { CacheService } = await import('@/server/services/CacheService');
-        const cache = CacheService.getInstance();
-        
-        const cachedResult = cache.get(cacheKey);
-        if (cachedResult) {
-          return cachedResult;
-        }
-      } catch (error) {
-        // Continue without caching if service unavailable
-      }
+    .query(async ({ input }) => {
       const { filters, sortBy, sortOrder, skip, take } = input;
       
-      const where: any = {};
+      // Build filter object for Neon query
+      const queryFilters: any = {};
       
-      // Apply filters
-      if (filters.season) where.season = filters.season;
-      if (filters.status) where.currentStatus = filters.status;
-      if (filters.location) where.location = { contains: filters.location, mode: 'insensitive' };
-      if (filters.brand) where.brand = { contains: filters.brand, mode: 'insensitive' };
-      if (filters.minWeight || filters.maxWeight) {
-        where.weightGrams = {};
-        if (filters.minWeight) where.weightGrams.gte = filters.minWeight;
-        if (filters.maxWeight) where.weightGrams.lte = filters.maxWeight;
-      }
-      if (filters.search) {
-        where.OR = [
-          { name: { contains: filters.search, mode: 'insensitive' } },
-          { color: { contains: filters.search, mode: 'insensitive' } },
-          { fillMaterial: { contains: filters.search, mode: 'insensitive' } },
-          { notes: { contains: filters.search, mode: 'insensitive' } },
-        ];
-      }
+      if (filters.season) queryFilters.season = filters.season;
+      if (filters.status) queryFilters.status = filters.status;
+      if (filters.location) queryFilters.location = filters.location;
+      if (filters.brand) queryFilters.brand = filters.brand;
+      if (filters.search) queryFilters.search = filters.search;
+      
+      queryFilters.limit = take;
+      queryFilters.offset = skip;
 
       const [quilts, total] = await Promise.all([
-        ctx.db.quilt.findMany({
-          where,
-          orderBy: { [sortBy]: sortOrder },
-          skip,
-          take,
-          include: {
-            currentUsage: true,
-            usagePeriods: {
-              orderBy: { startDate: 'desc' },
-              take: 3,
-            },
-            maintenanceLog: {
-              orderBy: { performedAt: 'desc' },
-              take: 1,
-            },
-          },
-        }),
-        ctx.db.quilt.count({ where }),
+        db.getQuilts(queryFilters),
+        db.countQuilts(queryFilters),
       ]);
 
-      const result = {
+      return {
         quilts,
         total,
         hasMore: skip + take < total,
       };
-
-      // Cache the result for 1 minute
-      try {
-        const { CacheService } = await import('@/server/services/CacheService');
-        const cache = CacheService.getInstance();
-        cache.set(cacheKey, result, 60 * 1000);
-      } catch (error) {
-        // Continue without caching if service unavailable
-      }
-
-      return result;
     }),
 
   // Get quilt by ID with full details
   getById: publicProcedure
-    .input(z.object({ id: z.string().cuid() }))
-    .query(async ({ ctx, input }) => {
-      const quilt = await ctx.db.quilt.findUnique({
-        where: { id: input.id },
-        include: {
-          currentUsage: true,
-          usagePeriods: {
-            orderBy: { startDate: 'desc' },
-          },
-          maintenanceLog: {
-            orderBy: { performedAt: 'desc' },
-          },
-        },
-      });
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input }) => {
+      const quilt = await db.getQuiltById(input.id);
 
       if (!quilt) {
         throw new TRPCError({
@@ -117,29 +55,7 @@ export const quiltsRouter = createTRPCRouter({
         });
       }
 
-      // Calculate usage statistics
-      const totalUsageDays = quilt.usagePeriods.reduce((total, period) => {
-        if (period.endDate) {
-          const days = Math.ceil(
-            (period.endDate.getTime() - period.startDate.getTime()) / (1000 * 60 * 60 * 24)
-          );
-          return total + days;
-        }
-        return total;
-      }, 0);
-
-      const usageFrequency = quilt.usagePeriods.length;
-      const lastUsedDate = quilt.usagePeriods[0]?.startDate || null;
-
-      return {
-        ...quilt,
-        stats: {
-          totalUsageDays,
-          usageFrequency,
-          lastUsedDate,
-          averageUsageDuration: usageFrequency > 0 ? totalUsageDays / usageFrequency : 0,
-        },
-      };
+      return quilt;
     }),
 
   // Create new quilt
@@ -338,13 +254,8 @@ export const quiltsRouter = createTRPCRouter({
 
   // Get current usage
   getCurrentUsage: publicProcedure
-    .query(async ({ ctx }) => {
-      return ctx.db.currentUsage.findMany({
-        include: {
-          quilt: true,
-        },
-        orderBy: { startedAt: 'desc' },
-      });
+    .query(async () => {
+      return db.getCurrentUsage();
     }),
 
   // Get usage history for a quilt
