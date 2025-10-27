@@ -24,7 +24,13 @@ export default function DashboardPage() {
     );
   }
   
-  const overview = stats?.overview || {};
+  const overview = stats?.overview || {
+    totalQuilts: 0,
+    inUseCount: 0,
+    availableCount: 0,
+    storageCount: 0,
+    maintenanceCount: 0,
+  };
   
   return (
     <div className="p-8">
@@ -34,25 +40,25 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-lg font-semibold text-gray-900">Total Quilts</h3>
-          <p className="text-3xl font-bold text-blue-600 mt-2">{overview.totalQuilts || 0}</p>
+          <p className="text-3xl font-bold text-blue-600 mt-2">{overview.totalQuilts}</p>
           <p className="text-sm text-gray-500 mt-1">In your collection</p>
         </div>
         
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-lg font-semibold text-gray-900">In Use</h3>
-          <p className="text-3xl font-bold text-green-600 mt-2">{overview.inUseCount || 0}</p>
+          <p className="text-3xl font-bold text-green-600 mt-2">{overview.inUseCount}</p>
           <p className="text-sm text-gray-500 mt-1">Currently being used</p>
         </div>
         
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-lg font-semibold text-gray-900">Available</h3>
-          <p className="text-3xl font-bold text-purple-600 mt-2">{overview.availableCount || 0}</p>
+          <p className="text-3xl font-bold text-purple-600 mt-2">{overview.availableCount}</p>
           <p className="text-sm text-gray-500 mt-1">Ready to use</p>
         </div>
         
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-lg font-semibold text-gray-900">In Storage</h3>
-          <p className="text-3xl font-bold text-orange-600 mt-2">{overview.storageCount || 0}</p>
+          <p className="text-3xl font-bold text-orange-600 mt-2">{overview.storageCount}</p>
           <p className="text-sm text-gray-500 mt-1">Stored away</p>
         </div>
       </div>
