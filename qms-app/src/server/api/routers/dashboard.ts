@@ -1,9 +1,6 @@
 import { z } from 'zod';
 import { createTRPCRouter, publicProcedure } from '@/server/api/trpc';
 import { dashboardStatsSchema } from '@/lib/validations/quilt';
-import { CacheService } from '@/server/services/CacheService';
-import { CacheService } from '@/server/services/CacheService';
-import { cache } from 'react';
 
 export const dashboardRouter = createTRPCRouter({
   // Get comprehensive dashboard statistics with caching
