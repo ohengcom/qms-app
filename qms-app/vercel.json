@@ -1,6 +1,4 @@
 {
-  "buildCommand": "npm run vercel-build",
-  "installCommand": "npm install",
   "framework": "nextjs",
   "env": {
     "CACHE_BUST": "2025-10-27-neon-migration-v3",

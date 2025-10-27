@@ -35,7 +35,10 @@ git push origin main
 1. Go to [vercel.com/dashboard](https://vercel.com/dashboard)
 2. Click "New Project"
 3. Import your GitHub repository
-4. Select the `qms-app` folder as the root directory
+4. **IMPORTANT**: Set Root Directory to `qms-app` in the project settings
+   - In the "Configure Project" step, expand "Build and Output Settings"
+   - Set "Root Directory" field to `qms-app`
+   - This tells Vercel to use the qms-app folder as the project root
 
 ### 3. Configure Environment Variables
 In Vercel dashboard, add these environment variables:
