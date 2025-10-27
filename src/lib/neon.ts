@@ -65,7 +65,7 @@ export const db = {
     try {
       console.log('Executing getQuilts query...');
       
-      // First, let's try a simple query to see what columns exist
+      // Get quilts from database
       const result = await sql`
         SELECT * FROM quilts 
         ORDER BY created_at DESC 
@@ -75,7 +75,31 @@ export const db = {
       console.log('Query result:', result);
       console.log('Number of records:', result?.length || 0);
       
-      return result;
+      // Transform database records to match frontend interface
+      const transformedQuilts = result.map((quilt: any) => ({
+        id: quilt.id,
+        itemNumber: quilt.item_number,
+        name: quilt.name,
+        season: quilt.season,
+        lengthCm: quilt.length_cm,
+        widthCm: quilt.width_cm,
+        weightGrams: quilt.weight_grams,
+        fillMaterial: quilt.fill_material,
+        materialDetails: quilt.material_details,
+        color: quilt.color,
+        brand: quilt.brand,
+        purchaseDate: quilt.purchase_date,
+        location: quilt.location,
+        packagingInfo: quilt.packaging_info,
+        currentStatus: quilt.current_status,
+        notes: quilt.notes,
+        imageUrl: quilt.image_url,
+        thumbnailUrl: quilt.thumbnail_url,
+        createdAt: quilt.created_at,
+        updatedAt: quilt.updated_at,
+      }));
+      
+      return transformedQuilts;
     } catch (error) {
       console.error('Get quilts error:', error);
       console.error('Error details:', error);
