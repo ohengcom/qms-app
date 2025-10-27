@@ -1,10 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Enable standalone output for Docker
-  output: 'standalone',
+  // Remove standalone output for Vercel deployment
+  // output: 'standalone',
   
   // Server external packages (moved from experimental)
   serverExternalPackages: ['@prisma/client'],
+  
+  // Experimental features for Vercel
+  experimental: {
+    serverComponentsExternalPackages: ['@prisma/client'],
+  },
   
   // Turbopack configuration
   turbopack: {},
