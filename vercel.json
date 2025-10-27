@@ -1,5 +1,0 @@
-{
-  "buildCommand": "cd qms-app && npm run build",
-  "installCommand": "cd qms-app && npm install",
-  "framework": "nextjs"
-}
