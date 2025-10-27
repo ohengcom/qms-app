@@ -42,7 +42,7 @@ export const createQuiltSchema = z.object({
   purchaseDate: z.date().optional(),
   location: z.string().min(1, 'Location is required'),
   packagingInfo: z.string().optional(),
-  currentStatus: z.enum(['AVAILABLE', 'IN_USE', 'MAINTENANCE', 'STORAGE']).default('AVAILABLE'),
+  currentStatus: z.enum(['AVAILABLE', 'IN_USE', 'MAINTENANCE', 'STORAGE']).optional().default('AVAILABLE'),
   notes: z.string().optional(),
   imageUrl: z.string().optional(),
   thumbnailUrl: z.string().optional(),
@@ -58,7 +58,7 @@ export const createUsagePeriodSchema = z.object({
   startDate: z.date(),
   endDate: z.date().optional(),
   seasonUsed: z.string().optional(),
-  usageType: z.enum(['REGULAR', 'GUEST', 'SPECIAL_OCCASION', 'SEASONAL_ROTATION']).default('REGULAR'),
+  usageType: z.enum(['REGULAR', 'GUEST', 'SPECIAL_OCCASION', 'SEASONAL_ROTATION']).optional().default('REGULAR'),
   notes: z.string().optional(),
 });
 
@@ -66,7 +66,7 @@ export const createCurrentUsageSchema = z.object({
   quiltId: z.string(),
   startedAt: z.date(),
   expectedEndDate: z.date().optional(),
-  usageType: z.enum(['REGULAR', 'GUEST', 'SPECIAL_OCCASION', 'SEASONAL_ROTATION']).default('REGULAR'),
+  usageType: z.enum(['REGULAR', 'GUEST', 'SPECIAL_OCCASION', 'SEASONAL_ROTATION']).optional().default('REGULAR'),
   notes: z.string().optional(),
 });
 
@@ -88,11 +88,11 @@ export const quiltFiltersSchema = z.object({
 });
 
 export const quiltSearchSchema = z.object({
-  filters: quiltFiltersSchema.default({}),
-  sortBy: z.enum(['itemNumber', 'name', 'season', 'weightGrams', 'createdAt', 'updatedAt']).default('itemNumber'),
-  sortOrder: z.enum(['asc', 'desc']).default('asc'),
-  skip: z.number().int().min(0).default(0),
-  take: z.number().int().min(1).max(100).default(20),
+  filters: quiltFiltersSchema.optional().default({}),
+  sortBy: z.enum(['itemNumber', 'name', 'season', 'weightGrams', 'createdAt', 'updatedAt']).optional().default('itemNumber'),
+  sortOrder: z.enum(['asc', 'desc']).optional().default('asc'),
+  skip: z.number().int().min(0).optional().default(0),
+  take: z.number().int().min(1).max(100).optional().default(20),
 });
 
 // Maintenance Schemas
@@ -112,7 +112,7 @@ export const createSeasonalRecommendationSchema = z.object({
   maxWeight: z.number().int().positive(),
   materials: z.array(z.string()),
   description: z.string().min(1, 'Description is required'),
-  priority: z.number().int().min(0).default(0),
+  priority: z.number().int().min(0).optional().default(0),
 });
 
 export const updateSeasonalRecommendationSchema = createSeasonalRecommendationSchema.partial().extend({
@@ -126,8 +126,8 @@ export const analyticsDateRangeSchema = z.object({
 });
 
 export const dashboardStatsSchema = z.object({
-  includeAnalytics: z.boolean().default(true),
-  includeTrends: z.boolean().default(false),
+  includeAnalytics: z.boolean().optional().default(true),
+  includeTrends: z.boolean().optional().default(false),
 });
 
 // Export types

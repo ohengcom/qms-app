@@ -99,7 +99,7 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
   const updateQuilt = useUpdateQuilt();
   
   const form = useForm<CreateQuiltInput>({
-    resolver: zodResolver(createQuiltSchema),
+    resolver: zodResolver(createQuiltSchema) as any,
     defaultValues: initialData || {
       itemNumber: 0,
       name: '',
