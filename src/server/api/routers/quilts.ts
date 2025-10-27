@@ -12,16 +12,13 @@ import {
   Season,
   UsageType,
 } from '@/lib/validations/quilt';
-// Removed direct db import - using ctx.db instead
+import { db } from '@/lib/neon';
 
 export const quiltsRouter = createTRPCRouter({
   // Get all quilts with filtering and pagination
   getAll: publicProcedure
     .query(async ({ ctx }) => {
       try {
-        // Import db here to avoid circular imports
-        const { db } = await import('@/lib/neon');
-        
         console.log('tRPC: Fetching quilts from database...');
         
         // Get quilts from database with basic parameters
@@ -64,7 +61,6 @@ export const quiltsRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       try {
-        const { db } = await import('@/lib/neon');
         const quilt = await db.getQuiltById(input.id);
         
         if (!quilt) {
@@ -143,7 +139,6 @@ export const quiltsRouter = createTRPCRouter({
   getCurrentUsage: publicProcedure
     .query(async ({ ctx }) => {
       try {
-        const { db } = await import('@/lib/neon');
         const currentUsage = await db.getCurrentUsage();
         return currentUsage || [];
       } catch (error) {
