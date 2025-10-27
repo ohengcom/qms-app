@@ -63,7 +63,7 @@ export const db = {
     offset?: number;
   } = {}) {
     try {
-      console.log('Executing getQuilts query...');
+      console.log('Executing getQuilts query with data transformation...');
       
       // Get quilts from database
       const result = await sql`
