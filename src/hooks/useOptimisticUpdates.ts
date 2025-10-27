@@ -18,12 +18,15 @@ export function useOptimisticQuiltUpdates() {
       });
       
       // Update the quilt in the list cache
-      utils.quilts.getAll.setData({ filters: {}, sortBy: 'itemNumber', sortOrder: 'asc', skip: 0, take: 50 }, (oldData) => {
-        if (!oldData || !Array.isArray(oldData)) return oldData;
+      utils.quilts.getAll.setData({ filters: {}, sortBy: 'itemNumber', sortOrder: 'asc', skip: 0, take: 50 }, (oldData: any) => {
+        if (!oldData || !oldData.quilts || !Array.isArray(oldData.quilts)) return oldData;
         
-        return oldData.map((quilt: any) =>
-          quilt.id === quiltId ? { ...quilt, ...updater(quilt) } : quilt
-        );
+        return {
+          ...oldData,
+          quilts: oldData.quilts.map((quilt: any) =>
+            quilt.id === quiltId ? { ...quilt, ...updater(quilt) } : quilt
+          )
+        };
       });
     },
     [utils]
@@ -77,9 +80,9 @@ export function useOptimisticQuiltUpdates() {
       optimisticStatusUpdate(quiltId, 'AVAILABLE');
       
       // Remove from current usage cache
-      utils.quilts.getCurrentUsage.setData(undefined, (oldData) => {
+      utils.quilts.getCurrentUsage.setData(undefined, (oldData: any) => {
         if (!oldData) return [];
-        return oldData.filter((usage) => usage.id !== usageId);
+        return oldData.filter((usage: any) => usage.id !== usageId);
       });
     },
     [optimisticStatusUpdate, utils]
