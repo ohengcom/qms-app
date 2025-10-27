@@ -154,7 +154,7 @@ export const importExportRouter = createTRPCRouter({
   // Get import/export statistics
   getImportExportStats: publicProcedure
     .query(async ({ ctx }) => {
-      const totalQuilts = await ctx.db.countQuilts();
+      const totalQuilts = 0; // TODO: Implement with Neon
       const recentImports: any[] = []; // TODO: Implement import log with Neon
 
       return {

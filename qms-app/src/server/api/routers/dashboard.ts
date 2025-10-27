@@ -17,8 +17,8 @@ export const dashboardRouter = createTRPCRouter({
         return cachedData;
       }
 
-      // Basic counts - simplified for Neon
-      const totalQuilts = await ctx.db.countQuilts();
+      // Basic counts - simplified for Neon (temporarily hardcoded)
+      const totalQuilts = 0; // TODO: Implement with Neon
       const inUseCount = 0; // TODO: Implement with Neon
       const availableCount = 0; // TODO: Implement with Neon
       const storageCount = 0; // TODO: Implement with Neon
