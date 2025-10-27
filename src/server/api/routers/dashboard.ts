@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { createTRPCRouter, publicProcedure } from '@/server/api/trpc';
 import { dashboardStatsSchema } from '@/lib/validations/quilt';
 import { CacheService } from '@/server/services/CacheService';
+import { db } from '@/lib/neon';
 
 export const dashboardRouter = createTRPCRouter({
   // Get comprehensive dashboard statistics with caching
@@ -10,9 +11,6 @@ export const dashboardRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       try {
         console.log('Dashboard getStats: Starting query...');
-        
-        // Get real data from Neon database
-        const { db } = await import('@/lib/neon');
         
         // Get total quilts count
         console.log('Dashboard getStats: Getting total quilts count...');
