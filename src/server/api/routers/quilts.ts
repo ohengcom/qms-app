@@ -17,32 +17,24 @@ import {
 export const quiltsRouter = createTRPCRouter({
   // Get all quilts with filtering and pagination
   getAll: publicProcedure
-    .input(quiltSearchSchema)
-    .query(async ({ ctx, input }) => {
+    .query(async ({ ctx }) => {
       try {
-        const { filters, sortBy, sortOrder, skip, take } = input;
-        
         // Import db here to avoid circular imports
         const { db } = await import('@/lib/neon');
         
-        // Get quilts from database
+        // Get quilts from database with basic parameters
         const quilts = await db.getQuilts({
-          season: filters.season,
-          status: filters.status,
-          location: filters.location,
-          brand: filters.brand,
-          search: filters.search,
-          limit: take,
-          offset: skip,
+          limit: 20,
+          offset: 0,
         });
         
         // Get total count
-        const total = await db.countQuilts(filters);
+        const total = await db.countQuilts();
 
         return {
           quilts: quilts || [],
           total: total || 0,
-          hasMore: skip + take < (total || 0),
+          hasMore: false,
         };
       } catch (error) {
         console.error('Error fetching quilts:', error);
@@ -108,7 +100,7 @@ export const quiltsRouter = createTRPCRouter({
 
   // Delete quilt - TODO: Implement with Neon
   delete: publicProcedure
-    .input(z.object({ id: z.string().cuid() }))
+    .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       throw new TRPCError({
         code: 'NOT_IMPLEMENTED',
@@ -152,8 +144,8 @@ export const quiltsRouter = createTRPCRouter({
   // Get usage history for a quilt - TODO: Implement with Neon
   getUsageHistory: publicProcedure
     .input(z.object({ 
-      quiltId: z.string().cuid(),
-      take: z.number().int().min(1).max(50).default(10),
+      quiltId: z.string(),
+      take: z.number().int().min(1).max(50).optional().default(10),
     }))
     .query(async ({ ctx, input }) => {
       // Return empty array for now
@@ -172,11 +164,7 @@ export const quiltsRouter = createTRPCRouter({
 
   // Get seasonal recommendations - TODO: Implement with Neon
   getSeasonalRecommendations: publicProcedure
-    .input(z.object({ 
-      season: z.nativeEnum(Season).optional(),
-      availableOnly: z.boolean().default(true),
-    }))
-    .query(async ({ ctx, input }) => {
+    .query(async ({ ctx }) => {
       // Return empty array for now
       return [];
     }),
