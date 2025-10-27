@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { db, executeQuery } from '@/lib/neon';
+import { db } from '@/lib/neon';
 
 export async function POST() {
   try {
@@ -93,15 +93,14 @@ export async function POST() {
 
 export async function GET() {
   try {
-    // Check database status
-    const quiltCount = await db.quilt.count();
-    const userCount = await db.user.count();
+    // Check database status using Neon methods
+    const quiltCount = await db.countQuilts();
     
     return NextResponse.json({
       status: 'Database connected',
       quilts: quiltCount,
-      users: userCount,
       initialized: quiltCount > 0,
+      driver: 'Neon Serverless Driver',
     });
   } catch (error) {
     return NextResponse.json(
