@@ -60,5 +60,3 @@ ENV/
 env.bak/
 venv.bak/
 
-# Old qms-app directory (keeping for reference)
-qms-app/
