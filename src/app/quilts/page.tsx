@@ -8,16 +8,9 @@ export default function QuiltsPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log('Fetching quilts from /api/quilts');
     fetch('/api/quilts')
-      .then(res => {
-        console.log('Response status:', res.status);
-        return res.json();
-      })
+      .then(res => res.json())
       .then(data => {
-        console.log('Fetched data:', data);
-        console.log('Quilts array:', data.quilts);
-        console.log('Quilts length:', data.quilts?.length);
         setQuilts(data.quilts || []);
         setLoading(false);
       })
@@ -27,8 +20,6 @@ export default function QuiltsPage() {
         setLoading(false);
       });
   }, []);
-
-  console.log('Render - quilts:', quilts, 'loading:', loading, 'error:', error);
 
   if (loading) {
     return (
@@ -48,13 +39,8 @@ export default function QuiltsPage() {
 
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-bold mb-4">Quilts Collection ({quilts.length})</h1>
+      <h1 className="text-2xl font-bold mb-4">Quilts ({quilts.length})</h1>
       
-      <div className="mb-4 p-4 bg-yellow-100 border border-yellow-300 rounded">
-        <p><strong>Debug:</strong> Quilts array length = {quilts.length}</p>
-        <p>First quilt: {quilts[0]?.name || 'none'}</p>
-      </div>
-
       {quilts.length === 0 ? (
         <p>No quilts found</p>
       ) : (
