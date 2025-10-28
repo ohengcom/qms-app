@@ -56,7 +56,7 @@ export function QuiltList({ onCreateQuilt, onEditQuilt, onViewQuilt }: QuiltList
     take: 50,
   });
   
-  const quilts = data?.quilts || [];
+  const quilts: any[] = data?.quilts || [];
   const totalCount = data?.total || 0;
   
   const handleSortChange = (field: SortField) => {
