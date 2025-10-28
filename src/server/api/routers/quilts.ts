@@ -108,28 +108,99 @@ export const quiltsRouter = createTRPCRouter({
 
   // Create new quilt
   create: publicProcedure.input(createQuiltSchema).mutation(async ({ ctx, input }) => {
-    // TODO: Implement with Neon - temporarily throw error for build
-    throw new TRPCError({
-      code: 'NOT_IMPLEMENTED',
-      message: 'Create functionality not yet implemented with Neon',
-    });
+    try {
+      console.log('tRPC quilts.create: Creating quilt with data:', input);
+      const quilt = await db.createQuilt(input);
+      console.log('tRPC quilts.create: Quilt created successfully:', quilt.id);
+      return quilt;
+    } catch (error) {
+      console.error('tRPC quilts.create: Error creating quilt:', error);
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Failed to create quilt',
+      });
+    }
   }),
 
-  // Update quilt - TODO: Implement with Neon
+  // Update quilt
   update: publicProcedure.input(updateQuiltSchema).mutation(async ({ ctx, input }) => {
-    throw new TRPCError({
-      code: 'NOT_IMPLEMENTED',
-      message: 'Update functionality not yet implemented with Neon',
-    });
+    try {
+      console.log('tRPC quilts.update: Updating quilt:', input.id);
+      const quilt = await db.updateQuilt(input.id, input);
+      if (!quilt) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Quilt not found',
+        });
+      }
+      console.log('tRPC quilts.update: Quilt updated successfully');
+      return quilt;
+    } catch (error) {
+      console.error('tRPC quilts.update: Error updating quilt:', error);
+      if (error instanceof TRPCError) {
+        throw error;
+      }
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Failed to update quilt',
+      });
+    }
   }),
 
-  // Delete quilt - TODO: Implement with Neon
+  // Delete quilt
   delete: publicProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
-    throw new TRPCError({
-      code: 'NOT_IMPLEMENTED',
-      message: 'Delete functionality not yet implemented with Neon',
-    });
+    try {
+      console.log('tRPC quilts.delete: Deleting quilt:', input.id);
+      const success = await db.deleteQuilt(input.id);
+      if (!success) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Quilt not found',
+        });
+      }
+      console.log('tRPC quilts.delete: Quilt deleted successfully');
+      return { success: true };
+    } catch (error) {
+      console.error('tRPC quilts.delete: Error deleting quilt:', error);
+      if (error instanceof TRPCError) {
+        throw error;
+      }
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Failed to delete quilt',
+      });
+    }
   }),
+
+  // Update quilt status (quick status change)
+  updateStatus: publicProcedure
+    .input(z.object({ 
+      id: z.string(), 
+      status: z.enum(['AVAILABLE', 'IN_USE', 'STORAGE', 'MAINTENANCE']) 
+    }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        console.log('tRPC quilts.updateStatus: Updating status for quilt:', input.id, 'to:', input.status);
+        const quilt = await db.updateQuiltStatus(input.id, input.status);
+        if (!quilt) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Quilt not found',
+          });
+        }
+        console.log('tRPC quilts.updateStatus: Status updated successfully');
+        return quilt;
+      } catch (error) {
+        console.error('tRPC quilts.updateStatus: Error updating status:', error);
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to update quilt status',
+        });
+      }
+    }),
 
   // Start using a quilt - TODO: Implement with Neon
   startUsage: publicProcedure.input(createCurrentUsageSchema).mutation(async ({ ctx, input }) => {

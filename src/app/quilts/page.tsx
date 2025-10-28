@@ -6,8 +6,10 @@ import { useLanguage } from '@/lib/language-provider';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Plus, Package } from 'lucide-react';
+import { Search, Plus, Package, Edit, Trash2, RotateCcw } from 'lucide-react';
 import { Loading } from '@/components/ui/loading';
+import { QuiltDialog } from '@/components/quilts/QuiltDialog';
+import { StatusChangeDialog } from '@/components/quilts/StatusChangeDialog';
 
 export default function QuiltsPage() {
   const [quilts, setQuilts] = useState<any[]>([]);
@@ -15,6 +17,11 @@ export default function QuiltsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // Dialog states
+  const [quiltDialogOpen, setQuiltDialogOpen] = useState(false);
+  const [statusDialogOpen, setStatusDialogOpen] = useState(false);
+  const [selectedQuilt, setSelectedQuilt] = useState<any>(null);
   
   const { t } = useLanguage();
   const searchParams = useSearchParams();
@@ -70,6 +77,113 @@ export default function QuiltsPage() {
     handleSearch(value);
   };
 
+  // CRUD operations
+  const handleAddQuilt = () => {
+    setSelectedQuilt(null);
+    setQuiltDialogOpen(true);
+  };
+
+  const handleEditQuilt = (quilt: any) => {
+    setSelectedQuilt(quilt);
+    setQuiltDialogOpen(true);
+  };
+
+  const handleChangeStatus = (quilt: any) => {
+    setSelectedQuilt(quilt);
+    setStatusDialogOpen(true);
+  };
+
+  const handleDeleteQuilt = async (quilt: any) => {
+    if (!confirm(`确定要删除被子 "${quilt.name}" 吗？\nAre you sure you want to delete quilt "${quilt.name}"?`)) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/quilts/${quilt.id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        // Remove from local state
+        const updatedQuilts = quilts.filter(q => q.id !== quilt.id);
+        setQuilts(updatedQuilts);
+        handleSearch(searchTerm); // Re-apply search filter
+        // TODO: Show success toast
+      } else {
+        throw new Error('Failed to delete quilt');
+      }
+    } catch (error) {
+      console.error('Error deleting quilt:', error);
+      // TODO: Show error toast
+    }
+  };
+
+  const handleSaveQuilt = async (data: any) => {
+    try {
+      if (selectedQuilt) {
+        // Update existing quilt
+        const response = await fetch(`/api/quilts/${selectedQuilt.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+
+        if (response.ok) {
+          const updatedQuilt = await response.json();
+          const updatedQuilts = quilts.map(q => q.id === selectedQuilt.id ? updatedQuilt : q);
+          setQuilts(updatedQuilts);
+          handleSearch(searchTerm); // Re-apply search filter
+          // TODO: Show success toast
+        } else {
+          throw new Error('Failed to update quilt');
+        }
+      } else {
+        // Create new quilt
+        const response = await fetch('/api/quilts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+
+        if (response.ok) {
+          const newQuilt = await response.json();
+          const updatedQuilts = [newQuilt, ...quilts];
+          setQuilts(updatedQuilts);
+          handleSearch(searchTerm); // Re-apply search filter
+          // TODO: Show success toast
+        } else {
+          throw new Error('Failed to create quilt');
+        }
+      }
+    } catch (error) {
+      console.error('Error saving quilt:', error);
+      throw error; // Re-throw to be handled by the dialog
+    }
+  };
+
+  const handleStatusChange = async (quiltId: string, newStatus: string) => {
+    try {
+      const response = await fetch(`/api/quilts/${quiltId}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (response.ok) {
+        const updatedQuilt = await response.json();
+        const updatedQuilts = quilts.map(q => q.id === quiltId ? updatedQuilt : q);
+        setQuilts(updatedQuilts);
+        handleSearch(searchTerm); // Re-apply search filter
+        // TODO: Show success toast
+      } else {
+        throw new Error('Failed to update status');
+      }
+    } catch (error) {
+      console.error('Error updating status:', error);
+      throw error; // Re-throw to be handled by the dialog
+    }
+  };
+
   if (loading) {
     return (
       <div className="p-8">
@@ -100,7 +214,7 @@ export default function QuiltsPage() {
             <h1 className="text-3xl font-bold text-gray-900">{t('quilts.title')}</h1>
             <p className="text-gray-600">{t('quilts.subtitle')}</p>
           </div>
-          <Button>
+          <Button onClick={handleAddQuilt}>
             <Plus className="w-4 h-4 mr-2" />
             {t('quilts.actions.add')}
           </Button>
@@ -148,7 +262,7 @@ export default function QuiltsPage() {
               }
             </p>
             {!searchTerm && (
-              <Button>
+              <Button onClick={handleAddQuilt}>
                 <Plus className="w-4 h-4 mr-2" />
                 {t('quilts.actions.add')}
               </Button>
@@ -199,11 +313,31 @@ export default function QuiltsPage() {
                   </div>
                 </div>
                 <div className="mt-4 flex space-x-2">
-                  <Button variant="outline" size="sm" className="flex-1">
-                    {t('common.view')}
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="flex-1"
+                    onClick={() => handleChangeStatus(quilt)}
+                  >
+                    <RotateCcw className="w-3 h-3 mr-1" />
+                    状态 / Status
                   </Button>
-                  <Button variant="outline" size="sm" className="flex-1">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="flex-1"
+                    onClick={() => handleEditQuilt(quilt)}
+                  >
+                    <Edit className="w-3 h-3 mr-1" />
                     {t('common.edit')}
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    onClick={() => handleDeleteQuilt(quilt)}
+                  >
+                    <Trash2 className="w-3 h-3" />
                   </Button>
                 </div>
               </CardContent>
@@ -211,6 +345,21 @@ export default function QuiltsPage() {
           ))}
         </div>
       )}
+
+      {/* Dialogs */}
+      <QuiltDialog
+        open={quiltDialogOpen}
+        onOpenChange={setQuiltDialogOpen}
+        quilt={selectedQuilt}
+        onSave={handleSaveQuilt}
+      />
+
+      <StatusChangeDialog
+        open={statusDialogOpen}
+        onOpenChange={setStatusDialogOpen}
+        quilt={selectedQuilt}
+        onStatusChange={handleStatusChange}
+      />
     </div>
   );
 }

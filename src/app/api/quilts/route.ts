@@ -1,39 +1,54 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/neon';
 
-export async function GET() {
+// GET /api/quilts - Get all quilts
+export async function GET(request: NextRequest) {
   try {
-    console.log('Direct quilts API: Fetching quilts...');
-
-    // Get quilts from database
-    const quilts = await db.getQuilts({
-      limit: 50,
-      offset: 0,
-    });
-
-    console.log('Direct quilts API: Quilts fetched:', quilts?.length || 0, 'records');
-
-    // Get total count
+    console.log('API /api/quilts GET: Starting...');
+    
+    const quilts = await db.getQuilts();
     const total = await db.countQuilts();
-
-    const response = {
-      quilts: quilts || [],
-      total: total || 0,
-      hasMore: false,
-    };
-
-    console.log('Direct quilts API: Returning response with', response.quilts.length, 'quilts');
-
-    return NextResponse.json(response);
+    
+    console.log('API /api/quilts GET: Success, returning', quilts.length, 'quilts');
+    
+    return NextResponse.json({
+      quilts,
+      total,
+      success: true,
+    });
   } catch (error) {
-    console.error('Direct quilts API: Error occurred:', error);
-
+    console.error('API /api/quilts GET: Error:', error);
     return NextResponse.json(
-      {
+      { 
+        error: 'Failed to fetch quilts',
+        details: error instanceof Error ? error.message : 'Unknown error',
         quilts: [],
         total: 0,
-        hasMore: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
+      },
+      { status: 500 }
+    );
+  }
+}
+
+// POST /api/quilts - Create new quilt
+export async function POST(request: NextRequest) {
+  try {
+    console.log('API /api/quilts POST: Starting...');
+    
+    const data = await request.json();
+    console.log('API /api/quilts POST: Data received:', data);
+    
+    const quilt = await db.createQuilt(data);
+    
+    console.log('API /api/quilts POST: Quilt created successfully:', quilt.id);
+    
+    return NextResponse.json(quilt);
+  } catch (error) {
+    console.error('API /api/quilts POST: Error:', error);
+    return NextResponse.json(
+      { 
+        error: 'Failed to create quilt',
+        details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     );

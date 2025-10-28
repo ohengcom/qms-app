@@ -220,6 +220,94 @@ export const db = {
     }
   },
 
+  // Update quilt
+  async updateQuilt(id: string, data: any) {
+    try {
+      const query = `
+        UPDATE quilts SET 
+          name = $2,
+          season = $3,
+          length_cm = $4,
+          width_cm = $5,
+          weight_grams = $6,
+          fill_material = $7,
+          material_details = $8,
+          color = $9,
+          brand = $10,
+          purchase_date = $11,
+          location = $12,
+          packaging_info = $13,
+          current_status = $14,
+          notes = $15,
+          updated_at = $16
+        WHERE id = $1
+        RETURNING *
+      `;
+
+      const params = [
+        id,
+        data.name,
+        data.season,
+        data.lengthCm,
+        data.widthCm,
+        data.weightGrams,
+        data.fillMaterial,
+        data.materialDetails || null,
+        data.color,
+        data.brand || null,
+        data.purchaseDate || null,
+        data.location,
+        data.packagingInfo || null,
+        data.currentStatus,
+        data.notes || null,
+        new Date().toISOString(),
+      ];
+
+      const result = await executeQuery(query, params);
+      return result[0] || null;
+    } catch (error) {
+      console.error('Update quilt error:', error);
+      throw error;
+    }
+  },
+
+  // Delete quilt
+  async deleteQuilt(id: string) {
+    try {
+      // First delete any related records (current_usage, usage_periods, maintenance_records)
+      await executeQuery('DELETE FROM current_usage WHERE quilt_id = $1', [id]);
+      await executeQuery('DELETE FROM usage_periods WHERE quilt_id = $1', [id]);
+      await executeQuery('DELETE FROM maintenance_records WHERE quilt_id = $1', [id]);
+      
+      // Then delete the quilt
+      const result = await executeQuery('DELETE FROM quilts WHERE id = $1 RETURNING id', [id]);
+      return result.length > 0;
+    } catch (error) {
+      console.error('Delete quilt error:', error);
+      throw error;
+    }
+  },
+
+  // Update quilt status only
+  async updateQuiltStatus(id: string, status: string) {
+    try {
+      const query = `
+        UPDATE quilts SET 
+          current_status = $2,
+          updated_at = $3
+        WHERE id = $1
+        RETURNING *
+      `;
+
+      const params = [id, status, new Date().toISOString()];
+      const result = await executeQuery(query, params);
+      return result[0] || null;
+    } catch (error) {
+      console.error('Update quilt status error:', error);
+      throw error;
+    }
+  },
+
   // Get table info
   async getTables() {
     try {
