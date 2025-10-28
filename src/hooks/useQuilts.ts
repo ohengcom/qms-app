@@ -1,110 +1,97 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
-import { api } from '@/lib/trpc';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { QuiltSearchInput } from '@/lib/validations/quilt';
 
 export function useQuilts(searchParams?: QuiltSearchInput) {
-  // Temporarily use direct API instead of tRPC to bypass tRPC issues
   return useQuery({
-    queryKey: ['quilts', 'getAll'],
+    queryKey: ['quilts'],
     queryFn: async () => {
-      try {
-        const response = await fetch('/api/quilts');
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`Failed to fetch quilts: ${response.status}`);
-        }
-
-        const data = await response.json();
-        return data;
-      } catch (error) {
-        throw error;
+      const response = await fetch('/api/quilts');
+      if (!response.ok) {
+        throw new Error(`Failed to fetch quilts: ${response.status}`);
       }
+      return response.json();
     },
-    retry: 1,
-    staleTime: 0, // Always fetch fresh data for debugging
+    staleTime: 60000, // 1 minute
   });
 }
 
 export function useQuilt(id: string) {
-  return api.quilts.getById.useQuery(
-    { id },
-    {
-      enabled: !!id,
-    }
-  );
+  return useQuery({
+    queryKey: ['quilt', id],
+    queryFn: async () => {
+      const response = await fetch(`/api/quilts/${id}`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch quilt: ${response.status}`);
+      }
+      return response.json();
+    },
+    enabled: !!id,
+  });
 }
 
 export function useCreateQuilt() {
-  const utils = api.useUtils();
+  const queryClient = useQueryClient();
 
-  return api.quilts.create.useMutation({
+  return useMutation({
+    mutationFn: async (data: any) => {
+      const response = await fetch('/api/quilts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        throw new Error(`Failed to create quilt: ${response.status}`);
+      }
+      return response.json();
+    },
     onSuccess: () => {
-      // Invalidate and refetch quilts list
-      utils.quilts.getAll.invalidate();
-      utils.dashboard.getStats.invalidate();
+      queryClient.invalidateQueries({ queryKey: ['quilts'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
   });
 }
 
 export function useUpdateQuilt() {
-  const utils = api.useUtils();
+  const queryClient = useQueryClient();
 
-  return api.quilts.update.useMutation({
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: any }) => {
+      const response = await fetch(`/api/quilts/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        throw new Error(`Failed to update quilt: ${response.status}`);
+      }
+      return response.json();
+    },
     onSuccess: () => {
-      // Invalidate all related queries to ensure consistency
-      utils.quilts.getAll.invalidate();
-      utils.quilts.getById.invalidate();
-      utils.dashboard.getStats.invalidate();
+      queryClient.invalidateQueries({ queryKey: ['quilts'] });
+      queryClient.invalidateQueries({ queryKey: ['quilt'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
   });
 }
 
 export function useDeleteQuilt() {
-  const utils = api.useUtils();
+  const queryClient = useQueryClient();
 
-  return api.quilts.delete.useMutation({
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const response = await fetch(`/api/quilts/${id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error(`Failed to delete quilt: ${response.status}`);
+      }
+      return response.json();
+    },
     onSuccess: () => {
-      // Invalidate all quilt-related queries
-      utils.quilts.invalidate();
-      utils.dashboard.getStats.invalidate();
+      queryClient.invalidateQueries({ queryKey: ['quilts'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
   });
-}
-
-export function useStartUsage() {
-  const utils = api.useUtils();
-
-  return api.quilts.startUsage.useMutation({
-    onSuccess: () => {
-      // Invalidate relevant queries
-      utils.quilts.getAll.invalidate();
-      utils.quilts.getCurrentUsage.invalidate();
-      utils.dashboard.getStats.invalidate();
-    },
-  });
-}
-
-export function useEndUsage() {
-  const utils = api.useUtils();
-
-  return api.quilts.endUsage.useMutation({
-    onSuccess: () => {
-      // Invalidate relevant queries
-      utils.quilts.getAll.invalidate();
-      utils.quilts.getCurrentUsage.invalidate();
-      utils.dashboard.getStats.invalidate();
-    },
-  });
-}
-
-export function useCurrentUsage() {
-  return api.quilts.getCurrentUsage.useQuery();
-}
-
-export function useSeasonalRecommendations(season?: any, availableOnly = true) {
-  // Simplified to not pass parameters for now
-  return api.quilts.getSeasonalRecommendations.useQuery();
 }
