@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { TRPCProvider } from '@/lib/trpc-provider';
+import { LanguageProvider } from '@/lib/language-provider';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
@@ -44,7 +45,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="h-full">
+    <html lang="zh" className="h-full">
       <head>
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -57,11 +58,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className={`${inter.className} h-full`}>
         <ErrorBoundary>
-          <TRPCProvider>
-            <RoutePreloader />
-            <AppLayout>{children}</AppLayout>
-            <Toaster />
-          </TRPCProvider>
+          <LanguageProvider>
+            <TRPCProvider>
+              <RoutePreloader />
+              <AppLayout>{children}</AppLayout>
+              <Toaster />
+            </TRPCProvider>
+          </LanguageProvider>
         </ErrorBoundary>
 
         {/* Service Worker Registration */}

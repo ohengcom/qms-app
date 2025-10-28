@@ -6,6 +6,21 @@ export default function QuiltsPage() {
   const [quilts, setQuilts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // 简体中文文本
+  const t = {
+    title: '被子收藏',
+    loading: '加载中...',
+    error: '错误',
+    noQuiltsFound: '未找到被子',
+    itemNumber: '编号',
+    season: '季节',
+    size: '尺寸',
+    weight: '重量',
+    material: '材料',
+    location: '位置',
+    status: '状态',
+  };
 
   useEffect(() => {
     fetch('/api/quilts')
@@ -24,7 +39,7 @@ export default function QuiltsPage() {
   if (loading) {
     return (
       <div className="p-8">
-        <h1 className="text-2xl font-bold mb-4">Loading quilts...</h1>
+        <h1 className="text-2xl font-bold mb-4">{t.loading}</h1>
       </div>
     );
   }
@@ -32,17 +47,17 @@ export default function QuiltsPage() {
   if (error) {
     return (
       <div className="p-8">
-        <h1 className="text-2xl font-bold mb-4 text-red-600">Error: {error}</h1>
+        <h1 className="text-2xl font-bold mb-4 text-red-600">{t.error}: {error}</h1>
       </div>
     );
   }
 
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-bold mb-4">Quilts ({quilts.length})</h1>
+      <h1 className="text-2xl font-bold mb-4">{t.title} ({quilts.length})</h1>
       
       {quilts.length === 0 ? (
-        <p>No quilts found</p>
+        <p>{t.noQuiltsFound}</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {quilts.map((quilt) => (

@@ -6,6 +6,8 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { useLanguage } from '@/lib/language-provider';
 import {
   Home,
   Package,
@@ -20,45 +22,45 @@ import {
   Wrench,
 } from 'lucide-react';
 
-const navigation = [
+const getNavigation = (t: (key: string) => string) => [
   {
-    name: 'Dashboard',
+    name: t('navigation.dashboard'),
     href: '/',
     icon: Home,
     description: 'Overview and quick stats',
   },
   {
-    name: 'Quilts',
+    name: t('navigation.quilts'),
     href: '/quilts',
     icon: Package,
     description: 'Manage your quilt collection',
   },
   {
-    name: 'Usage Tracking',
+    name: t('navigation.usage'),
     href: '/usage',
     icon: Calendar,
     description: 'Track quilt usage periods',
   },
   {
-    name: 'Analytics',
+    name: t('navigation.analytics'),
     href: '/analytics',
     icon: BarChart3,
     description: 'Usage insights and trends',
   },
   {
-    name: 'Maintenance',
+    name: t('navigation.maintenance'),
     href: '/maintenance',
     icon: Wrench,
     description: 'Care and maintenance records',
   },
   {
-    name: 'Reports',
+    name: t('navigation.reports'),
     href: '/reports',
     icon: FileText,
     description: 'Export and reporting',
   },
   {
-    name: 'Settings',
+    name: t('navigation.settings'),
     href: '/settings',
     icon: Settings,
     description: 'App configuration',
@@ -72,6 +74,9 @@ interface AppLayoutProps {
 export function AppLayout({ children }: AppLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
+  const { t } = useLanguage();
+  
+  const navigation = getNavigation(t);
 
   return (
     <div>
@@ -201,6 +206,9 @@ export function AppLayout({ children }: AppLayoutProps) {
 
               {/* Right side */}
               <div className="flex items-center gap-x-4 lg:gap-x-6">
+                {/* Language Switcher */}
+                <LanguageSwitcher />
+
                 {/* Notifications */}
                 <Button variant="ghost" size="sm" className="relative">
                   <Bell className="h-5 w-5" />
