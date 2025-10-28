@@ -19,22 +19,30 @@ export const quiltsRouter = createTRPCRouter({
   getAll: publicProcedure
     .query(async ({ ctx }) => {
       try {
-        console.log('tRPC: Fetching quilts from database...');
+        console.log('tRPC quilts.getAll: Starting...');
+        
+        // Test database connection first
+        console.log('tRPC quilts.getAll: Testing database connection...');
+        const connectionTest = await db.testConnection();
+        console.log('tRPC quilts.getAll: Connection test result:', connectionTest);
         
         // Get quilts from database with basic parameters
+        console.log('tRPC quilts.getAll: Calling db.getQuilts...');
         const quilts = await db.getQuilts({
           limit: 20,
           offset: 0,
         });
         
-        console.log('tRPC: Quilts fetched:', quilts?.length || 0, 'records');
-        console.log('tRPC: First quilt:', quilts?.[0]);
-        console.log('tRPC: Sample quilt data structure:', JSON.stringify(quilts?.[0], null, 2));
+        console.log('tRPC quilts.getAll: Quilts fetched:', quilts?.length || 0, 'records');
+        if (quilts && quilts.length > 0) {
+          console.log('tRPC quilts.getAll: First quilt:', quilts[0]);
+          console.log('tRPC quilts.getAll: First quilt keys:', Object.keys(quilts[0]));
+        }
         
         // Get total count
+        console.log('tRPC quilts.getAll: Getting total count...');
         const total = await db.countQuilts();
-        
-        console.log('tRPC: Total count:', total);
+        console.log('tRPC quilts.getAll: Total count:', total);
 
         const response = {
           quilts: quilts || [],
@@ -42,16 +50,24 @@ export const quiltsRouter = createTRPCRouter({
           hasMore: false,
         };
         
-        console.log('tRPC: Returning response:', response);
+        console.log('tRPC quilts.getAll: Final response structure:', {
+          quiltsCount: response.quilts.length,
+          total: response.total,
+          hasMore: response.hasMore,
+          firstQuiltId: response.quilts[0]?.id
+        });
+        
         return response;
       } catch (error) {
-        console.error('Error fetching quilts:', error);
+        console.error('tRPC quilts.getAll: ERROR occurred:', error);
+        console.error('tRPC quilts.getAll: Error stack:', error instanceof Error ? error.stack : 'No stack trace');
         
-        // Return empty data instead of throwing error to prevent UI crashes
+        // Return empty data with error info instead of throwing error to prevent UI crashes
         return {
           quilts: [],
           total: 0,
           hasMore: false,
+          error: error instanceof Error ? error.message : 'Unknown error occurred',
         };
       }
     }),
