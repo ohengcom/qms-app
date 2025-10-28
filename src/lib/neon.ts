@@ -154,43 +154,47 @@ export const db = {
 
   // Create quilt
   async createQuilt(data: any) {
-    const query = `
-      INSERT INTO quilts (
-        id, item_number, group_id, name, season, length_cm, width_cm, weight_grams,
-        fill_material, material_details, color, brand, purchase_date, location,
-        packaging_info, current_status, notes, created_at, updated_at
-      ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19
-      ) RETURNING *
-    `;
+    try {
+      console.log('Creating quilt with data:', data);
+      
+      const id = crypto.randomUUID();
+      const now = new Date().toISOString();
 
-    const id = crypto.randomUUID();
-    const now = new Date().toISOString();
+      // Use Neon's tagged template literal syntax directly
+      const result = await sql`
+        INSERT INTO quilts (
+          id, item_number, group_id, name, season, length_cm, width_cm, weight_grams,
+          fill_material, material_details, color, brand, purchase_date, location,
+          packaging_info, current_status, notes, created_at, updated_at
+        ) VALUES (
+          ${id},
+          ${data.itemNumber},
+          ${data.groupId || null},
+          ${data.name},
+          ${data.season},
+          ${data.lengthCm},
+          ${data.widthCm},
+          ${data.weightGrams},
+          ${data.fillMaterial},
+          ${data.materialDetails || null},
+          ${data.color},
+          ${data.brand || null},
+          ${data.purchaseDate || null},
+          ${data.location},
+          ${data.packagingInfo || null},
+          ${data.currentStatus || 'AVAILABLE'},
+          ${data.notes || null},
+          ${now},
+          ${now}
+        ) RETURNING *
+      `;
 
-    const params = [
-      id,
-      data.itemNumber,
-      data.groupId || null,
-      data.name,
-      data.season,
-      data.lengthCm,
-      data.widthCm,
-      data.weightGrams,
-      data.fillMaterial,
-      data.materialDetails || null,
-      data.color,
-      data.brand || null,
-      data.purchaseDate || null,
-      data.location,
-      data.packagingInfo || null,
-      data.currentStatus || 'AVAILABLE',
-      data.notes || null,
-      now,
-      now,
-    ];
-
-    const result = await executeQuery(query, params);
-    return result[0];
+      console.log('Quilt created successfully:', result[0]);
+      return result[0];
+    } catch (error) {
+      console.error('Create quilt error:', error);
+      throw error;
+    }
   },
 
   // Get current usage
@@ -223,47 +227,32 @@ export const db = {
   // Update quilt
   async updateQuilt(id: string, data: any) {
     try {
-      const query = `
+      console.log('Updating quilt:', id, 'with data:', data);
+      
+      const now = new Date().toISOString();
+
+      const result = await sql`
         UPDATE quilts SET 
-          name = $2,
-          season = $3,
-          length_cm = $4,
-          width_cm = $5,
-          weight_grams = $6,
-          fill_material = $7,
-          material_details = $8,
-          color = $9,
-          brand = $10,
-          purchase_date = $11,
-          location = $12,
-          packaging_info = $13,
-          current_status = $14,
-          notes = $15,
-          updated_at = $16
-        WHERE id = $1
+          name = ${data.name},
+          season = ${data.season},
+          length_cm = ${data.lengthCm},
+          width_cm = ${data.widthCm},
+          weight_grams = ${data.weightGrams},
+          fill_material = ${data.fillMaterial},
+          material_details = ${data.materialDetails || null},
+          color = ${data.color},
+          brand = ${data.brand || null},
+          purchase_date = ${data.purchaseDate || null},
+          location = ${data.location},
+          packaging_info = ${data.packagingInfo || null},
+          current_status = ${data.currentStatus},
+          notes = ${data.notes || null},
+          updated_at = ${now}
+        WHERE id = ${id}
         RETURNING *
       `;
 
-      const params = [
-        id,
-        data.name,
-        data.season,
-        data.lengthCm,
-        data.widthCm,
-        data.weightGrams,
-        data.fillMaterial,
-        data.materialDetails || null,
-        data.color,
-        data.brand || null,
-        data.purchaseDate || null,
-        data.location,
-        data.packagingInfo || null,
-        data.currentStatus,
-        data.notes || null,
-        new Date().toISOString(),
-      ];
-
-      const result = await executeQuery(query, params);
+      console.log('Quilt updated successfully:', result[0]);
       return result[0] || null;
     } catch (error) {
       console.error('Update quilt error:', error);
@@ -274,13 +263,17 @@ export const db = {
   // Delete quilt
   async deleteQuilt(id: string) {
     try {
+      console.log('Deleting quilt:', id);
+      
       // First delete any related records (current_usage, usage_periods, maintenance_records)
-      await executeQuery('DELETE FROM current_usage WHERE quilt_id = $1', [id]);
-      await executeQuery('DELETE FROM usage_periods WHERE quilt_id = $1', [id]);
-      await executeQuery('DELETE FROM maintenance_records WHERE quilt_id = $1', [id]);
+      await sql`DELETE FROM current_usage WHERE quilt_id = ${id}`;
+      await sql`DELETE FROM usage_periods WHERE quilt_id = ${id}`;
+      await sql`DELETE FROM maintenance_records WHERE quilt_id = ${id}`;
       
       // Then delete the quilt
-      const result = await executeQuery('DELETE FROM quilts WHERE id = $1 RETURNING id', [id]);
+      const result = await sql`DELETE FROM quilts WHERE id = ${id} RETURNING id`;
+      
+      console.log('Quilt deleted successfully:', result.length > 0);
       return result.length > 0;
     } catch (error) {
       console.error('Delete quilt error:', error);
@@ -291,16 +284,19 @@ export const db = {
   // Update quilt status only
   async updateQuiltStatus(id: string, status: string) {
     try {
-      const query = `
+      console.log('Updating quilt status:', id, 'to:', status);
+      
+      const now = new Date().toISOString();
+
+      const result = await sql`
         UPDATE quilts SET 
-          current_status = $2,
-          updated_at = $3
-        WHERE id = $1
+          current_status = ${status},
+          updated_at = ${now}
+        WHERE id = ${id}
         RETURNING *
       `;
 
-      const params = [id, status, new Date().toISOString()];
-      const result = await executeQuery(query, params);
+      console.log('Quilt status updated successfully:', result[0]);
       return result[0] || null;
     } catch (error) {
       console.error('Update quilt status error:', error);
