@@ -6,24 +6,24 @@ export async function GET(request: NextRequest) {
   try {
     console.log('Getting all usage history...');
 
-    // Get all usage periods with quilt information, sorted by start time (most recent first)
+    // Get all usage records with quilt information, sorted by start time (most recent first)
     const usageHistory = await sql`
       SELECT 
-        up.id,
-        up.quilt_id,
-        up.started_at,
-        up.ended_at,
-        up.usage_type,
-        up.notes,
-        up.created_at,
+        ur.id,
+        ur.quilt_id,
+        ur.start_date as started_at,
+        ur.end_date as ended_at,
+        ur.usage_type,
+        ur.notes,
+        ur.created_at,
         q.name as quilt_name,
         q.item_number,
         q.color,
         q.season,
         q.current_status
-      FROM usage_periods up
-      JOIN quilts q ON up.quilt_id = q.id
-      ORDER BY up.started_at DESC
+      FROM usage_records ur
+      JOIN quilts q ON ur.quilt_id = q.id
+      ORDER BY ur.start_date DESC
       LIMIT 100
     `;
 
