@@ -32,14 +32,15 @@ A modern Next.js application with tRPC and Neon PostgreSQL that transforms simpl
 - Seasonal transition alerts and preparation reminders
 - Weather-based suggestions and notifications
 
-### 📈 **Usage Analytics & Reporting**
+### 📈 **Usage Tracking & Analytics**
 
-- Detailed usage history with timeline visualization
-- Usage frequency and pattern analysis
-- Predictive insights for next usage periods
-- Maintenance scheduling based on usage patterns
-- Comprehensive analytics dashboard with charts and metrics
-- Export capabilities for reports and data analysis
+- **Complete Usage History**: View all quilt usage records sorted chronologically
+- **Individual Quilt Tracking**: Click any record to see detailed usage history for specific quilts
+- **Real-time Status**: Track active usage periods and completed usage cycles
+- **Duration Calculations**: Automatic calculation of usage days and patterns
+- **Usage Statistics**: Total records, active periods, and completion metrics
+- **Multilingual Interface**: Full Chinese/English support for all usage data
+- **Interactive Navigation**: Seamless switching between list view and detail view
 
 ### 🗂️ **Storage Optimization**
 
@@ -279,12 +280,32 @@ The application uses **tRPC** for type-safe API communication. All API endpoints
 - `importExport.exportToExcel` - Export data to Excel format
 - `importExport.getImportHistory` - Get import history
 
+### REST API Endpoints
+
+#### Usage Tracking API
+
+- `GET /api/usage` - Get all usage history sorted by time
+- `GET /api/usage/[quiltId]` - Get usage history for specific quilt
+- `POST /api/usage` - Start using a quilt
+- `POST /api/usage/end` - End current usage of a quilt
+
+#### Core API Endpoints
+
+- `GET /api/quilts` - List all quilts with filtering
+- `POST /api/quilts` - Create new quilt
+- `GET /api/quilts/[id]` - Get specific quilt details
+- `PUT /api/quilts/[id]` - Update quilt information
+- `DELETE /api/quilts/[id]` - Delete quilt
+- `PATCH /api/quilts/[id]/status` - Update quilt status
+- `GET /api/dashboard/stats` - Get dashboard statistics
+
 ### API Features
 
 - **Type Safety**: Full TypeScript support with automatic type inference
 - **Input Validation**: Zod schema validation for all inputs
 - **Error Handling**: Structured error responses with proper HTTP status codes
-- **Real-time Updates**: WebSocket support for live data updates
+- **Real-time Updates**: Live data synchronization for usage tracking
+- **Multilingual Support**: Chinese/English responses based on client preferences
 
 ## 🛠️ Development
 
