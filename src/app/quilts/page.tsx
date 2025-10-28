@@ -48,7 +48,7 @@ export default function QuiltsPage() {
 
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-bold mb-4">Quilts ({quilts.length})</h1>
+      <h1 className="text-2xl font-bold mb-4">Quilts Collection ({quilts.length})</h1>
       
       <div className="mb-4 p-4 bg-yellow-100 border border-yellow-300 rounded">
         <p><strong>Debug:</strong> Quilts array length = {quilts.length}</p>
