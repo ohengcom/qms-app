@@ -10,14 +10,30 @@ export function useQuilts(searchParams?: QuiltSearchInput) {
     queryKey: ['quilts', 'getAll'],
     queryFn: async () => {
       console.log('useQuilts: Fetching from direct API...');
-      const response = await fetch('/api/quilts');
-      if (!response.ok) {
-        throw new Error('Failed to fetch quilts');
+      try {
+        const response = await fetch('/api/quilts');
+        console.log('useQuilts: Response status:', response.status);
+        console.log('useQuilts: Response ok:', response.ok);
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('useQuilts: Error response:', errorText);
+          throw new Error(`Failed to fetch quilts: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('useQuilts: Received data:', data);
+        console.log('useQuilts: Quilts count:', data?.quilts?.length || 0);
+        console.log('useQuilts: First quilt:', data?.quilts?.[0]);
+        
+        return data;
+      } catch (error) {
+        console.error('useQuilts: Fetch error:', error);
+        throw error;
       }
-      const data = await response.json();
-      console.log('useQuilts: Received data:', data);
-      return data;
     },
+    retry: 1,
+    staleTime: 0, // Always fetch fresh data for debugging
   });
 }
 

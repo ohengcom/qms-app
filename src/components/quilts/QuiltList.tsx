@@ -56,8 +56,17 @@ export function QuiltList({ onCreateQuilt, onEditQuilt, onViewQuilt }: QuiltList
     take: 50,
   });
   
+  // Debug logging
+  console.log('QuiltList: data:', data);
+  console.log('QuiltList: isLoading:', isLoading);
+  console.log('QuiltList: error:', error);
+  
   const quilts: any[] = data?.quilts || [];
   const totalCount = data?.total || 0;
+  
+  console.log('QuiltList: quilts array:', quilts);
+  console.log('QuiltList: quilts length:', quilts.length);
+  console.log('QuiltList: totalCount:', totalCount);
   
   const handleSortChange = (field: SortField) => {
     if (field === sortField) {
