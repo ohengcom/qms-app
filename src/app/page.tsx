@@ -6,9 +6,16 @@ import { Loading } from '@/components/ui/loading';
 export default function DashboardPage() {
   const { data: stats, isLoading, error } = useDashboardStats();
 
+  console.log('Dashboard Page - isLoading:', isLoading);
+  console.log('Dashboard Page - error:', error);
+  console.log('Dashboard Page - stats:', stats);
+
   if (isLoading) {
     return (
       <div className="p-8">
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+          <p className="text-blue-800">Loading dashboard data via tRPC...</p>
+        </div>
         <Loading />
       </div>
     );
@@ -19,6 +26,7 @@ export default function DashboardPage() {
       <div className="p-8">
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
           <p className="text-red-800">Error loading dashboard: {error.message}</p>
+          <pre className="mt-2 text-xs text-red-600">{JSON.stringify(error, null, 2)}</pre>
         </div>
       </div>
     );
@@ -87,10 +95,17 @@ export default function DashboardPage() {
 
       <div className="mt-8 p-4 bg-green-50 border border-green-200 rounded-lg">
         <p className="text-green-800">
-          ✅ <strong>Success!</strong> The QMS application is now running without any React hooks
-          errors. This is a minimal version that displays static data. The backend APIs are working
-          correctly.
+          ✅ <strong>Success!</strong> The QMS application is now running with optimized tech stack.
+          Dashboard data loaded via tRPC successfully.
         </p>
+      </div>
+
+      {/* Debug Info */}
+      <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+        <h3 className="font-semibold mb-2">Debug Info:</h3>
+        <pre className="text-xs text-gray-600 overflow-auto">
+          {JSON.stringify({ stats, isLoading, error }, null, 2)}
+        </pre>
       </div>
     </div>
   );

@@ -54,34 +54,8 @@ export function QuiltList({ onCreateQuilt, onEditQuilt, onViewQuilt }: QuiltList
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
   const [filters, setFilters] = useState<QuiltFiltersInput>({});
 
-  // Temporarily use direct fetch like the working test page
-  const [quiltsData, setQuiltsData] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchQuilts = async () => {
-      try {
-        console.log('QuiltList: Direct fetch starting...');
-        const response = await fetch('/api/quilts');
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const result = await response.json();
-        console.log('QuiltList: Direct fetch success:', result);
-        setQuiltsData(result);
-      } catch (err) {
-        console.error('QuiltList: Direct fetch error:', err);
-        setError(err instanceof Error ? err.message : 'Unknown error');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchQuilts();
-  }, []);
+  // Use the useQuilts hook
+  const { data: quiltsData, isLoading, error } = useQuilts();
 
   const quilts: any[] = quiltsData?.quilts || [];
   const totalCount = quiltsData?.total || 0;
@@ -107,7 +81,7 @@ export function QuiltList({ onCreateQuilt, onEditQuilt, onViewQuilt }: QuiltList
       <Card className="p-6">
         <div className="text-center">
           <p className="text-red-600 mb-2">Failed to load quilts</p>
-          <p className="text-gray-500 text-sm">{error}</p>
+          <p className="text-gray-500 text-sm">{error instanceof Error ? error.message : 'Unknown error'}</p>
         </div>
       </Card>
     );
@@ -196,14 +170,15 @@ export function QuiltList({ onCreateQuilt, onEditQuilt, onViewQuilt }: QuiltList
       {/* Debug Info */}
       <div className="bg-yellow-100 p-4 rounded mb-4">
         <p>
-          <strong>Debug Info:</strong>
+          <strong>Debug Info (useQuilts hook):</strong>
         </p>
         <p>isLoading: {isLoading.toString()}</p>
-        <p>error: {error || 'null'}</p>
+        <p>error: {error ? (error instanceof Error ? error.message : 'error exists') : 'null'}</p>
         <p>quiltsData: {quiltsData ? 'exists' : 'null'}</p>
         <p>quilts.length: {quilts.length}</p>
         <p>totalCount: {totalCount}</p>
         <p>First quilt ID: {quilts[0]?.id || 'none'}</p>
+        <p>First quilt name: {quilts[0]?.name || 'none'}</p>
       </div>
 
       {/* Content */}
