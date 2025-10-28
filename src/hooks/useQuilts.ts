@@ -95,3 +95,48 @@ export function useDeleteQuilt() {
     },
   });
 }
+
+// Usage tracking hooks - simplified stubs for now
+export function useStartUsage() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: any) => {
+      const response = await fetch('/api/usage/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        throw new Error(`Failed to start usage: ${response.status}`);
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['quilts'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+    },
+  });
+}
+
+export function useEndUsage() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: any) => {
+      const response = await fetch('/api/usage/end', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        throw new Error(`Failed to end usage: ${response.status}`);
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['quilts'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+    },
+  });
+}
