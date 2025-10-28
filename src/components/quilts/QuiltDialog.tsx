@@ -116,13 +116,10 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {quilt ? t('common.edit') : t('quilts.actions.add')} {t('quilts.title')}
+            {quilt ? t('quilts.dialogs.editTitle') : t('quilts.dialogs.addTitle')}
           </DialogTitle>
           <DialogDescription>
-            {quilt 
-              ? '修改被子信息 / Edit quilt information'
-              : '添加新的被子到您的收藏 / Add a new quilt to your collection'
-            }
+            {quilt ? t('quilts.dialogs.editDesc') : t('quilts.dialogs.addDesc')}
           </DialogDescription>
         </DialogHeader>
 
@@ -130,18 +127,18 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Basic Information */}
             <div className="space-y-2">
-              <Label htmlFor="name">被子名称 / Name *</Label>
+              <Label htmlFor="name">{t('quilts.form.name')} *</Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => handleInputChange('name', e.target.value)}
-                placeholder="例如：冬季羽绒被 / e.g., Winter Down Comforter"
+                placeholder={t('quilts.form.namePlaceholder')}
                 required
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="itemNumber">编号 / Item Number *</Label>
+              <Label htmlFor="itemNumber">{t('quilts.table.itemNumber')} *</Label>
               <Input
                 id="itemNumber"
                 type="number"
@@ -153,7 +150,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="season">季节 / Season</Label>
+              <Label htmlFor="season">{t('quilts.table.season')}</Label>
               <Select value={formData.season} onValueChange={(value) => handleInputChange('season', value)}>
                 <SelectTrigger>
                   <SelectValue />
@@ -167,7 +164,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="currentStatus">状态 / Status</Label>
+              <Label htmlFor="currentStatus">{t('quilts.table.status')}</Label>
               <Select value={formData.currentStatus} onValueChange={(value) => handleInputChange('currentStatus', value)}>
                 <SelectTrigger>
                   <SelectValue />
@@ -183,7 +180,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
 
             {/* Dimensions */}
             <div className="space-y-2">
-              <Label htmlFor="lengthCm">长度 / Length (cm)</Label>
+              <Label htmlFor="lengthCm">{t('quilts.form.length')}</Label>
               <Input
                 id="lengthCm"
                 type="number"
@@ -195,7 +192,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="widthCm">宽度 / Width (cm)</Label>
+              <Label htmlFor="widthCm">{t('quilts.form.width')}</Label>
               <Input
                 id="widthCm"
                 type="number"
@@ -207,7 +204,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="weightGrams">重量 / Weight (g)</Label>
+              <Label htmlFor="weightGrams">{t('quilts.table.weight')}</Label>
               <Input
                 id="weightGrams"
                 type="number"
@@ -219,66 +216,66 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="color">颜色 / Color</Label>
+              <Label htmlFor="color">{t('quilts.form.color')}</Label>
               <Input
                 id="color"
                 value={formData.color}
                 onChange={(e) => handleInputChange('color', e.target.value)}
-                placeholder="白色 / White"
+                placeholder={t('quilts.form.colorPlaceholder')}
               />
             </div>
 
             {/* Material Information */}
             <div className="space-y-2">
-              <Label htmlFor="fillMaterial">填充材料 / Fill Material</Label>
+              <Label htmlFor="fillMaterial">{t('quilts.table.material')}</Label>
               <Input
                 id="fillMaterial"
                 value={formData.fillMaterial}
                 onChange={(e) => handleInputChange('fillMaterial', e.target.value)}
-                placeholder="羽绒 / Down"
+                placeholder={t('quilts.form.materialPlaceholder')}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="brand">品牌 / Brand</Label>
+              <Label htmlFor="brand">{t('quilts.form.brand')}</Label>
               <Input
                 id="brand"
                 value={formData.brand}
                 onChange={(e) => handleInputChange('brand', e.target.value)}
-                placeholder="品牌名称 / Brand Name"
+                placeholder={t('quilts.form.brandPlaceholder')}
               />
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="location">存放位置 / Location</Label>
+              <Label htmlFor="location">{t('quilts.table.location')}</Label>
               <Input
                 id="location"
                 value={formData.location}
                 onChange={(e) => handleInputChange('location', e.target.value)}
-                placeholder="卧室衣柜 / Bedroom Closet"
+                placeholder={t('quilts.form.locationPlaceholder')}
               />
             </div>
           </div>
 
           {/* Additional Details */}
           <div className="space-y-2">
-            <Label htmlFor="materialDetails">材料详情 / Material Details</Label>
+            <Label htmlFor="materialDetails">{t('quilts.form.materialDetails')}</Label>
             <Textarea
               id="materialDetails"
               value={formData.materialDetails}
               onChange={(e) => handleInputChange('materialDetails', e.target.value)}
-              placeholder="详细的材料信息... / Detailed material information..."
+              placeholder={t('quilts.form.materialDetailsPlaceholder')}
               rows={2}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="notes">备注 / Notes</Label>
+            <Label htmlFor="notes">{t('common.notes')}</Label>
             <Textarea
               id="notes"
               value={formData.notes}
               onChange={(e) => handleInputChange('notes', e.target.value)}
-              placeholder="其他备注信息... / Additional notes..."
+              placeholder={t('quilts.form.notesPlaceholder')}
               rows={3}
             />
           </div>

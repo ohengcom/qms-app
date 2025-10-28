@@ -50,24 +50,22 @@ export function StatusChangeDialog({ open, onOpenChange, quilt, onStatusChange }
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>更改状态 / Change Status</DialogTitle>
+          <DialogTitle>{t('quilts.dialogs.changeStatus')}</DialogTitle>
           <DialogDescription>
-            更改被子 "{quilt?.name}" 的状态
-            <br />
-            Change status for quilt "{quilt?.name}"
+            {t('quilts.dialogs.changeStatusDesc').replace('{name}', quilt?.name || '')}
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label>当前状态 / Current Status</Label>
+            <Label>{t('quilts.dialogs.currentStatus')}</Label>
             <div className={`text-sm font-medium ${getStatusColor(quilt?.currentStatus)}`}>
               {t(`status.${quilt?.currentStatus}`)}
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="newStatus">新状态 / New Status</Label>
+            <Label htmlFor="newStatus">{t('quilts.dialogs.newStatus')}</Label>
             <Select value={newStatus} onValueChange={setNewStatus}>
               <SelectTrigger>
                 <SelectValue />
