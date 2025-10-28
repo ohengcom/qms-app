@@ -192,6 +192,17 @@ export function QuiltList({ onCreateQuilt, onEditQuilt, onViewQuilt }: QuiltList
         </div>
       </div>
       
+      {/* Debug Info */}
+      <div className="bg-yellow-100 p-4 rounded mb-4">
+        <p><strong>Debug Info:</strong></p>
+        <p>isLoading: {isLoading.toString()}</p>
+        <p>error: {error?.message || 'null'}</p>
+        <p>quiltsData: {quiltsData ? 'exists' : 'null'}</p>
+        <p>quilts.length: {quilts.length}</p>
+        <p>totalCount: {totalCount}</p>
+        <p>First quilt ID: {quilts[0]?.id || 'none'}</p>
+      </div>
+
       {/* Content */}
       {isLoading ? (
         <div className="flex justify-center py-12">
