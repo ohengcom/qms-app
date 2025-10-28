@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import { QuiltList } from '@/components/quilts/QuiltList';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -39,11 +39,25 @@ const QuiltDetail = dynamic(
 type ViewMode = 'list' | 'create' | 'edit' | 'detail';
 
 export default function QuiltsPage() {
-  const [viewMode, setViewMode] = useState<ViewMode>('list');
+  const [quilts, setQuilts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedQuilt, setSelectedQuilt] = useState<any>(null);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDetailSheet, setShowDetailSheet] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/quilts')
+      .then(res => res.json())
+      .then(data => {
+        setQuilts(data.quilts || []);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Error fetching quilts:', err);
+        setLoading(false);
+      });
+  }, []);
 
   const handleCreateQuilt = () => {
     setShowCreateDialog(true);
@@ -61,11 +75,19 @@ export default function QuiltsPage() {
 
   const handleCreateSuccess = () => {
     setShowCreateDialog(false);
+    // Refetch quilts
+    fetch('/api/quilts')
+      .then(res => res.json())
+      .then(data => setQuilts(data.quilts || []));
   };
 
   const handleEditSuccess = () => {
     setShowEditDialog(false);
     setSelectedQuilt(null);
+    // Refetch quilts
+    fetch('/api/quilts')
+      .then(res => res.json())
+      .then(data => setQuilts(data.quilts || []));
   };
 
   const handleCancel = () => {
@@ -74,13 +96,57 @@ export default function QuiltsPage() {
     setSelectedQuilt(null);
   };
 
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">Loading quilts...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
-      <QuiltList
-        onCreateQuilt={handleCreateQuilt}
-        onEditQuilt={handleEditQuilt}
-        onViewQuilt={handleViewQuilt}
-      />
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Quilt Collection ({quilts.length})</h1>
+        <Button onClick={handleCreateQuilt}>Add Quilt</Button>
+      </div>
+
+      {quilts.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-gray-500 mb-4">No quilts found</p>
+          <Button onClick={handleCreateQuilt}>Add Your First Quilt</Button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {quilts.map((quilt) => (
+            <div
+              key={quilt.id}
+              className="border rounded-lg p-4 bg-white shadow hover:shadow-lg transition-shadow cursor-pointer"
+              onClick={() => handleViewQuilt(quilt)}
+            >
+              <h3 className="font-bold text-lg mb-2">{quilt.name}</h3>
+              <p className="text-sm text-gray-600">Item #{quilt.itemNumber}</p>
+              <p className="text-sm">Season: {quilt.season}</p>
+              <p className="text-sm">Size: {quilt.lengthCm} x {quilt.widthCm} cm</p>
+              <p className="text-sm">Weight: {quilt.weightGrams}g</p>
+              <p className="text-sm">Material: {quilt.fillMaterial}</p>
+              <p className="text-sm">Location: {quilt.location}</p>
+              <div className="mt-2 flex gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleEditQuilt(quilt);
+                  }}
+                >
+                  Edit
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Create Quilt Dialog */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
