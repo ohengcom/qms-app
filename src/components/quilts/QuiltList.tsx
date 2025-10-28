@@ -51,7 +51,7 @@ export function QuiltList({ onCreateQuilt, onEditQuilt, onViewQuilt }: QuiltList
   // Temporarily use direct fetch like the working test page
   const [quiltsData, setQuiltsData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchQuilts = async () => {
@@ -68,7 +68,7 @@ export function QuiltList({ onCreateQuilt, onEditQuilt, onViewQuilt }: QuiltList
         setQuiltsData(result);
       } catch (err) {
         console.error('QuiltList: Direct fetch error:', err);
-        setError(err instanceof Error ? err : new Error('Unknown error'));
+        setError(err instanceof Error ? err.message : 'Unknown error');
       } finally {
         setIsLoading(false);
       }
@@ -101,7 +101,7 @@ export function QuiltList({ onCreateQuilt, onEditQuilt, onViewQuilt }: QuiltList
       <Card className="p-6">
         <div className="text-center">
           <p className="text-red-600 mb-2">Failed to load quilts</p>
-          <p className="text-gray-500 text-sm">{error.message}</p>
+          <p className="text-gray-500 text-sm">{error}</p>
         </div>
       </Card>
     );
@@ -196,7 +196,7 @@ export function QuiltList({ onCreateQuilt, onEditQuilt, onViewQuilt }: QuiltList
       <div className="bg-yellow-100 p-4 rounded mb-4">
         <p><strong>Debug Info:</strong></p>
         <p>isLoading: {isLoading.toString()}</p>
-        <p>error: {error?.message || 'null'}</p>
+        <p>error: {error || 'null'}</p>
         <p>quiltsData: {quiltsData ? 'exists' : 'null'}</p>
         <p>quilts.length: {quilts.length}</p>
         <p>totalCount: {totalCount}</p>
