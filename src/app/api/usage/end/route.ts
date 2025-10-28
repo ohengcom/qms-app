@@ -32,10 +32,10 @@ export async function POST(request: NextRequest) {
     const now = new Date().toISOString();
     const usagePeriodId = crypto.randomUUID();
 
-    // Move to usage_records table
+    // Move to usage_periods table
     await sql`
-      INSERT INTO usage_records (
-        id, quilt_id, start_date, end_date, usage_type, notes, created_at
+      INSERT INTO usage_periods (
+        id, quilt_id, started_at, ended_at, usage_type, notes, created_at
       ) VALUES (
         ${usagePeriodId}, 
         ${quiltId}, 

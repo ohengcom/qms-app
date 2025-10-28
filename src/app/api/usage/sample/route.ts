@@ -29,9 +29,9 @@ export async function POST(request: NextRequest) {
       const endDate = new Date();
       endDate.setDate(endDate.getDate() - (10 + i * 3));
 
-      const usageRecord = await sql`
-        INSERT INTO usage_records (
-          id, quilt_id, start_date, end_date, usage_type, notes, created_at
+      const usagePeriod = await sql`
+        INSERT INTO usage_periods (
+          id, quilt_id, started_at, ended_at, usage_type, notes, created_at
         ) VALUES (
           ${usageRecordId},
           ${quilt.id},
@@ -44,9 +44,9 @@ export async function POST(request: NextRequest) {
       `;
 
       results.push({
-        type: 'usage_record',
+        type: 'usage_period',
         quilt: `${quilt.name} (#${quilt.item_number})`,
-        data: usageRecord[0]
+        data: usagePeriod[0]
       });
     }
 
