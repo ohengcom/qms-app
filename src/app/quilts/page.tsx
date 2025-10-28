@@ -6,7 +6,7 @@ import { useLanguage } from '@/lib/language-provider';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Plus, Package, Edit, Trash2, RotateCcw } from 'lucide-react';
+import { Search, Plus, Package, Edit, Trash2, RotateCcw, Grid3X3, List } from 'lucide-react';
 import { Loading } from '@/components/ui/loading';
 import { QuiltDialog } from '@/components/quilts/QuiltDialog';
 import { StatusChangeDialog } from '@/components/quilts/StatusChangeDialog';
@@ -22,6 +22,9 @@ export default function QuiltsPage() {
   const [quiltDialogOpen, setQuiltDialogOpen] = useState(false);
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
   const [selectedQuilt, setSelectedQuilt] = useState<any>(null);
+  
+  // View mode state
+  const [viewMode, setViewMode] = useState<'card' | 'list'>('card');
   
   const { t } = useLanguage();
   const searchParams = useSearchParams();
@@ -220,18 +223,42 @@ export default function QuiltsPage() {
           </Button>
         </div>
 
-        {/* Search Bar */}
-        <div className="relative max-w-md">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-4 w-4 text-gray-400" />
+        {/* Search Bar and View Toggle */}
+        <div className="flex items-center justify-between">
+          <div className="relative max-w-md">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Search className="h-4 w-4 text-gray-400" />
+            </div>
+            <Input
+              type="search"
+              placeholder={t('quilts.actions.search')}
+              value={searchTerm}
+              onChange={onSearchChange}
+              className="pl-10"
+            />
           </div>
-          <Input
-            type="search"
-            placeholder={t('quilts.actions.search')}
-            value={searchTerm}
-            onChange={onSearchChange}
-            className="pl-10"
-          />
+          
+          {/* View Mode Toggle */}
+          <div className="flex items-center space-x-1 bg-gray-100 rounded-lg p-1">
+            <Button
+              variant={viewMode === 'card' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setViewMode('card')}
+              className="h-8 px-3"
+            >
+              <Grid3X3 className="w-4 h-4 mr-1" />
+              卡片 / Cards
+            </Button>
+            <Button
+              variant={viewMode === 'list' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setViewMode('list')}
+              className="h-8 px-3"
+            >
+              <List className="w-4 h-4 mr-1" />
+              列表 / List
+            </Button>
+          </div>
         </div>
 
         {/* Search Results Info */}
@@ -247,7 +274,7 @@ export default function QuiltsPage() {
         )}
       </div>
 
-      {/* Quilts Grid */}
+      {/* Quilts Display */}
       {filteredQuilts.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
@@ -269,7 +296,8 @@ export default function QuiltsPage() {
             )}
           </CardContent>
         </Card>
-      ) : (
+      ) : viewMode === 'card' ? (
+        /* Card View */
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredQuilts.map((quilt) => (
             <Card key={quilt.id} className="hover:shadow-lg transition-shadow">
@@ -344,6 +372,80 @@ export default function QuiltsPage() {
             </Card>
           ))}
         </div>
+      ) : (
+        /* List View */
+        <Card>
+          <CardContent className="p-0">
+            {/* Table Header */}
+            <div className="grid grid-cols-12 gap-4 p-4 bg-gray-50 border-b font-medium text-sm text-gray-700">
+              <div className="col-span-2">{t('quilts.table.itemNumber')}</div>
+              <div className="col-span-2">名称 / Name</div>
+              <div className="col-span-1">{t('quilts.table.season')}</div>
+              <div className="col-span-1">{t('quilts.table.size')}</div>
+              <div className="col-span-1">{t('quilts.table.weight')}</div>
+              <div className="col-span-2">{t('quilts.table.material')}</div>
+              <div className="col-span-1">{t('quilts.table.status')}</div>
+              <div className="col-span-2">操作 / Actions</div>
+            </div>
+            
+            {/* Table Rows */}
+            <div className="divide-y">
+              {filteredQuilts.map((quilt) => (
+                <div key={quilt.id} className="grid grid-cols-12 gap-4 p-4 hover:bg-gray-50 transition-colors">
+                  <div className="col-span-2 font-medium">#{quilt.itemNumber}</div>
+                  <div className="col-span-2">
+                    <div className="font-medium">{quilt.name}</div>
+                    <div className="text-sm text-gray-500">{quilt.location}</div>
+                  </div>
+                  <div className="col-span-1 text-sm">{t(`season.${quilt.season}`)}</div>
+                  <div className="col-span-1 text-sm">{quilt.lengthCm}×{quilt.widthCm}</div>
+                  <div className="col-span-1 text-sm">{quilt.weightGrams}g</div>
+                  <div className="col-span-2 text-sm">
+                    <div>{quilt.fillMaterial}</div>
+                    <div className="text-gray-500">{quilt.color}</div>
+                  </div>
+                  <div className="col-span-1">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      quilt.currentStatus === 'AVAILABLE' ? 'bg-green-100 text-green-800' :
+                      quilt.currentStatus === 'IN_USE' ? 'bg-blue-100 text-blue-800' :
+                      quilt.currentStatus === 'STORAGE' ? 'bg-gray-100 text-gray-800' :
+                      'bg-yellow-100 text-yellow-800'
+                    }`}>
+                      {t(`status.${quilt.currentStatus}`)}
+                    </span>
+                  </div>
+                  <div className="col-span-2 flex space-x-1">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => handleChangeStatus(quilt)}
+                      title="更改状态 / Change Status"
+                    >
+                      <RotateCcw className="w-3 h-3" />
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => handleEditQuilt(quilt)}
+                      title="编辑 / Edit"
+                    >
+                      <Edit className="w-3 h-3" />
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                      onClick={() => handleDeleteQuilt(quilt)}
+                      title="删除 / Delete"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* Dialogs */}
