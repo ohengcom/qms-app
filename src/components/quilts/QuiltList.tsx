@@ -81,7 +81,7 @@ export function QuiltList({ onCreateQuilt, onEditQuilt, onViewQuilt }: QuiltList
       <Card className="p-6">
         <div className="text-center">
           <p className="text-red-600 mb-2">Failed to load quilts</p>
-          <p className="text-gray-500 text-sm">{error instanceof Error ? error.message : 'Unknown error'}</p>
+          <p className="text-gray-500 text-sm">{(error as any)?.message || 'Unknown error'}</p>
         </div>
       </Card>
     );
@@ -173,7 +173,7 @@ export function QuiltList({ onCreateQuilt, onEditQuilt, onViewQuilt }: QuiltList
           <strong>Debug Info (useQuilts hook):</strong>
         </p>
         <p>isLoading: {isLoading.toString()}</p>
-        <p>error: {error ? (error instanceof Error ? error.message : 'error exists') : 'null'}</p>
+        <p>error: {error ? (error as any)?.message || 'error exists' : 'null'}</p>
         <p>quiltsData: {quiltsData ? 'exists' : 'null'}</p>
         <p>quilts.length: {quilts.length}</p>
         <p>totalCount: {totalCount}</p>
