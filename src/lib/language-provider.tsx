@@ -34,7 +34,8 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     
     if (!translation) {
       if (process.env.NODE_ENV === 'development') {
-        console.warn(`Missing translation for key: ${key}`);
+        console.warn(`Missing translation for key: ${key} in language: ${language}`);
+        console.log('Available translations:', translations[language]);
       }
       return key;
     }

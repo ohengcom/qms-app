@@ -52,7 +52,10 @@ export function StatusChangeDialog({ open, onOpenChange, quilt, onStatusChange }
         <DialogHeader>
           <DialogTitle>{t('quilts.dialogs.changeStatus')}</DialogTitle>
           <DialogDescription>
-            {t('quilts.dialogs.changeStatusDesc').replace('{name}', quilt?.name || '')}
+            {t('language') === 'zh' 
+              ? `更改被子 "${quilt?.name}" 的状态`
+              : `Change status for quilt "${quilt?.name}"`
+            }
           </DialogDescription>
         </DialogHeader>
 
