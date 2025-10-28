@@ -144,7 +144,7 @@ export function QuiltCard({ quilt, variant = 'card', onEdit, onView }: QuiltCard
     }
 
     try {
-      await deleteQuilt.mutateAsync({ id: quilt.id });
+      await deleteQuilt.mutateAsync(quilt.id);
       toast.success('Quilt deleted', `${quilt.name} has been removed from your collection`);
     } catch (error) {
       toast.error(
