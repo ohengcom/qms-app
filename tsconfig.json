@@ -2,10 +2,13 @@
   "compilerOptions": {
     // Updated target for better performance and smaller bundles
     "target": "ES2022",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
-
     // Enhanced strict mode options for better type safety
     "strict": true,
     "noImplicitReturns": true,
@@ -13,7 +16,6 @@
     // Note: These stricter options require significant code refactoring
     // "noUncheckedIndexedAccess": true,
     // "exactOptionalPropertyTypes": true,
-
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
@@ -23,26 +25,35 @@
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "jsx": "react-jsx",
-
     // Optimized incremental compilation settings
     "incremental": true,
     "tsBuildInfoFile": ".next/cache/tsconfig.tsbuildinfo",
-
     // Performance monitoring options (disabled by default)
     // "generateCpuProfile": "profile.cpuprofile",
-
     "plugins": [
       {
         "name": "next"
       }
     ],
     "paths": {
-      "@/*": ["./src/*"],
-      "@/components/*": ["./src/components/*"],
-      "@/lib/*": ["./src/lib/*"],
-      "@/hooks/*": ["./src/hooks/*"],
-      "@/server/*": ["./src/server/*"],
-      "@/types/*": ["./src/types/*"]
+      "@/*": [
+        "./src/*"
+      ],
+      "@/components/*": [
+        "./src/components/*"
+      ],
+      "@/lib/*": [
+        "./src/lib/*"
+      ],
+      "@/hooks/*": [
+        "./src/hooks/*"
+      ],
+      "@/server/*": [
+        "./src/server/*"
+      ],
+      "@/types/*": [
+        "./src/types/*"
+      ]
     },
     "baseUrl": "."
   },
@@ -52,7 +63,11 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
-    "**/*.mts"
+    "**/*.mts",
+    ".next\\dev/types/**/*.ts",
+    ".next\\dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }
