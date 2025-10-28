@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -48,25 +48,40 @@ export function QuiltList({ onCreateQuilt, onEditQuilt, onViewQuilt }: QuiltList
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
   const [filters, setFilters] = useState<QuiltFiltersInput>({});
   
-  const { data, isLoading, error } = useQuilts({
-    filters,
-    sortBy: sortField,
-    sortOrder,
-    skip: 0,
-    take: 50,
-  });
+  // Temporarily use direct fetch like the working test page
+  const [quiltsData, setQuiltsData] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    const fetchQuilts = async () => {
+      try {
+        console.log('QuiltList: Direct fetch starting...');
+        const response = await fetch('/api/quilts');
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const result = await response.json();
+        console.log('QuiltList: Direct fetch success:', result);
+        setQuiltsData(result);
+      } catch (err) {
+        console.error('QuiltList: Direct fetch error:', err);
+        setError(err instanceof Error ? err : new Error('Unknown error'));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchQuilts();
+  }, []);
   
-  // Debug logging
-  console.log('QuiltList: data:', data);
-  console.log('QuiltList: isLoading:', isLoading);
-  console.log('QuiltList: error:', error);
+  const quilts: any[] = quiltsData?.quilts || [];
+  const totalCount = quiltsData?.total || 0;
   
-  const quilts: any[] = data?.quilts || [];
-  const totalCount = data?.total || 0;
-  
-  console.log('QuiltList: quilts array:', quilts);
-  console.log('QuiltList: quilts length:', quilts.length);
-  console.log('QuiltList: totalCount:', totalCount);
+  console.log('QuiltList: Final quilts array:', quilts);
+  console.log('QuiltList: Final quilts length:', quilts.length);
   
   const handleSortChange = (field: SortField) => {
     if (field === sortField) {
