@@ -5,7 +5,7 @@ export async function POST() {
   try {
     // First, create the database schema if it doesn't exist
     const { sql } = await import('@/lib/neon');
-    
+
     // Create quilts table
     await sql`
       CREATE TABLE IF NOT EXISTS quilts (
@@ -61,11 +61,11 @@ export async function POST() {
 
     // Check if database is already set up
     const quiltCount = await db.countQuilts();
-    
+
     if (quiltCount > 0) {
-      return NextResponse.json({ 
-        message: 'Database schema created, already has data', 
-        quilts: quiltCount 
+      return NextResponse.json({
+        message: 'Database schema created, already has data',
+        quilts: quiltCount,
       });
     }
 
@@ -134,13 +134,12 @@ export async function POST() {
         driver: 'Neon Serverless Driver',
       },
     });
-
   } catch (error) {
     console.error('Database setup error:', error);
     return NextResponse.json(
-      { 
-        error: 'Failed to initialize database', 
-        details: error instanceof Error ? error.message : 'Unknown error' 
+      {
+        error: 'Failed to initialize database',
+        details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     );
@@ -151,7 +150,7 @@ export async function GET() {
   try {
     // Check database status using Neon methods
     const quiltCount = await db.countQuilts();
-    
+
     return NextResponse.json({
       status: 'Database connected',
       quilts: quiltCount,
@@ -160,9 +159,9 @@ export async function GET() {
     });
   } catch (error) {
     return NextResponse.json(
-      { 
-        error: 'Database connection failed', 
-        details: error instanceof Error ? error.message : 'Unknown error' 
+      {
+        error: 'Database connection failed',
+        details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     );

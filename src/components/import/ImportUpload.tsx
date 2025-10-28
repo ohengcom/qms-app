@@ -19,18 +19,15 @@ export function ImportUpload({ onFileUpload }: ImportUploadProps) {
   const handleFileRead = useCallback(
     (file: File) => {
       setIsUploading(true);
-      
+
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = e => {
         try {
           const arrayBuffer = e.target?.result as ArrayBuffer;
           const base64 = btoa(
-            new Uint8Array(arrayBuffer).reduce(
-              (data, byte) => data + String.fromCharCode(byte),
-              ''
-            )
+            new Uint8Array(arrayBuffer).reduce((data, byte) => data + String.fromCharCode(byte), '')
           );
-          
+
           onFileUpload(file.name, base64);
           success('File uploaded', `${file.name} has been uploaded successfully`);
         } catch (err) {
@@ -39,12 +36,12 @@ export function ImportUpload({ onFileUpload }: ImportUploadProps) {
           setIsUploading(false);
         }
       };
-      
+
       reader.onerror = () => {
         error('Upload failed', 'Failed to read the uploaded file');
         setIsUploading(false);
       };
-      
+
       reader.readAsArrayBuffer(file);
     },
     [onFileUpload, success, error]
@@ -53,21 +50,21 @@ export function ImportUpload({ onFileUpload }: ImportUploadProps) {
   const handleFileSelect = useCallback(
     (files: FileList | null) => {
       if (!files || files.length === 0) return;
-      
+
       const file = files[0];
-      
+
       // Validate file type
       if (!file.name.toLowerCase().endsWith('.xlsx') && !file.name.toLowerCase().endsWith('.xls')) {
         error('Invalid file type', 'Please select an Excel file (.xlsx or .xls)');
         return;
       }
-      
+
       // Validate file size (10MB limit)
       if (file.size > 10 * 1024 * 1024) {
         error('File too large', 'Please select a file smaller than 10MB');
         return;
       }
-      
+
       handleFileRead(file);
     },
     [handleFileRead, error]
@@ -116,9 +113,7 @@ export function ImportUpload({ onFileUpload }: ImportUploadProps) {
           <div
             className={cn(
               'border-2 border-dashed rounded-lg p-8 text-center transition-colors',
-              isDragOver
-                ? 'border-blue-500 bg-blue-50'
-                : 'border-gray-300 hover:border-gray-400',
+              isDragOver ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400',
               isUploading && 'opacity-50 pointer-events-none'
             )}
             onDrop={handleDrop}
@@ -129,16 +124,14 @@ export function ImportUpload({ onFileUpload }: ImportUploadProps) {
               <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
                 <FileSpreadsheet className="h-8 w-8 text-gray-600" />
               </div>
-              
+
               <div>
                 <p className="text-lg font-medium text-gray-900">
                   {isUploading ? 'Processing file...' : 'Drop your Excel file here'}
                 </p>
-                <p className="text-sm text-gray-500 mt-1">
-                  or click to browse and select a file
-                </p>
+                <p className="text-sm text-gray-500 mt-1">or click to browse and select a file</p>
               </div>
-              
+
               <div className="flex justify-center">
                 <Button
                   variant="outline"
@@ -149,7 +142,7 @@ export function ImportUpload({ onFileUpload }: ImportUploadProps) {
                   {isUploading ? 'Uploading...' : 'Select File'}
                 </Button>
               </div>
-              
+
               <input
                 id="file-input"
                 type="file"
@@ -179,7 +172,7 @@ export function ImportUpload({ onFileUpload }: ImportUploadProps) {
                 <p className="text-sm text-gray-600">Excel files (.xlsx, .xls)</p>
               </div>
             </div>
-            
+
             <div className="flex items-start space-x-3">
               <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
               <div>
@@ -187,14 +180,14 @@ export function ImportUpload({ onFileUpload }: ImportUploadProps) {
                 <p className="text-sm text-gray-600">10MB per file</p>
               </div>
             </div>
-            
+
             <div className="flex items-start space-x-3">
               <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
               <div>
                 <p className="font-medium">Expected columns</p>
                 <p className="text-sm text-gray-600">
-                  The system will automatically detect and map columns from your Excel file.
-                  Common columns include: Item Number, Name, Season, Color, Brand, Location, etc.
+                  The system will automatically detect and map columns from your Excel file. Common
+                  columns include: Item Number, Name, Season, Color, Brand, Location, etc.
                 </p>
               </div>
             </div>
@@ -214,7 +207,10 @@ export function ImportUpload({ onFileUpload }: ImportUploadProps) {
           <div className="space-y-2 text-sm text-gray-600">
             <p>• Make sure your Excel file has a header row with column names</p>
             <p>• Item numbers should be unique for each quilt</p>
-            <p>• Season values should be one of: Winter, Summer, Spring/Autumn (or Chinese equivalents)</p>
+            <p>
+              • Season values should be one of: Winter, Summer, Spring/Autumn (or Chinese
+              equivalents)
+            </p>
             <p>• Dates should be in a standard format (YYYY/MM/DD or MM/DD/YYYY)</p>
             <p>• The system will show you a preview before importing any data</p>
             <p>• You can review and fix any errors before confirming the import</p>

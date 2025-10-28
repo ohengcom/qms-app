@@ -11,24 +11,28 @@ interface TouchButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>
   hapticFeedback?: boolean;
 }
 
-export function TouchButton({ 
-  variant = 'default', 
-  size = 'md', 
-  className, 
+export function TouchButton({
+  variant = 'default',
+  size = 'md',
+  className,
   children,
   hapticFeedback = true,
   onClick,
-  ...props 
+  ...props
 }: TouchButtonProps) {
-  const baseClasses = 'inline-flex items-center justify-center rounded-md font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background active:scale-95 touch-manipulation';
-  
+  const baseClasses =
+    'inline-flex items-center justify-center rounded-md font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background active:scale-95 touch-manipulation';
+
   const variants = {
-    default: 'bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80 shadow-sm hover:shadow-md',
-    outline: 'border border-input hover:bg-accent hover:text-accent-foreground active:bg-accent/80 shadow-sm hover:shadow-md',
+    default:
+      'bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80 shadow-sm hover:shadow-md',
+    outline:
+      'border border-input hover:bg-accent hover:text-accent-foreground active:bg-accent/80 shadow-sm hover:shadow-md',
     ghost: 'hover:bg-accent hover:text-accent-foreground active:bg-accent/80',
-    destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90 active:bg-destructive/80 shadow-sm hover:shadow-md',
+    destructive:
+      'bg-destructive text-destructive-foreground hover:bg-destructive/90 active:bg-destructive/80 shadow-sm hover:shadow-md',
   };
-  
+
   const sizes = {
     sm: 'h-12 px-4 text-sm min-w-[48px]', // Minimum 48px for touch targets
     md: 'h-14 px-6 text-base min-w-[56px]', // Minimum 56px for comfortable touch
@@ -40,10 +44,10 @@ export function TouchButton({
     if (hapticFeedback && 'vibrate' in navigator) {
       navigator.vibrate(10);
     }
-    
+
     onClick?.(e);
   };
-  
+
   return (
     <button
       className={cn(baseClasses, variants[variant], sizes[size], className)}
@@ -64,12 +68,12 @@ interface SwipeableCardProps {
   swipeThreshold?: number;
 }
 
-export function SwipeableCard({ 
-  children, 
-  onSwipeLeft, 
-  onSwipeRight, 
+export function SwipeableCard({
+  children,
+  onSwipeLeft,
+  onSwipeRight,
   className,
-  swipeThreshold = 100 
+  swipeThreshold = 100,
 }: SwipeableCardProps) {
   const [startX, setStartX] = useState<number | null>(null);
   const [currentX, setCurrentX] = useState<number | null>(null);
@@ -95,7 +99,7 @@ export function SwipeableCard({
     }
 
     const diffX = currentX - startX;
-    
+
     if (Math.abs(diffX) > swipeThreshold) {
       if (diffX > 0 && onSwipeRight) {
         onSwipeRight();
@@ -133,11 +137,11 @@ interface PullToRefreshProps {
   className?: string;
 }
 
-export function PullToRefresh({ 
-  children, 
-  onRefresh, 
+export function PullToRefresh({
+  children,
+  onRefresh,
   refreshThreshold = 80,
-  className 
+  className,
 }: PullToRefreshProps) {
   const [startY, setStartY] = useState<number | null>(null);
   const [currentY, setCurrentY] = useState<number | null>(null);
@@ -153,10 +157,10 @@ export function PullToRefresh({
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!startY || containerRef.current?.scrollTop !== 0) return;
-    
+
     const currentY = e.touches[0].clientY;
     const diffY = currentY - startY;
-    
+
     if (diffY > 0) {
       setCurrentY(currentY);
       setIsPulling(diffY > refreshThreshold);
@@ -166,9 +170,9 @@ export function PullToRefresh({
 
   const handleTouchEnd = async () => {
     if (!startY || !currentY) return;
-    
+
     const diffY = currentY - startY;
-    
+
     if (diffY > refreshThreshold && !isRefreshing) {
       setIsRefreshing(true);
       try {
@@ -177,7 +181,7 @@ export function PullToRefresh({
         setIsRefreshing(false);
       }
     }
-    
+
     setStartY(null);
     setCurrentY(null);
     setIsPulling(false);
@@ -196,7 +200,7 @@ export function PullToRefresh({
     >
       {/* Pull indicator */}
       {(isPulling || isRefreshing) && (
-        <div 
+        <div
           className="absolute top-0 left-0 right-0 flex items-center justify-center bg-blue-50 border-b border-blue-200 transition-all duration-200"
           style={{ height: `${Math.min(pullDistance, 60)}px` }}
         >
@@ -208,7 +212,7 @@ export function PullToRefresh({
               </>
             ) : (
               <>
-                <div 
+                <div
                   className="w-4 h-4 border-2 border-blue-600 rounded-full transition-transform"
                   style={{ transform: `rotate(${pullProgress * 180}deg)` }}
                 />
@@ -220,11 +224,9 @@ export function PullToRefresh({
           </div>
         </div>
       )}
-      
+
       {/* Content */}
-      <div style={{ transform: `translateY(${Math.min(pullDistance, 60)}px)` }}>
-        {children}
-      </div>
+      <div style={{ transform: `translateY(${Math.min(pullDistance, 60)}px)` }}>{children}</div>
     </div>
   );
 }
@@ -238,11 +240,7 @@ interface TouchInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 export function TouchInput({ label, error, className, ...props }: TouchInputProps) {
   return (
     <div className="space-y-2">
-      {label && (
-        <label className="text-sm font-medium text-gray-700 block">
-          {label}
-        </label>
-      )}
+      {label && <label className="text-sm font-medium text-gray-700 block">{label}</label>}
       <input
         className={cn(
           'flex h-12 w-full rounded-md border border-input bg-background px-4 py-3 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
@@ -251,9 +249,7 @@ export function TouchInput({ label, error, className, ...props }: TouchInputProp
         )}
         {...props}
       />
-      {error && (
-        <p className="text-sm text-red-600">{error}</p>
-      )}
+      {error && <p className="text-sm text-red-600">{error}</p>}
     </div>
   );
 }
@@ -267,12 +263,12 @@ interface FloatingActionButtonProps {
   className?: string;
 }
 
-export function FloatingActionButton({ 
-  onClick, 
-  icon, 
+export function FloatingActionButton({
+  onClick,
+  icon,
   label,
   position = 'bottom-right',
-  className 
+  className,
 }: FloatingActionButtonProps) {
   const positions = {
     'bottom-right': 'fixed bottom-6 right-6',

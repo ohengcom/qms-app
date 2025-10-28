@@ -26,7 +26,7 @@ export function PWAInstallPrompt() {
         setIsInstalled(true);
         return;
       }
-      
+
       // Check for iOS standalone mode
       if ((window.navigator as any).standalone === true) {
         setIsInstalled(true);
@@ -40,7 +40,7 @@ export function PWAInstallPrompt() {
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
-      
+
       // Show prompt after a delay if not dismissed before
       setTimeout(() => {
         const dismissed = localStorage.getItem('pwa-install-dismissed');
@@ -73,7 +73,7 @@ export function PWAInstallPrompt() {
     try {
       await deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
-      
+
       if (outcome === 'accepted') {
         console.log('PWA installation accepted');
       } else {
@@ -105,15 +105,13 @@ export function PWAInstallPrompt() {
             <div className="p-2 bg-blue-100 rounded-lg">
               <Smartphone className="h-6 w-6 text-blue-600" />
             </div>
-            
+
             <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-blue-900 text-sm">
-                Install QMS App
-              </h3>
+              <h3 className="font-semibold text-blue-900 text-sm">Install QMS App</h3>
               <p className="text-blue-700 text-xs mt-1">
                 Add to your home screen for quick access and offline use
               </p>
-              
+
               <div className="flex space-x-2 mt-3">
                 <TouchButton
                   size="sm"
@@ -123,7 +121,7 @@ export function PWAInstallPrompt() {
                   <Download className="h-3 w-3 mr-1" />
                   Install
                 </TouchButton>
-                
+
                 <TouchButton
                   variant="ghost"
                   size="sm"
@@ -134,7 +132,7 @@ export function PWAInstallPrompt() {
                 </TouchButton>
               </div>
             </div>
-            
+
             <TouchButton
               variant="ghost"
               size="sm"
@@ -184,15 +182,14 @@ export function IOSInstallPrompt() {
             <div className="p-2 bg-blue-100 rounded-lg">
               <Smartphone className="h-6 w-6 text-blue-600" />
             </div>
-            
+
             <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-blue-900 text-sm">
-                Add to Home Screen
-              </h3>
+              <h3 className="font-semibold text-blue-900 text-sm">Add to Home Screen</h3>
               <p className="text-blue-700 text-xs mt-1">
-                Tap the share button <span className="font-mono">⬆️</span> and select "Add to Home Screen"
+                Tap the share button <span className="font-mono">⬆️</span> and select "Add to Home
+                Screen"
               </p>
-              
+
               <TouchButton
                 variant="ghost"
                 size="sm"
@@ -202,7 +199,7 @@ export function IOSInstallPrompt() {
                 Got it
               </TouchButton>
             </div>
-            
+
             <TouchButton
               variant="ghost"
               size="sm"

@@ -96,9 +96,9 @@ export function VirtualizedQuiltList({
           position: 'relative',
         }}
       >
-        {virtualizer.getVirtualItems().map((virtualItem) => {
+        {virtualizer.getVirtualItems().map(virtualItem => {
           const quilt = memoizedQuilts[virtualItem.index];
-          
+
           return (
             <div
               key={virtualItem.key}
@@ -141,10 +141,10 @@ export function VirtualizedQuiltGrid({
   gap = 24,
 }: VirtualizedQuiltListProps & { columns?: number; gap?: number }) {
   const parentRef = React.useRef<HTMLDivElement>(null);
-  
+
   // Calculate rows needed for grid layout
   const rows = Math.ceil(quilts.length / columns);
-  
+
   const virtualizer = useVirtualizer({
     count: rows,
     getScrollElement: () => parentRef.current,
@@ -187,10 +187,7 @@ export function VirtualizedQuiltGrid({
   }
 
   return (
-    <div
-      ref={parentRef}
-      className={cn('h-[600px] overflow-auto', className)}
-    >
+    <div ref={parentRef} className={cn('h-[600px] overflow-auto', className)}>
       <div
         style={{
           height: `${virtualizer.getTotalSize()}px`,
@@ -198,7 +195,7 @@ export function VirtualizedQuiltGrid({
           position: 'relative',
         }}
       >
-        {virtualizer.getVirtualItems().map((virtualRow) => {
+        {virtualizer.getVirtualItems().map(virtualRow => {
           const startIndex = virtualRow.index * columns;
           const endIndex = Math.min(startIndex + columns, quilts.length);
           const rowQuilts = quilts.slice(startIndex, endIndex);
@@ -215,7 +212,7 @@ export function VirtualizedQuiltGrid({
                 transform: `translateY(${virtualRow.start}px)`,
               }}
             >
-              <div 
+              <div
                 className="grid gap-6 px-3"
                 style={{
                   gridTemplateColumns: `repeat(${columns}, 1fr)`,

@@ -5,6 +5,7 @@ import { TRPCProvider } from '@/lib/trpc-provider';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
+import { RoutePreloader } from '@/components/performance/RoutePreloader';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -41,11 +42,7 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="h-full">
       <head>
@@ -61,13 +58,12 @@ export default function RootLayout({
       <body className={`${inter.className} h-full`}>
         <ErrorBoundary>
           <TRPCProvider>
-            <AppLayout>
-              {children}
-            </AppLayout>
+            <RoutePreloader />
+            <AppLayout>{children}</AppLayout>
             <Toaster />
           </TRPCProvider>
         </ErrorBoundary>
-        
+
         {/* Service Worker Registration */}
         <script
           dangerouslySetInnerHTML={{

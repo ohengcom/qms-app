@@ -15,7 +15,7 @@ export function OfflineIndicator() {
     const updateOnlineStatus = () => {
       const online = navigator.onLine;
       setIsOnline(online);
-      
+
       if (!online && !showOfflineMessage) {
         setShowOfflineMessage(true);
       } else if (online && showOfflineMessage) {
@@ -41,14 +41,14 @@ export function OfflineIndicator() {
 
   const handleRetry = async () => {
     setIsRetrying(true);
-    
+
     try {
       // Try to fetch a small resource to test connectivity
-      const response = await fetch('/manifest.json', { 
+      const response = await fetch('/manifest.json', {
         cache: 'no-cache',
-        method: 'HEAD'
+        method: 'HEAD',
       });
-      
+
       if (response.ok) {
         setIsOnline(true);
         setShowOfflineMessage(false);
@@ -80,45 +80,38 @@ export function OfflineIndicator() {
   if (showOfflineMessage) {
     return (
       <div className="fixed top-4 left-4 right-4 z-50 lg:hidden">
-        <Card className={cn(
-          'shadow-lg border-2',
-          isOnline 
-            ? 'border-green-200 bg-green-50' 
-            : 'border-red-200 bg-red-50'
-        )}>
+        <Card
+          className={cn(
+            'shadow-lg border-2',
+            isOnline ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'
+          )}
+        >
           <CardContent className="p-4">
             <div className="flex items-start space-x-3">
-              <div className={cn(
-                'p-2 rounded-lg',
-                isOnline 
-                  ? 'bg-green-100' 
-                  : 'bg-red-100'
-              )}>
+              <div className={cn('p-2 rounded-lg', isOnline ? 'bg-green-100' : 'bg-red-100')}>
                 {isOnline ? (
                   <Wifi className="h-5 w-5 text-green-600" />
                 ) : (
                   <WifiOff className="h-5 w-5 text-red-600" />
                 )}
               </div>
-              
+
               <div className="flex-1 min-w-0">
-                <h3 className={cn(
-                  'font-semibold text-sm',
-                  isOnline ? 'text-green-900' : 'text-red-900'
-                )}>
-                  {isOnline ? 'Back Online!' : 'You\'re Offline'}
+                <h3
+                  className={cn(
+                    'font-semibold text-sm',
+                    isOnline ? 'text-green-900' : 'text-red-900'
+                  )}
+                >
+                  {isOnline ? 'Back Online!' : "You're Offline"}
                 </h3>
-                
-                <p className={cn(
-                  'text-xs mt-1',
-                  isOnline ? 'text-green-700' : 'text-red-700'
-                )}>
-                  {isOnline 
+
+                <p className={cn('text-xs mt-1', isOnline ? 'text-green-700' : 'text-red-700')}>
+                  {isOnline
                     ? 'Your connection has been restored. Data will sync automatically.'
-                    : 'Some features may be limited. You can still view cached data.'
-                  }
+                    : 'Some features may be limited. You can still view cached data.'}
                 </p>
-                
+
                 {!isOnline && (
                   <div className="flex space-x-2 mt-3">
                     <TouchButton
@@ -134,7 +127,7 @@ export function OfflineIndicator() {
                       )}
                       Retry
                     </TouchButton>
-                    
+
                     <TouchButton
                       variant="ghost"
                       size="sm"
@@ -145,7 +138,7 @@ export function OfflineIndicator() {
                     </TouchButton>
                   </div>
                 )}
-                
+
                 {isOnline && (
                   <TouchButton
                     variant="ghost"
@@ -174,10 +167,10 @@ interface SyncStatusProps {
   pendingChanges?: number;
 }
 
-export function SyncStatusIndicator({ 
-  isSyncing = false, 
-  lastSyncTime, 
-  pendingChanges = 0 
+export function SyncStatusIndicator({
+  isSyncing = false,
+  lastSyncTime,
+  pendingChanges = 0,
 }: SyncStatusProps) {
   const [showDetails, setShowDetails] = useState(false);
 
@@ -193,9 +186,9 @@ export function SyncStatusIndicator({
         onClick={() => setShowDetails(!showDetails)}
         className={cn(
           'h-10 w-10 p-0 rounded-full shadow-lg',
-          isSyncing 
-            ? 'bg-blue-100 text-blue-600' 
-            : pendingChanges > 0 
+          isSyncing
+            ? 'bg-blue-100 text-blue-600'
+            : pendingChanges > 0
               ? 'bg-amber-100 text-amber-600'
               : 'bg-green-100 text-green-600'
         )}
@@ -219,18 +212,16 @@ export function SyncStatusIndicator({
                   <span>Syncing data...</span>
                 </div>
               )}
-              
+
               {pendingChanges > 0 && (
                 <div className="flex items-center space-x-2 text-amber-600">
                   <AlertCircle className="h-3 w-3" />
                   <span>{pendingChanges} changes pending sync</span>
                 </div>
               )}
-              
+
               {lastSyncTime && (
-                <div className="text-gray-600">
-                  Last sync: {lastSyncTime.toLocaleTimeString()}
-                </div>
+                <div className="text-gray-600">Last sync: {lastSyncTime.toLocaleTimeString()}</div>
               )}
             </div>
           </CardContent>

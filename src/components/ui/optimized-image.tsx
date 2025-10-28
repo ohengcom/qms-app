@@ -154,14 +154,9 @@ export function ProgressiveImage({
         sizes={sizes}
         type="image/webp"
       />
-      
+
       {/* Fallback for older browsers */}
-      <OptimizedImage
-        src={src}
-        alt={alt}
-        className={className}
-        {...props}
-      />
+      <OptimizedImage src={src} alt={alt} className={className} {...props} />
     </picture>
   );
 }

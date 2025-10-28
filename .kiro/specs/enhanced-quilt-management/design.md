@@ -23,24 +23,28 @@ The system uses a modern full-stack architecture with real-time capabilities:
 ### Technology Stack Rationale
 
 **Frontend: Next.js 14 + React 18**
+
 - Server-side rendering for better SEO and performance
 - App Router for modern routing and layouts
 - Built-in optimization for images, fonts, and scripts
 - Excellent TypeScript support and developer experience
 
 **Backend: Node.js + tRPC + Prisma**
+
 - End-to-end type safety with tRPC
 - Prisma for type-safe database operations and migrations
 - Real-time subscriptions with WebSocket support
 - Excellent performance with modern JavaScript runtime
 
 **Database: PostgreSQL + Redis**
+
 - PostgreSQL for robust relational data with JSON support
 - Redis for caching and real-time features
 - Full-text search capabilities
 - Excellent scalability and performance
 
 **Styling: TailwindCSS + Shadcn/ui**
+
 - Utility-first CSS for rapid development
 - Consistent design system with Shadcn/ui components
 - Excellent mobile-first responsive design
@@ -59,6 +63,7 @@ The system uses a modern full-stack architecture with real-time capabilities:
 ### Backend Architecture (Node.js + tRPC + Prisma)
 
 #### 1. tRPC Router Structure
+
 ```typescript
 // Main router with type-safe procedures
 export const appRouter = router({
@@ -74,11 +79,11 @@ const quiltsRouter = router({
   list: publicProcedure
     .input(z.object({ filters: QuiltFiltersSchema, pagination: PaginationSchema }))
     .query(({ input }) => QuiltService.searchQuilts(input)),
-  
+
   create: publicProcedure
     .input(CreateQuiltSchema)
     .mutation(({ input }) => QuiltService.createQuilt(input)),
-  
+
   update: publicProcedure
     .input(UpdateQuiltSchema)
     .mutation(({ input }) => QuiltService.updateQuilt(input)),
@@ -86,22 +91,25 @@ const quiltsRouter = router({
 ```
 
 #### 2. Prisma Database Service
+
 ```typescript
 class QuiltService {
   static async searchQuilts(params: SearchParams) {
     return await prisma.quilt.findMany({
       where: {
         AND: [
-          params.search ? {
-            OR: [
-              { name: { contains: params.search, mode: 'insensitive' } },
-              { brand: { contains: params.search, mode: 'insensitive' } },
-              { color: { contains: params.search, mode: 'insensitive' } },
-            ]
-          } : {},
+          params.search
+            ? {
+                OR: [
+                  { name: { contains: params.search, mode: 'insensitive' } },
+                  { brand: { contains: params.search, mode: 'insensitive' } },
+                  { color: { contains: params.search, mode: 'insensitive' } },
+                ],
+              }
+            : {},
           params.season ? { season: params.season } : {},
           params.status ? { currentStatus: params.status } : {},
-        ]
+        ],
       },
       include: {
         usagePeriods: true,
@@ -116,6 +124,7 @@ class QuiltService {
 ```
 
 #### 3. Real-time Analytics Service
+
 ```typescript
 class AnalyticsService {
   static async getDashboardData(): Promise<DashboardData> {
@@ -134,13 +143,16 @@ class AnalyticsService {
     return {
       totalQuilts,
       statusCounts: Object.fromEntries(statusCounts.map(s => [s.currentStatus, s._count.id])),
-      seasonalDistribution: Object.fromEntries(seasonalDistribution.map(s => [s.season, s._count.id])),
+      seasonalDistribution: Object.fromEntries(
+        seasonalDistribution.map(s => [s.season, s._count.id])
+      ),
     };
   }
 }
 ```
 
 #### 4. Excel Import/Export Service
+
 ```typescript
 class ImportExportService {
   static async importFromExcel(file: Buffer): Promise<ImportResult> {
@@ -148,7 +160,7 @@ class ImportExportService {
     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
     const data = XLSX.utils.sheet_to_json(worksheet);
 
-    const results = await prisma.$transaction(async (tx) => {
+    const results = await prisma.$transaction(async tx => {
       const imported = [];
       const errors = [];
 
@@ -174,11 +186,12 @@ class ImportExportService {
 ### Frontend Architecture (Next.js + React + TypeScript)
 
 #### 1. Dashboard Page Component
+
 ```tsx
 // app/dashboard/page.tsx
 export default function DashboardPage() {
   const { data: dashboardData, isLoading } = trpc.dashboard.getData.useQuery();
-  
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       <StatisticsCards data={dashboardData?.stats} />
@@ -195,6 +208,7 @@ export default function DashboardPage() {
 ```
 
 #### 2. Advanced Search Component
+
 ```tsx
 // components/QuiltSearch.tsx
 export function QuiltSearch() {
@@ -209,17 +223,14 @@ export function QuiltSearch() {
 
   return (
     <div className="space-y-6">
-      <SearchInput 
+      <SearchInput
         value={searchParams.get('q') || ''}
-        onChange={(value) => setSearchParams({ ...searchParams, q: value })}
+        onChange={value => setSearchParams({ ...searchParams, q: value })}
         placeholder="Search quilts by name, brand, or color..."
       />
-      
-      <FilterPanel
-        filters={Object.fromEntries(searchParams)}
-        onFiltersChange={setSearchParams}
-      />
-      
+
+      <FilterPanel filters={Object.fromEntries(searchParams)} onFiltersChange={setSearchParams} />
+
       <QuiltGrid quilts={quilts} isLoading={isLoading} />
     </div>
   );
@@ -227,6 +238,7 @@ export function QuiltSearch() {
 ```
 
 #### 3. Quilt Management Form
+
 ```tsx
 // components/QuiltForm.tsx
 export function QuiltForm({ quilt }: { quilt?: Quilt }) {
@@ -263,7 +275,7 @@ export function QuiltForm({ quilt }: { quilt?: Quilt }) {
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="season"
@@ -287,7 +299,7 @@ export function QuiltForm({ quilt }: { quilt?: Quilt }) {
             )}
           />
         </div>
-        
+
         <Button type="submit" disabled={createMutation.isLoading || updateMutation.isLoading}>
           {quilt ? 'Update' : 'Create'} Quilt
         </Button>
@@ -298,6 +310,7 @@ export function QuiltForm({ quilt }: { quilt?: Quilt }) {
 ```
 
 #### 4. Usage Tracking Component
+
 ```tsx
 // components/UsageTracker.tsx
 export function UsageTracker({ quiltId }: { quiltId: number }) {
@@ -316,9 +329,9 @@ export function UsageTracker({ quiltId }: { quiltId: number }) {
           Start Using
         </Button>
       </div>
-      
+
       <UsageTimeline periods={usageHistory} />
-      
+
       <UsageStatistics quiltId={quiltId} />
     </div>
   );
@@ -344,41 +357,41 @@ model Quilt {
   id            Int      @id @default(autoincrement())
   itemNumber    Int      @unique @map("item_number")
   groupId       Int?     @map("group_id")
-  
+
   // Basic information
   name          String
   season        Season
-  
+
   // Physical specifications
   lengthCm      Int      @map("length_cm")
   widthCm       Int      @map("width_cm")
   weightGrams   Int      @map("weight_grams")
-  
+
   // Material composition
   fillMaterial     String  @map("fill_material")
   materialDetails  String? @map("material_details")
   color           String
-  
+
   // Brand and purchase info
   brand          String?
   purchaseDate   DateTime? @map("purchase_date") @db.Date
-  
+
   // Storage and packaging
   location       String
   packagingInfo  String?   @map("packaging_info")
-  
+
   // Status and metadata
   currentStatus  Status    @default(AVAILABLE) @map("current_status")
   notes          String?
-  
+
   // Timestamps
   createdAt      DateTime  @default(now()) @map("created_at")
   updatedAt      DateTime  @updatedAt @map("updated_at")
-  
+
   // Relationships
   usagePeriods   QuiltUsagePeriod[]
   currentUsage   CurrentUsage?
-  
+
   @@map("quilts")
   @@index([season, currentStatus])
   @@index([location])
@@ -388,16 +401,16 @@ model Quilt {
 model QuiltUsagePeriod {
   id         Int       @id @default(autoincrement())
   quiltId    Int       @map("quilt_id")
-  
+
   startDate  DateTime  @map("start_date") @db.Date
   endDate    DateTime? @map("end_date") @db.Date
   seasonUsed String?   @map("season_used")
   notes      String?
-  
+
   createdAt  DateTime  @default(now()) @map("created_at")
-  
+
   quilt      Quilt     @relation(fields: [quiltId], references: [id], onDelete: Cascade)
-  
+
   @@map("quilt_usage_periods")
   @@index([startDate, endDate])
 }
@@ -405,16 +418,16 @@ model QuiltUsagePeriod {
 model CurrentUsage {
   id              Int       @id @default(autoincrement())
   quiltId         Int       @unique @map("quilt_id")
-  
+
   startedAt       DateTime  @map("started_at") @db.Date
   expectedEndDate DateTime? @map("expected_end_date") @db.Date
   usageType       String    @default("regular") @map("usage_type")
-  
+
   createdAt       DateTime  @default(now()) @map("created_at")
   updatedAt       DateTime  @updatedAt @map("updated_at")
-  
+
   quilt           Quilt     @relation(fields: [quiltId], references: [id], onDelete: Cascade)
-  
+
   @@map("current_usage")
 }
 
@@ -535,25 +548,25 @@ export class QuiltService {
     try {
       // Check for duplicate item number
       const existing = await prisma.quilt.findUnique({
-        where: { itemNumber: input.itemNumber }
+        where: { itemNumber: input.itemNumber },
       });
-      
+
       if (existing) {
         throw new TRPCError({
           code: 'CONFLICT',
           message: `Quilt with item number ${input.itemNumber} already exists`,
-          cause: 'DUPLICATE_ITEM_NUMBER'
+          cause: 'DUPLICATE_ITEM_NUMBER',
         });
       }
 
       return await prisma.quilt.create({ data: input });
     } catch (error) {
       if (error instanceof TRPCError) throw error;
-      
+
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
         message: 'Failed to create quilt',
-        cause: error
+        cause: error,
       });
     }
   }
@@ -567,44 +580,47 @@ export class QuiltService {
 export function useErrorHandler() {
   const { toast } = useToast();
 
-  return useCallback((error: TRPCClientError<AppRouter>) => {
-    switch (error.data?.code) {
-      case 'CONFLICT':
-        toast({
-          title: "Conflict",
-          description: error.message,
-          variant: "destructive",
-        });
-        break;
-      case 'NOT_FOUND':
-        toast({
-          title: "Not Found",
-          description: "The requested quilt could not be found.",
-          variant: "destructive",
-        });
-        break;
-      default:
-        toast({
-          title: "Error",
-          description: "An unexpected error occurred. Please try again.",
-          variant: "destructive",
-        });
-    }
-  }, [toast]);
+  return useCallback(
+    (error: TRPCClientError<AppRouter>) => {
+      switch (error.data?.code) {
+        case 'CONFLICT':
+          toast({
+            title: 'Conflict',
+            description: error.message,
+            variant: 'destructive',
+          });
+          break;
+        case 'NOT_FOUND':
+          toast({
+            title: 'Not Found',
+            description: 'The requested quilt could not be found.',
+            variant: 'destructive',
+          });
+          break;
+        default:
+          toast({
+            title: 'Error',
+            description: 'An unexpected error occurred. Please try again.',
+            variant: 'destructive',
+          });
+      }
+    },
+    [toast]
+  );
 }
 
 // components/QuiltForm.tsx
 export function QuiltForm() {
   const handleError = useErrorHandler();
-  
+
   const createMutation = trpc.quilts.create.useMutation({
     onError: handleError,
     onSuccess: () => {
       toast({
-        title: "Success",
-        description: "Quilt created successfully!",
+        title: 'Success',
+        description: 'Quilt created successfully!',
       });
-    }
+    },
   });
 }
 ```
@@ -639,7 +655,7 @@ describe('Quilt Management', () => {
     };
 
     const result = await caller.quilts.create(input);
-    
+
     expect(result.itemNumber).toBe(1);
     expect(result.name).toBe('Test Winter Quilt');
   });
@@ -650,7 +666,7 @@ describe('Quilt Management', () => {
 
     const results = await caller.quilts.list({
       filters: { season: 'WINTER', search: 'down' },
-      pagination: { skip: 0, take: 10 }
+      pagination: { skip: 0, take: 10 },
     });
 
     expect(results.quilts).toHaveLength(2);
@@ -669,23 +685,21 @@ import { QuiltForm } from '../QuiltForm';
 
 const createWrapper = () => {
   const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: false } }
+    defaultOptions: { queries: { retry: false } },
   });
-  
+
   return ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 };
 
 describe('QuiltForm', () => {
   it('should validate required fields', async () => {
     render(<QuiltForm />, { wrapper: createWrapper() });
-    
+
     const submitButton = screen.getByRole('button', { name: /create quilt/i });
     fireEvent.click(submitButton);
-    
+
     await waitFor(() => {
       expect(screen.getByText(/name is required/i)).toBeInTheDocument();
       expect(screen.getByText(/item number is required/i)).toBeInTheDocument();
@@ -694,18 +708,18 @@ describe('QuiltForm', () => {
 
   it('should submit form with valid data', async () => {
     const mockCreate = vi.fn().mockResolvedValue({ id: 1 });
-    
+
     render(<QuiltForm />, { wrapper: createWrapper() });
-    
+
     fireEvent.change(screen.getByLabelText(/quilt name/i), {
-      target: { value: 'Test Quilt' }
+      target: { value: 'Test Quilt' },
     });
     fireEvent.change(screen.getByLabelText(/item number/i), {
-      target: { value: '1' }
+      target: { value: '1' },
     });
-    
+
     fireEvent.click(screen.getByRole('button', { name: /create quilt/i }));
-    
+
     await waitFor(() => {
       expect(mockCreate).toHaveBeenCalledWith({
         name: 'Test Quilt',
@@ -726,21 +740,21 @@ import { test, expect } from '@playwright/test';
 test.describe('Quilt Management Flow', () => {
   test('should create, edit, and delete a quilt', async ({ page }) => {
     await page.goto('/');
-    
+
     // Navigate to create quilt
     await page.click('text=Add New Quilt');
-    
+
     // Fill form
     await page.fill('[data-testid=quilt-name]', 'E2E Test Quilt');
     await page.fill('[data-testid=item-number]', '999');
     await page.selectOption('[data-testid=season]', 'WINTER');
-    
+
     // Submit form
     await page.click('button[type=submit]');
-    
+
     // Verify creation
     await expect(page.locator('text=Quilt created successfully')).toBeVisible();
-    
+
     // Search for created quilt
     await page.fill('[data-testid=search-input]', 'E2E Test Quilt');
     await expect(page.locator('text=E2E Test Quilt')).toBeVisible();
@@ -761,15 +775,17 @@ class QuiltService {
       where: {
         AND: [
           // Full-text search using PostgreSQL
-          params.search ? {
-            OR: [
-              { name: { search: params.search } },
-              { brand: { search: params.search } },
-              { color: { search: params.search } },
-            ]
-          } : {},
+          params.search
+            ? {
+                OR: [
+                  { name: { search: params.search } },
+                  { brand: { search: params.search } },
+                  { color: { search: params.search } },
+                ],
+              }
+            : {},
           params.season ? { season: params.season } : {},
-        ]
+        ],
       },
       // Only select needed fields for list view
       select: {
@@ -781,8 +797,8 @@ class QuiltService {
         color: true,
         location: true,
         _count: {
-          select: { usagePeriods: true }
-        }
+          select: { usagePeriods: true },
+        },
       },
       orderBy: { [params.sortBy]: params.sortOrder },
       skip: params.skip,
@@ -838,7 +854,7 @@ const QuiltCard = memo(({ quilt }: { quilt: QuiltSummary }) => {
 // Virtualized list for large datasets
 export function QuiltList({ quilts }: { quilts: QuiltSummary[] }) {
   const parentRef = useRef<HTMLDivElement>(null);
-  
+
   const virtualizer = useVirtualizer({
     count: quilts.length,
     getScrollElement: () => parentRef.current,
@@ -849,7 +865,7 @@ export function QuiltList({ quilts }: { quilts: QuiltSummary[] }) {
   return (
     <div ref={parentRef} className="h-96 overflow-auto">
       <div style={{ height: virtualizer.getTotalSize() }}>
-        {virtualizer.getVirtualItems().map((virtualItem) => (
+        {virtualizer.getVirtualItems().map(virtualItem => (
           <div
             key={virtualItem.key}
             style={{
@@ -876,9 +892,9 @@ export function QuiltList({ quilts }: { quilts: QuiltSummary[] }) {
 // Real-time dashboard updates
 export function useDashboardSubscription() {
   const utils = trpc.useContext();
-  
+
   trpc.dashboard.onUpdate.useSubscription(undefined, {
-    onData: (data) => {
+    onData: data => {
       // Update cache with new data
       utils.dashboard.getData.setData(undefined, data);
     },
@@ -888,7 +904,7 @@ export function useDashboardSubscription() {
 // Server-side subscription
 export const dashboardRouter = router({
   onUpdate: publicProcedure.subscription(() => {
-    return observable<DashboardData>((emit) => {
+    return observable<DashboardData>(emit => {
       // Listen for database changes
       const interval = setInterval(async () => {
         const data = await getDashboardData();
@@ -930,7 +946,7 @@ services:
   app:
     build: .
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       - DATABASE_URL=postgresql://user:pass@postgres:5432/qms
       - REDIS_URL=redis://redis:6379

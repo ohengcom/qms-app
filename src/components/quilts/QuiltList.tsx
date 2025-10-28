@@ -3,7 +3,13 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { QuiltCard } from './QuiltCard';
 import { QuiltFilters } from './QuiltFilters';
 import { Loading } from '@/components/ui/loading';
@@ -20,7 +26,7 @@ import {
   Package,
   Calendar,
   Weight,
-  MapPin
+  MapPin,
 } from 'lucide-react';
 
 interface QuiltListProps {
@@ -47,7 +53,7 @@ export function QuiltList({ onCreateQuilt, onEditQuilt, onViewQuilt }: QuiltList
   const [sortField, setSortField] = useState<SortField>('itemNumber');
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
   const [filters, setFilters] = useState<QuiltFiltersInput>({});
-  
+
   // Temporarily use direct fetch like the working test page
   const [quiltsData, setQuiltsData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -58,11 +64,11 @@ export function QuiltList({ onCreateQuilt, onEditQuilt, onViewQuilt }: QuiltList
       try {
         console.log('QuiltList: Direct fetch starting...');
         const response = await fetch('/api/quilts');
-        
+
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
-        
+
         const result = await response.json();
         console.log('QuiltList: Direct fetch success:', result);
         setQuiltsData(result);
@@ -76,13 +82,13 @@ export function QuiltList({ onCreateQuilt, onEditQuilt, onViewQuilt }: QuiltList
 
     fetchQuilts();
   }, []);
-  
+
   const quilts: any[] = quiltsData?.quilts || [];
   const totalCount = quiltsData?.total || 0;
-  
+
   console.log('QuiltList: Final quilts array:', quilts);
   console.log('QuiltList: Final quilts length:', quilts.length);
-  
+
   const handleSortChange = (field: SortField) => {
     if (field === sortField) {
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
@@ -91,11 +97,11 @@ export function QuiltList({ onCreateQuilt, onEditQuilt, onViewQuilt }: QuiltList
       setSortOrder('asc');
     }
   };
-  
+
   const toggleSortOrder = () => {
     setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
   };
-  
+
   if (error) {
     return (
       <Card className="p-6">
@@ -106,7 +112,7 @@ export function QuiltList({ onCreateQuilt, onEditQuilt, onViewQuilt }: QuiltList
       </Card>
     );
   }
-  
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -115,7 +121,7 @@ export function QuiltList({ onCreateQuilt, onEditQuilt, onViewQuilt }: QuiltList
           <h1 className="text-2xl font-bold text-gray-900">Quilt Collection</h1>
           <p className="text-gray-500">Manage your quilts and track their usage</p>
         </div>
-        
+
         {onCreateQuilt && (
           <Button onClick={onCreateQuilt} className="w-full sm:w-auto">
             <Plus className="w-4 h-4 mr-2" />
@@ -123,7 +129,7 @@ export function QuiltList({ onCreateQuilt, onEditQuilt, onViewQuilt }: QuiltList
           </Button>
         )}
       </div>
-      
+
       {/* Filters */}
       <QuiltFilters
         filters={filters}
@@ -131,7 +137,7 @@ export function QuiltList({ onCreateQuilt, onEditQuilt, onViewQuilt }: QuiltList
         totalCount={totalCount}
         filteredCount={quilts.length}
       />
-      
+
       {/* View Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center space-x-2">
@@ -155,15 +161,15 @@ export function QuiltList({ onCreateQuilt, onEditQuilt, onViewQuilt }: QuiltList
             </Button>
           </div>
         </div>
-        
+
         {/* Sort Controls */}
         <div className="flex items-center space-x-2">
-          <Select value={sortField} onValueChange={(value) => setSortField(value as SortField)}>
+          <Select value={sortField} onValueChange={value => setSortField(value as SortField)}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Sort by..." />
             </SelectTrigger>
             <SelectContent>
-              {SORT_OPTIONS.map((option) => {
+              {SORT_OPTIONS.map(option => {
                 const Icon = option.icon;
                 return (
                   <SelectItem key={option.value} value={option.value}>
@@ -176,13 +182,8 @@ export function QuiltList({ onCreateQuilt, onEditQuilt, onViewQuilt }: QuiltList
               })}
             </SelectContent>
           </Select>
-          
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={toggleSortOrder}
-            className="px-3"
-          >
+
+          <Button variant="outline" size="sm" onClick={toggleSortOrder} className="px-3">
             {sortOrder === 'asc' ? (
               <SortAsc className="w-4 h-4" />
             ) : (
@@ -191,10 +192,12 @@ export function QuiltList({ onCreateQuilt, onEditQuilt, onViewQuilt }: QuiltList
           </Button>
         </div>
       </div>
-      
+
       {/* Debug Info */}
       <div className="bg-yellow-100 p-4 rounded mb-4">
-        <p><strong>Debug Info:</strong></p>
+        <p>
+          <strong>Debug Info:</strong>
+        </p>
         <p>isLoading: {isLoading.toString()}</p>
         <p>error: {error || 'null'}</p>
         <p>quiltsData: {quiltsData ? 'exists' : 'null'}</p>
@@ -214,8 +217,8 @@ export function QuiltList({ onCreateQuilt, onEditQuilt, onViewQuilt }: QuiltList
           title="No quilts found"
           description={
             Object.keys(filters).some(key => filters[key as keyof QuiltFiltersInput])
-              ? "No quilts match your current filters. Try adjusting your search criteria."
-              : "Start building your quilt collection by adding your first quilt."
+              ? 'No quilts match your current filters. Try adjusting your search criteria.'
+              : 'Start building your quilt collection by adding your first quilt.'
           }
           action={
             onCreateQuilt ? (
@@ -234,7 +237,7 @@ export function QuiltList({ onCreateQuilt, onEditQuilt, onViewQuilt }: QuiltList
               : 'space-y-4'
           )}
         >
-          {quilts.map((quilt) => (
+          {quilts.map(quilt => (
             <QuiltCard
               key={quilt.id}
               quilt={quilt}

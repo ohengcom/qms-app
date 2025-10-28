@@ -23,7 +23,7 @@ import {
   Calendar,
   Clock,
   MapPin,
-  Lightbulb
+  Lightbulb,
 } from 'lucide-react';
 
 interface WeatherCondition {
@@ -63,14 +63,20 @@ interface WeatherBasedSuggestionsProps {
 
 // Mock weather data generator
 const generateMockWeather = (): WeatherCondition => {
-  const conditions: WeatherCondition['condition'][] = ['sunny', 'cloudy', 'rainy', 'snowy', 'windy'];
+  const conditions: WeatherCondition['condition'][] = [
+    'sunny',
+    'cloudy',
+    'rainy',
+    'snowy',
+    'windy',
+  ];
   const randomCondition = conditions[Math.floor(Math.random() * conditions.length)];
-  
+
   let baseTemp = 20;
   if (randomCondition === 'snowy') baseTemp = -2;
   else if (randomCondition === 'rainy') baseTemp = 12;
   else if (randomCondition === 'sunny') baseTemp = 25;
-  
+
   return {
     temperature: baseTemp + (Math.random() - 0.5) * 10,
     humidity: 40 + Math.random() * 40,
@@ -80,7 +86,10 @@ const generateMockWeather = (): WeatherCondition => {
     forecast: {
       tomorrow: {
         temp: baseTemp + (Math.random() - 0.5) * 5,
-        condition: Math.random() > 0.7 ? conditions[Math.floor(Math.random() * conditions.length)] : randomCondition,
+        condition:
+          Math.random() > 0.7
+            ? conditions[Math.floor(Math.random() * conditions.length)]
+            : randomCondition,
       },
       nextWeek: {
         avgTemp: baseTemp + (Math.random() - 0.5) * 8,
@@ -106,22 +115,22 @@ const CONDITION_COLORS = {
   windy: 'text-green-600 bg-green-100',
 };
 
-export function WeatherBasedSuggestions({ 
-  quilts, 
+export function WeatherBasedSuggestions({
+  quilts,
   currentWeather = generateMockWeather(),
-  location = "Your Location"
+  location = 'Your Location',
 }: WeatherBasedSuggestionsProps) {
   const [refreshKey, setRefreshKey] = useState(0);
-  
+
   // Refresh weather data every 30 seconds for demo
   useEffect(() => {
     const interval = setInterval(() => {
       setRefreshKey(prev => prev + 1);
     }, 30000);
-    
+
     return () => clearInterval(interval);
   }, []);
-  
+
   // Generate suggestions based on weather
   const generateSuggestions = () => {
     const suggestions: {
@@ -132,10 +141,10 @@ export function WeatherBasedSuggestions({
       quilts?: Quilt[];
       action?: string;
     }[] = [];
-    
+
     const { temperature, humidity, condition, forecast } = currentWeather;
     const availableQuilts = quilts.filter(q => q.currentStatus === 'AVAILABLE');
-    
+
     // Temperature-based suggestions
     if (temperature < 5) {
       const heavyQuilts = availableQuilts.filter(q => q.weightGrams > 1800);
@@ -158,12 +167,13 @@ export function WeatherBasedSuggestions({
         action: 'Switch to light quilt',
       });
     }
-    
+
     // Humidity-based suggestions
     if (humidity > 75) {
-      const breathableQuilts = availableQuilts.filter(q => 
-        q.fillMaterial.toLowerCase().includes('cotton') || 
-        q.fillMaterial.toLowerCase().includes('bamboo')
+      const breathableQuilts = availableQuilts.filter(
+        q =>
+          q.fillMaterial.toLowerCase().includes('cotton') ||
+          q.fillMaterial.toLowerCase().includes('bamboo')
       );
       suggestions.push({
         type: 'immediate',
@@ -174,30 +184,32 @@ export function WeatherBasedSuggestions({
         action: 'Use breathable quilt',
       });
     }
-    
+
     // Condition-specific suggestions
     if (condition === 'rainy') {
       suggestions.push({
         type: 'maintenance',
         priority: 'medium',
         title: 'Rainy Weather Precautions',
-        description: 'High moisture in the air. Ensure quilts are properly stored and consider using moisture-resistant materials.',
+        description:
+          'High moisture in the air. Ensure quilts are properly stored and consider using moisture-resistant materials.',
         action: 'Check storage conditions',
       });
     }
-    
+
     if (condition === 'snowy') {
       const winterQuilts = availableQuilts.filter(q => q.season === 'WINTER');
       suggestions.push({
         type: 'immediate',
         priority: 'high',
         title: 'Snow Weather - Winter Quilts Recommended',
-        description: 'Snowy conditions call for your warmest winter quilts. Down-filled options provide excellent insulation.',
+        description:
+          'Snowy conditions call for your warmest winter quilts. Down-filled options provide excellent insulation.',
         quilts: winterQuilts.slice(0, 3),
         action: 'Use winter quilt',
       });
     }
-    
+
     // Forecast-based planning
     const tempDiff = forecast.tomorrow.temp - temperature;
     if (Math.abs(tempDiff) > 5) {
@@ -209,12 +221,13 @@ export function WeatherBasedSuggestions({
         action: 'Plan ahead',
       });
     }
-    
+
     if (forecast.nextWeek.trend !== 'stable') {
-      const trendQuilts = forecast.nextWeek.trend === 'warming' 
-        ? availableQuilts.filter(q => q.weightGrams < 1200)
-        : availableQuilts.filter(q => q.weightGrams > 1200);
-      
+      const trendQuilts =
+        forecast.nextWeek.trend === 'warming'
+          ? availableQuilts.filter(q => q.weightGrams < 1200)
+          : availableQuilts.filter(q => q.weightGrams > 1200);
+
       suggestions.push({
         type: 'planning',
         priority: 'low',
@@ -224,34 +237,42 @@ export function WeatherBasedSuggestions({
         action: 'Prepare for trend',
       });
     }
-    
+
     return suggestions.sort((a, b) => {
       const priorityOrder = { high: 3, medium: 2, low: 1 };
       return priorityOrder[b.priority] - priorityOrder[a.priority];
     });
   };
-  
+
   const suggestions = generateSuggestions();
   const ConditionIcon = CONDITION_ICONS[currentWeather.condition];
-  
+
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'text-red-600 bg-red-100';
-      case 'medium': return 'text-yellow-600 bg-yellow-100';
-      case 'low': return 'text-blue-600 bg-blue-100';
-      default: return 'text-gray-600 bg-gray-100';
+      case 'high':
+        return 'text-red-600 bg-red-100';
+      case 'medium':
+        return 'text-yellow-600 bg-yellow-100';
+      case 'low':
+        return 'text-blue-600 bg-blue-100';
+      default:
+        return 'text-gray-600 bg-gray-100';
     }
   };
-  
+
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'immediate': return AlertTriangle;
-      case 'planning': return Calendar;
-      case 'maintenance': return Eye;
-      default: return Lightbulb;
+      case 'immediate':
+        return AlertTriangle;
+      case 'planning':
+        return Calendar;
+      case 'maintenance':
+        return Eye;
+      default:
+        return Lightbulb;
     }
   };
-  
+
   return (
     <div className="space-y-6">
       {/* Current Weather Display */}
@@ -266,9 +287,7 @@ export function WeatherBasedSuggestions({
               {currentWeather.condition}
             </Badge>
           </CardTitle>
-          <CardDescription>
-            Current conditions in {location}
-          </CardDescription>
+          <CardDescription>Current conditions in {location}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -303,7 +322,7 @@ export function WeatherBasedSuggestions({
           </div>
         </CardContent>
       </Card>
-      
+
       {/* Forecast */}
       <Card>
         <CardHeader>
@@ -333,7 +352,7 @@ export function WeatherBasedSuggestions({
                 )}
               </div>
             </div>
-            
+
             <div className="p-3 bg-gray-50 rounded-lg">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-medium text-sm">Next Week</span>
@@ -358,7 +377,7 @@ export function WeatherBasedSuggestions({
           </div>
         </CardContent>
       </Card>
-      
+
       {/* Weather-Based Suggestions */}
       <Card>
         <CardHeader>
@@ -400,18 +419,27 @@ export function WeatherBasedSuggestions({
                         <AlertDescription className="text-sm">
                           {suggestion.description}
                         </AlertDescription>
-                        
+
                         {suggestion.quilts && suggestion.quilts.length > 0 && (
                           <div className="space-y-2">
                             <Separator />
                             <div>
-                              <h5 className="text-xs font-medium text-gray-700 mb-2">Recommended Quilts:</h5>
+                              <h5 className="text-xs font-medium text-gray-700 mb-2">
+                                Recommended Quilts:
+                              </h5>
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                                 {suggestion.quilts.map(quilt => (
-                                  <div key={quilt.id} className="flex items-center justify-between p-2 bg-gray-50 rounded text-xs">
+                                  <div
+                                    key={quilt.id}
+                                    className="flex items-center justify-between p-2 bg-gray-50 rounded text-xs"
+                                  >
                                     <div>
-                                      <div className="font-medium">#{quilt.itemNumber} {quilt.name}</div>
-                                      <div className="text-gray-500">{quilt.fillMaterial} • {quilt.weightGrams}g</div>
+                                      <div className="font-medium">
+                                        #{quilt.itemNumber} {quilt.name}
+                                      </div>
+                                      <div className="text-gray-500">
+                                        {quilt.fillMaterial} • {quilt.weightGrams}g
+                                      </div>
                                     </div>
                                     <Button size="sm" variant="outline" className="text-xs h-6">
                                       Use
@@ -422,7 +450,7 @@ export function WeatherBasedSuggestions({
                             </div>
                           </div>
                         )}
-                        
+
                         {suggestion.action && (
                           <div className="flex justify-end">
                             <Button size="sm" variant="outline">
@@ -439,11 +467,11 @@ export function WeatherBasedSuggestions({
           )}
         </CardContent>
       </Card>
-      
+
       {/* Refresh Button */}
       <div className="flex justify-center">
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           onClick={() => setRefreshKey(prev => prev + 1)}
           className="flex items-center space-x-2"
         >

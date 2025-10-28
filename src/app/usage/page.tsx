@@ -4,7 +4,13 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { UsageTracker } from '@/components/usage/UsageTracker';
@@ -23,38 +29,41 @@ import {
   Filter,
   TrendingUp,
   Users,
-  MapPin
+  MapPin,
 } from 'lucide-react';
 
 export default function UsageTrackingPage() {
   const [selectedQuiltId, setSelectedQuiltId] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
-  
+
   const { data, isLoading, error } = useQuilts({
     filters: {
       search: searchQuery || undefined,
-      status: statusFilter !== 'all' ? statusFilter as any : undefined,
+      status: statusFilter !== 'all' ? (statusFilter as any) : undefined,
     },
     sortBy: 'name',
     sortOrder: 'asc',
     skip: 0,
     take: 100,
   });
-  
+
   const quilts = Array.isArray(data) ? data : [];
   const selectedQuilt = quilts.find(q => q.id === selectedQuiltId);
-  
+
   // Get usage statistics for all quilts
   const overallStats = {
     totalQuilts: quilts.length,
     quiltsInUse: quilts.filter(q => q.currentStatus === 'IN_USE').length,
     totalUsagePeriods: quilts.reduce((sum, q) => sum + (q.usagePeriods?.length || 0), 0),
-    avgUsagePerQuilt: quilts.length > 0 
-      ? Math.round(quilts.reduce((sum, q) => sum + (q.usagePeriods?.length || 0), 0) / quilts.length * 10) / 10
-      : 0,
+    avgUsagePerQuilt:
+      quilts.length > 0
+        ? Math.round(
+            (quilts.reduce((sum, q) => sum + (q.usagePeriods?.length || 0), 0) / quilts.length) * 10
+          ) / 10
+        : 0,
   };
-  
+
   if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -64,7 +73,7 @@ export default function UsageTrackingPage() {
       </div>
     );
   }
-  
+
   if (error) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -77,7 +86,7 @@ export default function UsageTrackingPage() {
       </div>
     );
   }
-  
+
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
       {/* Header */}
@@ -87,7 +96,7 @@ export default function UsageTrackingPage() {
           <p className="text-gray-500">Monitor and analyze quilt usage patterns</p>
         </div>
       </div>
-      
+
       {/* Overall Statistics */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card>
@@ -101,7 +110,7 @@ export default function UsageTrackingPage() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center space-x-2">
@@ -113,7 +122,7 @@ export default function UsageTrackingPage() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center space-x-2">
@@ -125,7 +134,7 @@ export default function UsageTrackingPage() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center space-x-2">
@@ -138,7 +147,7 @@ export default function UsageTrackingPage() {
           </CardContent>
         </Card>
       </div>
-      
+
       {/* Quilt Selection */}
       <Card>
         <CardHeader>
@@ -156,7 +165,7 @@ export default function UsageTrackingPage() {
               <Input
                 placeholder="Search quilts by name, material, or location..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={e => setSearchQuery(e.target.value)}
                 className="w-full"
               />
             </div>
@@ -173,7 +182,7 @@ export default function UsageTrackingPage() {
               </SelectContent>
             </Select>
           </div>
-          
+
           {quilts.length === 0 ? (
             <EmptyState
               icon={Package}
@@ -182,7 +191,7 @@ export default function UsageTrackingPage() {
             />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {quilts.map((quilt) => (
+              {quilts.map(quilt => (
                 <div
                   key={quilt.id}
                   className={`p-4 border rounded-lg cursor-pointer transition-colors ${
@@ -196,7 +205,7 @@ export default function UsageTrackingPage() {
                     <h3 className="font-medium text-sm">
                       #{quilt.itemNumber} {quilt.name}
                     </h3>
-                    <Badge 
+                    <Badge
                       variant={quilt.currentStatus === 'IN_USE' ? 'default' : 'secondary'}
                       className="text-xs"
                     >
@@ -224,7 +233,7 @@ export default function UsageTrackingPage() {
           )}
         </CardContent>
       </Card>
-      
+
       {/* Selected Quilt Details */}
       {selectedQuilt ? (
         <Tabs defaultValue="tracker" className="space-y-6">
@@ -246,9 +255,9 @@ export default function UsageTrackingPage() {
               <span>Calendar</span>
             </TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="tracker">
-            <UsageTracker 
+            <UsageTracker
               quilt={selectedQuilt}
               onUsageChange={() => {
                 // Refresh data when usage changes
@@ -256,29 +265,29 @@ export default function UsageTrackingPage() {
               }}
             />
           </TabsContent>
-          
+
           <TabsContent value="timeline">
-            <UsageTimeline 
+            <UsageTimeline
               usagePeriods={selectedQuilt.usagePeriods || []}
               quiltName={selectedQuilt.name}
             />
           </TabsContent>
-          
+
           <TabsContent value="statistics">
-            <UsageStatistics 
+            <UsageStatistics
               usagePeriods={selectedQuilt.usagePeriods || []}
               quiltName={selectedQuilt.name}
             />
           </TabsContent>
-          
+
           <TabsContent value="calendar">
-            <UsageCalendar 
+            <UsageCalendar
               usagePeriods={selectedQuilt.usagePeriods || []}
               quiltName={selectedQuilt.name}
-              onDateSelect={(date) => {
+              onDateSelect={date => {
                 console.log('Selected date:', date);
               }}
-              onPeriodSelect={(period) => {
+              onPeriodSelect={period => {
                 console.log('Selected period:', period);
               }}
             />

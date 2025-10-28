@@ -6,25 +6,39 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Season, QuiltStatus } from '@/lib/validations/quilt';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { createQuiltSchema } from '@/lib/validations/quilt';
 import type { CreateQuiltInput } from '@/lib/validations/quilt';
 import { useCreateQuilt, useUpdateQuilt } from '@/hooks/useQuilts';
 import { useToastContext } from '@/hooks/useToast';
 import { Loading } from '@/components/ui/loading';
-import { 
-  ChevronLeft, 
-  ChevronRight, 
-  Package, 
-  Ruler, 
-  Palette, 
+import {
+  ChevronLeft,
+  ChevronRight,
+  Package,
+  Ruler,
+  Palette,
   FileText,
   X,
-  Save
+  Save,
 } from 'lucide-react';
 
 interface QuiltFormProps {
@@ -62,7 +76,11 @@ const FORM_STEPS = [
 
 const SEASON_OPTIONS = [
   { value: Season.WINTER, label: 'Winter', description: 'Heavy quilts for cold weather' },
-  { value: Season.SPRING_AUTUMN, label: 'Spring/Autumn', description: 'Medium weight for transitional seasons' },
+  {
+    value: Season.SPRING_AUTUMN,
+    label: 'Spring/Autumn',
+    description: 'Medium weight for transitional seasons',
+  },
   { value: Season.SUMMER, label: 'Summer', description: 'Light quilts for warm weather' },
 ];
 
@@ -74,30 +92,51 @@ const STATUS_OPTIONS = [
 ];
 
 const COMMON_MATERIALS = [
-  'Down', 'Goose Down', 'Duck Down', 'Synthetic Down',
-  'Cotton', 'Organic Cotton', 'Bamboo Fiber', 'Wool',
-  'Polyester', 'Microfiber', 'Silk', 'Linen'
+  'Down',
+  'Goose Down',
+  'Duck Down',
+  'Synthetic Down',
+  'Cotton',
+  'Organic Cotton',
+  'Bamboo Fiber',
+  'Wool',
+  'Polyester',
+  'Microfiber',
+  'Silk',
+  'Linen',
 ];
 
 const COMMON_BRANDS = [
-  'IKEA', 'Muji', 'Uniqlo', 'Nitori', 'Francfranc',
-  'West Elm', 'Pottery Barn', 'Patagonia', 'REI Co-op'
+  'IKEA',
+  'Muji',
+  'Uniqlo',
+  'Nitori',
+  'Francfranc',
+  'West Elm',
+  'Pottery Barn',
+  'Patagonia',
+  'REI Co-op',
 ];
 
 const COMMON_LOCATIONS = [
-  'Master Bedroom', 'Guest Room', 'Living Room',
-  'Bedroom Closet', 'Linen Closet', 'Storage Room',
-  'Under Bed Storage', 'Wardrobe'
+  'Master Bedroom',
+  'Guest Room',
+  'Living Room',
+  'Bedroom Closet',
+  'Linen Closet',
+  'Storage Room',
+  'Under Bed Storage',
+  'Wardrobe',
 ];
 
 export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const isEditing = !!initialData;
   const toast = useToastContext();
-  
+
   const createQuilt = useCreateQuilt();
   const updateQuilt = useUpdateQuilt();
-  
+
   const form = useForm<CreateQuiltInput>({
     resolver: zodResolver(createQuiltSchema) as any,
     defaultValues: initialData || {
@@ -113,7 +152,7 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
       currentStatus: QuiltStatus.AVAILABLE,
     },
   });
-  
+
   const onSubmit = async (data: CreateQuiltInput) => {
     try {
       if (isEditing) {
@@ -121,7 +160,10 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
         toast.success('Quilt updated successfully', 'Your changes have been saved.');
       } else {
         await createQuilt.mutateAsync(data);
-        toast.success('Quilt created successfully', 'Your new quilt has been added to the collection.');
+        toast.success(
+          'Quilt created successfully',
+          'Your new quilt has been added to the collection.'
+        );
       }
       onSuccess?.();
     } catch (error) {
@@ -131,22 +173,22 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
       );
     }
   };
-  
+
   const nextStep = () => {
     if (currentStep < FORM_STEPS.length - 1) {
       setCurrentStep(currentStep + 1);
     }
   };
-  
+
   const prevStep = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
   };
-  
+
   const currentStepData = FORM_STEPS[currentStep];
   const isLoading = createQuilt.isPending || updateQuilt.isPending;
-  
+
   return (
     <div className="max-w-4xl mx-auto">
       {/* Progress Steps */}
@@ -156,19 +198,23 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
             const isActive = index === currentStep;
             const isCompleted = index < currentStep;
             const StepIcon = step.icon;
-            
+
             return (
               <div key={step.id} className="flex items-center">
-                <div className={`flex items-center space-x-3 ${
-                  isActive ? 'text-blue-600' : isCompleted ? 'text-green-600' : 'text-gray-400'
-                }`}>
-                  <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${
-                    isActive 
-                      ? 'border-blue-600 bg-blue-50' 
-                      : isCompleted 
-                        ? 'border-green-600 bg-green-50' 
-                        : 'border-gray-300 bg-gray-50'
-                  }`}>
+                <div
+                  className={`flex items-center space-x-3 ${
+                    isActive ? 'text-blue-600' : isCompleted ? 'text-green-600' : 'text-gray-400'
+                  }`}
+                >
+                  <div
+                    className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${
+                      isActive
+                        ? 'border-blue-600 bg-blue-50'
+                        : isCompleted
+                          ? 'border-green-600 bg-green-50'
+                          : 'border-gray-300 bg-gray-50'
+                    }`}
+                  >
                     <StepIcon className="w-5 h-5" />
                   </div>
                   <div className="hidden sm:block">
@@ -177,16 +223,16 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                   </div>
                 </div>
                 {index < FORM_STEPS.length - 1 && (
-                  <div className={`w-12 h-px mx-4 ${
-                    isCompleted ? 'bg-green-600' : 'bg-gray-300'
-                  }`} />
+                  <div
+                    className={`w-12 h-px mx-4 ${isCompleted ? 'bg-green-600' : 'bg-gray-300'}`}
+                  />
                 )}
               </div>
             );
           })}
         </div>
       </div>
-      
+
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <Card>
@@ -208,21 +254,19 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                       <FormItem>
                         <FormLabel>Item Number *</FormLabel>
                         <FormControl>
-                          <Input 
-                            type="number" 
+                          <Input
+                            type="number"
                             placeholder="e.g., 1"
                             {...field}
-                            onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                            onChange={e => field.onChange(parseInt(e.target.value) || 0)}
                           />
                         </FormControl>
-                        <FormDescription>
-                          Unique identifier for this quilt
-                        </FormDescription>
+                        <FormDescription>Unique identifier for this quilt</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={form.control}
                     name="groupId"
@@ -230,21 +274,21 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                       <FormItem>
                         <FormLabel>Group ID</FormLabel>
                         <FormControl>
-                          <Input 
-                            type="number" 
+                          <Input
+                            type="number"
                             placeholder="e.g., 1"
                             {...field}
-                            onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                            onChange={e =>
+                              field.onChange(e.target.value ? parseInt(e.target.value) : undefined)
+                            }
                           />
                         </FormControl>
-                        <FormDescription>
-                          Optional grouping for related quilts
-                        </FormDescription>
+                        <FormDescription>Optional grouping for related quilts</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  
+
                   <div className="md:col-span-2">
                     <FormField
                       control={form.control}
@@ -263,7 +307,7 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                       )}
                     />
                   </div>
-                  
+
                   <FormField
                     control={form.control}
                     name="season"
@@ -277,7 +321,7 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {SEASON_OPTIONS.map((option) => (
+                            {SEASON_OPTIONS.map(option => (
                               <SelectItem key={option.value} value={option.value}>
                                 <div>
                                   <div className="font-medium">{option.label}</div>
@@ -287,14 +331,12 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                             ))}
                           </SelectContent>
                         </Select>
-                        <FormDescription>
-                          Primary season for this quilt
-                        </FormDescription>
+                        <FormDescription>Primary season for this quilt</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={form.control}
                     name="currentStatus"
@@ -308,7 +350,7 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {STATUS_OPTIONS.map((option) => (
+                            {STATUS_OPTIONS.map(option => (
                               <SelectItem key={option.value} value={option.value}>
                                 <div>
                                   <div className="font-medium">{option.label}</div>
@@ -318,16 +360,14 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                             ))}
                           </SelectContent>
                         </Select>
-                        <FormDescription>
-                          Current availability status
-                        </FormDescription>
+                        <FormDescription>Current availability status</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                 </div>
               )}
-              
+
               {/* Step 2: Specifications */}
               {currentStep === 1 && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -338,21 +378,19 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                       <FormItem>
                         <FormLabel>Length (cm) *</FormLabel>
                         <FormControl>
-                          <Input 
-                            type="number" 
+                          <Input
+                            type="number"
                             placeholder="e.g., 200"
                             {...field}
-                            onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                            onChange={e => field.onChange(parseInt(e.target.value) || 0)}
                           />
                         </FormControl>
-                        <FormDescription>
-                          Length in centimeters
-                        </FormDescription>
+                        <FormDescription>Length in centimeters</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={form.control}
                     name="widthCm"
@@ -360,21 +398,19 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                       <FormItem>
                         <FormLabel>Width (cm) *</FormLabel>
                         <FormControl>
-                          <Input 
-                            type="number" 
+                          <Input
+                            type="number"
                             placeholder="e.g., 180"
                             {...field}
-                            onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                            onChange={e => field.onChange(parseInt(e.target.value) || 0)}
                           />
                         </FormControl>
-                        <FormDescription>
-                          Width in centimeters
-                        </FormDescription>
+                        <FormDescription>Width in centimeters</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={form.control}
                     name="weightGrams"
@@ -382,21 +418,19 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                       <FormItem>
                         <FormLabel>Weight (g) *</FormLabel>
                         <FormControl>
-                          <Input 
-                            type="number" 
+                          <Input
+                            type="number"
                             placeholder="e.g., 1500"
                             {...field}
-                            onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                            onChange={e => field.onChange(parseInt(e.target.value) || 0)}
                           />
                         </FormControl>
-                        <FormDescription>
-                          Weight in grams
-                        </FormDescription>
+                        <FormDescription>Weight in grams</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  
+
                   <div className="md:col-span-2">
                     <FormField
                       control={form.control}
@@ -408,10 +442,10 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                             <div className="space-y-2">
                               <Input placeholder="e.g., Goose Down" {...field} />
                               <div className="flex flex-wrap gap-2">
-                                {COMMON_MATERIALS.map((material) => (
-                                  <Badge 
+                                {COMMON_MATERIALS.map(material => (
+                                  <Badge
                                     key={material}
-                                    variant="outline" 
+                                    variant="outline"
                                     className="cursor-pointer hover:bg-gray-100"
                                     onClick={() => field.onChange(material)}
                                   >
@@ -429,7 +463,7 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                       )}
                     />
                   </div>
-                  
+
                   <div className="md:col-span-2">
                     <FormField
                       control={form.control}
@@ -438,15 +472,13 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                         <FormItem>
                           <FormLabel>Material Details</FormLabel>
                           <FormControl>
-                            <Textarea 
+                            <Textarea
                               placeholder="e.g., 90% Goose Down, 10% Feathers"
                               className="resize-none"
                               {...field}
                             />
                           </FormControl>
-                          <FormDescription>
-                            Detailed material composition
-                          </FormDescription>
+                          <FormDescription>Detailed material composition</FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -454,7 +486,7 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                   </div>
                 </div>
               )}
-              
+
               {/* Step 3: Details & Location */}
               {currentStep === 2 && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -467,14 +499,12 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                         <FormControl>
                           <Input placeholder="e.g., White, Cream, Light Blue" {...field} />
                         </FormControl>
-                        <FormDescription>
-                          Primary color or pattern
-                        </FormDescription>
+                        <FormDescription>Primary color or pattern</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={form.control}
                     name="brand"
@@ -485,10 +515,10 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                           <div className="space-y-2">
                             <Input placeholder="e.g., IKEA, Muji" {...field} />
                             <div className="flex flex-wrap gap-2">
-                              {COMMON_BRANDS.map((brand) => (
-                                <Badge 
+                              {COMMON_BRANDS.map(brand => (
+                                <Badge
                                   key={brand}
-                                  variant="outline" 
+                                  variant="outline"
                                   className="cursor-pointer hover:bg-gray-100"
                                   onClick={() => field.onChange(brand)}
                                 >
@@ -498,14 +528,12 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                             </div>
                           </div>
                         </FormControl>
-                        <FormDescription>
-                          Manufacturer or brand name
-                        </FormDescription>
+                        <FormDescription>Manufacturer or brand name</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={form.control}
                     name="purchaseDate"
@@ -513,21 +541,23 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                       <FormItem>
                         <FormLabel>Purchase Date</FormLabel>
                         <FormControl>
-                          <Input 
-                            type="date" 
+                          <Input
+                            type="date"
                             {...field}
-                            value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''}
-                            onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value) : undefined)}
+                            value={
+                              field.value ? new Date(field.value).toISOString().split('T')[0] : ''
+                            }
+                            onChange={e =>
+                              field.onChange(e.target.value ? new Date(e.target.value) : undefined)
+                            }
                           />
                         </FormControl>
-                        <FormDescription>
-                          When you purchased this quilt
-                        </FormDescription>
+                        <FormDescription>When you purchased this quilt</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={form.control}
                     name="location"
@@ -538,10 +568,10 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                           <div className="space-y-2">
                             <Input placeholder="e.g., Master Bedroom Closet" {...field} />
                             <div className="flex flex-wrap gap-2">
-                              {COMMON_LOCATIONS.map((location) => (
-                                <Badge 
+                              {COMMON_LOCATIONS.map(location => (
+                                <Badge
                                   key={location}
-                                  variant="outline" 
+                                  variant="outline"
                                   className="cursor-pointer hover:bg-gray-100"
                                   onClick={() => field.onChange(location)}
                                 >
@@ -551,14 +581,12 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                             </div>
                           </div>
                         </FormControl>
-                        <FormDescription>
-                          Where this quilt is stored
-                        </FormDescription>
+                        <FormDescription>Where this quilt is stored</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  
+
                   <div className="md:col-span-2">
                     <FormField
                       control={form.control}
@@ -567,11 +595,12 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                         <FormItem>
                           <FormLabel>Packaging Info</FormLabel>
                           <FormControl>
-                            <Input placeholder="e.g., Vacuum sealed bag, Cotton storage bag" {...field} />
+                            <Input
+                              placeholder="e.g., Vacuum sealed bag, Cotton storage bag"
+                              {...field}
+                            />
                           </FormControl>
-                          <FormDescription>
-                            How the quilt is packaged or stored
-                          </FormDescription>
+                          <FormDescription>How the quilt is packaged or stored</FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -579,7 +608,7 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                   </div>
                 </div>
               )}
-              
+
               {/* Step 4: Additional Info */}
               {currentStep === 3 && (
                 <div className="space-y-6">
@@ -590,7 +619,7 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                       <FormItem>
                         <FormLabel>Notes</FormLabel>
                         <FormControl>
-                          <Textarea 
+                          <Textarea
                             placeholder="Any additional notes about this quilt..."
                             className="resize-none h-24"
                             {...field}
@@ -607,7 +636,7 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
               )}
             </CardContent>
           </Card>
-          
+
           {/* Navigation Buttons */}
           <div className="flex justify-between">
             <div className="flex space-x-2">
@@ -624,7 +653,7 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                 </Button>
               )}
             </div>
-            
+
             <div className="flex space-x-2">
               {currentStep < FORM_STEPS.length - 1 ? (
                 <Button type="button" onClick={nextStep}>

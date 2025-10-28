@@ -5,12 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  BarChart3,
-  Calendar,
-  Award,
-  Activity
-} from 'lucide-react';
+import { BarChart3, Calendar, Award, Activity } from 'lucide-react';
 
 interface UsagePeriod {
   id: string;
@@ -39,69 +34,79 @@ interface UsagePatternAnalysisProps {
 
 export function UsagePatternAnalysis({ quilts }: UsagePatternAnalysisProps) {
   const analysis = useMemo(() => {
-    const allUsagePeriods = quilts.flatMap(q => 
+    const allUsagePeriods = quilts.flatMap(q =>
       (q.usagePeriods || []).map(period => ({
         ...period,
         quilt: q,
       }))
     );
-    
+
     const completedPeriods = allUsagePeriods.filter(p => p.endDate);
-    
+
     // Seasonal usage patterns
-    const seasonalUsage = completedPeriods.reduce((acc, period) => {
-      const season = period.seasonUsed || 'Unknown';
-      if (!acc[season]) {
-        acc[season] = {
-          count: 0,
-          totalDays: 0,
-          avgSatisfaction: 0,
-          quilts: new Set(),
-        };
-      }
-      
-      acc[season].count++;
-      acc[season].totalDays += period.durationDays || 0;
-      acc[season].quilts.add(period.quilt.id);
-      
-      if (period.satisfactionRating) {
-        acc[season].avgSatisfaction = 
-          (acc[season].avgSatisfaction * (acc[season].count - 1) + period.satisfactionRating) / acc[season].count;
-      }
-      
-      return acc;
-    }, {} as Record<string, any>);
-    
+    const seasonalUsage = completedPeriods.reduce(
+      (acc, period) => {
+        const season = period.seasonUsed || 'Unknown';
+        if (!acc[season]) {
+          acc[season] = {
+            count: 0,
+            totalDays: 0,
+            avgSatisfaction: 0,
+            quilts: new Set(),
+          };
+        }
+
+        acc[season].count++;
+        acc[season].totalDays += period.durationDays || 0;
+        acc[season].quilts.add(period.quilt.id);
+
+        if (period.satisfactionRating) {
+          acc[season].avgSatisfaction =
+            (acc[season].avgSatisfaction * (acc[season].count - 1) + period.satisfactionRating) /
+            acc[season].count;
+        }
+
+        return acc;
+      },
+      {} as Record<string, any>
+    );
+
     // Quilt performance analysis
-    const quiltPerformance = quilts.map(quilt => {
-      const periods = quilt.usagePeriods || [];
-      const completed = periods.filter(p => p.endDate);
-      
-      const totalDays = completed.reduce((sum, p) => sum + (p.durationDays || 0), 0);
-      const avgSatisfaction = completed.length > 0
-        ? completed.reduce((sum, p) => sum + (p.satisfactionRating || 0), 0) / completed.length
-        : 0;
-      
-      return {
-        quilt,
-        usageCount: completed.length,
-        totalDays,
-        avgSatisfaction: Math.round(avgSatisfaction * 10) / 10,
-        avgDuration: completed.length > 0 ? Math.round(totalDays / completed.length * 10) / 10 : 0,
-      };
-    }).sort((a, b) => b.usageCount - a.usageCount);
-    
+    const quiltPerformance = quilts
+      .map(quilt => {
+        const periods = quilt.usagePeriods || [];
+        const completed = periods.filter(p => p.endDate);
+
+        const totalDays = completed.reduce((sum, p) => sum + (p.durationDays || 0), 0);
+        const avgSatisfaction =
+          completed.length > 0
+            ? completed.reduce((sum, p) => sum + (p.satisfactionRating || 0), 0) / completed.length
+            : 0;
+
+        return {
+          quilt,
+          usageCount: completed.length,
+          totalDays,
+          avgSatisfaction: Math.round(avgSatisfaction * 10) / 10,
+          avgDuration:
+            completed.length > 0 ? Math.round((totalDays / completed.length) * 10) / 10 : 0,
+        };
+      })
+      .sort((a, b) => b.usageCount - a.usageCount);
+
     return {
       seasonalUsage,
       quiltPerformance,
       totalPeriods: completedPeriods.length,
       totalDays: completedPeriods.reduce((sum, p) => sum + (p.durationDays || 0), 0),
-      avgSatisfaction: completedPeriods.length > 0
-        ? completedPeriods.reduce((sum, p) => sum + (p.satisfactionRating || 0), 0) / completedPeriods.length
-        : 0,
+      avgSatisfaction:
+        completedPeriods.length > 0
+          ? completedPeriods.reduce((sum, p) => sum + (p.satisfactionRating || 0), 0) /
+            completedPeriods.length
+          : 0,
     };
   }, [quilts]);
-  
+
   if (analysis.totalPeriods === 0) {
     return (
       <Card>
@@ -124,7 +129,7 @@ export function UsagePatternAnalysis({ quilts }: UsagePatternAnalysisProps) {
       </Card>
     );
   }
-  
+
   return (
     <div className="space-y-6">
       {/* Overview Statistics */}
@@ -134,9 +139,7 @@ export function UsagePatternAnalysis({ quilts }: UsagePatternAnalysisProps) {
             <Activity className="w-5 h-5" />
             <span>Usage Overview</span>
           </CardTitle>
-          <CardDescription>
-            Key metrics from your quilt usage history
-          </CardDescription>
+          <CardDescription>Key metrics from your quilt usage history</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -156,14 +159,14 @@ export function UsagePatternAnalysis({ quilts }: UsagePatternAnalysisProps) {
             </div>
             <div className="text-center p-4 bg-orange-50 rounded-lg">
               <div className="text-3xl font-bold text-orange-600">
-                {Math.round(analysis.totalDays / analysis.totalPeriods * 10) / 10}
+                {Math.round((analysis.totalDays / analysis.totalPeriods) * 10) / 10}
               </div>
               <div className="text-sm text-orange-600">Avg Duration</div>
             </div>
           </div>
         </CardContent>
       </Card>
-      
+
       {/* Detailed Analysis */}
       <Tabs defaultValue="seasonal" className="space-y-4">
         <TabsList className="grid w-full grid-cols-2">
@@ -176,15 +179,13 @@ export function UsagePatternAnalysis({ quilts }: UsagePatternAnalysisProps) {
             <span>Performance</span>
           </TabsTrigger>
         </TabsList>
-        
+
         {/* Seasonal Analysis */}
         <TabsContent value="seasonal">
           <Card>
             <CardHeader>
               <CardTitle>Seasonal Usage Patterns</CardTitle>
-              <CardDescription>
-                How your quilts are used across different seasons
-              </CardDescription>
+              <CardDescription>How your quilts are used across different seasons</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
@@ -197,7 +198,7 @@ export function UsagePatternAnalysis({ quilts }: UsagePatternAnalysisProps) {
                         <Badge variant="outline">{data.quilts.size} quilts</Badge>
                       </div>
                     </div>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="p-3 bg-blue-50 rounded-lg">
                         <div className="text-2xl font-bold text-blue-600">{data.totalDays}</div>
@@ -211,7 +212,7 @@ export function UsagePatternAnalysis({ quilts }: UsagePatternAnalysisProps) {
                       </div>
                       <div className="p-3 bg-purple-50 rounded-lg">
                         <div className="text-2xl font-bold text-purple-600">
-                          {Math.round(data.totalDays / data.count * 10) / 10}
+                          {Math.round((data.totalDays / data.count) * 10) / 10}
                         </div>
                         <div className="text-xs text-purple-600">Avg Duration</div>
                       </div>
@@ -222,7 +223,7 @@ export function UsagePatternAnalysis({ quilts }: UsagePatternAnalysisProps) {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         {/* Performance Analysis */}
         <TabsContent value="performance">
           <Card>
@@ -235,7 +236,10 @@ export function UsagePatternAnalysis({ quilts }: UsagePatternAnalysisProps) {
             <CardContent>
               <div className="space-y-3">
                 {analysis.quiltPerformance.slice(0, 10).map((performance, index) => (
-                  <div key={performance.quilt.id} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div
+                    key={performance.quilt.id}
+                    className="flex items-center justify-between p-3 border rounded-lg"
+                  >
                     <div className="flex items-center space-x-4">
                       <div className="text-sm font-medium text-gray-500">#{index + 1}</div>
                       <div>
@@ -247,7 +251,7 @@ export function UsagePatternAnalysis({ quilts }: UsagePatternAnalysisProps) {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center space-x-4">
                       <div className="text-right">
                         <div className="text-sm font-medium">{performance.usageCount} uses</div>

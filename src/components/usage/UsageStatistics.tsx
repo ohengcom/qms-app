@@ -16,7 +16,7 @@ import {
   MapPin,
   User,
   Target,
-  Award
+  Award,
 } from 'lucide-react';
 
 interface UsagePeriod {
@@ -42,90 +42,102 @@ interface UsageStatisticsProps {
 export function UsageStatistics({ usagePeriods, quiltName }: UsageStatisticsProps) {
   const stats = useMemo(() => {
     if (usagePeriods.length === 0) return null;
-    
+
     const completedPeriods = usagePeriods.filter(p => p.endDate);
     const ongoingPeriods = usagePeriods.filter(p => !p.endDate);
-    
+
     // Duration statistics
-    const durations = completedPeriods.map(period => {
-      if (period.durationDays) return period.durationDays;
-      if (period.endDate) {
-        const start = new Date(period.startDate);
-        const end = new Date(period.endDate);
-        const diffMs = end.getTime() - start.getTime();
-        return Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-      }
-      return 0;
-    }).filter(d => d > 0);
-    
+    const durations = completedPeriods
+      .map(period => {
+        if (period.durationDays) return period.durationDays;
+        if (period.endDate) {
+          const start = new Date(period.startDate);
+          const end = new Date(period.endDate);
+          const diffMs = end.getTime() - start.getTime();
+          return Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+        }
+        return 0;
+      })
+      .filter(d => d > 0);
+
     const totalDays = durations.reduce((sum, d) => sum + d, 0);
     const avgDuration = durations.length > 0 ? totalDays / durations.length : 0;
     const minDuration = durations.length > 0 ? Math.min(...durations) : 0;
     const maxDuration = durations.length > 0 ? Math.max(...durations) : 0;
-    
+
     // Usage type distribution
-    const usageTypeCount = usagePeriods.reduce((acc, period) => {
-      acc[period.usageType] = (acc[period.usageType] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-    
+    const usageTypeCount = usagePeriods.reduce(
+      (acc, period) => {
+        acc[period.usageType] = (acc[period.usageType] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
+
     // Location distribution
     const locationCount = usagePeriods
       .filter(p => p.location)
-      .reduce((acc, period) => {
-        acc[period.location!] = (acc[period.location!] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>);
-    
+      .reduce(
+        (acc, period) => {
+          acc[period.location!] = (acc[period.location!] || 0) + 1;
+          return acc;
+        },
+        {} as Record<string, number>
+      );
+
     // Satisfaction statistics
     const satisfactionRatings = completedPeriods
       .filter(p => p.satisfactionRating)
       .map(p => p.satisfactionRating!);
-    
-    const avgSatisfaction = satisfactionRatings.length > 0 
-      ? satisfactionRatings.reduce((sum, r) => sum + r, 0) / satisfactionRatings.length 
-      : 0;
-    
+
+    const avgSatisfaction =
+      satisfactionRatings.length > 0
+        ? satisfactionRatings.reduce((sum, r) => sum + r, 0) / satisfactionRatings.length
+        : 0;
+
     // Environmental conditions
-    const temperatures = usagePeriods
-      .filter(p => p.temperature)
-      .map(p => p.temperature!);
-    
-    const humidities = usagePeriods
-      .filter(p => p.humidity)
-      .map(p => p.humidity!);
-    
-    const avgTemperature = temperatures.length > 0 
-      ? temperatures.reduce((sum, t) => sum + t, 0) / temperatures.length 
-      : 0;
-    
-    const avgHumidity = humidities.length > 0 
-      ? humidities.reduce((sum, h) => sum + h, 0) / humidities.length 
-      : 0;
-    
+    const temperatures = usagePeriods.filter(p => p.temperature).map(p => p.temperature!);
+
+    const humidities = usagePeriods.filter(p => p.humidity).map(p => p.humidity!);
+
+    const avgTemperature =
+      temperatures.length > 0
+        ? temperatures.reduce((sum, t) => sum + t, 0) / temperatures.length
+        : 0;
+
+    const avgHumidity =
+      humidities.length > 0 ? humidities.reduce((sum, h) => sum + h, 0) / humidities.length : 0;
+
     // Seasonal usage
     const seasonCount = usagePeriods
       .filter(p => p.seasonUsed)
-      .reduce((acc, period) => {
-        acc[period.seasonUsed!] = (acc[period.seasonUsed!] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>);
-    
+      .reduce(
+        (acc, period) => {
+          acc[period.seasonUsed!] = (acc[period.seasonUsed!] || 0) + 1;
+          return acc;
+        },
+        {} as Record<string, number>
+      );
+
     // Condition tracking
     const conditionCount = completedPeriods
       .filter(p => p.condition)
-      .reduce((acc, period) => {
-        acc[period.condition!] = (acc[period.condition!] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>);
-    
+      .reduce(
+        (acc, period) => {
+          acc[period.condition!] = (acc[period.condition!] || 0) + 1;
+          return acc;
+        },
+        {} as Record<string, number>
+      );
+
     // Usage frequency (periods per month)
-    const firstUsage = usagePeriods.length > 0 
-      ? new Date(Math.min(...usagePeriods.map(p => new Date(p.startDate).getTime())))
-      : new Date();
+    const firstUsage =
+      usagePeriods.length > 0
+        ? new Date(Math.min(...usagePeriods.map(p => new Date(p.startDate).getTime())))
+        : new Date();
     const monthsSinceFirst = (Date.now() - firstUsage.getTime()) / (1000 * 60 * 60 * 24 * 30);
     const usageFrequency = monthsSinceFirst > 0 ? usagePeriods.length / monthsSinceFirst : 0;
-    
+
     return {
       totalPeriods: usagePeriods.length,
       completedPeriods: completedPeriods.length,
@@ -146,7 +158,7 @@ export function UsageStatistics({ usagePeriods, quiltName }: UsageStatisticsProp
       firstUsage,
     };
   }, [usagePeriods]);
-  
+
   if (!stats || usagePeriods.length === 0) {
     return (
       <Card>
@@ -155,9 +167,7 @@ export function UsageStatistics({ usagePeriods, quiltName }: UsageStatisticsProp
             <BarChart3 className="w-5 h-5" />
             <span>Usage Statistics</span>
           </CardTitle>
-          <CardDescription>
-            Detailed analytics and insights for {quiltName}
-          </CardDescription>
+          <CardDescription>Detailed analytics and insights for {quiltName}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8 text-gray-500">
@@ -169,16 +179,13 @@ export function UsageStatistics({ usagePeriods, quiltName }: UsageStatisticsProp
       </Card>
     );
   }
-  
-  const mostUsedType = Object.entries(stats.usageTypeCount)
-    .sort(([,a], [,b]) => b - a)[0];
-  
-  const mostUsedLocation = Object.entries(stats.locationCount)
-    .sort(([,a], [,b]) => b - a)[0];
-  
-  const mostUsedSeason = Object.entries(stats.seasonCount)
-    .sort(([,a], [,b]) => b - a)[0];
-  
+
+  const mostUsedType = Object.entries(stats.usageTypeCount).sort(([, a], [, b]) => b - a)[0];
+
+  const mostUsedLocation = Object.entries(stats.locationCount).sort(([, a], [, b]) => b - a)[0];
+
+  const mostUsedSeason = Object.entries(stats.seasonCount).sort(([, a], [, b]) => b - a)[0];
+
   return (
     <div className="space-y-6">
       {/* Overview Statistics */}
@@ -188,9 +195,7 @@ export function UsageStatistics({ usagePeriods, quiltName }: UsageStatisticsProp
             <BarChart3 className="w-5 h-5" />
             <span>Usage Overview</span>
           </CardTitle>
-          <CardDescription>
-            Key statistics and metrics for {quiltName}
-          </CardDescription>
+          <CardDescription>Key statistics and metrics for {quiltName}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -213,7 +218,7 @@ export function UsageStatistics({ usagePeriods, quiltName }: UsageStatisticsProp
           </div>
         </CardContent>
       </Card>
-      
+
       {/* Usage Patterns */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Usage Types */}
@@ -252,7 +257,7 @@ export function UsageStatistics({ usagePeriods, quiltName }: UsageStatisticsProp
             )}
           </CardContent>
         </Card>
-        
+
         {/* Locations */}
         {Object.keys(stats.locationCount).length > 0 && (
           <Card>
@@ -292,7 +297,7 @@ export function UsageStatistics({ usagePeriods, quiltName }: UsageStatisticsProp
           </Card>
         )}
       </div>
-      
+
       {/* Performance Metrics */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Satisfaction & Condition */}
@@ -320,7 +325,7 @@ export function UsageStatistics({ usagePeriods, quiltName }: UsageStatisticsProp
                   </div>
                 </div>
               )}
-              
+
               {Object.keys(stats.conditionCount).length > 0 && (
                 <div>
                   <Separator className="my-4" />
@@ -344,7 +349,7 @@ export function UsageStatistics({ usagePeriods, quiltName }: UsageStatisticsProp
             </CardContent>
           </Card>
         )}
-        
+
         {/* Environmental Conditions */}
         {(stats.avgTemperature > 0 || stats.avgHumidity > 0) && (
           <Card>
@@ -361,28 +366,24 @@ export function UsageStatistics({ usagePeriods, quiltName }: UsageStatisticsProp
                     <Thermometer className="w-4 h-4 text-red-600" />
                     <span className="text-sm font-medium">Average Temperature</span>
                   </div>
-                  <Badge className="bg-red-100 text-red-800">
-                    {stats.avgTemperature}°C
-                  </Badge>
+                  <Badge className="bg-red-100 text-red-800">{stats.avgTemperature}°C</Badge>
                 </div>
               )}
-              
+
               {stats.avgHumidity > 0 && (
                 <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
                   <div className="flex items-center space-x-2">
                     <Droplets className="w-4 h-4 text-blue-600" />
                     <span className="text-sm font-medium">Average Humidity</span>
                   </div>
-                  <Badge className="bg-blue-100 text-blue-800">
-                    {stats.avgHumidity}%
-                  </Badge>
+                  <Badge className="bg-blue-100 text-blue-800">{stats.avgHumidity}%</Badge>
                 </div>
               )}
             </CardContent>
           </Card>
         )}
       </div>
-      
+
       {/* Duration Analysis */}
       <Card>
         <CardHeader>
@@ -416,7 +417,7 @@ export function UsageStatistics({ usagePeriods, quiltName }: UsageStatisticsProp
           </div>
         </CardContent>
       </Card>
-      
+
       {/* Seasonal Usage */}
       {Object.keys(stats.seasonCount).length > 0 && (
         <Card>

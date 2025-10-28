@@ -6,7 +6,14 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 import { Season } from '@/lib/validations/quilt';
 import { cn } from '@/lib/utils';
@@ -26,7 +33,7 @@ import {
   Target,
   Lightbulb,
   BarChart3,
-  RefreshCw
+  RefreshCw,
 } from 'lucide-react';
 
 interface Quilt {
@@ -88,7 +95,7 @@ const SEASON_NAMES = {
 // Mock weather data for demonstration
 const getMockWeatherData = (): WeatherData => {
   const currentMonth = new Date().getMonth();
-  
+
   if (currentMonth >= 11 || currentMonth <= 2) {
     return {
       temperature: 5,
@@ -119,25 +126,25 @@ const getMockWeatherData = (): WeatherData => {
   }
 };
 
-export function SeasonalRecommendations({ 
-  quilts, 
+export function SeasonalRecommendations({
+  quilts,
   currentWeather = getMockWeatherData(),
-  userPreferences = {}
+  userPreferences = {},
 }: SeasonalRecommendationsProps) {
   const [selectedRecommendation, setSelectedRecommendation] = useState<Quilt | null>(null);
   const [showDetails, setShowDetails] = useState(false);
-  
+
   const recommendations = useMemo(() => {
     const currentSeason = currentWeather.season as Season;
     const temp = currentWeather.temperature;
-    
+
     // Score quilts based on multiple factors
     const scoredQuilts = quilts
       .filter(quilt => quilt.currentStatus === 'AVAILABLE')
       .map(quilt => {
         let score = 0;
         let reasons: string[] = [];
-        
+
         // Season match (40% weight)
         if (quilt.season === currentSeason) {
           score += 40;
@@ -149,7 +156,7 @@ export function SeasonalRecommendations({
           score += 25;
           reasons.push('Good transitional choice');
         }
-        
+
         // Temperature appropriateness (30% weight)
         if (temp < 10 && quilt.weightGrams > 1500) {
           score += 30;
@@ -157,38 +164,48 @@ export function SeasonalRecommendations({
         } else if (temp > 25 && quilt.weightGrams < 1000) {
           score += 30;
           reasons.push('Light weight for warm weather');
-        } else if (temp >= 10 && temp <= 25 && quilt.weightGrams >= 1000 && quilt.weightGrams <= 1500) {
+        } else if (
+          temp >= 10 &&
+          temp <= 25 &&
+          quilt.weightGrams >= 1000 &&
+          quilt.weightGrams <= 1500
+        ) {
           score += 25;
           reasons.push('Medium weight for moderate temperature');
         }
-        
+
         // Historical usage success (20% weight)
-        const historicalUsage = quilt.usagePeriods?.filter(period => 
-          period.seasonUsed === currentSeason && period.satisfactionRating
-        ) || [];
-        
+        const historicalUsage =
+          quilt.usagePeriods?.filter(
+            period => period.seasonUsed === currentSeason && period.satisfactionRating
+          ) || [];
+
         if (historicalUsage.length > 0) {
-          const avgSatisfaction = historicalUsage.reduce((sum, period) => 
-            sum + (period.satisfactionRating || 0), 0) / historicalUsage.length;
+          const avgSatisfaction =
+            historicalUsage.reduce((sum, period) => sum + (period.satisfactionRating || 0), 0) /
+            historicalUsage.length;
           score += (avgSatisfaction / 5) * 20;
           reasons.push(`${avgSatisfaction.toFixed(1)}/5 satisfaction in similar conditions`);
         }
-        
+
         // Material preferences (10% weight)
         if (userPreferences.materialPreferences?.includes(quilt.fillMaterial)) {
           score += 10;
           reasons.push('Matches your material preference');
         }
-        
+
         // Humidity considerations
         if (currentWeather.humidity > 70 && quilt.fillMaterial.toLowerCase().includes('down')) {
           score -= 5;
           reasons.push('Down may retain moisture in high humidity');
-        } else if (currentWeather.humidity < 40 && quilt.fillMaterial.toLowerCase().includes('cotton')) {
+        } else if (
+          currentWeather.humidity < 40 &&
+          quilt.fillMaterial.toLowerCase().includes('cotton')
+        ) {
           score += 5;
           reasons.push('Cotton breathes well in dry conditions');
         }
-        
+
         return {
           quilt,
           score: Math.max(0, Math.min(100, score)),
@@ -197,64 +214,79 @@ export function SeasonalRecommendations({
         };
       })
       .sort((a, b) => b.score - a.score);
-    
+
     return {
       top: scoredQuilts.slice(0, 3),
       all: scoredQuilts,
     };
   }, [quilts, currentWeather, userPreferences]);
-  
+
   const seasonalInsights = useMemo(() => {
     const currentSeason = currentWeather.season as Season;
     const seasonQuilts = quilts.filter(q => q.season === currentSeason);
     const availableSeasonQuilts = seasonQuilts.filter(q => q.currentStatus === 'AVAILABLE');
-    
+
     // Usage patterns for current season
-    const seasonUsage = quilts.flatMap(q => 
-      q.usagePeriods?.filter(p => p.seasonUsed === currentSeason) || []
+    const seasonUsage = quilts.flatMap(
+      q => q.usagePeriods?.filter(p => p.seasonUsed === currentSeason) || []
     );
-    
-    const avgSatisfaction = seasonUsage.length > 0
-      ? seasonUsage.reduce((sum, p) => sum + (p.satisfactionRating || 0), 0) / seasonUsage.length
-      : 0;
-    
+
+    const avgSatisfaction =
+      seasonUsage.length > 0
+        ? seasonUsage.reduce((sum, p) => sum + (p.satisfactionRating || 0), 0) / seasonUsage.length
+        : 0;
+
     // Most used materials in this season
-    const materialUsage = seasonUsage.reduce((acc, period) => {
-      const quilt = quilts.find(q => q.usagePeriods?.includes(period));
-      if (quilt) {
-        acc[quilt.fillMaterial] = (acc[quilt.fillMaterial] || 0) + 1;
-      }
-      return acc;
-    }, {} as Record<string, number>);
-    
-    const topMaterial = Object.entries(materialUsage)
-      .sort(([,a], [,b]) => b - a)[0];
-    
+    const materialUsage = seasonUsage.reduce(
+      (acc, period) => {
+        const quilt = quilts.find(q => q.usagePeriods?.includes(period));
+        if (quilt) {
+          acc[quilt.fillMaterial] = (acc[quilt.fillMaterial] || 0) + 1;
+        }
+        return acc;
+      },
+      {} as Record<string, number>
+    );
+
+    const topMaterial = Object.entries(materialUsage).sort(([, a], [, b]) => b - a)[0];
+
     return {
       totalSeasonQuilts: seasonQuilts.length,
       availableSeasonQuilts: availableSeasonQuilts.length,
       seasonUsageCount: seasonUsage.length,
       avgSatisfaction: Math.round(avgSatisfaction * 10) / 10,
       topMaterial: topMaterial ? topMaterial[0] : null,
-      utilizationRate: seasonQuilts.length > 0 
-        ? Math.round((seasonQuilts.length - availableSeasonQuilts.length) / seasonQuilts.length * 100)
-        : 0,
+      utilizationRate:
+        seasonQuilts.length > 0
+          ? Math.round(
+              ((seasonQuilts.length - availableSeasonQuilts.length) / seasonQuilts.length) * 100
+            )
+          : 0,
     };
   }, [quilts, currentWeather.season]);
-  
+
   const getConfidenceColor = (confidence: string) => {
     switch (confidence) {
-      case 'high': return 'text-green-600 bg-green-100';
-      case 'medium': return 'text-yellow-600 bg-yellow-100';
-      case 'low': return 'text-red-600 bg-red-100';
-      default: return 'text-gray-600 bg-gray-100';
+      case 'high':
+        return 'text-green-600 bg-green-100';
+      case 'medium':
+        return 'text-yellow-600 bg-yellow-100';
+      case 'low':
+        return 'text-red-600 bg-red-100';
+      default:
+        return 'text-gray-600 bg-gray-100';
     }
   };
-  
-  const WeatherIcon = currentWeather.season === 'WINTER' ? Snowflake :
-                     currentWeather.season === 'SUMMER' ? Sun : 
-                     currentWeather.season === 'SPRING_AUTUMN' ? Leaf : Cloud;
-  
+
+  const WeatherIcon =
+    currentWeather.season === 'WINTER'
+      ? Snowflake
+      : currentWeather.season === 'SUMMER'
+        ? Sun
+        : currentWeather.season === 'SPRING_AUTUMN'
+          ? Leaf
+          : Cloud;
+
   return (
     <div className="space-y-6">
       {/* Current Weather & Season */}
@@ -267,9 +299,7 @@ export function SeasonalRecommendations({
               <RefreshCw className="w-4 h-4" />
             </Button>
           </CardTitle>
-          <CardDescription>
-            Weather-based quilt recommendations for optimal comfort
-          </CardDescription>
+          <CardDescription>Weather-based quilt recommendations for optimal comfort</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -309,7 +339,7 @@ export function SeasonalRecommendations({
           </div>
         </CardContent>
       </Card>
-      
+
       {/* Seasonal Insights */}
       <Card>
         <CardHeader>
@@ -321,23 +351,31 @@ export function SeasonalRecommendations({
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center p-3 bg-blue-50 rounded-lg">
-              <div className="text-2xl font-bold text-blue-600">{seasonalInsights.totalSeasonQuilts}</div>
+              <div className="text-2xl font-bold text-blue-600">
+                {seasonalInsights.totalSeasonQuilts}
+              </div>
               <div className="text-xs text-blue-600">Season Quilts</div>
             </div>
             <div className="text-center p-3 bg-green-50 rounded-lg">
-              <div className="text-2xl font-bold text-green-600">{seasonalInsights.availableSeasonQuilts}</div>
+              <div className="text-2xl font-bold text-green-600">
+                {seasonalInsights.availableSeasonQuilts}
+              </div>
               <div className="text-xs text-green-600">Available</div>
             </div>
             <div className="text-center p-3 bg-purple-50 rounded-lg">
-              <div className="text-2xl font-bold text-purple-600">{seasonalInsights.avgSatisfaction}</div>
+              <div className="text-2xl font-bold text-purple-600">
+                {seasonalInsights.avgSatisfaction}
+              </div>
               <div className="text-xs text-purple-600">Avg Rating</div>
             </div>
             <div className="text-center p-3 bg-orange-50 rounded-lg">
-              <div className="text-2xl font-bold text-orange-600">{seasonalInsights.utilizationRate}%</div>
+              <div className="text-2xl font-bold text-orange-600">
+                {seasonalInsights.utilizationRate}%
+              </div>
               <div className="text-xs text-orange-600">In Use</div>
             </div>
           </div>
-          
+
           {seasonalInsights.topMaterial && (
             <div className="mt-4 p-3 bg-yellow-50 rounded-lg">
               <div className="flex items-center space-x-2">
@@ -350,7 +388,7 @@ export function SeasonalRecommendations({
           )}
         </CardContent>
       </Card>
-      
+
       {/* Recommendations */}
       <Tabs defaultValue="top" className="space-y-4">
         <TabsList className="grid w-full grid-cols-2">
@@ -363,7 +401,7 @@ export function SeasonalRecommendations({
             <span>All Recommendations</span>
           </TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="top">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {recommendations.top.map((rec, index) => {
@@ -403,7 +441,7 @@ export function SeasonalRecommendations({
                       </div>
                       <Progress value={rec.score} className="h-2" />
                     </div>
-                    
+
                     <div className="space-y-1">
                       <h4 className="text-sm font-medium text-gray-700">Why this quilt?</h4>
                       {rec.reasons.slice(0, 2).map((reason, idx) => (
@@ -426,7 +464,7 @@ export function SeasonalRecommendations({
                         </Button>
                       )}
                     </div>
-                    
+
                     <div className="flex items-center justify-between pt-2 border-t">
                       <div className="flex items-center space-x-2 text-xs text-gray-500">
                         <MapPin className="w-3 h-3" />
@@ -442,7 +480,7 @@ export function SeasonalRecommendations({
             })}
           </div>
         </TabsContent>
-        
+
         <TabsContent value="all">
           <Card>
             <CardHeader>
@@ -456,7 +494,10 @@ export function SeasonalRecommendations({
                 {recommendations.all.map((rec, index) => {
                   const SeasonIcon = SEASON_ICONS[rec.quilt.season];
                   return (
-                    <div key={rec.quilt.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
+                    <div
+                      key={rec.quilt.id}
+                      className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50"
+                    >
                       <div className="flex items-center space-x-4">
                         <div className="text-sm font-medium text-gray-500">#{index + 1}</div>
                         <div className="flex items-center space-x-2">
@@ -471,7 +512,7 @@ export function SeasonalRecommendations({
                           </div>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center space-x-4">
                         <div className="text-right">
                           <div className="text-sm font-medium">{Math.round(rec.score)}%</div>
@@ -491,7 +532,7 @@ export function SeasonalRecommendations({
           </Card>
         </TabsContent>
       </Tabs>
-      
+
       {/* Recommendation Details Dialog */}
       <Dialog open={showDetails} onOpenChange={setShowDetails}>
         <DialogContent className="max-w-2xl">
@@ -501,7 +542,7 @@ export function SeasonalRecommendations({
               Detailed analysis for {selectedRecommendation?.name}
             </DialogDescription>
           </DialogHeader>
-          
+
           {selectedRecommendation && (
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -523,20 +564,20 @@ export function SeasonalRecommendations({
                   </div>
                 </div>
               </div>
-              
+
               <Separator />
-              
+
               <div>
                 <h4 className="font-medium mb-2">Recommendation Factors</h4>
                 <div className="space-y-2">
                   {recommendations.all
                     .find(r => r.quilt.id === selectedRecommendation.id)
                     ?.reasons.map((reason, index) => (
-                    <div key={index} className="flex items-start space-x-2">
-                      <Lightbulb className="w-4 h-4 mt-0.5 text-yellow-500 flex-shrink-0" />
-                      <span className="text-sm text-gray-700">{reason}</span>
-                    </div>
-                  ))}
+                      <div key={index} className="flex items-start space-x-2">
+                        <Lightbulb className="w-4 h-4 mt-0.5 text-yellow-500 flex-shrink-0" />
+                        <span className="text-sm text-gray-700">{reason}</span>
+                      </div>
+                    ))}
                 </div>
               </div>
             </div>

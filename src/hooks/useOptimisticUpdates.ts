@@ -15,7 +15,7 @@ type Quilt = {
 
 export function useOptimisticQuiltUpdates() {
   const utils = api.useUtils();
-  
+
   const optimisticUpdate = useCallback(
     (quiltId: string, updater: (quilt: Quilt) => Partial<Quilt>) => {
       // Update the specific quilt in cache optimistically
@@ -23,22 +23,22 @@ export function useOptimisticQuiltUpdates() {
         if (!oldData) return oldData;
         return { ...oldData, ...updater(oldData as any) };
       });
-      
+
       // Update the quilt in the list cache
       utils.quilts.getAll.setData(undefined, (oldData: any) => {
         if (!oldData || !oldData.quilts || !Array.isArray(oldData.quilts)) return oldData;
-        
+
         return {
           ...oldData,
           quilts: oldData.quilts.map((quilt: any) =>
             quilt.id === quiltId ? { ...quilt, ...updater(quilt) } : quilt
-          )
+          ),
         };
       });
     },
     [utils]
   );
-  
+
   const optimisticStatusUpdate = useCallback(
     (quiltId: string, newStatus: string) => {
       optimisticUpdate(quiltId, () => ({
@@ -48,11 +48,11 @@ export function useOptimisticQuiltUpdates() {
     },
     [optimisticUpdate]
   );
-  
+
   const optimisticUsageStart = useCallback(
     (quiltId: string) => {
       optimisticStatusUpdate(quiltId, 'IN_USE');
-      
+
       // Update current usage cache - disabled for now since we're using mock data
       // utils.quilts.getCurrentUsage.setData(undefined, (oldData: any) => {
       //   if (!oldData) return [];
@@ -61,11 +61,11 @@ export function useOptimisticQuiltUpdates() {
     },
     [optimisticStatusUpdate, utils]
   );
-  
+
   const optimisticUsageEnd = useCallback(
     (quiltId: string, usageId: string) => {
       optimisticStatusUpdate(quiltId, 'AVAILABLE');
-      
+
       // Remove from current usage cache - disabled for now since we're using mock data
       // utils.quilts.getCurrentUsage.setData(undefined, (oldData: any) => {
       //   if (!oldData) return [];
@@ -74,13 +74,13 @@ export function useOptimisticQuiltUpdates() {
     },
     [optimisticStatusUpdate, utils]
   );
-  
+
   const revertOptimisticUpdates = useCallback(() => {
     // Invalidate all caches to revert optimistic updates
     utils.quilts.invalidate();
     utils.dashboard.invalidate();
   }, [utils]);
-  
+
   return {
     optimisticUpdate,
     optimisticStatusUpdate,

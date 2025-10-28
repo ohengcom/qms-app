@@ -6,14 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/useToast';
 import { api } from '@/lib/trpc';
-import { 
-  FileSpreadsheet, 
-  AlertTriangle, 
-  CheckCircle, 
-  Eye, 
-  Upload,
-  Loader2 
-} from 'lucide-react';
+import { FileSpreadsheet, AlertTriangle, CheckCircle, Eye, Upload, Loader2 } from 'lucide-react';
 
 interface ImportPreviewProps {
   fileName: string;
@@ -22,11 +15,11 @@ interface ImportPreviewProps {
   onImportComplete: (results: any) => void;
 }
 
-export function ImportPreview({ 
-  fileName, 
-  fileData, 
-  onPreviewComplete, 
-  onImportComplete 
+export function ImportPreview({
+  fileName,
+  fileData,
+  onPreviewComplete,
+  onImportComplete,
 }: ImportPreviewProps) {
   const [preview, setPreview] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -35,12 +28,12 @@ export function ImportPreview({
 
   // Get preview data
   const previewMutation = api.importExport.previewImport.useMutation({
-    onSuccess: (data) => {
+    onSuccess: data => {
       setPreview(data.preview);
       onPreviewComplete(data.preview);
       setIsLoading(false);
     },
-    onError: (err) => {
+    onError: err => {
       error('Preview failed', err.message);
       setIsLoading(false);
     },
@@ -48,12 +41,12 @@ export function ImportPreview({
 
   // Confirm import
   const confirmMutation = api.importExport.confirmImport.useMutation({
-    onSuccess: (data) => {
+    onSuccess: data => {
       success('Import completed', `Successfully imported ${data.result.imported} quilts`);
       onImportComplete(data.result);
       setIsImporting(false);
     },
-    onError: (err) => {
+    onError: err => {
       error('Import failed', err.message);
       setIsImporting(false);
     },
@@ -92,7 +85,8 @@ export function ImportPreview({
             <AlertTriangle className="h-8 w-8 mx-auto text-red-600" />
             <p className="text-lg font-medium">Failed to preview file</p>
             <p className="text-sm text-gray-600">
-              There was an error processing your Excel file. Please check the file format and try again.
+              There was an error processing your Excel file. Please check the file format and try
+              again.
             </p>
           </div>
         </CardContent>
@@ -109,9 +103,7 @@ export function ImportPreview({
             <FileSpreadsheet className="mr-2 h-5 w-5" />
             Import Preview
           </CardTitle>
-          <CardDescription>
-            Review the data that will be imported from {fileName}
-          </CardDescription>
+          <CardDescription>Review the data that will be imported from {fileName}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -130,7 +122,9 @@ export function ImportPreview({
               <p className="text-sm text-gray-600">Errors</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl font-bold text-amber-600">{preview.summary?.duplicates || 0}</p>
+              <p className="text-2xl font-bold text-amber-600">
+                {preview.summary?.duplicates || 0}
+              </p>
               <p className="text-sm text-gray-600">Duplicates</p>
             </div>
           </div>
@@ -233,15 +227,17 @@ export function ImportPreview({
           <CardDescription>
             {preview.errors && preview.errors.length > 0
               ? `${(preview.summary?.totalRows || 0) - preview.errors.length} valid rows will be imported. ${preview.errors.length} rows with errors will be skipped.`
-              : `All ${preview.summary?.totalRows || 0} rows are ready to be imported.`
-            }
+              : `All ${preview.summary?.totalRows || 0} rows are ready to be imported.`}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex space-x-4">
             <Button
               onClick={handleConfirmImport}
-              disabled={isImporting || (preview.summary?.totalRows || 0) - (preview.errors?.length || 0) === 0}
+              disabled={
+                isImporting ||
+                (preview.summary?.totalRows || 0) - (preview.errors?.length || 0) === 0
+              }
               className="flex-1"
             >
               {isImporting ? (
@@ -256,17 +252,18 @@ export function ImportPreview({
                 </>
               )}
             </Button>
-            
+
             <Button variant="outline" onClick={() => window.location.reload()}>
               Cancel
             </Button>
           </div>
-          
+
           {preview.errors && preview.errors.length > 0 && (
             <div className="mt-4 p-3 bg-amber-50 rounded-lg">
               <p className="text-sm text-amber-800">
                 <AlertTriangle className="inline h-4 w-4 mr-1" />
-                Some rows contain errors and will be skipped. You can fix these issues in your Excel file and import again later.
+                Some rows contain errors and will be skipped. You can fix these issues in your Excel
+                file and import again later.
               </p>
             </div>
           )}

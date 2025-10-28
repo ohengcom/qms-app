@@ -19,7 +19,7 @@ export function MobileAppWrapper({ children }: MobileAppWrapperProps) {
     if (updateAvailable) {
       // Show update notification with haptic feedback
       success();
-      
+
       // Auto-update after a delay (optional)
       const timer = setTimeout(() => {
         updateServiceWorker();
@@ -27,6 +27,8 @@ export function MobileAppWrapper({ children }: MobileAppWrapperProps) {
 
       return () => clearTimeout(timer);
     }
+    // Return undefined when condition is not met
+    return undefined;
   }, [updateAvailable, updateServiceWorker, success]);
 
   // Handle online/offline status changes with haptic feedback
@@ -89,17 +91,13 @@ export function MobileAppWrapper({ children }: MobileAppWrapperProps) {
   return (
     <>
       {children}
-      
+
       {/* Mobile-specific overlays */}
       <div className="lg:hidden">
         <OfflineIndicator />
         <PWAInstallPrompt />
         <IOSInstallPrompt />
-        <SyncStatusIndicator 
-          isSyncing={false} 
-          lastSyncTime={new Date()} 
-          pendingChanges={0} 
-        />
+        <SyncStatusIndicator isSyncing={false} lastSyncTime={new Date()} pendingChanges={0} />
       </div>
 
       {/* Update notification */}
@@ -109,9 +107,7 @@ export function MobileAppWrapper({ children }: MobileAppWrapperProps) {
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-semibold text-sm">Update Available</h3>
-                <p className="text-blue-100 text-xs mt-1">
-                  A new version is ready to install
-                </p>
+                <p className="text-blue-100 text-xs mt-1">A new version is ready to install</p>
               </div>
               <button
                 onClick={updateServiceWorker}

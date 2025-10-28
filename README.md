@@ -9,6 +9,7 @@ A modern Next.js application with tRPC and Neon PostgreSQL that transforms simpl
 ## 🌟 Features
 
 ### 📊 **Intelligent Dashboard**
+
 - Real-time inventory overview with status tracking
 - Seasonal distribution and usage analytics
 - Quick access filters and search functionality
@@ -16,6 +17,7 @@ A modern Next.js application with tRPC and Neon PostgreSQL that transforms simpl
 - Performance monitoring and system health metrics
 
 ### 🔍 **Advanced Search & Filtering**
+
 - Multi-field search across name, brand, color, and notes
 - Filter by season, status, location, weight range, and materials
 - Smart suggestions and saved searches
@@ -23,6 +25,7 @@ A modern Next.js application with tRPC and Neon PostgreSQL that transforms simpl
 - Advanced query capabilities with complex filters
 
 ### 🌱 **Seasonal Intelligence**
+
 - Automatic seasonal classification (Winter/Spring-Autumn/Summer)
 - Smart recommendations based on current season and weather
 - Usage pattern analysis for optimal rotation
@@ -30,6 +33,7 @@ A modern Next.js application with tRPC and Neon PostgreSQL that transforms simpl
 - Weather-based suggestions and notifications
 
 ### 📈 **Usage Analytics & Reporting**
+
 - Detailed usage history with timeline visualization
 - Usage frequency and pattern analysis
 - Predictive insights for next usage periods
@@ -38,12 +42,14 @@ A modern Next.js application with tRPC and Neon PostgreSQL that transforms simpl
 - Export capabilities for reports and data analysis
 
 ### 🗂️ **Storage Optimization**
+
 - Accessibility-based storage layout suggestions
 - Location tracking with packaging information
 - Storage efficiency analysis and optimization
 - Visual storage organization tools
 
 ### 📱 **Modern UI/UX & Mobile Support**
+
 - Responsive design optimized for desktop, tablet, and mobile
 - Progressive Web App (PWA) capabilities with offline support
 - Touch-friendly interface with gesture support
@@ -52,6 +58,7 @@ A modern Next.js application with tRPC and Neon PostgreSQL that transforms simpl
 - Optimized performance with caching and virtual scrolling
 
 ### 🔄 **Data Management & Import/Export**
+
 - Excel import/export with Chinese language support
 - Bulk operations and batch processing
 - Data validation and error handling
@@ -61,6 +68,7 @@ A modern Next.js application with tRPC and Neon PostgreSQL that transforms simpl
 ## 🏗️ Application Architecture
 
 ### 🚀 **Next.js Production Application** (Current Implementation)
+
 ```
 qms/                            # Production-ready Next.js application
 ├── src/
@@ -90,6 +98,7 @@ qms/                            # Production-ready Next.js application
 ```
 
 ### 📋 **Development Specifications**
+
 ```
 .kiro/specs/enhanced-quilt-management/
 ├── requirements.md           # EARS-compliant requirements
@@ -98,6 +107,7 @@ qms/                            # Production-ready Next.js application
 ```
 
 ### 🗂️ **Current Status**
+
 - **Production Application**: Next.js 16 with tRPC and Neon PostgreSQL
 - **Deployment**: Vercel (https://qms-app-omega.vercel.app)
 - **Database**: Neon Serverless PostgreSQL with 16 quilts imported
@@ -106,6 +116,7 @@ qms/                            # Production-ready Next.js application
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Node.js 18+
 - Docker and Docker Compose (for production deployment)
 - PostgreSQL (for production) or SQLite (for development)
@@ -113,6 +124,7 @@ qms/                            # Production-ready Next.js application
 ### 🎯 **Application Setup**
 
 #### Development Setup
+
 ```bash
 # Install dependencies
 npm install
@@ -126,12 +138,15 @@ npm run dev
 ```
 
 #### Current Deployment
+
 The application is currently deployed on **Vercel** at:
+
 - **Production URL**: https://qms-app-omega.vercel.app
 - **Database**: Neon Serverless PostgreSQL
 - **Features**: Real-time dashboard, quilt management, Excel import/export
 
 #### Local Development
+
 ```bash
 # Install dependencies
 npm install
@@ -145,11 +160,13 @@ npm run dev
 ### 🌐 **Access Points**
 
 #### Production (Live)
+
 - **Application**: https://qms-app-omega.vercel.app
 - **Health Check**: https://qms-app-omega.vercel.app/api/health
 - **Database Test**: https://qms-app-omega.vercel.app/api/db-test
 
 #### Development
+
 - **Application**: http://localhost:3000
 - **Health Check**: http://localhost:3000/api/health
 - **Database Test**: http://localhost:3000/api/db-test
@@ -157,27 +174,33 @@ npm run dev
 ## 📊 Data Management
 
 ### Excel Import/Export
+
 The application provides comprehensive Excel import and export functionality:
 
 #### Import Process
+
 1. Navigate to the Import section in the web application
 2. Upload your Excel file (supports Chinese headers)
 3. Preview the data mapping and validation results
 4. Confirm and complete the import
 
 #### Export Features
+
 - Export current inventory to Excel format
 - Include usage history and analytics
 - Support for Chinese language headers
 - Customizable export options
 
 ### Excel Format Support
+
 The system supports Excel files with these columns:
+
 - **Basic Info**: Group, 编号, 季节, 填充物, 颜色, 长, 宽, 重量（g）
 - **Storage**: 放置位置, 包, 使用时间段, 品牌, 购买日期, 备注
 - **Usage History**: 上次使用, 上上次使用, etc.
 
 ### Data Validation
+
 - Automatic data type validation
 - Duplicate detection and handling
 - Missing field identification
@@ -186,6 +209,7 @@ The system supports Excel files with these columns:
 ## 🎯 Data Model
 
 ### Quilt Entity (Database Schema)
+
 ```sql
 CREATE TABLE quilts (
   id TEXT PRIMARY KEY,
@@ -220,6 +244,7 @@ CREATE TABLE usage_records (
 ```
 
 ### Usage Tracking
+
 - **Usage Records**: Historical usage with start/end dates and notes
 - **Current Usage**: Real-time active usage tracking
 - **Usage Analytics**: Patterns, frequency, and predictive insights
@@ -232,6 +257,7 @@ The application uses **tRPC** for type-safe API communication. All API endpoints
 ### Core tRPC Routers
 
 #### Quilts Router (`quilts`)
+
 - `quilts.list` - List quilts with filtering and search
 - `quilts.getById` - Get detailed quilt information
 - `quilts.create` - Create new quilt
@@ -240,18 +266,21 @@ The application uses **tRPC** for type-safe API communication. All API endpoints
 - `quilts.search` - Advanced search with filters
 
 #### Dashboard Router (`dashboard`)
+
 - `dashboard.getStats` - Get dashboard statistics
 - `dashboard.getRecentUsage` - Get recent usage activity
 - `dashboard.getSeasonalDistribution` - Get seasonal analytics
 - `dashboard.getUsagePatterns` - Get usage pattern analysis
 
 #### Import/Export Router (`importExport`)
+
 - `importExport.analyzeExcel` - Analyze uploaded Excel file
 - `importExport.importFromExcel` - Import data from Excel
 - `importExport.exportToExcel` - Export data to Excel format
 - `importExport.getImportHistory` - Get import history
 
 ### API Features
+
 - **Type Safety**: Full TypeScript support with automatic type inference
 - **Input Validation**: Zod schema validation for all inputs
 - **Error Handling**: Structured error responses with proper HTTP status codes
@@ -262,6 +291,7 @@ The application uses **tRPC** for type-safe API communication. All API endpoints
 ### Technology Stack
 
 #### Core Technologies
+
 - **Frontend**: Next.js 16, React 19, TypeScript, Tailwind CSS
 - **Backend**: tRPC, Neon Serverless Driver, PostgreSQL
 - **UI Components**: Radix UI, Lucide Icons, Custom Components
@@ -270,6 +300,7 @@ The application uses **tRPC** for type-safe API communication. All API endpoints
 - **Type Safety**: End-to-end TypeScript with tRPC and Zod validation
 
 #### Development Tools
+
 - **Code Quality**: ESLint, Prettier, TypeScript
 - **Testing**: Vitest, Jest, Playwright (when implemented)
 - **Database**: Neon Console, Direct SQL operations
@@ -279,6 +310,7 @@ The application uses **tRPC** for type-safe API communication. All API endpoints
 ### Development Tools & Scripts
 
 #### Available Scripts
+
 ```bash
 # Development
 npm run dev                    # Start development server
@@ -303,6 +335,7 @@ npm run monitoring:up        # Start monitoring stack
 ### Environment Configuration
 
 #### Environment Variables
+
 ```bash
 # Database Configuration
 DATABASE_URL="postgresql://username:password@localhost:5432/qms_db"
@@ -328,6 +361,7 @@ PORT=3000
 ### 🚀 **Production Deployment (Next.js)**
 
 #### Automated Deployment
+
 ```bash
 cd qms-app
 
@@ -341,6 +375,7 @@ cp .env.production .env.local
 ```
 
 #### Manual Docker Deployment
+
 ```bash
 # Build and start production stack
 docker-compose -f docker-compose.prod.yml up -d
@@ -355,6 +390,7 @@ docker-compose -f docker-compose.prod.yml -f docker-compose.monitoring.yml up -d
 ```
 
 #### Production Features
+
 - **SSL/TLS**: Automatic HTTPS with Let's Encrypt
 - **Monitoring**: Prometheus metrics, Grafana dashboards
 - **Logging**: Structured logging with log aggregation
@@ -363,6 +399,7 @@ docker-compose -f docker-compose.prod.yml -f docker-compose.monitoring.yml up -d
 - **Performance**: Nginx reverse proxy, caching, compression
 
 ### 🔧 **Development Deployment**
+
 ```bash
 # Simple development setup
 cd qms-app
@@ -373,6 +410,7 @@ npm run dev
 ```
 
 ### 🔧 **Production Checklist**
+
 - [ ] Environment variables configured
 - [ ] SSL certificates installed
 - [ ] Database migrations applied
@@ -385,6 +423,7 @@ npm run dev
 ## 🧪 Testing
 
 ### Application Testing
+
 ```bash
 cd qms-app
 
@@ -404,18 +443,21 @@ npm run lint
 ## 📋 Development Roadmap
 
 ### Phase 1: Foundation ✅
+
 - [x] Enhanced database schema with Neon PostgreSQL
 - [x] Comprehensive API layer with tRPC
 - [x] Excel data migration and import/export
 - [x] Vue.js prototype and Next.js production app
 
 ### Phase 2: Core Features ✅
+
 - [x] Complete dashboard UI with analytics
 - [x] Quilt management with advanced forms
 - [x] Search and filtering with virtual scrolling
 - [x] Usage tracking with timeline visualization
 
 ### Phase 3: Advanced Features ✅
+
 - [x] Predictive analytics and reporting
 - [x] Maintenance scheduling and notifications
 - [x] Storage optimization recommendations
@@ -423,6 +465,7 @@ npm run lint
 - [x] Mobile-first responsive design
 
 ### Phase 4: Production & Monitoring ✅
+
 - [x] Comprehensive testing suite
 - [x] Performance optimization and caching
 - [x] Security hardening and authentication
@@ -431,6 +474,7 @@ npm run lint
 - [x] Automated backup and restore
 
 ### Phase 5: Enhanced Features 🚧
+
 - [ ] Advanced search with AI-powered suggestions
 - [ ] Performance optimizations (virtual scrolling, caching)
 - [ ] Enhanced analytics with predictive insights
@@ -439,6 +483,7 @@ npm run lint
 - [ ] Integration with external weather APIs
 
 ### Phase 6: Enterprise Features 🔮
+
 - [ ] Multi-user support with role-based access
 - [ ] API rate limiting and advanced security
 - [ ] Advanced reporting and data visualization
@@ -465,22 +510,26 @@ For questions or support, please open an issue on GitHub or contact the developm
 ## 📚 Documentation & Resources
 
 ### 📋 **Specifications & Planning**
+
 - **Requirements**: [Enhanced Quilt Management Requirements](.kiro/specs/enhanced-quilt-management/requirements.md)
 - **Design**: [System Architecture & Design](.kiro/specs/enhanced-quilt-management/design.md)
 - **Tasks**: [Implementation Task Breakdown](.kiro/specs/enhanced-quilt-management/tasks.md)
 
 ### 🚀 **Next.js Application Docs**
+
 - **Deployment Guide**: [qms-app/DEPLOYMENT.md](qms-app/DEPLOYMENT.md)
 - **Monitoring Guide**: [qms-app/MONITORING.md](qms-app/MONITORING.md)
 - **Cleanup Summary**: [qms-app/CLEANUP_SUMMARY.md](qms-app/CLEANUP_SUMMARY.md)
 - **Application README**: [qms-app/README.md](qms-app/README.md)
 
 ### 🔧 **Development Resources**
+
 - **API Documentation**: Available at `/api/docs` when running
 - **Database Operations**: [qms-app/src/lib/neon.ts](qms-app/src/lib/neon.ts)
 - **Component Library**: Radix UI + Custom components in `qms-app/src/components/ui/`
 
 ### 🏗️ **Project Structure Overview**
+
 ```
 QMS Project/
 ├── 📱 qms-app/              # Production Next.js application (MAIN)

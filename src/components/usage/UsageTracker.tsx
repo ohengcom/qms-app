@@ -3,11 +3,32 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -15,16 +36,7 @@ import { z } from 'zod';
 import { useStartUsage, useEndUsage } from '@/hooks/useQuilts';
 import { useToastContext } from '@/hooks/useToast';
 import { Loading } from '@/components/ui/loading';
-import { 
-  Play, 
-  Square, 
-  Clock, 
-  Calendar,
-  MapPin,
-  Thermometer,
-  User,
-  FileText
-} from 'lucide-react';
+import { Play, Square, Clock, Calendar, MapPin, Thermometer, User, FileText } from 'lucide-react';
 
 const startUsageSchema = z.object({
   usageType: z.enum(['REGULAR', 'GUEST', 'SPECIAL_OCCASION', 'SEASONAL_ROTATION']),
@@ -65,8 +77,16 @@ interface UsageTrackerProps {
 const USAGE_TYPES = [
   { value: 'REGULAR', label: 'Regular Use', description: 'Normal daily/nightly use' },
   { value: 'GUEST', label: 'Guest Use', description: 'Used by guests or visitors' },
-  { value: 'SPECIAL_OCCASION', label: 'Special Occasion', description: 'Special events or occasions' },
-  { value: 'SEASONAL_ROTATION', label: 'Seasonal Rotation', description: 'Seasonal rotation or storage' },
+  {
+    value: 'SPECIAL_OCCASION',
+    label: 'Special Occasion',
+    description: 'Special events or occasions',
+  },
+  {
+    value: 'SEASONAL_ROTATION',
+    label: 'Seasonal Rotation',
+    description: 'Seasonal rotation or storage',
+  },
 ];
 
 const CONDITION_OPTIONS = [
@@ -81,12 +101,12 @@ export function UsageTracker({ quilt, onUsageChange }: UsageTrackerProps) {
   const [showStartDialog, setShowStartDialog] = useState(false);
   const [showEndDialog, setShowEndDialog] = useState(false);
   const toast = useToastContext();
-  
+
   const startUsage = useStartUsage();
   const endUsage = useEndUsage();
-  
+
   const isInUse = quilt.currentStatus === 'IN_USE' && quilt.currentUsage;
-  
+
   const startForm = useForm<StartUsageInput>({
     resolver: zodResolver(startUsageSchema),
     defaultValues: {
@@ -95,7 +115,7 @@ export function UsageTracker({ quilt, onUsageChange }: UsageTrackerProps) {
       notes: '',
     },
   });
-  
+
   const endForm = useForm<EndUsageInput>({
     resolver: zodResolver(endUsageSchema),
     defaultValues: {
@@ -104,7 +124,7 @@ export function UsageTracker({ quilt, onUsageChange }: UsageTrackerProps) {
       satisfactionRating: 4,
     },
   });
-  
+
   const handleStartUsage = async (data: StartUsageInput) => {
     try {
       await startUsage.mutateAsync({
@@ -112,50 +132,56 @@ export function UsageTracker({ quilt, onUsageChange }: UsageTrackerProps) {
         startedAt: new Date(),
         ...data,
       });
-      
+
       toast.success('Usage Started', `Started tracking usage for ${quilt.name}`);
       setShowStartDialog(false);
       startForm.reset();
       onUsageChange?.();
     } catch (error) {
-      toast.error('Failed to start usage', error instanceof Error ? error.message : 'Please try again');
+      toast.error(
+        'Failed to start usage',
+        error instanceof Error ? error.message : 'Please try again'
+      );
     }
   };
-  
+
   const handleEndUsage = async (data: EndUsageInput) => {
     if (!quilt.currentUsage) return;
-    
+
     try {
       await endUsage.mutateAsync({
         id: quilt.currentUsage.id,
         ...data,
       });
-      
+
       toast.success('Usage Ended', `Stopped tracking usage for ${quilt.name}`);
       setShowEndDialog(false);
       endForm.reset();
       onUsageChange?.();
     } catch (error) {
-      toast.error('Failed to end usage', error instanceof Error ? error.message : 'Please try again');
+      toast.error(
+        'Failed to end usage',
+        error instanceof Error ? error.message : 'Please try again'
+      );
     }
   };
-  
+
   const getUsageDuration = () => {
     if (!quilt.currentUsage) return null;
-    
+
     const start = new Date(quilt.currentUsage.startedAt);
     const now = new Date();
     const diffMs = now.getTime() - start.getTime();
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
     const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    
+
     if (diffDays > 0) {
       return `${diffDays} day${diffDays > 1 ? 's' : ''}, ${diffHours} hour${diffHours > 1 ? 's' : ''}`;
     } else {
       return `${diffHours} hour${diffHours > 1 ? 's' : ''}`;
     }
   };
-  
+
   return (
     <Card>
       <CardHeader>
@@ -168,11 +194,9 @@ export function UsageTracker({ quilt, onUsageChange }: UsageTrackerProps) {
             {isInUse ? 'In Use' : 'Available'}
           </Badge>
         </CardTitle>
-        <CardDescription>
-          Track when and how this quilt is being used
-        </CardDescription>
+        <CardDescription>Track when and how this quilt is being used</CardDescription>
       </CardHeader>
-      
+
       <CardContent className="space-y-4">
         {isInUse && quilt.currentUsage ? (
           // Currently in use - show usage details and end button
@@ -184,11 +208,13 @@ export function UsageTracker({ quilt, onUsageChange }: UsageTrackerProps) {
                   {quilt.currentUsage.usageType.replace('_', ' ')}
                 </Badge>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div className="flex items-center space-x-2 text-blue-700">
                   <Calendar className="w-4 h-4" />
-                  <span>Started: {new Date(quilt.currentUsage.startedAt).toLocaleDateString()}</span>
+                  <span>
+                    Started: {new Date(quilt.currentUsage.startedAt).toLocaleDateString()}
+                  </span>
                 </div>
                 <div className="flex items-center space-x-2 text-blue-700">
                   <Clock className="w-4 h-4" />
@@ -208,7 +234,7 @@ export function UsageTracker({ quilt, onUsageChange }: UsageTrackerProps) {
                 )}
               </div>
             </div>
-            
+
             <Dialog open={showEndDialog} onOpenChange={setShowEndDialog}>
               <DialogTrigger asChild>
                 <Button className="w-full">
@@ -220,10 +246,11 @@ export function UsageTracker({ quilt, onUsageChange }: UsageTrackerProps) {
                 <DialogHeader>
                   <DialogTitle>End Usage Tracking</DialogTitle>
                   <DialogDescription>
-                    Record the end of usage for {quilt.name} and provide feedback about the experience.
+                    Record the end of usage for {quilt.name} and provide feedback about the
+                    experience.
                   </DialogDescription>
                 </DialogHeader>
-                
+
                 <Form {...endForm}>
                   <form onSubmit={endForm.handleSubmit(handleEndUsage)} className="space-y-4">
                     <FormField
@@ -236,18 +263,29 @@ export function UsageTracker({ quilt, onUsageChange }: UsageTrackerProps) {
                             <Input
                               type="datetime-local"
                               {...field}
-                              value={field.value ? new Date(field.value.getTime() - field.value.getTimezoneOffset() * 60000).toISOString().slice(0, 16) : ''}
-                              onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value) : new Date())}
+                              value={
+                                field.value
+                                  ? new Date(
+                                      field.value.getTime() -
+                                        field.value.getTimezoneOffset() * 60000
+                                    )
+                                      .toISOString()
+                                      .slice(0, 16)
+                                  : ''
+                              }
+                              onChange={e =>
+                                field.onChange(
+                                  e.target.value ? new Date(e.target.value) : new Date()
+                                )
+                              }
                             />
                           </FormControl>
-                          <FormDescription>
-                            When did you stop using this quilt?
-                          </FormDescription>
+                          <FormDescription>When did you stop using this quilt?</FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    
+
                     <FormField
                       control={endForm.control}
                       name="condition"
@@ -261,11 +299,13 @@ export function UsageTracker({ quilt, onUsageChange }: UsageTrackerProps) {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {CONDITION_OPTIONS.map((option) => (
+                              {CONDITION_OPTIONS.map(option => (
                                 <SelectItem key={option.value} value={option.value}>
                                   <div>
                                     <div className="font-medium">{option.label}</div>
-                                    <div className="text-xs text-gray-500">{option.description}</div>
+                                    <div className="text-xs text-gray-500">
+                                      {option.description}
+                                    </div>
                                   </div>
                                 </SelectItem>
                               ))}
@@ -278,7 +318,7 @@ export function UsageTracker({ quilt, onUsageChange }: UsageTrackerProps) {
                         </FormItem>
                       )}
                     />
-                    
+
                     <FormField
                       control={endForm.control}
                       name="satisfactionRating"
@@ -291,7 +331,7 @@ export function UsageTracker({ quilt, onUsageChange }: UsageTrackerProps) {
                               min="1"
                               max="5"
                               {...field}
-                              onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
+                              onChange={e => field.onChange(parseInt(e.target.value) || 1)}
                             />
                           </FormControl>
                           <FormDescription>
@@ -301,7 +341,7 @@ export function UsageTracker({ quilt, onUsageChange }: UsageTrackerProps) {
                         </FormItem>
                       )}
                     />
-                    
+
                     <FormField
                       control={endForm.control}
                       name="notes"
@@ -322,9 +362,13 @@ export function UsageTracker({ quilt, onUsageChange }: UsageTrackerProps) {
                         </FormItem>
                       )}
                     />
-                    
+
                     <div className="flex justify-end space-x-2">
-                      <Button type="button" variant="outline" onClick={() => setShowEndDialog(false)}>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setShowEndDialog(false)}
+                      >
                         Cancel
                       </Button>
                       <Button type="submit" disabled={endUsage.isPending}>
@@ -340,8 +384,10 @@ export function UsageTracker({ quilt, onUsageChange }: UsageTrackerProps) {
         ) : (
           // Not in use - show start usage button
           <div className="text-center py-4">
-            <p className="text-gray-500 mb-4">This quilt is not currently being tracked for usage.</p>
-            
+            <p className="text-gray-500 mb-4">
+              This quilt is not currently being tracked for usage.
+            </p>
+
             <Dialog open={showStartDialog} onOpenChange={setShowStartDialog}>
               <DialogTrigger asChild>
                 <Button>
@@ -356,7 +402,7 @@ export function UsageTracker({ quilt, onUsageChange }: UsageTrackerProps) {
                     Begin tracking usage for {quilt.name} and record relevant details.
                   </DialogDescription>
                 </DialogHeader>
-                
+
                 <Form {...startForm}>
                   <form onSubmit={startForm.handleSubmit(handleStartUsage)} className="space-y-4">
                     <FormField
@@ -372,7 +418,7 @@ export function UsageTracker({ quilt, onUsageChange }: UsageTrackerProps) {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {USAGE_TYPES.map((type) => (
+                              {USAGE_TYPES.map(type => (
                                 <SelectItem key={type.value} value={type.value}>
                                   <div>
                                     <div className="font-medium">{type.label}</div>
@@ -382,14 +428,12 @@ export function UsageTracker({ quilt, onUsageChange }: UsageTrackerProps) {
                               ))}
                             </SelectContent>
                           </Select>
-                          <FormDescription>
-                            What type of usage is this?
-                          </FormDescription>
+                          <FormDescription>What type of usage is this?</FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    
+
                     <FormField
                       control={startForm.control}
                       name="location"
@@ -406,7 +450,7 @@ export function UsageTracker({ quilt, onUsageChange }: UsageTrackerProps) {
                         </FormItem>
                       )}
                     />
-                    
+
                     <div className="grid grid-cols-2 gap-4">
                       <FormField
                         control={startForm.control}
@@ -419,17 +463,19 @@ export function UsageTracker({ quilt, onUsageChange }: UsageTrackerProps) {
                                 type="number"
                                 placeholder="e.g., 20"
                                 {...field}
-                                onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                                onChange={e =>
+                                  field.onChange(
+                                    e.target.value ? parseFloat(e.target.value) : undefined
+                                  )
+                                }
                               />
                             </FormControl>
-                            <FormDescription>
-                              Room temperature (optional)
-                            </FormDescription>
+                            <FormDescription>Room temperature (optional)</FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
-                      
+
                       <FormField
                         control={startForm.control}
                         name="humidity"
@@ -443,18 +489,20 @@ export function UsageTracker({ quilt, onUsageChange }: UsageTrackerProps) {
                                 min="0"
                                 max="100"
                                 {...field}
-                                onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                                onChange={e =>
+                                  field.onChange(
+                                    e.target.value ? parseFloat(e.target.value) : undefined
+                                  )
+                                }
                               />
                             </FormControl>
-                            <FormDescription>
-                              Room humidity (optional)
-                            </FormDescription>
+                            <FormDescription>Room humidity (optional)</FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
                     </div>
-                    
+
                     <FormField
                       control={startForm.control}
                       name="expectedDuration"
@@ -466,7 +514,11 @@ export function UsageTracker({ quilt, onUsageChange }: UsageTrackerProps) {
                               type="number"
                               placeholder="e.g., 7"
                               {...field}
-                              onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                              onChange={e =>
+                                field.onChange(
+                                  e.target.value ? parseInt(e.target.value) : undefined
+                                )
+                              }
                             />
                           </FormControl>
                           <FormDescription>
@@ -476,7 +528,7 @@ export function UsageTracker({ quilt, onUsageChange }: UsageTrackerProps) {
                         </FormItem>
                       )}
                     />
-                    
+
                     <FormField
                       control={startForm.control}
                       name="notes"
@@ -497,9 +549,13 @@ export function UsageTracker({ quilt, onUsageChange }: UsageTrackerProps) {
                         </FormItem>
                       )}
                     />
-                    
+
                     <div className="flex justify-end space-x-2">
-                      <Button type="button" variant="outline" onClick={() => setShowStartDialog(false)}>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setShowStartDialog(false)}
+                      >
                         Cancel
                       </Button>
                       <Button type="submit" disabled={startUsage.isPending}>

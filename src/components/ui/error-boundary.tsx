@@ -54,10 +54,7 @@ export class ErrorBoundary extends Component<Props, State> {
                   </pre>
                 </div>
               )}
-              <Button
-                onClick={() => window.location.reload()}
-                className="w-full"
-              >
+              <Button onClick={() => window.location.reload()} className="w-full">
                 <RefreshCw className="mr-2 h-4 w-4" />
                 Refresh Page
               </Button>
@@ -71,13 +68,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 }
 
-export function ErrorFallback({ 
-  error, 
-  resetError 
-}: { 
-  error: Error; 
-  resetError: () => void;
-}) {
+export function ErrorFallback({ error, resetError }: { error: Error; resetError: () => void }) {
   return (
     <div className="flex min-h-[400px] items-center justify-center p-4">
       <Card className="w-full max-w-md">
@@ -86,26 +77,19 @@ export function ErrorFallback({
             <AlertTriangle className="h-6 w-6 text-red-600" />
           </div>
           <CardTitle className="text-lg">Something went wrong</CardTitle>
-          <CardDescription>
-            {error.message || 'An unexpected error occurred'}
-          </CardDescription>
+          <CardDescription>{error.message || 'An unexpected error occurred'}</CardDescription>
         </CardHeader>
         <CardContent className="text-center space-y-3">
           {process.env.NODE_ENV === 'development' && (
             <div className="rounded-md bg-gray-50 p-3 text-left">
-              <pre className="text-xs text-gray-600 overflow-auto">
-                {error.stack}
-              </pre>
+              <pre className="text-xs text-gray-600 overflow-auto">{error.stack}</pre>
             </div>
           )}
           <div className="flex gap-2">
             <Button onClick={resetError} variant="outline" className="flex-1">
               Try Again
             </Button>
-            <Button 
-              onClick={() => window.location.reload()} 
-              className="flex-1"
-            >
+            <Button onClick={() => window.location.reload()} className="flex-1">
               <RefreshCw className="mr-2 h-4 w-4" />
               Refresh
             </Button>

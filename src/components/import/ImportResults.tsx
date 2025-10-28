@@ -4,14 +4,14 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  CheckCircle, 
-  AlertTriangle, 
-  XCircle, 
-  BarChart3, 
-  Home, 
+import {
+  CheckCircle,
+  AlertTriangle,
+  XCircle,
+  BarChart3,
+  Home,
   RotateCcw,
-  FileSpreadsheet 
+  FileSpreadsheet,
 } from 'lucide-react';
 
 interface ImportResultsProps {
@@ -37,15 +37,16 @@ interface ImportResultsProps {
   onGoToDashboard: () => void;
 }
 
-export function ImportResults({ 
-  results, 
-  fileName, 
-  onStartOver, 
-  onGoToDashboard 
+export function ImportResults({
+  results,
+  fileName,
+  onStartOver,
+  onGoToDashboard,
 }: ImportResultsProps) {
-  const successRate = results.summary.totalRows > 0 
-    ? Math.round((results.summary.successfulImports / results.summary.totalRows) * 100)
-    : 0;
+  const successRate =
+    results.summary.totalRows > 0
+      ? Math.round((results.summary.successfulImports / results.summary.totalRows) * 100)
+      : 0;
 
   return (
     <div className="space-y-6">
@@ -60,9 +61,7 @@ export function ImportResults({
             )}
             Import {results.success ? 'Completed' : 'Failed'}
           </CardTitle>
-          <CardDescription>
-            Import results for {fileName}
-          </CardDescription>
+          <CardDescription>Import results for {fileName}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -71,7 +70,9 @@ export function ImportResults({
               <p className="text-sm text-gray-600">Total Rows</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl font-bold text-green-600">{results.summary.successfulImports}</p>
+              <p className="text-2xl font-bold text-green-600">
+                {results.summary.successfulImports}
+              </p>
               <p className="text-sm text-gray-600">Imported</p>
             </div>
             <div className="text-center">
@@ -83,17 +84,20 @@ export function ImportResults({
               <p className="text-sm text-gray-600">Duplicates</p>
             </div>
           </div>
-          
+
           <div className="mt-6">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium">Success Rate</span>
               <span className="text-sm text-gray-600">{successRate}%</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
+              <div
                 className={`h-2 rounded-full ${
-                  successRate >= 80 ? 'bg-green-500' : 
-                  successRate >= 60 ? 'bg-yellow-500' : 'bg-red-500'
+                  successRate >= 80
+                    ? 'bg-green-500'
+                    : successRate >= 60
+                      ? 'bg-yellow-500'
+                      : 'bg-red-500'
                 }`}
                 style={{ width: `${successRate}%` }}
               ></div>
@@ -130,7 +134,7 @@ export function ImportResults({
                   Complete
                 </Badge>
               </div>
-              
+
               {results.summary.duplicates > 0 && (
                 <div className="flex items-center justify-between p-3 bg-amber-50 rounded-lg">
                   <div className="flex items-center space-x-3">
@@ -193,9 +197,7 @@ export function ImportResults({
       <Card>
         <CardHeader>
           <CardTitle>What's Next?</CardTitle>
-          <CardDescription>
-            Choose your next action
-          </CardDescription>
+          <CardDescription>Choose your next action</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -208,7 +210,7 @@ export function ImportResults({
                 </div>
               </div>
             </Button>
-            
+
             <Button variant="outline" onClick={onStartOver} className="h-auto p-4">
               <div className="flex flex-col items-center space-y-2">
                 <RotateCcw className="h-6 w-6" />
@@ -219,7 +221,7 @@ export function ImportResults({
               </div>
             </Button>
           </div>
-          
+
           {results.success && results.summary.successfulImports > 0 && (
             <div className="mt-4 p-3 bg-blue-50 rounded-lg">
               <div className="flex items-start space-x-3">
@@ -235,15 +237,13 @@ export function ImportResults({
               </div>
             </div>
           )}
-          
+
           {results.errors.length > 0 && (
             <div className="mt-4 p-3 bg-amber-50 rounded-lg">
               <div className="flex items-start space-x-3">
                 <AlertTriangle className="h-5 w-5 text-amber-600 mt-0.5" />
                 <div>
-                  <p className="text-sm font-medium text-amber-800">
-                    Some rows had errors
-                  </p>
+                  <p className="text-sm font-medium text-amber-800">Some rows had errors</p>
                   <p className="text-xs text-amber-600 mt-1">
                     You can fix the errors in your Excel file and import those rows again later.
                   </p>

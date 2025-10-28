@@ -9,36 +9,42 @@
 ## 🌟 功能特性
 
 ### 📊 **智能仪表板**
+
 - 实时库存概览，状态跟踪
 - 季节分布和使用情况分析
 - 快速访问过滤器和搜索功能
 - 存储位置优化洞察
 
 ### 🔍 **高级搜索与过滤**
+
 - 跨姓名、品牌、颜色和备注的多字段搜索
 - 按季节、状态、位置、重量范围和材料过滤
 - 智能建议和已保存的搜索
 - 实时搜索结果
 
 ### 🌱 **季节智能**
+
 - 自动季节分类（冬季/春秋/夏季）
 - 基于当前季节和天气的智能推荐
 - 使用模式分析，实现最佳轮换
 - 季节转换提醒和准备提醒
 
 ### 📈 **使用分析**
+
 - 详细的使用历史，时间轴可视化
 - 使用频率和模式分析
 - 下次使用期间的预测洞察
 - 基于使用模式的维护调度
 
 ### 🗂️ **存储优化**
+
 - 基于可访问性的存储布局建议
 - 带包装信息的位置跟踪
 - 存储效率分析和优化
 - 可视化存储组织工具
 
 ### 📱 **现代UI/UX与移动支持**
+
 - 针对桌面、平板和移动设备优化的响应式设计
 - 渐进式Web应用（PWA）功能，支持离线使用
 - 触摸友好界面，支持手势操作
@@ -47,6 +53,7 @@
 - 通过缓存和虚拟滚动优化性能
 
 ### 🔄 **数据管理与导入/导出**
+
 - Excel导入/导出，支持中文
 - 批量操作和批处理
 - 数据验证和错误处理
@@ -56,6 +63,7 @@
 ## 🏗️ 应用程序架构
 
 ### 🚀 **Next.js生产应用程序**（主要实现）
+
 ```
 qms-app/                        # 生产就绪的Next.js应用程序
 ├── src/
@@ -97,6 +105,7 @@ qms-app/                        # 生产就绪的Next.js应用程序
 ```
 
 ### 📋 **开发规范**
+
 ```
 .kiro/specs/enhanced-quilt-management/
 ├── requirements.md           # EARS兼容需求
@@ -105,7 +114,9 @@ qms-app/                        # 生产就绪的Next.js应用程序
 ```
 
 ### 🗂️ **遗留原型**（仅供参考）
+
 项目包含一些在开发过程中使用的遗留原型实现：
+
 - `frontend/` - Vue.js原型（不再积极维护）
 - `backend/` - FastAPI原型（不再积极维护）
 - `workers/` - Cloudflare Workers实验（不再积极维护）
@@ -115,6 +126,7 @@ qms-app/                        # 生产就绪的Next.js应用程序
 ## 🚀 快速开始
 
 ### 前置要求
+
 - Node.js 18+
 - Docker和Docker Compose（用于生产部署）
 - PostgreSQL（生产环境）或SQLite（开发环境）
@@ -122,6 +134,7 @@ qms-app/                        # 生产就绪的Next.js应用程序
 ### 🎯 **Next.js应用程序设置**
 
 #### 开发设置
+
 ```bash
 cd qms-app
 
@@ -142,6 +155,7 @@ npm run dev
 ```
 
 #### 生产部署
+
 ```bash
 cd qms-app
 
@@ -159,11 +173,13 @@ cp .env.production .env.local
 ### � **替访问点**
 
 #### 开发环境
+
 - **应用程序**: http://localhost:3000
 - **健康检查**: http://localhost:3000/api/health
 - **指标**: http://localhost:3000/api/metrics
 
 #### 生产环境
+
 - **应用程序**: https://your-domain.com
 - **Grafana仪表板**: http://localhost:3001 (admin/admin123)
 - **Prometheus指标**: http://localhost:9090
@@ -171,27 +187,33 @@ cp .env.production .env.local
 ## 📊 数据管理
 
 ### Excel导入/导出
+
 应用程序提供全面的Excel导入和导出功能：
 
 #### 导入流程
+
 1. 导航到Web应用程序中的导入部分
 2. 上传您的Excel文件（支持中文标题）
 3. 预览数据映射和验证结果
 4. 确认并完成导入
 
 #### 导出功能
+
 - 将当前库存导出为Excel格式
 - 包含使用历史和分析数据
 - 支持中文标题
 - 可自定义导出选项
 
 ### Excel格式支持
+
 系统支持包含以下列的Excel文件：
+
 - **基本信息**: Group, 编号, 季节, 填充物, 颜色, 长, 宽, 重量（g）
 - **存储信息**: 放置位置, 包, 使用时间段, 品牌, 购买日期, 备注
 - **使用历史**: 上次使用, 上上次使用等
 
 ### 数据验证
+
 - 自动数据类型验证
 - 重复检测和处理
 - 缺失字段识别
@@ -200,6 +222,7 @@ cp .env.production .env.local
 ## 🎯 数据模型
 
 ### 被子实体（数据库模式）
+
 ```sql
 CREATE TABLE quilts (
   id TEXT PRIMARY KEY,
@@ -234,6 +257,7 @@ CREATE TABLE usage_records (
 ```
 
 ### 使用跟踪
+
 - **使用记录**：具有开始/结束日期和备注的历史使用
 - **当前使用**：实时活动使用跟踪
 - **使用分析**：模式、频率和预测洞察
@@ -246,6 +270,7 @@ CREATE TABLE usage_records (
 ### 核心tRPC路由器
 
 #### 被子路由器（`quilts`）
+
 - `quilts.list` - 使用过滤和搜索列出被子
 - `quilts.getById` - 获取详细的被子信息
 - `quilts.create` - 创建新被子
@@ -254,18 +279,21 @@ CREATE TABLE usage_records (
 - `quilts.search` - 带过滤器的高级搜索
 
 #### 仪表板路由器（`dashboard`）
+
 - `dashboard.getStats` - 获取仪表板统计信息
 - `dashboard.getRecentUsage` - 获取最近使用活动
 - `dashboard.getSeasonalDistribution` - 获取季节分析
 - `dashboard.getUsagePatterns` - 获取使用模式分析
 
 #### 导入/导出路由器（`importExport`）
+
 - `importExport.analyzeExcel` - 分析上传的Excel文件
 - `importExport.importFromExcel` - 从Excel导入数据
 - `importExport.exportToExcel` - 导出数据为Excel格式
 - `importExport.getImportHistory` - 获取导入历史
 
 ### API功能
+
 - **类型安全**：完整的TypeScript支持，自动类型推断
 - **输入验证**：所有输入的Zod模式验证
 - **错误处理**：结构化错误响应，正确的HTTP状态码
@@ -276,6 +304,7 @@ CREATE TABLE usage_records (
 ### 技术栈
 
 #### 核心技术
+
 - **前端**: Next.js 14, React 19, TypeScript, Tailwind CSS
 - **后端**: tRPC, Neon Serverless Driver, PostgreSQL
 - **UI组件**: Radix UI, Lucide Icons, 自定义组件
@@ -284,6 +313,7 @@ CREATE TABLE usage_records (
 - **部署**: Docker, Nginx, CI/CD管道
 
 #### 开发工具
+
 - **代码质量**: ESLint, Prettier, TypeScript
 - **测试**: Vitest, Jest, Playwright（计划实现）
 - **数据库**: Neon控制台, 直接SQL操作
@@ -293,6 +323,7 @@ CREATE TABLE usage_records (
 ### 开发工具和脚本
 
 #### 可用脚本
+
 ```bash
 # 开发
 npm run dev                    # 启动开发服务器
@@ -317,6 +348,7 @@ npm run monitoring:up        # 启动监控堆栈
 ### 环境配置
 
 #### 环境变量
+
 ```bash
 # 数据库配置
 DATABASE_URL="postgresql://username:password@localhost:5432/qms_db"
@@ -342,6 +374,7 @@ PORT=3000
 ### 🚀 **生产部署（Next.js）**
 
 #### 自动化部署
+
 ```bash
 cd qms-app
 
@@ -355,6 +388,7 @@ cp .env.production .env.local
 ```
 
 #### 手动Docker部署
+
 ```bash
 # 构建并启动生产堆栈
 docker-compose -f docker-compose.prod.yml up -d
@@ -369,6 +403,7 @@ docker-compose -f docker-compose.prod.yml -f docker-compose.monitoring.yml up -d
 ```
 
 #### 生产功能
+
 - **SSL/TLS**: 使用Let's Encrypt自动HTTPS
 - **监控**: Prometheus指标，Grafana仪表板
 - **日志**: 结构化日志与日志聚合
@@ -377,6 +412,7 @@ docker-compose -f docker-compose.prod.yml -f docker-compose.monitoring.yml up -d
 - **性能**: Nginx反向代理，缓存，压缩
 
 ### 🔧 **开发部署**
+
 ```bash
 # 简单开发设置
 cd qms-app
@@ -387,6 +423,7 @@ npm run dev
 ```
 
 ### 🔧 **生产检查清单**
+
 - [ ] 环境变量已配置
 - [ ] SSL证书已安装
 - [ ] 数据库迁移已应用
@@ -399,6 +436,7 @@ npm run dev
 ## 🧪 测试
 
 ### 应用程序测试
+
 ```bash
 cd qms-app
 
@@ -418,18 +456,21 @@ npm run lint
 ## 📋 开发路线图
 
 ### 第一阶段：基础 ✅
+
 - [x] 使用Neon PostgreSQL的增强数据库模式
 - [x] 使用tRPC的全面API层
 - [x] Excel数据迁移和导入/导出
 - [x] Vue.js原型和Next.js生产应用
 
 ### 第二阶段：核心功能 ✅
+
 - [x] 带分析的完整仪表板UI
 - [x] 带高级表单的被子管理
 - [x] 带虚拟滚动的搜索和过滤
 - [x] 带时间轴可视化的使用跟踪
 
 ### 第三阶段：高级功能 ✅
+
 - [x] 预测分析和报告
 - [x] 维护调度和通知
 - [x] 存储优化建议
@@ -437,6 +478,7 @@ npm run lint
 - [x] 移动优先响应式设计
 
 ### 第四阶段：生产和监控 ✅
+
 - [x] 全面测试套件
 - [x] 性能优化和缓存
 - [x] 安全加固和认证
@@ -445,6 +487,7 @@ npm run lint
 - [x] 自动备份和恢复
 
 ### 第五阶段：增强功能 🚧
+
 - [ ] 带AI驱动建议的高级搜索
 - [ ] 性能优化（虚拟滚动，缓存）
 - [ ] 带预测洞察的增强分析
@@ -453,6 +496,7 @@ npm run lint
 - [ ] 与外部天气API集成
 
 ### 第六阶段：企业功能 🔮
+
 - [ ] 带基于角色访问的多用户支持
 - [ ] API速率限制和高级安全
 - [ ] 高级报告和数据可视化
@@ -479,22 +523,26 @@ npm run lint
 ## 📚 文档与资源
 
 ### 📋 **规范与规划**
+
 - **需求文档**: [增强被子管理需求](.kiro/specs/enhanced-quilt-management/requirements.md)
 - **设计文档**: [系统架构与设计](.kiro/specs/enhanced-quilt-management/design.md)
 - **任务清单**: [实现任务分解](.kiro/specs/enhanced-quilt-management/tasks.md)
 
 ### 🚀 **Next.js应用程序文档**
+
 - **部署指南**: [qms-app/DEPLOYMENT.md](qms-app/DEPLOYMENT.md)
 - **监控指南**: [qms-app/MONITORING.md](qms-app/MONITORING.md)
 - **清理摘要**: [qms-app/CLEANUP_SUMMARY.md](qms-app/CLEANUP_SUMMARY.md)
 - **应用程序README**: [qms-app/README.md](qms-app/README.md)
 
 ### 🔧 **开发资源**
+
 - **API文档**: 运行时在`/api/docs`可用
 - **数据库操作**: [qms-app/src/lib/neon.ts](qms-app/src/lib/neon.ts)
 - **组件库**: Radix UI + `qms-app/src/components/ui/`中的自定义组件
 
 ### 🏗️ **项目结构概览**
+
 ```
 QMS项目/
 ├── 📱 qms-app/              # 生产Next.js应用程序（主要）

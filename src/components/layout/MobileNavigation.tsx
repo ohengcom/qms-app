@@ -17,7 +17,7 @@ import {
   Download,
   X,
   ChevronRight,
-  Zap
+  Zap,
 } from 'lucide-react';
 
 interface NavigationItem {
@@ -94,12 +94,7 @@ export function MobileNavigation({ className }: MobileNavigationProps) {
                 <h2 className="text-lg font-semibold">QMS</h2>
                 <p className="text-sm text-gray-600">Quilt Management System</p>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={closeSheet}
-                className="h-8 w-8 p-0"
-              >
+              <Button variant="ghost" size="sm" onClick={closeSheet} className="h-8 w-8 p-0">
                 <X className="h-4 w-4" />
               </Button>
             </div>
@@ -107,7 +102,7 @@ export function MobileNavigation({ className }: MobileNavigationProps) {
             {/* Navigation Items */}
             <nav className="flex-1 overflow-y-auto">
               <div className="p-4 space-y-2">
-                {navigationItems.map((item) => {
+                {navigationItems.map(item => {
                   const isActive = pathname === item.href;
                   const Icon = item.icon;
 
@@ -122,37 +117,43 @@ export function MobileNavigation({ className }: MobileNavigationProps) {
                       )}
                     >
                       <div className="flex items-center space-x-4">
-                        <div className={cn(
-                          'p-2 rounded-md',
-                          isActive ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600 group-hover:bg-gray-200'
-                        )}>
+                        <div
+                          className={cn(
+                            'p-2 rounded-md',
+                            isActive
+                              ? 'bg-blue-100 text-blue-600'
+                              : 'bg-gray-100 text-gray-600 group-hover:bg-gray-200'
+                          )}
+                        >
                           <Icon className="h-5 w-5" />
                         </div>
                         <div>
-                          <p className={cn(
-                            'font-medium',
-                            isActive ? 'text-blue-900' : 'text-gray-900'
-                          )}>
+                          <p
+                            className={cn(
+                              'font-medium',
+                              isActive ? 'text-blue-900' : 'text-gray-900'
+                            )}
+                          >
                             {item.label}
                           </p>
                           {item.description && (
-                            <p className="text-sm text-gray-500">
-                              {item.description}
-                            </p>
+                            <p className="text-sm text-gray-500">{item.description}</p>
                           )}
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center space-x-2">
                         {item.badge && (
                           <Badge variant="secondary" className="text-xs">
                             {item.badge}
                           </Badge>
                         )}
-                        <ChevronRight className={cn(
-                          'h-4 w-4 transition-colors',
-                          isActive ? 'text-blue-600' : 'text-gray-400'
-                        )} />
+                        <ChevronRight
+                          className={cn(
+                            'h-4 w-4 transition-colors',
+                            isActive ? 'text-blue-600' : 'text-gray-400'
+                          )}
+                        />
                       </div>
                     </Link>
                   );
@@ -165,9 +166,7 @@ export function MobileNavigation({ className }: MobileNavigationProps) {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <Zap className="h-4 w-4 text-green-600" />
-                  <span className="text-sm font-medium text-gray-700">
-                    All systems operational
-                  </span>
+                  <span className="text-sm font-medium text-gray-700">All systems operational</span>
                 </div>
                 <Badge variant="outline" className="text-xs">
                   v1.0.0
@@ -195,7 +194,7 @@ export function MobileBottomNavigation() {
   return (
     <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40">
       <nav className="flex">
-        {bottomNavItems.map((item) => {
+        {bottomNavItems.map(item => {
           const isActive = pathname === item.href;
           const Icon = item.icon;
 
@@ -205,19 +204,13 @@ export function MobileBottomNavigation() {
               href={item.href as any}
               className={cn(
                 'flex-1 flex flex-col items-center justify-center py-3 px-2 text-xs transition-colors',
-                isActive 
-                  ? 'text-blue-600 bg-blue-50' 
+                isActive
+                  ? 'text-blue-600 bg-blue-50'
                   : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 active:bg-gray-100'
               )}
             >
-              <Icon className={cn(
-                'h-5 w-5 mb-1',
-                isActive ? 'text-blue-600' : 'text-gray-600'
-              )} />
-              <span className={cn(
-                'font-medium',
-                isActive ? 'text-blue-600' : 'text-gray-600'
-              )}>
+              <Icon className={cn('h-5 w-5 mb-1', isActive ? 'text-blue-600' : 'text-gray-600')} />
+              <span className={cn('font-medium', isActive ? 'text-blue-600' : 'text-gray-600')}>
                 {item.label}
               </span>
             </Link>
@@ -237,40 +230,29 @@ interface MobileHeaderProps {
   onBack?: () => void;
 }
 
-export function MobileHeader({ 
-  title, 
-  subtitle, 
-  actions, 
-  showBackButton = false, 
-  onBack 
+export function MobileHeader({
+  title,
+  subtitle,
+  actions,
+  showBackButton = false,
+  onBack,
 }: MobileHeaderProps) {
   return (
     <header className="lg:hidden sticky top-0 z-30 bg-white border-b border-gray-200">
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center space-x-3">
           {showBackButton && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onBack}
-              className="h-10 w-10 p-0"
-            >
+            <Button variant="ghost" size="sm" onClick={onBack} className="h-10 w-10 p-0">
               <ChevronRight className="h-5 w-5 rotate-180" />
             </Button>
           )}
           <div>
             <h1 className="text-lg font-semibold text-gray-900">{title}</h1>
-            {subtitle && (
-              <p className="text-sm text-gray-600">{subtitle}</p>
-            )}
+            {subtitle && <p className="text-sm text-gray-600">{subtitle}</p>}
           </div>
         </div>
-        
-        {actions && (
-          <div className="flex items-center space-x-2">
-            {actions}
-          </div>
-        )}
+
+        {actions && <div className="flex items-center space-x-2">{actions}</div>}
       </div>
     </header>
   );

@@ -5,11 +5,24 @@ import { Season, QuiltStatus } from '@/lib/validations/quilt';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 import type { QuiltFiltersInput } from '@/lib/validations/quilt';
 import { cn } from '@/lib/utils';
 import {
@@ -23,7 +36,7 @@ import {
   Package,
   MapPin,
   Building,
-  Weight
+  Weight,
 } from 'lucide-react';
 
 interface QuiltFiltersProps {
@@ -47,36 +60,53 @@ const STATUS_OPTIONS = [
 ];
 
 const COMMON_LOCATIONS = [
-  'Master Bedroom', 'Guest Room', 'Living Room',
-  'Bedroom Closet', 'Linen Closet', 'Storage Room',
-  'Under Bed Storage', 'Wardrobe'
+  'Master Bedroom',
+  'Guest Room',
+  'Living Room',
+  'Bedroom Closet',
+  'Linen Closet',
+  'Storage Room',
+  'Under Bed Storage',
+  'Wardrobe',
 ];
 
 const COMMON_BRANDS = [
-  'IKEA', 'Muji', 'Uniqlo', 'Nitori', 'Francfranc',
-  'West Elm', 'Pottery Barn', 'Patagonia', 'REI Co-op'
+  'IKEA',
+  'Muji',
+  'Uniqlo',
+  'Nitori',
+  'Francfranc',
+  'West Elm',
+  'Pottery Barn',
+  'Patagonia',
+  'REI Co-op',
 ];
 
-export function QuiltFilters({ filters, onFiltersChange, totalCount, filteredCount }: QuiltFiltersProps) {
+export function QuiltFilters({
+  filters,
+  onFiltersChange,
+  totalCount,
+  filteredCount,
+}: QuiltFiltersProps) {
   const [localFilters, setLocalFilters] = useState<QuiltFiltersInput>(filters);
   const [isOpen, setIsOpen] = useState(false);
-  
+
   // Debounced filter application
   useEffect(() => {
     const timer = setTimeout(() => {
       onFiltersChange(localFilters);
     }, 300);
-    
+
     return () => clearTimeout(timer);
   }, [localFilters, onFiltersChange]);
-  
+
   const updateFilter = (key: keyof QuiltFiltersInput, value: any) => {
     setLocalFilters(prev => ({
       ...prev,
       [key]: value || undefined,
     }));
   };
-  
+
   const clearFilters = () => {
     const clearedFilters = {
       season: undefined,
@@ -90,15 +120,15 @@ export function QuiltFilters({ filters, onFiltersChange, totalCount, filteredCou
     setLocalFilters(clearedFilters);
     onFiltersChange(clearedFilters);
   };
-  
+
   const getActiveFilterCount = () => {
-    return Object.values(localFilters).filter(value => 
-      value !== undefined && value !== '' && value !== null
+    return Object.values(localFilters).filter(
+      value => value !== undefined && value !== '' && value !== null
     ).length;
   };
-  
+
   const activeFilterCount = getActiveFilterCount();
-  
+
   return (
     <div className="space-y-4">
       {/* Search Bar */}
@@ -107,17 +137,17 @@ export function QuiltFilters({ filters, onFiltersChange, totalCount, filteredCou
         <Input
           placeholder="Search quilts by name, material, color, or notes..."
           value={localFilters.search || ''}
-          onChange={(e) => updateFilter('search', e.target.value)}
+          onChange={e => updateFilter('search', e.target.value)}
           className="pl-10 pr-4"
         />
       </div>
-      
+
       {/* Quick Filters */}
       <div className="flex flex-wrap items-center gap-2">
         {/* Season Filter */}
         <div className="flex items-center space-x-1">
           <Label className="text-sm text-gray-600">Season:</Label>
-          {SEASON_OPTIONS.map((option) => {
+          {SEASON_OPTIONS.map(option => {
             const Icon = option.icon;
             const isActive = localFilters.season === option.value;
             return (
@@ -126,10 +156,7 @@ export function QuiltFilters({ filters, onFiltersChange, totalCount, filteredCou
                 variant={isActive ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => updateFilter('season', isActive ? undefined : option.value)}
-                className={cn(
-                  'h-8',
-                  !isActive && option.color
-                )}
+                className={cn('h-8', !isActive && option.color)}
               >
                 <Icon className="w-3 h-3 mr-1" />
                 {option.label}
@@ -137,13 +164,13 @@ export function QuiltFilters({ filters, onFiltersChange, totalCount, filteredCou
             );
           })}
         </div>
-        
+
         <Separator orientation="vertical" className="h-6" />
-        
+
         {/* Status Filter */}
         <div className="flex items-center space-x-1">
           <Label className="text-sm text-gray-600">Status:</Label>
-          {STATUS_OPTIONS.map((option) => {
+          {STATUS_OPTIONS.map(option => {
             const isActive = localFilters.status === option.value;
             return (
               <Button
@@ -151,19 +178,16 @@ export function QuiltFilters({ filters, onFiltersChange, totalCount, filteredCou
                 variant={isActive ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => updateFilter('status', isActive ? undefined : option.value)}
-                className={cn(
-                  'h-8',
-                  !isActive && option.color
-                )}
+                className={cn('h-8', !isActive && option.color)}
               >
                 {option.label}
               </Button>
             );
           })}
         </div>
-        
+
         <Separator orientation="vertical" className="h-6" />
-        
+
         {/* Advanced Filters Toggle */}
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
@@ -171,20 +195,16 @@ export function QuiltFilters({ filters, onFiltersChange, totalCount, filteredCou
               <SlidersHorizontal className="w-4 h-4 mr-2" />
               Advanced
               {activeFilterCount > 0 && (
-                <Badge className="ml-2 h-5 w-5 p-0 text-xs">
-                  {activeFilterCount}
-                </Badge>
+                <Badge className="ml-2 h-5 w-5 p-0 text-xs">{activeFilterCount}</Badge>
               )}
             </Button>
           </SheetTrigger>
           <SheetContent className="w-[400px] sm:w-[540px]">
             <SheetHeader>
               <SheetTitle>Advanced Filters</SheetTitle>
-              <SheetDescription>
-                Refine your search with detailed criteria
-              </SheetDescription>
+              <SheetDescription>Refine your search with detailed criteria</SheetDescription>
             </SheetHeader>
-            
+
             <div className="mt-6 space-y-6">
               {/* Location Filter */}
               <div className="space-y-2">
@@ -194,14 +214,14 @@ export function QuiltFilters({ filters, onFiltersChange, totalCount, filteredCou
                 </Label>
                 <Select
                   value={localFilters.location || ''}
-                  onValueChange={(value) => updateFilter('location', value)}
+                  onValueChange={value => updateFilter('location', value)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select location" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="">All locations</SelectItem>
-                    {COMMON_LOCATIONS.map((location) => (
+                    {COMMON_LOCATIONS.map(location => (
                       <SelectItem key={location} value={location}>
                         {location}
                       </SelectItem>
@@ -209,7 +229,7 @@ export function QuiltFilters({ filters, onFiltersChange, totalCount, filteredCou
                   </SelectContent>
                 </Select>
                 <div className="flex flex-wrap gap-1 mt-2">
-                  {COMMON_LOCATIONS.slice(0, 4).map((location) => (
+                  {COMMON_LOCATIONS.slice(0, 4).map(location => (
                     <Badge
                       key={location}
                       variant="outline"
@@ -221,7 +241,7 @@ export function QuiltFilters({ filters, onFiltersChange, totalCount, filteredCou
                   ))}
                 </div>
               </div>
-              
+
               {/* Brand Filter */}
               <div className="space-y-2">
                 <Label className="flex items-center space-x-2">
@@ -230,14 +250,14 @@ export function QuiltFilters({ filters, onFiltersChange, totalCount, filteredCou
                 </Label>
                 <Select
                   value={localFilters.brand || ''}
-                  onValueChange={(value) => updateFilter('brand', value)}
+                  onValueChange={value => updateFilter('brand', value)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select brand" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="">All brands</SelectItem>
-                    {COMMON_BRANDS.map((brand) => (
+                    {COMMON_BRANDS.map(brand => (
                       <SelectItem key={brand} value={brand}>
                         {brand}
                       </SelectItem>
@@ -245,7 +265,7 @@ export function QuiltFilters({ filters, onFiltersChange, totalCount, filteredCou
                   </SelectContent>
                 </Select>
                 <div className="flex flex-wrap gap-1 mt-2">
-                  {COMMON_BRANDS.slice(0, 6).map((brand) => (
+                  {COMMON_BRANDS.slice(0, 6).map(brand => (
                     <Badge
                       key={brand}
                       variant="outline"
@@ -257,7 +277,7 @@ export function QuiltFilters({ filters, onFiltersChange, totalCount, filteredCou
                   ))}
                 </div>
               </div>
-              
+
               {/* Weight Range */}
               <div className="space-y-2">
                 <Label className="flex items-center space-x-2">
@@ -271,7 +291,12 @@ export function QuiltFilters({ filters, onFiltersChange, totalCount, filteredCou
                       type="number"
                       placeholder="e.g., 500"
                       value={localFilters.minWeight || ''}
-                      onChange={(e) => updateFilter('minWeight', e.target.value ? parseInt(e.target.value) : undefined)}
+                      onChange={e =>
+                        updateFilter(
+                          'minWeight',
+                          e.target.value ? parseInt(e.target.value) : undefined
+                        )
+                      }
                     />
                   </div>
                   <div>
@@ -280,7 +305,12 @@ export function QuiltFilters({ filters, onFiltersChange, totalCount, filteredCou
                       type="number"
                       placeholder="e.g., 2000"
                       value={localFilters.maxWeight || ''}
-                      onChange={(e) => updateFilter('maxWeight', e.target.value ? parseInt(e.target.value) : undefined)}
+                      onChange={e =>
+                        updateFilter(
+                          'maxWeight',
+                          e.target.value ? parseInt(e.target.value) : undefined
+                        )
+                      }
                     />
                   </div>
                 </div>
@@ -317,21 +347,19 @@ export function QuiltFilters({ filters, onFiltersChange, totalCount, filteredCou
                   </Badge>
                 </div>
               </div>
-              
+
               {/* Clear Filters */}
               <div className="flex justify-between items-center pt-4 border-t">
                 <Button variant="outline" onClick={clearFilters}>
                   <X className="w-4 h-4 mr-2" />
                   Clear All
                 </Button>
-                <Button onClick={() => setIsOpen(false)}>
-                  Apply Filters
-                </Button>
+                <Button onClick={() => setIsOpen(false)}>Apply Filters</Button>
               </div>
             </div>
           </SheetContent>
         </Sheet>
-        
+
         {/* Clear All Filters */}
         {activeFilterCount > 0 && (
           <Button variant="ghost" size="sm" onClick={clearFilters}>
@@ -340,12 +368,14 @@ export function QuiltFilters({ filters, onFiltersChange, totalCount, filteredCou
           </Button>
         )}
       </div>
-      
+
       {/* Results Count */}
       {totalCount !== undefined && (
         <div className="text-sm text-gray-500">
           {filteredCount !== undefined && filteredCount !== totalCount ? (
-            <>Showing {filteredCount} of {totalCount} quilts</>
+            <>
+              Showing {filteredCount} of {totalCount} quilts
+            </>
           ) : (
             <>Showing {totalCount} quilts</>
           )}

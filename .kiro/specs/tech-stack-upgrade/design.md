@@ -1,166 +1,245 @@
-# Tech Stack Upgrade Design Document
+# Tech Stack Optimization & Upgrade Design Document
 
 ## Overview
 
-This design document outlines the approach for upgrading the QMS application's technology stack to the latest stable versions. The upgrade focuses on three main dependencies that have available updates: TypeScript (5.x → 5.9.3), @types/node (20.19.23 → 24.9.1), and superjson (2.2.2 → 2.2.3).
+This design document outlines a comprehensive approach for optimizing and upgrading the QMS application's technology stack. The optimization focuses on dependency updates, performance improvements, security enhancements, and developer experience improvements.
 
-**Note**: Prisma has been completely removed from the project and replaced with Neon Serverless Driver for direct PostgreSQL access.
+**Current State Analysis:**
 
-The upgrade strategy prioritizes minimal disruption while ensuring all code remains type-safe and functional. We'll perform incremental updates, testing after each major change.
+- Next.js 16 with React 19 (latest)
+- TypeScript 5.9.3 (current)
+- tRPC 11.7.0 (current)
+- Neon Serverless PostgreSQL (current)
+- Outdated dependencies: @types/node (20.19.23 → 24.9.1), lucide-react (0.546.0 → 0.548.0), Zod (3.25.76 → 4.1.12)
+
+The optimization strategy prioritizes performance, security, and maintainability while ensuring zero downtime and backward compatibility.
 
 ## Architecture
 
-### Upgrade Strategy
+### Optimization Strategy
 
-The upgrade follows a phased approach:
+The optimization follows a comprehensive phased approach:
 
-1. **Dependency Update Phase**: Update package.json with new versions
-2. **Installation Phase**: Install updated dependencies and regenerate lock files
-3. **Type Resolution Phase**: Fix TypeScript compilation errors
-4. **Code Adaptation Phase**: Update code to accommodate breaking changes
-5. **Testing Phase**: Verify functionality across all features
-6. **Documentation Phase**: Document changes and lessons learned
+1. **Dependency Analysis Phase**: Audit all dependencies for updates and security vulnerabilities
+2. **Configuration Optimization Phase**: Optimize TypeScript, Next.js, and build configurations
+3. **Dependency Update Phase**: Update dependencies with careful consideration of breaking changes
+4. **Performance Optimization Phase**: Implement bundle optimization and code splitting
+5. **Security Enhancement Phase**: Apply security best practices and headers
+6. **Testing & Validation Phase**: Comprehensive testing of all changes
+7. **Documentation Phase**: Document all optimizations and provide maintenance guidelines
 
 ### Risk Assessment
 
 **Low Risk Updates:**
-- superjson 2.2.2 → 2.2.3 (patch version, bug fixes only)
+
+- lucide-react 0.546.0 → 0.548.0 (minor version, likely backward compatible)
+- Minor/patch updates for other dependencies
 
 **Medium Risk Updates:**
-- TypeScript 5.x → 5.9.3 (may introduce stricter type checking)
+
 - @types/node 20.19.23 → 24.9.1 (major version bump, potential breaking changes)
+- TypeScript configuration optimizations (may reveal hidden type issues)
+
+**High Risk Updates:**
+
+- Zod 3.25.76 → 4.1.12 (major version bump, significant breaking changes expected)
 
 ## Components and Interfaces
 
-### 1. Package Management
+### 1. Dependency Management & Security
 
-**Component**: package.json
-**Changes Required**:
-- Update dependency versions
-- Ensure peer dependency compatibility
-- Verify no conflicting version requirements
+**Component**: Package Dependencies
+**Optimizations Required**:
+
+- Update @types/node to 24.9.1 for latest Node.js type definitions
+- Update lucide-react to 0.548.0 for latest icons and bug fixes
+- Evaluate Zod 4.1.12 upgrade (breaking changes analysis required)
+- Audit all dependencies for security vulnerabilities
+- Implement automated dependency scanning
 
 **Affected Files**:
-- `qms-app/package.json`
-- `qms-app/package-lock.json` (regenerated)
 
-### 2. TypeScript Configuration
+- `package.json` - dependency version updates
+- `package-lock.json` - regenerated with new versions
+- All files using Zod validation (if upgraded)
+
+### 2. TypeScript Configuration Optimization
 
 **Component**: TypeScript Compiler Configuration
-**Changes Required**:
-- Review and update tsconfig.json for TypeScript 5.9.3 best practices
-- Enable new compiler options if beneficial
-- Adjust strictness settings if needed
+**Optimizations Required**:
+
+- Update target from ES2017 to ES2022 for better performance and smaller bundles
+- Enable additional strict mode options for better type safety
+- Optimize incremental compilation settings
+- Add performance monitoring options
+- Configure better path mapping and module resolution
+
+**Current Configuration Issues**:
+
+- Target ES2017 is outdated (modern browsers support ES2022)
+- Missing some beneficial strict mode options
+- Could benefit from better incremental compilation settings
 
 **Affected Files**:
-- `qms-app/tsconfig.json`
 
-### 3. Node.js Type Definitions
+- `tsconfig.json` - compiler configuration updates
 
-**Component**: Server-side Type Definitions
-**Changes Required**:
-- Update imports from @types/node
-- Handle breaking changes in Node.js 24.x types
-- Update API route handler types
-- Update server utility types
+### 3. Performance & Bundle Optimization
 
-**Affected Areas**:
-- API routes (`src/app/api/**/*.ts`)
-- Server utilities (`src/lib/**/*.ts`)
-- tRPC context and middleware (`src/server/api/trpc.ts`)
-- Service layer (`src/server/services/**/*.ts`)
+**Component**: Build and Runtime Performance
+**Optimizations Required**:
 
-### 4. Database Layer
+- Implement advanced code splitting strategies
+- Optimize bundle sizes with better tree shaking
+- Implement dynamic imports for large components
+- Optimize image loading and caching
+- Implement service worker for better caching
+- Optimize CSS delivery and critical path
 
-**Component**: Database Access
-**Current State**: Using Neon Serverless Driver (Prisma removed)
-**Changes Required**: None - Neon Serverless Driver is already up to date
+**Current Performance Opportunities**:
 
-**Affected Files**:
-- `src/lib/neon.ts` - Database connection and operations
-- All files using database operations
-
-### 5. Type Definitions Across Codebase
-
-**Component**: Application Type Safety
-**Changes Required**:
-- Fix type errors from stricter TypeScript checking
-- Update type assertions where necessary
-- Ensure React component types are correct
-- Verify tRPC router types
+- Bundle analysis shows opportunities for code splitting
+- Some components could be lazy-loaded
+- Image optimization could be enhanced
+- CSS could be better optimized
 
 **Affected Areas**:
-- React components (`src/components/**/*.tsx`)
-- Custom hooks (`src/hooks/**/*.ts`)
-- tRPC routers (`src/server/api/routers/**/*.ts`)
-- Validation schemas (`src/lib/validations/**/*.ts`)
+
+- `next.config.js` - webpack and build optimizations
+- Component files - dynamic imports and lazy loading
+- Image components - optimization strategies
+- CSS files - critical path optimization
+
+### 4. Security Enhancements
+
+**Component**: Application Security
+**Enhancements Required**:
+
+- Implement Content Security Policy (CSP) headers
+- Add security headers for XSS and CSRF protection
+- Implement proper input validation and sanitization
+- Add rate limiting for API endpoints
+- Implement secure session management
+- Add security vulnerability scanning
+
+**Current Security State**:
+
+- Basic security headers are implemented
+- Need enhanced CSP and additional security measures
+- API endpoints could benefit from rate limiting
+- Input validation could be strengthened
+
+**Affected Areas**:
+
+- `next.config.js` - security headers configuration
+- API routes - rate limiting and validation
+- Authentication system - session security
+- Input validation - enhanced sanitization
+
+### 5. Development Experience Optimization
+
+**Component**: Developer Tooling and Workflow
+**Optimizations Required**:
+
+- Enhance ESLint configuration with additional rules
+- Implement automated code formatting with Prettier
+- Add pre-commit hooks for code quality
+- Implement automated testing pipeline
+- Add better error handling and debugging tools
+- Optimize hot reload and build performance
+
+**Current Development Experience**:
+
+- Basic ESLint configuration is in place
+- Could benefit from additional linting rules
+- No automated formatting or pre-commit hooks
+- Build times could be optimized
+
+**Affected Areas**:
+
+- `eslint.config.mjs` - enhanced linting rules
+- Package scripts - development workflow optimization
+- Git hooks - pre-commit quality checks
+- Development server configuration
 
 ## Data Models
 
 No changes to data models are required. The database schema is managed directly through Neon PostgreSQL and remains unchanged.
 
-## Breaking Changes Analysis
+## Breaking Changes Analysis & Migration Strategy
 
 ### @types/node 20.x → 24.x
 
-**Potential Breaking Changes**:
+**Breaking Changes Analysis**:
 
-1. **Request/Response Types**: Node.js 24.x may have updated HTTP types
-   - **Impact**: API route handlers may need type updates
-   - **Solution**: Update to use `NextRequest` and `NextResponse` from Next.js instead of raw Node types
+1. **HTTP Types**: Node.js 24.x has updated HTTP request/response types
+   - **Impact**: API route handlers using raw Node.js types
+   - **Migration**: Use Next.js `NextRequest`/`NextResponse` types exclusively
+   - **Files Affected**: All API routes in `src/app/api/`
 
-2. **Buffer Types**: Changes in Buffer type definitions
-   - **Impact**: File upload/download operations
-   - **Solution**: Verify Buffer usage in import/export services
+2. **Buffer and Stream Types**: Enhanced type definitions for Buffer and Stream APIs
+   - **Impact**: File operations and data streaming
+   - **Migration**: Update type annotations for file handling operations
+   - **Files Affected**: Import/export services, file upload handlers
 
-3. **Stream Types**: Updates to stream type definitions
-   - **Impact**: Any streaming operations
-   - **Solution**: Review and update stream handling code
+3. **Process Environment Types**: Stricter typing for process.env
+   - **Impact**: Environment variable access patterns
+   - **Migration**: Add proper type definitions for environment variables
+   - **Files Affected**: Configuration files, database connections
 
-4. **Process Types**: Changes in process.env typing
-   - **Impact**: Environment variable access
-   - **Solution**: Ensure proper typing for environment variables
+### Zod 3.x → 4.x (Evaluation Required)
 
-### TypeScript 5.9.3
+**Major Breaking Changes**:
 
-**New Features & Changes**:
+1. **Schema Definition Changes**: New API for schema composition
+   - **Impact**: All validation schemas need review
+   - **Migration**: Update schema definitions to new API
+   - **Files Affected**: `src/lib/validations/`, all tRPC routers
 
-1. **Stricter Type Checking**: More rigorous type inference
-   - **Impact**: May reveal previously hidden type errors
-   - **Solution**: Add explicit type annotations where needed
+2. **Error Handling Changes**: New error structure and handling
+   - **Impact**: Error handling logic throughout the application
+   - **Migration**: Update error handling to use new error types
+   - **Files Affected**: API routes, form validation, tRPC error handling
 
-2. **Improved Type Narrowing**: Better control flow analysis
-   - **Impact**: Some type assertions may become unnecessary
-   - **Solution**: Remove redundant type assertions
+3. **Type Inference Changes**: Improved but different type inference
+   - **Impact**: TypeScript types derived from Zod schemas
+   - **Migration**: Review and update type exports from schemas
+   - **Files Affected**: Type definitions, component props
 
-3. **Enhanced Error Messages**: More detailed error reporting
-   - **Impact**: Easier debugging but may show more errors initially
-   - **Solution**: Address errors systematically
+**Migration Decision**: Due to extensive breaking changes, Zod 4.x upgrade should be evaluated separately and may be deferred to a future release.
 
-### Database Layer (Neon)
+### Performance Optimization Strategy
 
-**Changes**: None required - Prisma has been removed
-- Bug fixes and performance improvements
-- No breaking changes expected
-- Enhanced type generation
+**Bundle Size Optimization**:
 
-### superjson 2.2.3
+1. **Code Splitting**: Implement route-based and component-based code splitting
+   - **Strategy**: Use dynamic imports for large components and pages
+   - **Target**: Reduce initial bundle size by 20-30%
+   - **Implementation**: Next.js dynamic imports and React.lazy
 
-**Changes**:
-- Patch release with bug fixes
-- No breaking changes
+2. **Tree Shaking**: Optimize unused code elimination
+   - **Strategy**: Configure webpack for better tree shaking
+   - **Target**: Eliminate unused library code
+   - **Implementation**: ES modules and sideEffects configuration
+
+3. **Image Optimization**: Enhanced image loading and caching
+   - **Strategy**: Implement next/image optimizations and WebP/AVIF formats
+   - **Target**: Reduce image payload by 40-60%
+   - **Implementation**: Next.js Image component with optimized settings
 
 ## Error Handling
 
 ### Compilation Errors
 
 **Strategy**: Fix errors incrementally by category
+
 1. Address Node.js type errors first
 2. Fix React component type errors
 3. Resolve tRPC type errors
 4. Handle remaining miscellaneous errors
 
 **Approach**:
+
 - Use `npm run type-check` to identify all errors
 - Group errors by file and type
 - Fix systematically from dependencies outward
@@ -168,6 +247,7 @@ No changes to data models are required. The database schema is managed directly 
 ### Runtime Errors
 
 **Strategy**: Test thoroughly after compilation succeeds
+
 1. Start development server
 2. Test each major feature area
 3. Check browser console for errors
@@ -177,6 +257,7 @@ No changes to data models are required. The database schema is managed directly 
 ### Rollback Plan
 
 If critical issues arise:
+
 1. Revert package.json to previous versions
 2. Run `npm install` to restore previous state
 3. Document the blocking issue
@@ -189,6 +270,7 @@ If critical issues arise:
 **Objective**: Ensure code compiles without errors
 
 **Steps**:
+
 1. Run `npm run type-check` - verify TypeScript compilation
 2. Run `npm run lint:check` - verify ESLint passes
 3. Run `npm run db:test` - verify database connection
@@ -200,6 +282,7 @@ If critical issues arise:
 **Objective**: Ensure production build succeeds
 
 **Steps**:
+
 1. Run `npm run build` - verify Next.js production build
 2. Check build output for warnings
 3. Verify bundle sizes are reasonable
@@ -211,6 +294,7 @@ If critical issues arise:
 **Objective**: Ensure application runs in development mode
 
 **Steps**:
+
 1. Start development server with `npm run dev`
 2. Verify server starts without errors
 3. Check for console warnings
@@ -223,6 +307,7 @@ If critical issues arise:
 **Objective**: Verify all features work correctly
 
 **Test Areas**:
+
 1. **Dashboard**: Load dashboard, verify statistics display
 2. **Quilt Management**: Create, read, update, delete quilts
 3. **Usage Tracking**: Record and view usage history
@@ -237,6 +322,7 @@ If critical issues arise:
 **Objective**: Verify all tRPC procedures work
 
 **Steps**:
+
 1. Test each tRPC router
 2. Verify query procedures
 3. Verify mutation procedures
@@ -247,47 +333,61 @@ If critical issues arise:
 
 ## Implementation Sequence
 
-### Step 1: Update Dependencies
-- Modify package.json with new versions
-- Run npm install
-- Verify installation succeeds
+### Phase 1: Configuration Optimization
 
-### Step 2: Verify Database Connection
-- Run `npm run db:test`
-- Verify database connection succeeds
-- Check for any warnings
+- Optimize TypeScript configuration (target ES2022, strict mode options)
+- Enhance Next.js configuration for performance and security
+- Update ESLint configuration with additional rules
+- Implement Prettier for consistent code formatting
 
-### Step 3: Type Check and Fix Errors
-- Run `npm run type-check`
-- Identify all TypeScript errors
-- Fix errors systematically
-- Re-run type check until clean
+### Phase 2: Safe Dependency Updates
 
-### Step 4: Update Configuration
-- Review tsconfig.json
-- Update if beneficial settings available
-- Verify ESLint configuration compatibility
+- Update lucide-react to 0.548.0 (low risk)
+- Update other minor/patch version dependencies
+- Run security audit and fix vulnerabilities
+- Test all functionality after updates
 
-### Step 5: Test Development Build
-- Start development server
-- Test all major features
-- Fix any runtime errors
+### Phase 3: Major Dependency Updates
 
-### Step 6: Test Production Build
-- Run production build
-- Verify build succeeds
-- Test production mode if possible
+- Update @types/node to 24.9.1
+- Fix any breaking changes in API routes and server code
+- Update type definitions throughout the codebase
+- Comprehensive testing of all affected areas
 
-### Step 7: Documentation
-- Document all changes made
-- Note any breaking changes encountered
-- Provide upgrade notes for future reference
+### Phase 4: Performance Optimization
+
+- Implement code splitting and dynamic imports
+- Optimize bundle configuration and tree shaking
+- Enhance image optimization and caching
+- Implement service worker for better caching
+
+### Phase 5: Security Enhancements
+
+- Implement enhanced Content Security Policy
+- Add rate limiting to API endpoints
+- Strengthen input validation and sanitization
+- Add security monitoring and logging
+
+### Phase 6: Development Experience
+
+- Add pre-commit hooks for code quality
+- Implement automated testing pipeline
+- Optimize development server performance
+- Add better debugging and error handling tools
+
+### Phase 7: Testing & Validation
+
+- Comprehensive functionality testing
+- Performance benchmarking and validation
+- Security testing and vulnerability assessment
+- Production deployment and monitoring
 
 ## Configuration Changes
 
 ### tsconfig.json
 
 Review and potentially update:
+
 - `target`: Consider ES2023 or newer
 - `lib`: Ensure includes necessary libraries
 - `moduleResolution`: Verify "bundler" or "node16" is appropriate
@@ -297,6 +397,7 @@ Review and potentially update:
 ### next.config.js
 
 Verify compatibility with:
+
 - TypeScript 5.9.3
 - Updated type definitions
 - No changes expected but verify no warnings
@@ -306,6 +407,7 @@ Verify compatibility with:
 ### Peer Dependencies
 
 Verify compatibility matrix:
+
 - React 19.2.0 ✓ (already latest)
 - Next.js 16.0.0 ✓ (already latest)
 - TypeScript 5.9.3 ✓ (compatible with all packages)
@@ -314,6 +416,7 @@ Verify compatibility matrix:
 ### Transitive Dependencies
 
 Monitor for:
+
 - Automatic updates to sub-dependencies
 - Potential conflicts in dependency tree
 - Security vulnerabilities (run `npm audit`)
@@ -372,18 +475,42 @@ Monitor for:
 4. Have rollback plan ready
 5. Verify all features post-deployment
 
-## Success Metrics
+## Success Metrics & KPIs
 
-- ✅ All TypeScript compilation errors resolved
-- ✅ All ESLint checks pass
-- ✅ Development server starts without errors
-- ✅ Production build completes successfully
-- ✅ All features function correctly
-- ✅ No new runtime errors in console
-- ✅ Database operations work correctly
-- ✅ API endpoints respond correctly
-- ✅ No performance regressions
-- ✅ Documentation updated
+### Performance Metrics
+
+- **Bundle Size**: Reduce initial JavaScript bundle by 20-30%
+- **Build Time**: Improve build performance by 15-25%
+- **Core Web Vitals**: Achieve scores of 90+ for LCP, FID, and CLS
+- **Page Load Time**: Reduce initial page load time by 20-30%
+
+### Security Metrics
+
+- **Vulnerability Count**: Zero high/critical security vulnerabilities
+- **Security Headers**: 100% compliance with security best practices
+- **CSP Implementation**: Comprehensive Content Security Policy in place
+- **Input Validation**: 100% coverage of user inputs with proper validation
+
+### Development Experience Metrics
+
+- **Type Safety**: Zero TypeScript compilation errors
+- **Code Quality**: 100% ESLint compliance with enhanced rules
+- **Hot Reload Time**: Improve development server reload time by 20%
+- **Developer Productivity**: Reduced time for common development tasks
+
+### Reliability Metrics
+
+- **Test Coverage**: Maintain or improve existing test coverage
+- **Runtime Errors**: Zero new runtime errors introduced
+- **API Reliability**: 100% API endpoint functionality maintained
+- **Database Operations**: All database operations function correctly
+
+### Maintenance Metrics
+
+- **Dependency Health**: All dependencies up-to-date with security patches
+- **Documentation**: Complete documentation of all changes and optimizations
+- **Automation**: Automated dependency scanning and security monitoring
+- **Future Readiness**: Established processes for ongoing maintenance
 
 ## Future Considerations
 

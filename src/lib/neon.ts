@@ -15,16 +15,16 @@ export async function executeQuery<T = any>(queryText: string, params: any[] = [
       const result = await sql`${queryText}`;
       return result as T[];
     }
-    
+
     // For parameterized queries, we need to use Neon's tagged template syntax
     // Neon supports parameter interpolation in tagged templates
     let processedQuery = queryText;
-    
+
     // Replace $1, $2, etc. with actual parameter values safely
     params.forEach((param, index) => {
       const placeholder = `$${index + 1}`;
       let escapedParam: string;
-      
+
       if (param === null || param === undefined) {
         escapedParam = 'NULL';
       } else if (typeof param === 'string') {
@@ -37,10 +37,10 @@ export async function executeQuery<T = any>(queryText: string, params: any[] = [
       } else {
         escapedParam = String(param);
       }
-      
+
       processedQuery = processedQuery.replace(new RegExp(`\\${placeholder}\\b`, 'g'), escapedParam);
     });
-    
+
     // Execute with tagged template literal
     const result = await sql`${processedQuery}`;
     return result as T[];
@@ -53,28 +53,30 @@ export async function executeQuery<T = any>(queryText: string, params: any[] = [
 // Helper functions for common operations
 export const db = {
   // Get all quilts with optional filtering
-  async getQuilts(filters: {
-    season?: string;
-    status?: string;
-    location?: string;
-    brand?: string;
-    search?: string;
-    limit?: number;
-    offset?: number;
-  } = {}) {
+  async getQuilts(
+    filters: {
+      season?: string;
+      status?: string;
+      location?: string;
+      brand?: string;
+      search?: string;
+      limit?: number;
+      offset?: number;
+    } = {}
+  ) {
     try {
       console.log('Executing getQuilts query with data transformation...');
-      
+
       // Get quilts from database
       const result = await sql`
         SELECT * FROM quilts 
         ORDER BY created_at DESC 
         LIMIT 20
       `;
-      
+
       console.log('Query result:', result);
       console.log('Number of records:', result?.length || 0);
-      
+
       // Transform database records to match frontend interface
       const transformedQuilts = result.map((quilt: any) => ({
         id: String(quilt.id),
@@ -101,7 +103,7 @@ export const db = {
         currentUsage: null,
         usagePeriods: [],
       }));
-      
+
       return transformedQuilts;
     } catch (error) {
       console.error('Get quilts error:', error);
@@ -139,7 +141,7 @@ export const db = {
         const result = await sql`SELECT COUNT(*) as count FROM quilts`;
         return parseInt(result[0]?.count || '0');
       }
-      
+
       // For filtered queries, we'll need to handle this differently
       // For now, just return the basic count
       const result = await sql`SELECT COUNT(*) as count FROM quilts`;
@@ -161,10 +163,10 @@ export const db = {
         $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19
       ) RETURNING *
     `;
-    
+
     const id = crypto.randomUUID();
     const now = new Date().toISOString();
-    
+
     const params = [
       id,
       data.itemNumber,
@@ -184,7 +186,7 @@ export const db = {
       data.currentStatus || 'AVAILABLE',
       data.notes || null,
       now,
-      now
+      now,
     ];
 
     const result = await executeQuery(query, params);
@@ -232,5 +234,5 @@ export const db = {
       console.error('Get tables error:', error);
       return [];
     }
-  }
+  },
 };

@@ -18,7 +18,7 @@ export class CacheService {
   constructor(options: CacheOptions = {}) {
     this.defaultTTL = options.ttl || 5 * 60 * 1000; // 5 minutes default
     this.maxSize = options.maxSize || 1000; // 1000 entries max
-    
+
     // Clean up expired entries every minute
     setInterval(() => this.cleanup(), 60 * 1000);
   }
@@ -50,7 +50,7 @@ export class CacheService {
   // Get cache entry
   get<T>(key: string): T | null {
     const entry = this.cache.get(key);
-    
+
     if (!entry) {
       return null;
     }
@@ -83,14 +83,14 @@ export class CacheService {
   invalidatePattern(pattern: string): number {
     const regex = new RegExp(pattern);
     let deletedCount = 0;
-    
+
     for (const key of this.cache.keys()) {
       if (regex.test(key)) {
         this.cache.delete(key);
         deletedCount++;
       }
     }
-    
+
     return deletedCount;
   }
 
@@ -99,14 +99,14 @@ export class CacheService {
     const now = Date.now();
     let expiredCount = 0;
     let totalSize = 0;
-    
+
     for (const [key, entry] of this.cache.entries()) {
       totalSize++;
       if (now - entry.timestamp > entry.ttl) {
         expiredCount++;
       }
     }
-    
+
     return {
       totalEntries: totalSize,
       expiredEntries: expiredCount,
@@ -120,13 +120,13 @@ export class CacheService {
   private cleanup(): void {
     const now = Date.now();
     const keysToDelete: string[] = [];
-    
+
     for (const [key, entry] of this.cache.entries()) {
       if (now - entry.timestamp > entry.ttl) {
         keysToDelete.push(key);
       }
     }
-    
+
     keysToDelete.forEach(key => this.cache.delete(key));
   }
 
@@ -138,8 +138,10 @@ export class CacheService {
   }
 
   // Warm up cache with common queries
-  async warmUp(warmUpFunctions: Array<() => Promise<{ key: string; data: any; ttl?: number }>>): Promise<void> {
-    const promises = warmUpFunctions.map(async (fn) => {
+  async warmUp(
+    warmUpFunctions: Array<() => Promise<{ key: string; data: any; ttl?: number }>>
+  ): Promise<void> {
+    const promises = warmUpFunctions.map(async fn => {
       try {
         const { key, data, ttl } = await fn();
         this.set(key, data, ttl);
@@ -147,27 +149,27 @@ export class CacheService {
         console.error('Cache warm-up failed for function:', error);
       }
     });
-    
+
     await Promise.all(promises);
   }
 }
 
 // Cache key generators for consistent naming
 export const CacheKeys = {
-  dashboardStats: (includeAnalytics: boolean = true) => 
+  dashboardStats: (includeAnalytics: boolean = true) =>
     `dashboard:stats:${includeAnalytics ? 'with' : 'without'}_analytics`,
-  
+
   seasonalInsights: () => 'dashboard:seasonal_insights',
-  
+
   maintenanceInsights: () => 'dashboard:maintenance_insights',
-  
-  usageTrends: (startDate: string, endDate: string) => 
+
+  usageTrends: (startDate: string, endDate: string) =>
     `dashboard:usage_trends:${startDate}:${endDate}`,
-  
+
   quiltList: (filters: string) => `quilts:list:${filters}`,
-  
+
   quiltDetail: (id: number) => `quilts:detail:${id}`,
-  
+
   userPreferences: (userId: string) => `user:preferences:${userId}`,
 };
 

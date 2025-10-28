@@ -4,15 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import {
-  Snowflake,
-  Sun,
-  Leaf,
-  TrendingUp,
-  BarChart3,
-  PieChart,
-  Activity
-} from 'lucide-react';
+import { Snowflake, Sun, Leaf, TrendingUp, BarChart3, PieChart, Activity } from 'lucide-react';
 
 interface SeasonalData {
   WINTER: number;
@@ -79,8 +71,10 @@ export function SeasonalChart({ data, totalQuilts, isLoading = false }: Seasonal
   ];
 
   const maxCount = Math.max(...seasons.map(s => s.count));
-  const getPercentage = (count: number) => totalQuilts > 0 ? Math.round((count / totalQuilts) * 100) : 0;
-  const getBarHeight = (count: number) => maxCount > 0 ? Math.max((count / maxCount) * 100, 5) : 5;
+  const getPercentage = (count: number) =>
+    totalQuilts > 0 ? Math.round((count / totalQuilts) * 100) : 0;
+  const getBarHeight = (count: number) =>
+    maxCount > 0 ? Math.max((count / maxCount) * 100, 5) : 5;
 
   return (
     <Card>
@@ -89,48 +83,42 @@ export function SeasonalChart({ data, totalQuilts, isLoading = false }: Seasonal
           <BarChart3 className="mr-2 h-5 w-5" />
           Seasonal Distribution
         </CardTitle>
-        <CardDescription>
-          Distribution of quilts by season and usage patterns
-        </CardDescription>
+        <CardDescription>Distribution of quilts by season and usage patterns</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
           {/* Bar Chart Visualization */}
           <div className="relative">
             <div className="flex items-end justify-between h-32 mb-4">
-              {seasons.map((season) => (
+              {seasons.map(season => (
                 <div key={season.key} className="flex flex-col items-center flex-1 mx-2">
                   <div className="relative w-full max-w-16">
                     <div
                       className={cn(
-                        "w-full rounded-t-md transition-all duration-500 ease-in-out",
+                        'w-full rounded-t-md transition-all duration-500 ease-in-out',
                         season.bgColor,
                         season.borderColor,
-                        "border-2 border-b-0"
+                        'border-2 border-b-0'
                       )}
                       style={{ height: `${getBarHeight(season.count)}%` }}
                     >
                       <div className="absolute -top-6 left-1/2 transform -translate-x-1/2">
-                        <span className="text-xs font-medium text-gray-700">
-                          {season.count}
-                        </span>
+                        <span className="text-xs font-medium text-gray-700">{season.count}</span>
                       </div>
                     </div>
                   </div>
                 </div>
               ))}
             </div>
-            
+
             {/* X-axis labels */}
             <div className="flex justify-between">
-              {seasons.map((season) => (
+              {seasons.map(season => (
                 <div key={season.key} className="flex flex-col items-center flex-1 mx-2">
-                  <div className={cn("p-2 rounded-full mb-1", season.bgColor)}>
-                    <season.icon className={cn("h-4 w-4", season.color)} />
+                  <div className={cn('p-2 rounded-full mb-1', season.bgColor)}>
+                    <season.icon className={cn('h-4 w-4', season.color)} />
                   </div>
-                  <span className="text-xs text-gray-600 text-center">
-                    {season.name}
-                  </span>
+                  <span className="text-xs text-gray-600 text-center">{season.name}</span>
                 </div>
               ))}
             </div>
@@ -138,17 +126,17 @@ export function SeasonalChart({ data, totalQuilts, isLoading = false }: Seasonal
 
           {/* Statistics Cards */}
           <div className="grid grid-cols-3 gap-4">
-            {seasons.map((season) => (
+            {seasons.map(season => (
               <div
                 key={season.key}
                 className={cn(
-                  "p-4 rounded-lg border-2 transition-all duration-200 hover:shadow-md",
+                  'p-4 rounded-lg border-2 transition-all duration-200 hover:shadow-md',
                   season.bgColor,
                   season.borderColor
                 )}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <season.icon className={cn("h-5 w-5", season.color)} />
+                  <season.icon className={cn('h-5 w-5', season.color)} />
                   <Badge variant="secondary" className="text-xs">
                     {getPercentage(season.count)}%
                   </Badge>
@@ -186,7 +174,8 @@ export function SeasonalChart({ data, totalQuilts, isLoading = false }: Seasonal
               )}
               {data.WINTER > 0 && data.SUMMER > 0 && (
                 <p>
-                  • Good seasonal balance between winter ({data.WINTER}) and summer ({data.SUMMER}) quilts
+                  • Good seasonal balance between winter ({data.WINTER}) and summer ({data.SUMMER})
+                  quilts
                 </p>
               )}
             </div>
@@ -194,11 +183,21 @@ export function SeasonalChart({ data, totalQuilts, isLoading = false }: Seasonal
 
           {/* Quick Actions */}
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" className="flex-1" onClick={() => console.log('View seasonal details')}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex-1"
+              onClick={() => console.log('View seasonal details')}
+            >
               <PieChart className="h-4 w-4 mr-2" />
               View Details
             </Button>
-            <Button variant="outline" size="sm" className="flex-1" onClick={() => console.log('View usage trends')}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex-1"
+              onClick={() => console.log('View usage trends')}
+            >
               <Activity className="h-4 w-4 mr-2" />
               Usage Trends
             </Button>

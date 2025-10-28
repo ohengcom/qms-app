@@ -7,11 +7,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { useStartUsage, useEndUsage, useDeleteQuilt } from '@/hooks/useQuilts';
 import { useToastContext } from '@/hooks/useToast';
 import { Loading } from '@/components/ui/loading';
 import { cn } from '@/lib/utils';
+import { QuiltDetailImage } from '@/components/ui/next-image';
 import {
   ArrowLeft,
   Edit,
@@ -33,7 +41,7 @@ import {
   Image as ImageIcon,
   BarChart3,
   History,
-  Settings
+  Settings,
 } from 'lucide-react';
 
 interface QuiltDetailProps {
@@ -118,15 +126,15 @@ const STATUS_LABELS = {
 export function QuiltDetail({ quilt, onBack, onEdit }: QuiltDetailProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const toast = useToastContext();
-  
+
   const startUsage = useStartUsage();
   const endUsage = useEndUsage();
   const deleteQuilt = useDeleteQuilt();
-  
+
   const SeasonIcon = SEASON_ICONS[quilt.season];
   const isInUse = quilt.currentStatus === QuiltStatus.IN_USE;
   const isAvailable = quilt.currentStatus === QuiltStatus.AVAILABLE;
-  
+
   const handleStartUsage = async () => {
     try {
       await startUsage.mutateAsync({
@@ -136,13 +144,16 @@ export function QuiltDetail({ quilt, onBack, onEdit }: QuiltDetailProps) {
       });
       toast.success('Usage started', `Started using ${quilt.name}`);
     } catch (error) {
-      toast.error('Failed to start usage', error instanceof Error ? error.message : 'Please try again');
+      toast.error(
+        'Failed to start usage',
+        error instanceof Error ? error.message : 'Please try again'
+      );
     }
   };
-  
+
   const handleEndUsage = async () => {
     if (!quilt.currentUsage) return;
-    
+
     try {
       await endUsage.mutateAsync({
         id: quilt.currentUsage.id,
@@ -150,20 +161,26 @@ export function QuiltDetail({ quilt, onBack, onEdit }: QuiltDetailProps) {
       });
       toast.success('Usage ended', `Stopped using ${quilt.name}`);
     } catch (error) {
-      toast.error('Failed to end usage', error instanceof Error ? error.message : 'Please try again');
+      toast.error(
+        'Failed to end usage',
+        error instanceof Error ? error.message : 'Please try again'
+      );
     }
   };
-  
+
   const handleDelete = async () => {
     try {
       await deleteQuilt.mutateAsync({ id: quilt.id });
       toast.success('Quilt deleted', `${quilt.name} has been removed from your collection`);
       onBack?.();
     } catch (error) {
-      toast.error('Failed to delete quilt', error instanceof Error ? error.message : 'Please try again');
+      toast.error(
+        'Failed to delete quilt',
+        error instanceof Error ? error.message : 'Please try again'
+      );
     }
   };
-  
+
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -171,7 +188,7 @@ export function QuiltDetail({ quilt, onBack, onEdit }: QuiltDetailProps) {
       day: 'numeric',
     });
   };
-  
+
   const formatDateTime = (date: Date) => {
     return new Date(date).toLocaleString('en-US', {
       year: 'numeric',
@@ -181,11 +198,11 @@ export function QuiltDetail({ quilt, onBack, onEdit }: QuiltDetailProps) {
       minute: '2-digit',
     });
   };
-  
+
   const getDaysSince = (date: Date) => {
     return Math.ceil((Date.now() - new Date(date).getTime()) / (1000 * 60 * 60 * 24));
   };
-  
+
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
@@ -210,12 +227,10 @@ export function QuiltDetail({ quilt, onBack, onEdit }: QuiltDetailProps) {
                 {STATUS_LABELS[quilt.currentStatus]}
               </Badge>
             </div>
-            {quilt.groupId && (
-              <p className="text-gray-500 mt-1">Group #{quilt.groupId}</p>
-            )}
+            {quilt.groupId && <p className="text-gray-500 mt-1">Group #{quilt.groupId}</p>}
           </div>
         </div>
-        
+
         <div className="flex items-center space-x-2">
           {isAvailable && (
             <Button onClick={handleStartUsage} disabled={startUsage.isPending}>
@@ -261,8 +276,8 @@ export function QuiltDetail({ quilt, onBack, onEdit }: QuiltDetailProps) {
                 <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
                   Cancel
                 </Button>
-                <Button 
-                  variant="destructive" 
+                <Button
+                  variant="destructive"
                   onClick={handleDelete}
                   disabled={deleteQuilt.isPending}
                 >
@@ -278,7 +293,7 @@ export function QuiltDetail({ quilt, onBack, onEdit }: QuiltDetailProps) {
           </Dialog>
         </div>
       </div>
-      
+
       {/* Current Usage Alert */}
       {isInUse && quilt.currentUsage && (
         <Card className="border-blue-200 bg-blue-50">
@@ -295,7 +310,7 @@ export function QuiltDetail({ quilt, onBack, onEdit }: QuiltDetailProps) {
           </CardContent>
         </Card>
       )}
-      
+
       <Tabs defaultValue="overview" className="space-y-6">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="overview" className="flex items-center space-x-2">
@@ -315,7 +330,7 @@ export function QuiltDetail({ quilt, onBack, onEdit }: QuiltDetailProps) {
             <span>Maintenance</span>
           </TabsTrigger>
         </TabsList>
-        
+
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -330,11 +345,9 @@ export function QuiltDetail({ quilt, onBack, onEdit }: QuiltDetailProps) {
                 </CardHeader>
                 <CardContent>
                   {quilt.imageUrl ? (
-                    <img
-                      src={quilt.imageUrl}
-                      alt={quilt.name}
-                      className="w-full h-64 object-cover rounded-lg"
-                    />
+                    <div className="relative w-full h-64 rounded-lg overflow-hidden">
+                      <QuiltDetailImage src={quilt.imageUrl} alt={quilt.name} />
+                    </div>
                   ) : (
                     <div className="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center">
                       <div className="text-center text-gray-500">
@@ -346,7 +359,7 @@ export function QuiltDetail({ quilt, onBack, onEdit }: QuiltDetailProps) {
                 </CardContent>
               </Card>
             </div>
-            
+
             {/* Details */}
             <div className="lg:col-span-2 space-y-6">
               {/* Basic Information */}
@@ -359,7 +372,9 @@ export function QuiltDetail({ quilt, onBack, onEdit }: QuiltDetailProps) {
                     <div className="flex items-center space-x-2">
                       <Ruler className="w-4 h-4 text-gray-500" />
                       <span className="text-sm text-gray-600">Dimensions:</span>
-                      <span className="font-medium">{quilt.lengthCm} × {quilt.widthCm} cm</span>
+                      <span className="font-medium">
+                        {quilt.lengthCm} × {quilt.widthCm} cm
+                      </span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Weight className="w-4 h-4 text-gray-500" />
@@ -370,7 +385,7 @@ export function QuiltDetail({ quilt, onBack, onEdit }: QuiltDetailProps) {
                       <Palette className="w-4 h-4 text-gray-500" />
                       <span className="text-sm text-gray-600">Color:</span>
                       <div className="flex items-center space-x-2">
-                        <div 
+                        <div
                           className="w-4 h-4 rounded-full border border-gray-300"
                           style={{ backgroundColor: quilt.color.toLowerCase() }}
                         />
@@ -383,9 +398,9 @@ export function QuiltDetail({ quilt, onBack, onEdit }: QuiltDetailProps) {
                       <span className="font-medium">{quilt.location}</span>
                     </div>
                   </div>
-                  
+
                   <Separator />
-                  
+
                   <div className="space-y-2">
                     <div className="flex items-center space-x-2">
                       <Package2 className="w-4 h-4 text-gray-500" />
@@ -398,7 +413,7 @@ export function QuiltDetail({ quilt, onBack, onEdit }: QuiltDetailProps) {
                       </div>
                     )}
                   </div>
-                  
+
                   {quilt.brand && (
                     <div className="flex items-center space-x-2">
                       <Building className="w-4 h-4 text-gray-500" />
@@ -406,7 +421,7 @@ export function QuiltDetail({ quilt, onBack, onEdit }: QuiltDetailProps) {
                       <span className="font-medium">{quilt.brand}</span>
                     </div>
                   )}
-                  
+
                   {quilt.purchaseDate && (
                     <div className="flex items-center space-x-2">
                       <Calendar className="w-4 h-4 text-gray-500" />
@@ -414,7 +429,7 @@ export function QuiltDetail({ quilt, onBack, onEdit }: QuiltDetailProps) {
                       <span className="font-medium">{formatDate(quilt.purchaseDate)}</span>
                     </div>
                   )}
-                  
+
                   {quilt.packagingInfo && (
                     <div className="flex items-start space-x-2">
                       <Package2 className="w-4 h-4 text-gray-500 mt-0.5" />
@@ -424,7 +439,7 @@ export function QuiltDetail({ quilt, onBack, onEdit }: QuiltDetailProps) {
                   )}
                 </CardContent>
               </Card>
-              
+
               {/* Notes */}
               {quilt.notes && (
                 <Card>
@@ -442,21 +457,22 @@ export function QuiltDetail({ quilt, onBack, onEdit }: QuiltDetailProps) {
             </div>
           </div>
         </TabsContent>
-        
+
         {/* Usage History Tab */}
         <TabsContent value="usage" className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>Usage History</CardTitle>
-              <CardDescription>
-                Track when and how this quilt has been used
-              </CardDescription>
+              <CardDescription>Track when and how this quilt has been used</CardDescription>
             </CardHeader>
             <CardContent>
               {quilt.usagePeriods && quilt.usagePeriods.length > 0 ? (
                 <div className="space-y-4">
-                  {quilt.usagePeriods.map((period) => (
-                    <div key={period.id} className="flex items-center justify-between p-4 border rounded-lg">
+                  {quilt.usagePeriods.map(period => (
+                    <div
+                      key={period.id}
+                      className="flex items-center justify-between p-4 border rounded-lg"
+                    >
                       <div className="space-y-1">
                         <div className="flex items-center space-x-2">
                           <Calendar className="w-4 h-4 text-gray-500" />
@@ -471,11 +487,7 @@ export function QuiltDetail({ quilt, onBack, onEdit }: QuiltDetailProps) {
                         )}
                       </div>
                       <div className="text-sm text-gray-500">
-                        {period.endDate ? (
-                          `${getDaysSince(period.endDate)} days ago`
-                        ) : (
-                          'In use'
-                        )}
+                        {period.endDate ? `${getDaysSince(period.endDate)} days ago` : 'In use'}
                       </div>
                     </div>
                   ))}
@@ -489,7 +501,7 @@ export function QuiltDetail({ quilt, onBack, onEdit }: QuiltDetailProps) {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         {/* Analytics Tab */}
         <TabsContent value="analytics" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -506,7 +518,7 @@ export function QuiltDetail({ quilt, onBack, onEdit }: QuiltDetailProps) {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardContent className="pt-6">
                 <div className="flex items-center space-x-2">
@@ -520,7 +532,7 @@ export function QuiltDetail({ quilt, onBack, onEdit }: QuiltDetailProps) {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardContent className="pt-6">
                 <div className="flex items-center space-x-2">
@@ -534,17 +546,16 @@ export function QuiltDetail({ quilt, onBack, onEdit }: QuiltDetailProps) {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardContent className="pt-6">
                 <div className="flex items-center space-x-2">
                   <Calendar className="w-5 h-5 text-orange-600" />
                   <div>
                     <p className="text-lg font-bold">
-                      {quilt.usageAnalytics?.lastUsedDate 
+                      {quilt.usageAnalytics?.lastUsedDate
                         ? `${getDaysSince(quilt.usageAnalytics.lastUsedDate)}d`
-                        : 'Never'
-                      }
+                        : 'Never'}
                     </p>
                     <p className="text-sm text-gray-600">Days Since Last Use</p>
                   </div>
@@ -553,7 +564,7 @@ export function QuiltDetail({ quilt, onBack, onEdit }: QuiltDetailProps) {
             </Card>
           </div>
         </TabsContent>
-        
+
         {/* Maintenance Tab */}
         <TabsContent value="maintenance" className="space-y-6">
           <Card>
@@ -566,22 +577,21 @@ export function QuiltDetail({ quilt, onBack, onEdit }: QuiltDetailProps) {
             <CardContent>
               {quilt.maintenanceRecords && quilt.maintenanceRecords.length > 0 ? (
                 <div className="space-y-4">
-                  {quilt.maintenanceRecords.map((record) => (
-                    <div key={record.id} className="flex items-center justify-between p-4 border rounded-lg">
+                  {quilt.maintenanceRecords.map(record => (
+                    <div
+                      key={record.id}
+                      className="flex items-center justify-between p-4 border rounded-lg"
+                    >
                       <div className="space-y-1">
                         <div className="flex items-center space-x-2">
                           <Settings className="w-4 h-4 text-gray-500" />
                           <span className="font-medium">{record.type}</span>
-                          <span className="text-sm text-gray-500">
-                            {formatDate(record.date)}
-                          </span>
+                          <span className="text-sm text-gray-500">{formatDate(record.date)}</span>
                         </div>
                         <p className="text-sm text-gray-600 ml-6">{record.description}</p>
                       </div>
                       {record.cost && (
-                        <div className="text-sm font-medium">
-                          ${record.cost.toFixed(2)}
-                        </div>
+                        <div className="text-sm font-medium">${record.cost.toFixed(2)}</div>
                       )}
                     </div>
                   ))}
@@ -596,7 +606,7 @@ export function QuiltDetail({ quilt, onBack, onEdit }: QuiltDetailProps) {
           </Card>
         </TabsContent>
       </Tabs>
-      
+
       {/* Metadata */}
       <Card>
         <CardContent className="pt-6">

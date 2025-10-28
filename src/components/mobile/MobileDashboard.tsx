@@ -17,7 +17,7 @@ import {
   BarChart3,
   Upload,
   AlertTriangle,
-  CheckCircle
+  CheckCircle,
 } from 'lucide-react';
 
 interface MobileDashboardProps {
@@ -43,10 +43,12 @@ export function MobileDashboard({ stats, error, refetch, alerts }: MobileDashboa
     totalQuilts: (stats as any)?.overview?.totalQuilts || 0,
     quiltsInUse: (stats as any)?.overview?.inUseCount || 0,
     availableQuilts: (stats as any)?.overview?.availableCount || 0,
-    mostUsedQuilt: (stats as any)?.topUsedQuilts?.[0] ? {
-      name: (stats as any).topUsedQuilts[0].quilt.name,
-      usageCount: (stats as any).topUsedQuilts[0].stats.usageCount,
-    } : undefined,
+    mostUsedQuilt: (stats as any)?.topUsedQuilts?.[0]
+      ? {
+          name: (stats as any).topUsedQuilts[0].quilt.name,
+          usageCount: (stats as any).topUsedQuilts[0].stats.usageCount,
+        }
+      : undefined,
     seasonalDistribution: {
       WINTER: (stats as any)?.distribution?.seasonal?.WINTER || 0,
       SPRING_AUTUMN: (stats as any)?.distribution?.seasonal?.SPRING_AUTUMN || 0,
@@ -64,11 +66,7 @@ export function MobileDashboard({ stats, error, refetch, alerts }: MobileDashboa
                 <AlertTriangle className="h-12 w-12 text-red-600 mx-auto mb-4" />
                 <p className="text-red-800 font-medium">Failed to load dashboard</p>
                 <p className="text-red-600 text-sm mt-2">{error.message}</p>
-                <TouchButton 
-                  onClick={handleRefresh}
-                  className="mt-4"
-                  size="sm"
-                >
+                <TouchButton onClick={handleRefresh} className="mt-4" size="sm">
                   Try Again
                 </TouchButton>
               </div>
@@ -80,8 +78,8 @@ export function MobileDashboard({ stats, error, refetch, alerts }: MobileDashboa
   }
 
   return (
-    <MobileLayout 
-      title="Dashboard" 
+    <MobileLayout
+      title="Dashboard"
       subtitle="Quilt Management System"
       showFAB={true}
       fabAction={handleAddQuilt}
@@ -99,9 +97,7 @@ export function MobileDashboard({ stats, error, refetch, alerts }: MobileDashboa
                       <div className="flex items-start space-x-3">
                         <AlertTriangle className="h-5 w-5 text-amber-600 mt-0.5" />
                         <div className="flex-1">
-                          <p className="text-sm font-medium text-amber-800">
-                            {alert.message}
-                          </p>
+                          <p className="text-sm font-medium text-amber-800">{alert.message}</p>
                           <Badge variant="outline" className="mt-2 text-xs">
                             {alert.priority}
                           </Badge>
@@ -120,9 +116,7 @@ export function MobileDashboard({ stats, error, refetch, alerts }: MobileDashboa
               <Card className="bg-blue-50 border-blue-200">
                 <CardContent className="p-4 text-center">
                   <Package className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-                  <p className="text-2xl font-bold text-blue-900">
-                    {dashboardStats.totalQuilts}
-                  </p>
+                  <p className="text-2xl font-bold text-blue-900">{dashboardStats.totalQuilts}</p>
                   <p className="text-sm text-blue-700">Total Quilts</p>
                 </CardContent>
               </Card>
@@ -130,9 +124,7 @@ export function MobileDashboard({ stats, error, refetch, alerts }: MobileDashboa
               <Card className="bg-green-50 border-green-200">
                 <CardContent className="p-4 text-center">
                   <Clock className="h-8 w-8 text-green-600 mx-auto mb-2" />
-                  <p className="text-2xl font-bold text-green-900">
-                    {dashboardStats.quiltsInUse}
-                  </p>
+                  <p className="text-2xl font-bold text-green-900">{dashboardStats.quiltsInUse}</p>
                   <p className="text-sm text-green-700">In Use</p>
                 </CardContent>
               </Card>

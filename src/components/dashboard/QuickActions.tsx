@@ -20,7 +20,7 @@ import {
   TrendingUp,
   Activity,
   FileText,
-  RefreshCw
+  RefreshCw,
 } from 'lucide-react';
 
 interface QuickAction {
@@ -57,9 +57,8 @@ export function QuickActions({
   onExportData,
   onViewSettings,
   pendingActions = 0,
-  isLoading = false
+  isLoading = false,
 }: QuickActionsProps) {
-  
   const primaryActions: QuickAction[] = [
     {
       id: 'add-quilt',
@@ -192,9 +191,7 @@ export function QuickActions({
             <RefreshCw className="h-4 w-4" />
           </Button>
         </CardTitle>
-        <CardDescription>
-          Common tasks and shortcuts for managing your quilts
-        </CardDescription>
+        <CardDescription>Common tasks and shortcuts for managing your quilts</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
@@ -205,24 +202,24 @@ export function QuickActions({
               Primary Actions
             </h4>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              {primaryActions.map((action) => (
+              {primaryActions.map(action => (
                 <Button
                   key={action.id}
                   variant="outline"
                   className={cn(
-                    "h-auto p-4 flex flex-col items-center space-y-2 border-2 transition-all duration-200 hover:shadow-md",
+                    'h-auto p-4 flex flex-col items-center space-y-2 border-2 transition-all duration-200 hover:shadow-md',
                     action.bgColor,
                     action.borderColor,
-                    action.disabled && "opacity-50 cursor-not-allowed"
+                    action.disabled && 'opacity-50 cursor-not-allowed'
                   )}
                   onClick={action.onClick}
                   disabled={action.disabled}
                 >
                   <div className="relative">
-                    <action.icon className={cn("h-6 w-6", action.color)} />
+                    <action.icon className={cn('h-6 w-6', action.color)} />
                     {action.badge && (
-                      <Badge 
-                        variant="destructive" 
+                      <Badge
+                        variant="destructive"
                         className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center text-xs"
                       >
                         {action.badge}
@@ -245,22 +242,22 @@ export function QuickActions({
               Data & Reports
             </h4>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-              {secondaryActions.map((action) => (
+              {secondaryActions.map(action => (
                 <Button
                   key={action.id}
                   variant="ghost"
                   className={cn(
-                    "h-16 flex flex-col items-center justify-center space-y-1 border border-gray-200 hover:border-gray-300 transition-all duration-200",
+                    'h-16 flex flex-col items-center justify-center space-y-1 border border-gray-200 hover:border-gray-300 transition-all duration-200',
                     action.bgColor
                   )}
                   onClick={action.onClick}
                   disabled={action.disabled}
                 >
                   <div className="relative">
-                    <action.icon className={cn("h-5 w-5", action.color)} />
+                    <action.icon className={cn('h-5 w-5', action.color)} />
                     {action.badge && (
-                      <Badge 
-                        variant="destructive" 
+                      <Badge
+                        variant="destructive"
                         className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-xs"
                       >
                         {action.badge}
@@ -281,12 +278,7 @@ export function QuickActions({
             </h4>
             <div className="flex flex-wrap gap-2">
               {quickFilters.map((filter, index) => (
-                <Button
-                  key={index}
-                  variant="outline"
-                  size="sm"
-                  className="h-8 px-3 text-xs"
-                >
+                <Button key={index} variant="outline" size="sm" className="h-8 px-3 text-xs">
                   <filter.icon className="h-3 w-3 mr-1" />
                   {filter.label}
                   {filter.count > 0 && (
@@ -312,7 +304,9 @@ export function QuickActions({
             </div>
             <div className="mt-2 text-xs text-gray-600">
               {pendingActions > 0 ? (
-                <p>• {pendingActions} maintenance task{pendingActions > 1 ? 's' : ''} pending</p>
+                <p>
+                  • {pendingActions} maintenance task{pendingActions > 1 ? 's' : ''} pending
+                </p>
               ) : (
                 <p>• All quilts are in good condition</p>
               )}

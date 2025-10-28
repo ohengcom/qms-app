@@ -13,7 +13,7 @@ import {
   Eye,
   MoreHorizontal,
   TrendingUp,
-  Activity
+  Activity,
 } from 'lucide-react';
 
 interface RecentUsageItem {
@@ -39,12 +39,12 @@ interface RecentUsageListProps {
   onViewDetails?: (quiltId: number) => void;
 }
 
-export function RecentUsageList({ 
-  quilts, 
+export function RecentUsageList({
+  quilts,
   isLoading = false,
   onStartUsage,
   onEndUsage,
-  onViewDetails
+  onViewDetails,
 }: RecentUsageListProps) {
   if (isLoading) {
     return (
@@ -88,16 +88,18 @@ export function RecentUsageList({
     if (isCurrentlyInUse) {
       return <Play className="h-3 w-3 text-green-600" />;
     }
-    return type === 'usage_started' ? 
-      <Play className="h-3 w-3 text-blue-600" /> : 
-      <Square className="h-3 w-3 text-gray-600" />;
+    return type === 'usage_started' ? (
+      <Play className="h-3 w-3 text-blue-600" />
+    ) : (
+      <Square className="h-3 w-3 text-gray-600" />
+    );
   };
 
   const formatDate = (dateInput: Date | string) => {
     const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
     const now = new Date();
     const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-    
+
     if (diffInHours < 1) return 'Just now';
     if (diffInHours < 24) return `${diffInHours}h ago`;
     if (diffInHours < 48) return 'Yesterday';
@@ -125,14 +127,12 @@ export function RecentUsageList({
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </CardTitle>
-        <CardDescription>
-          Latest quilt usage changes and activity
-        </CardDescription>
+        <CardDescription>Latest quilt usage changes and activity</CardDescription>
       </CardHeader>
       <CardContent>
         {quilts && quilts.length > 0 ? (
           <div className="space-y-4">
-            {quilts.slice(0, 8).map((item) => (
+            {quilts.slice(0, 8).map(item => (
               <div
                 key={`${item.quilt.id}-${item.date}`}
                 className="flex items-center justify-between p-3 rounded-lg border border-gray-100 hover:border-gray-200 hover:bg-gray-50 transition-all duration-200"
@@ -140,14 +140,13 @@ export function RecentUsageList({
                 <div className="flex items-center space-x-3">
                   {/* Quilt Avatar */}
                   <Avatar className="h-10 w-10">
-                    <AvatarFallback className={cn(
-                      "text-xs font-medium",
-                      getSeasonColor(item.quilt.season)
-                    )}>
+                    <AvatarFallback
+                      className={cn('text-xs font-medium', getSeasonColor(item.quilt.season))}
+                    >
                       {getInitials(item.quilt.name)}
                     </AvatarFallback>
                   </Avatar>
-                  
+
                   {/* Activity Details */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2">
@@ -158,7 +157,7 @@ export function RecentUsageList({
                         #{item.quilt.itemNumber}
                       </Badge>
                     </div>
-                    
+
                     <div className="flex items-center space-x-2 mt-1">
                       {getActivityIcon(item.type, item.isCurrentlyInUse)}
                       <span className="text-xs text-gray-500">
@@ -166,22 +165,20 @@ export function RecentUsageList({
                         {item.duration && ` • ${item.duration} days`}
                       </span>
                       <span className="text-xs text-gray-400">•</span>
-                      <span className="text-xs text-gray-400">
-                        {formatDate(item.date)}
-                      </span>
+                      <span className="text-xs text-gray-400">{formatDate(item.date)}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Status and Actions */}
                 <div className="flex items-center space-x-2">
-                  <Badge 
+                  <Badge
                     variant={item.isCurrentlyInUse ? 'default' : 'secondary'}
                     className="text-xs"
                   >
                     {item.isCurrentlyInUse ? 'In Use' : 'Available'}
                   </Badge>
-                  
+
                   <div className="flex space-x-1">
                     {item.isCurrentlyInUse ? (
                       <Button
@@ -202,7 +199,7 @@ export function RecentUsageList({
                         <Play className="h-3 w-3" />
                       </Button>
                     )}
-                    
+
                     <Button
                       variant="ghost"
                       size="sm"
@@ -215,7 +212,7 @@ export function RecentUsageList({
                 </div>
               </div>
             ))}
-            
+
             {quilts.length > 8 && (
               <div className="text-center pt-4 border-t border-gray-100">
                 <Button variant="ghost" size="sm">
@@ -229,9 +226,7 @@ export function RecentUsageList({
           <div className="text-center py-8">
             <Clock className="h-12 w-12 text-gray-300 mx-auto mb-4" />
             <p className="text-sm text-gray-500 mb-2">No recent activity</p>
-            <p className="text-xs text-gray-400 mb-4">
-              Start using a quilt to see activity here
-            </p>
+            <p className="text-xs text-gray-400 mb-4">Start using a quilt to see activity here</p>
             <Button variant="outline" size="sm">
               <Calendar className="h-4 w-4 mr-2" />
               Browse Quilts

@@ -10,6 +10,12 @@
     "vercel-build": "next build",
     "lint": "eslint . --fix",
     "lint:check": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "husky",
+    "dev:turbo": "next dev --turbo",
+    "dev:debug": "NODE_OPTIONS='--inspect' next dev",
+    "analyze": "ANALYZE=true npm run build",
     "type-check": "tsc --noEmit",
     "db:setup": "curl -X POST http://localhost:3000/api/setup",
     "db:test": "curl -f http://localhost:3000/api/db-test",
@@ -54,7 +60,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
-    "lucide-react": "^0.546.0",
+    "lucide-react": "^0.548.0",
     "multer": "^2.0.2",
     "next": "16.0.0",
     "react": "19.2.0",
@@ -66,14 +72,26 @@
     "xlsx": "^0.18.5",
     "zod": "^3.23.8"
   },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@tanstack/react-query-devtools": "^5.90.2",
-    "@types/node": "^20.19.23",
+    "@types/node": "^24.9.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.0.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.6",
     "prettier": "^3.6.2",
     "tailwindcss": "^4",
     "tsx": "^4.20.6",

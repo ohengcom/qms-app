@@ -6,15 +6,15 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { usePerformanceMonitor, usePagePerformance } from '@/hooks/usePerformance';
 import { api } from '@/lib/trpc';
-import { 
-  Activity, 
-  Zap, 
-  Clock, 
-  Database, 
+import {
+  Activity,
+  Zap,
+  Clock,
+  Database,
   Wifi,
   RefreshCw,
   TrendingUp,
-  AlertTriangle
+  AlertTriangle,
 } from 'lucide-react';
 
 interface PerformanceMonitorProps {
@@ -68,12 +68,19 @@ export function PerformanceMonitor({ showDetails = false }: PerformanceMonitorPr
 
   const getPerformanceStatus = (value: number, thresholds: { good: number; warning: number }) => {
     if (value <= thresholds.good) return { status: 'good', color: 'bg-green-100 text-green-800' };
-    if (value <= thresholds.warning) return { status: 'warning', color: 'bg-yellow-100 text-yellow-800' };
+    if (value <= thresholds.warning)
+      return { status: 'warning', color: 'bg-yellow-100 text-yellow-800' };
     return { status: 'poor', color: 'bg-red-100 text-red-800' };
   };
 
-  const renderTimeStatus = getPerformanceStatus(componentMetrics.renderTime, { good: 16, warning: 50 });
-  const apiTimeStatus = getPerformanceStatus(apiMetrics.averageResponseTime, { good: 100, warning: 300 });
+  const renderTimeStatus = getPerformanceStatus(componentMetrics.renderTime, {
+    good: 16,
+    warning: 50,
+  });
+  const apiTimeStatus = getPerformanceStatus(apiMetrics.averageResponseTime, {
+    good: 100,
+    warning: 300,
+  });
 
   return (
     <Card className="border-dashed border-2 border-gray-300">
@@ -115,14 +122,12 @@ export function PerformanceMonitor({ showDetails = false }: PerformanceMonitorPr
               <span className="text-xs font-medium">API Response</span>
             </div>
             <div className="flex items-center space-x-2">
-              <span className="text-lg font-bold">{Math.round(apiMetrics.averageResponseTime)}ms</span>
-              <Badge className={`text-xs ${apiTimeStatus.color}`}>
-                {apiTimeStatus.status}
-              </Badge>
+              <span className="text-lg font-bold">
+                {Math.round(apiMetrics.averageResponseTime)}ms
+              </span>
+              <Badge className={`text-xs ${apiTimeStatus.color}`}>{apiTimeStatus.status}</Badge>
             </div>
-            <div className="text-xs text-gray-500">
-              Slow queries: {apiMetrics.slowQueries}
-            </div>
+            <div className="text-xs text-gray-500">Slow queries: {apiMetrics.slowQueries}</div>
           </div>
 
           {/* Cache Performance */}
@@ -135,9 +140,7 @@ export function PerformanceMonitor({ showDetails = false }: PerformanceMonitorPr
               <span className="text-lg font-bold">
                 {Math.round((cacheStats?.hitRate || apiMetrics.cacheHitRate) * 100)}%
               </span>
-              <Badge className="text-xs bg-purple-100 text-purple-800">
-                hit rate
-              </Badge>
+              <Badge className="text-xs bg-purple-100 text-purple-800">hit rate</Badge>
             </div>
             <div className="text-xs text-gray-500">
               Entries: {cacheStats?.activeEntries || 'N/A'}
@@ -154,18 +157,22 @@ export function PerformanceMonitor({ showDetails = false }: PerformanceMonitorPr
               <span className="text-lg font-bold">
                 {pageMetrics?.loadTime ? Math.round(pageMetrics.loadTime) : 'N/A'}ms
               </span>
-              <Badge className="text-xs bg-orange-100 text-orange-800">
-                load
-              </Badge>
+              <Badge className="text-xs bg-orange-100 text-orange-800">load</Badge>
             </div>
             <div className="text-xs text-gray-500">
-              FCP: {pageMetrics?.firstContentfulPaint ? Math.round(pageMetrics.firstContentfulPaint) : 'N/A'}ms
+              FCP:{' '}
+              {pageMetrics?.firstContentfulPaint
+                ? Math.round(pageMetrics.firstContentfulPaint)
+                : 'N/A'}
+              ms
             </div>
           </div>
         </div>
 
         {/* Performance Warnings */}
-        {(componentMetrics.renderTime > 50 || apiMetrics.averageResponseTime > 300 || apiMetrics.slowQueries > 2) && (
+        {(componentMetrics.renderTime > 50 ||
+          apiMetrics.averageResponseTime > 300 ||
+          apiMetrics.slowQueries > 2) && (
           <div className="mt-4 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
             <div className="flex items-start space-x-2">
               <AlertTriangle className="h-4 w-4 text-yellow-600 mt-0.5" />
@@ -196,18 +203,18 @@ export function PerformanceMonitor({ showDetails = false }: PerformanceMonitorPr
 
         {/* Quick Actions */}
         <div className="mt-4 flex space-x-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => window.location.reload()}
             className="text-xs"
           >
             <RefreshCw className="h-3 w-3 mr-1" />
             Refresh
           </Button>
-          <Button 
-            variant="outline" 
-            size="sm" 
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => {
               if ('performance' in window && 'clearMarks' in performance) {
                 performance.clearMarks();

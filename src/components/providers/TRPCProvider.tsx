@@ -7,18 +7,23 @@ import { useState } from 'react';
 import { api, trpcConfig } from '@/lib/trpc';
 
 export function TRPCProvider({ children }: { children: React.ReactNode }) {
-  const [queryClient] = useState(() => new QueryClient({
-    defaultOptions: {
-      queries: {
-        staleTime: 5 * 60 * 1000, // 5 minutes
-        refetchOnWindowFocus: false,
-      },
-    },
-  }));
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 5 * 60 * 1000, // 5 minutes
+            refetchOnWindowFocus: false,
+          },
+        },
+      })
+  );
 
-  const [trpcClient] = useState(() => api.createClient({
-    links: trpcConfig.links,
-  }));
+  const [trpcClient] = useState(() =>
+    api.createClient({
+      links: trpcConfig.links,
+    })
+  );
 
   return (
     <api.Provider client={trpcClient} queryClient={queryClient}>

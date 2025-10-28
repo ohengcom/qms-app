@@ -24,13 +24,13 @@ export function usePerformanceMonitor(componentName: string) {
 
   useEffect(() => {
     mountCount.current += 1;
-    
+
     // Measure render time
     const renderTime = Date.now() - renderStartTime.current;
-    
+
     // Get memory usage if available
     const memoryUsage = (performance as any).memory?.usedJSHeapSize;
-    
+
     setMetrics({
       renderTime,
       componentMounts: mountCount.current,
@@ -66,17 +66,17 @@ export function useApiPerformance() {
     operationName: string
   ): Promise<T> => {
     const startTime = performance.now();
-    
+
     try {
       const result = await apiCall();
       const endTime = performance.now();
       const duration = endTime - startTime;
-      
+
       // Log in development
       if (process.env.NODE_ENV === 'development') {
         console.log(`[API Performance] ${operationName}: ${duration.toFixed(2)}ms`);
       }
-      
+
       // Send to analytics in production (if configured)
       if (process.env.NODE_ENV === 'production' && typeof window !== 'undefined') {
         // Example: Send to analytics service
@@ -86,13 +86,16 @@ export function useApiPerformance() {
         //   timestamp: Date.now(),
         // });
       }
-      
+
       return result;
     } catch (error) {
       const endTime = performance.now();
       const duration = endTime - startTime;
-      
-      console.error(`[API Performance] ${operationName} failed after ${duration.toFixed(2)}ms:`, error);
+
+      console.error(
+        `[API Performance] ${operationName} failed after ${duration.toFixed(2)}ms:`,
+        error
+      );
       throw error;
     }
   };
@@ -113,26 +116,29 @@ export function usePagePerformance(pageName: string) {
 
   useEffect(() => {
     const measurePerformance = () => {
-      const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-      
+      const navigation = performance.getEntriesByType(
+        'navigation'
+      )[0] as PerformanceNavigationTiming;
+
       if (navigation) {
         const loadTime = navigation.loadEventEnd - navigation.loadEventStart;
-        const domContentLoaded = navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart;
-        
+        const domContentLoaded =
+          navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart;
+
         let firstContentfulPaint: number | undefined;
         let largestContentfulPaint: number | undefined;
-        
+
         // Get paint metrics if available
         const paintEntries = performance.getEntriesByType('paint');
         const fcpEntry = paintEntries.find(entry => entry.name === 'first-contentful-paint');
         if (fcpEntry) {
           firstContentfulPaint = fcpEntry.startTime;
         }
-        
+
         // Get LCP if available
         if ('PerformanceObserver' in window) {
           try {
-            const observer = new PerformanceObserver((list) => {
+            const observer = new PerformanceObserver(list => {
               const entries = list.getEntries();
               const lastEntry = entries[entries.length - 1];
               if (lastEntry) {
@@ -144,16 +150,16 @@ export function usePagePerformance(pageName: string) {
             // LCP not supported
           }
         }
-        
+
         const pageMetrics = {
           loadTime,
           domContentLoaded,
           firstContentfulPaint,
           largestContentfulPaint,
         };
-        
+
         setMetrics(pageMetrics);
-        
+
         // Log in development
         if (process.env.NODE_ENV === 'development') {
           console.log(`[Page Performance] ${pageName}:`, {
@@ -169,6 +175,7 @@ export function usePagePerformance(pageName: string) {
     // Measure after page load
     if (document.readyState === 'complete') {
       measurePerformance();
+      return undefined;
     } else {
       window.addEventListener('load', measurePerformance);
       return () => window.removeEventListener('load', measurePerformance);
@@ -181,30 +188,35 @@ export function usePagePerformance(pageName: string) {
 /**
  * Hook to detect slow renders and memory leaks
  */
-export function usePerformanceWarnings(componentName: string, thresholds = {
-  slowRenderMs: 16, // 60fps = 16.67ms per frame
-  memoryLeakMB: 50,
-}) {
+export function usePerformanceWarnings(
+  componentName: string,
+  thresholds = {
+    slowRenderMs: 16, // 60fps = 16.67ms per frame
+    memoryLeakMB: 50,
+  }
+) {
   const renderTimes = useRef<number[]>([]);
   const initialMemory = useRef<number | null>(null);
 
   useEffect(() => {
     const startTime = performance.now();
-    
+
     return () => {
       const renderTime = performance.now() - startTime;
       renderTimes.current.push(renderTime);
-      
+
       // Keep only last 10 render times
       if (renderTimes.current.length > 10) {
         renderTimes.current = renderTimes.current.slice(-10);
       }
-      
+
       // Check for slow renders
       if (renderTime > thresholds.slowRenderMs) {
-        console.warn(`[Performance Warning] ${componentName} slow render: ${renderTime.toFixed(2)}ms`);
+        console.warn(
+          `[Performance Warning] ${componentName} slow render: ${renderTime.toFixed(2)}ms`
+        );
       }
-      
+
       // Check memory usage
       const currentMemory = (performance as any).memory?.usedJSHeapSize;
       if (currentMemory) {
@@ -213,7 +225,9 @@ export function usePerformanceWarnings(componentName: string, thresholds = {
         } else {
           const memoryIncrease = (currentMemory - initialMemory.current) / 1024 / 1024;
           if (memoryIncrease > thresholds.memoryLeakMB) {
-            console.warn(`[Performance Warning] ${componentName} potential memory leak: +${memoryIncrease.toFixed(2)}MB`);
+            console.warn(
+              `[Performance Warning] ${componentName} potential memory leak: +${memoryIncrease.toFixed(2)}MB`
+            );
           }
         }
       }
@@ -221,9 +235,10 @@ export function usePerformanceWarnings(componentName: string, thresholds = {
   });
 
   // Calculate average render time
-  const averageRenderTime = renderTimes.current.length > 0 
-    ? renderTimes.current.reduce((sum, time) => sum + time, 0) / renderTimes.current.length
-    : 0;
+  const averageRenderTime =
+    renderTimes.current.length > 0
+      ? renderTimes.current.reduce((sum, time) => sum + time, 0) / renderTimes.current.length
+      : 0;
 
   return {
     averageRenderTime,

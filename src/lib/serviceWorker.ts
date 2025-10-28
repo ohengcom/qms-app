@@ -38,7 +38,7 @@ class ServiceWorkerManager {
       // Handle service worker updates
       this.registration.addEventListener('updatefound', () => {
         const newWorker = this.registration?.installing;
-        
+
         if (newWorker) {
           newWorker.addEventListener('statechange', () => {
             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
@@ -160,11 +160,11 @@ class ServiceWorkerManager {
       case 'DASHBOARD_SYNCED':
         this.emit('dashboard-synced', { timestamp });
         break;
-      
+
       case 'CACHE_UPDATED':
         this.emit('cache-updated', data);
         break;
-      
+
       default:
         console.log('Unknown service worker message:', type);
     }
@@ -174,7 +174,7 @@ class ServiceWorkerManager {
     window.addEventListener('online', () => {
       this.isOnline = true;
       this.emit('online');
-      
+
       // Trigger background sync when back online
       if (this.registration && 'sync' in this.registration) {
         (this.registration as any).sync.register('dashboard-sync');

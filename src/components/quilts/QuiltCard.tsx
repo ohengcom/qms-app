@@ -6,10 +6,17 @@ import { Season, QuiltStatus } from '@/lib/validations/quilt';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useStartUsage, useEndUsage, useDeleteQuilt } from '@/hooks/useQuilts';
 import { useToastContext } from '@/hooks/useToast';
 import { cn } from '@/lib/utils';
+import { QuiltThumbnail, QuiltImage } from '@/components/ui/next-image';
 import {
   MoreHorizontal,
   Eye,
@@ -25,7 +32,7 @@ import {
   Clock,
   Snowflake,
   Sun,
-  Leaf
+  Leaf,
 } from 'lucide-react';
 
 interface QuiltCardProps {
@@ -87,15 +94,15 @@ const STATUS_LABELS = {
 export function QuiltCard({ quilt, variant = 'card', onEdit, onView }: QuiltCardProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const toast = useToastContext();
-  
+
   const startUsage = useStartUsage();
   const endUsage = useEndUsage();
   const deleteQuilt = useDeleteQuilt();
-  
+
   const SeasonIcon = SEASON_ICONS[quilt.season];
   const isInUse = quilt.currentStatus === QuiltStatus.IN_USE;
   const isAvailable = quilt.currentStatus === QuiltStatus.AVAILABLE;
-  
+
   const handleStartUsage = async () => {
     try {
       await startUsage.mutateAsync({
@@ -105,13 +112,16 @@ export function QuiltCard({ quilt, variant = 'card', onEdit, onView }: QuiltCard
       });
       toast.success('Usage started', `Started using ${quilt.name}`);
     } catch (error) {
-      toast.error('Failed to start usage', error instanceof Error ? error.message : 'Please try again');
+      toast.error(
+        'Failed to start usage',
+        error instanceof Error ? error.message : 'Please try again'
+      );
     }
   };
-  
+
   const handleEndUsage = async () => {
     if (!quilt.currentUsage) return;
-    
+
     try {
       await endUsage.mutateAsync({
         id: quilt.currentUsage.id,
@@ -119,23 +129,31 @@ export function QuiltCard({ quilt, variant = 'card', onEdit, onView }: QuiltCard
       });
       toast.success('Usage ended', `Stopped using ${quilt.name}`);
     } catch (error) {
-      toast.error('Failed to end usage', error instanceof Error ? error.message : 'Please try again');
+      toast.error(
+        'Failed to end usage',
+        error instanceof Error ? error.message : 'Please try again'
+      );
     }
   };
-  
+
   const handleDelete = async () => {
-    if (!confirm(`Are you sure you want to delete "${quilt.name}"? This action cannot be undone.`)) {
+    if (
+      !confirm(`Are you sure you want to delete "${quilt.name}"? This action cannot be undone.`)
+    ) {
       return;
     }
-    
+
     try {
       await deleteQuilt.mutateAsync({ id: quilt.id });
       toast.success('Quilt deleted', `${quilt.name} has been removed from your collection`);
     } catch (error) {
-      toast.error('Failed to delete quilt', error instanceof Error ? error.message : 'Please try again');
+      toast.error(
+        'Failed to delete quilt',
+        error instanceof Error ? error.message : 'Please try again'
+      );
     }
   };
-  
+
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString('en-US', {
       month: 'short',
@@ -143,17 +161,17 @@ export function QuiltCard({ quilt, variant = 'card', onEdit, onView }: QuiltCard
       year: 'numeric',
     });
   };
-  
+
   const getDaysSinceLastUse = () => {
     if (!quilt.usagePeriods || quilt.usagePeriods.length === 0) return null;
-    
+
     const lastUsage = quilt.usagePeriods[0];
     const lastDate = lastUsage.endDate || lastUsage.startDate;
     const days = Math.ceil((Date.now() - new Date(lastDate).getTime()) / (1000 * 60 * 60 * 24));
-    
+
     return days;
   };
-  
+
   if (variant === 'compact') {
     return (
       <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
@@ -161,17 +179,17 @@ export function QuiltCard({ quilt, variant = 'card', onEdit, onView }: QuiltCard
           <div className="flex-shrink-0">
             <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
               {quilt.thumbnailUrl ? (
-                <img
+                <QuiltThumbnail
                   src={quilt.thumbnailUrl}
                   alt={quilt.name}
-                  className="w-full h-full object-cover rounded-lg"
+                  className="w-full h-full"
                 />
               ) : (
                 <Package2 className="w-6 h-6 text-gray-400" />
               )}
             </div>
           </div>
-          
+
           <div className="min-w-0 flex-1">
             <div className="flex items-center space-x-2">
               <h3 className="text-sm font-medium text-gray-900 truncate">
@@ -197,7 +215,7 @@ export function QuiltCard({ quilt, variant = 'card', onEdit, onView }: QuiltCard
             </div>
           </div>
         </div>
-        
+
         <div className="flex items-center space-x-2">
           {isAvailable && (
             <Button size="sm" variant="outline" onClick={handleStartUsage}>
@@ -209,7 +227,7 @@ export function QuiltCard({ quilt, variant = 'card', onEdit, onView }: QuiltCard
               <Square className="w-4 h-4" />
             </Button>
           )}
-          
+
           <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm">
@@ -236,7 +254,7 @@ export function QuiltCard({ quilt, variant = 'card', onEdit, onView }: QuiltCard
       </div>
     );
   }
-  
+
   return (
     <Card className="group hover:shadow-md transition-shadow">
       <CardHeader className="pb-3">
@@ -256,20 +274,22 @@ export function QuiltCard({ quilt, variant = 'card', onEdit, onView }: QuiltCard
                 <MapPin className="w-3 h-3 mr-1" />
                 {quilt.location}
               </span>
-              {quilt.brand && (
-                <span>• {quilt.brand}</span>
-              )}
+              {quilt.brand && <span>• {quilt.brand}</span>}
             </CardDescription>
           </div>
-          
+
           <div className="flex items-center space-x-2">
             <Badge className={cn('text-xs', STATUS_COLORS[quilt.currentStatus])}>
               {STATUS_LABELS[quilt.currentStatus]}
             </Badge>
-            
+
             <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="opacity-0 group-hover:opacity-100 transition-opacity"
+                >
                   <MoreHorizontal className="w-4 h-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -305,24 +325,22 @@ export function QuiltCard({ quilt, variant = 'card', onEdit, onView }: QuiltCard
           </div>
         </div>
       </CardHeader>
-      
+
       <CardContent>
         {/* Image */}
         {quilt.imageUrl && (
           <div className="mb-4">
-            <img
-              src={quilt.imageUrl}
-              alt={quilt.name}
-              className="w-full h-48 object-cover rounded-lg"
-            />
+            <QuiltImage src={quilt.imageUrl} alt={quilt.name} className="w-full h-48" />
           </div>
         )}
-        
+
         {/* Specifications */}
         <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
           <div className="flex items-center space-x-2 text-gray-600">
             <Ruler className="w-4 h-4" />
-            <span>{quilt.lengthCm} × {quilt.widthCm} cm</span>
+            <span>
+              {quilt.lengthCm} × {quilt.widthCm} cm
+            </span>
           </div>
           <div className="flex items-center space-x-2 text-gray-600">
             <Weight className="w-4 h-4" />
@@ -333,7 +351,7 @@ export function QuiltCard({ quilt, variant = 'card', onEdit, onView }: QuiltCard
             <span>{quilt.fillMaterial}</span>
           </div>
         </div>
-        
+
         {/* Usage Info */}
         {isInUse && quilt.currentUsage && (
           <div className="mb-4 p-3 bg-blue-50 rounded-lg">
@@ -345,39 +363,38 @@ export function QuiltCard({ quilt, variant = 'card', onEdit, onView }: QuiltCard
             </div>
           </div>
         )}
-        
+
         {/* Last Usage */}
-        {!isInUse && (() => {
-          const daysSince = getDaysSinceLastUse();
-          if (daysSince !== null) {
+        {!isInUse &&
+          (() => {
+            const daysSince = getDaysSinceLastUse();
+            if (daysSince !== null) {
+              return (
+                <div className="mb-4 flex items-center space-x-2 text-gray-500 text-sm">
+                  <Clock className="w-4 h-4" />
+                  <span>Last used {daysSince === 0 ? 'today' : `${daysSince} days ago`}</span>
+                </div>
+              );
+            }
             return (
               <div className="mb-4 flex items-center space-x-2 text-gray-500 text-sm">
                 <Clock className="w-4 h-4" />
-                <span>
-                  Last used {daysSince === 0 ? 'today' : `${daysSince} days ago`}
-                </span>
+                <span>Never used</span>
               </div>
             );
-          }
-          return (
-            <div className="mb-4 flex items-center space-x-2 text-gray-500 text-sm">
-              <Clock className="w-4 h-4" />
-              <span>Never used</span>
-            </div>
-          );
-        })()}
-        
+          })()}
+
         {/* Color */}
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <div 
+            <div
               className="w-4 h-4 rounded-full border border-gray-300"
               style={{ backgroundColor: quilt.color.toLowerCase() }}
               title={quilt.color}
             />
             <span className="text-sm text-gray-600">{quilt.color}</span>
           </div>
-          
+
           {/* Quick Actions */}
           <div className="flex space-x-2">
             {isAvailable && (

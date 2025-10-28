@@ -22,9 +22,9 @@ export const UsageType = {
 } as const;
 
 // Export types for the enums
-export type Season = typeof Season[keyof typeof Season];
-export type QuiltStatus = typeof QuiltStatus[keyof typeof QuiltStatus];
-export type UsageType = typeof UsageType[keyof typeof UsageType];
+export type Season = (typeof Season)[keyof typeof Season];
+export type QuiltStatus = (typeof QuiltStatus)[keyof typeof QuiltStatus];
+export type UsageType = (typeof UsageType)[keyof typeof UsageType];
 
 // Base Quilt Schema
 export const createQuiltSchema = z.object({
@@ -42,7 +42,10 @@ export const createQuiltSchema = z.object({
   purchaseDate: z.date().optional(),
   location: z.string().min(1, 'Location is required'),
   packagingInfo: z.string().optional(),
-  currentStatus: z.enum(['AVAILABLE', 'IN_USE', 'MAINTENANCE', 'STORAGE']).optional().default('AVAILABLE'),
+  currentStatus: z
+    .enum(['AVAILABLE', 'IN_USE', 'MAINTENANCE', 'STORAGE'])
+    .optional()
+    .default('AVAILABLE'),
   notes: z.string().optional(),
   imageUrl: z.string().optional(),
   thumbnailUrl: z.string().optional(),
@@ -58,7 +61,10 @@ export const createUsagePeriodSchema = z.object({
   startDate: z.date(),
   endDate: z.date().optional(),
   seasonUsed: z.string().optional(),
-  usageType: z.enum(['REGULAR', 'GUEST', 'SPECIAL_OCCASION', 'SEASONAL_ROTATION']).optional().default('REGULAR'),
+  usageType: z
+    .enum(['REGULAR', 'GUEST', 'SPECIAL_OCCASION', 'SEASONAL_ROTATION'])
+    .optional()
+    .default('REGULAR'),
   notes: z.string().optional(),
 });
 
@@ -66,7 +72,10 @@ export const createCurrentUsageSchema = z.object({
   quiltId: z.string(),
   startedAt: z.date(),
   expectedEndDate: z.date().optional(),
-  usageType: z.enum(['REGULAR', 'GUEST', 'SPECIAL_OCCASION', 'SEASONAL_ROTATION']).optional().default('REGULAR'),
+  usageType: z
+    .enum(['REGULAR', 'GUEST', 'SPECIAL_OCCASION', 'SEASONAL_ROTATION'])
+    .optional()
+    .default('REGULAR'),
   notes: z.string().optional(),
 });
 
@@ -89,7 +98,10 @@ export const quiltFiltersSchema = z.object({
 
 export const quiltSearchSchema = z.object({
   filters: quiltFiltersSchema.optional().default({}),
-  sortBy: z.enum(['itemNumber', 'name', 'season', 'weightGrams', 'createdAt', 'updatedAt']).optional().default('itemNumber'),
+  sortBy: z
+    .enum(['itemNumber', 'name', 'season', 'weightGrams', 'createdAt', 'updatedAt'])
+    .optional()
+    .default('itemNumber'),
   sortOrder: z.enum(['asc', 'desc']).optional().default('asc'),
   skip: z.number().int().min(0).optional().default(0),
   take: z.number().int().min(1).max(100).optional().default(20),
@@ -115,9 +127,11 @@ export const createSeasonalRecommendationSchema = z.object({
   priority: z.number().int().min(0).optional().default(0),
 });
 
-export const updateSeasonalRecommendationSchema = createSeasonalRecommendationSchema.partial().extend({
-  id: z.string(),
-});
+export const updateSeasonalRecommendationSchema = createSeasonalRecommendationSchema
+  .partial()
+  .extend({
+    id: z.string(),
+  });
 
 // Analytics Schemas
 export const analyticsDateRangeSchema = z.object({

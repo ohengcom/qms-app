@@ -16,7 +16,7 @@ import {
   Zap,
   ArrowUpRight,
   ArrowDownRight,
-  Minus
+  Minus,
 } from 'lucide-react';
 
 interface DashboardStats {
@@ -49,11 +49,11 @@ interface StatisticsCardsProps {
 export function StatisticsCards({ stats, previousStats, isLoading = false }: StatisticsCardsProps) {
   const getTrendIndicator = (current: number, previous?: number) => {
     if (!previous || previous === 0) return null;
-    
+
     const change = ((current - previous) / previous) * 100;
     const isPositive = change > 0;
     const isNeutral = Math.abs(change) < 1;
-    
+
     if (isNeutral) {
       return (
         <div className="flex items-center text-gray-500">
@@ -62,32 +62,28 @@ export function StatisticsCards({ stats, previousStats, isLoading = false }: Sta
         </div>
       );
     }
-    
+
     return (
-      <div className={cn(
-        "flex items-center",
-        isPositive ? "text-green-600" : "text-red-600"
-      )}>
+      <div className={cn('flex items-center', isPositive ? 'text-green-600' : 'text-red-600')}>
         {isPositive ? (
           <ArrowUpRight className="w-3 h-3 mr-1" />
         ) : (
           <ArrowDownRight className="w-3 h-3 mr-1" />
         )}
         <span className="text-xs">
-          {isPositive ? '+' : ''}{Math.round(change)}%
+          {isPositive ? '+' : ''}
+          {Math.round(change)}%
         </span>
       </div>
     );
   };
-  
-  const utilizationRate = stats.totalQuilts > 0 
-    ? Math.round((stats.quiltsInUse / stats.totalQuilts) * 100)
-    : 0;
-  
-  const availabilityRate = stats.totalQuilts > 0
-    ? Math.round((stats.availableQuilts / stats.totalQuilts) * 100)
-    : 0;
-  
+
+  const utilizationRate =
+    stats.totalQuilts > 0 ? Math.round((stats.quiltsInUse / stats.totalQuilts) * 100) : 0;
+
+  const availabilityRate =
+    stats.totalQuilts > 0 ? Math.round((stats.availableQuilts / stats.totalQuilts) * 100) : 0;
+
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -105,7 +101,7 @@ export function StatisticsCards({ stats, previousStats, isLoading = false }: Sta
       </div>
     );
   }
-  
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {/* Total Quilts */}
@@ -130,7 +126,7 @@ export function StatisticsCards({ stats, previousStats, isLoading = false }: Sta
           </div>
         </CardContent>
       </Card>
-      
+
       {/* Quilts In Use */}
       <Card>
         <CardContent className="pt-6">
@@ -151,7 +147,7 @@ export function StatisticsCards({ stats, previousStats, isLoading = false }: Sta
           </div>
         </CardContent>
       </Card>
-      
+
       {/* Available Quilts */}
       <Card>
         <CardContent className="pt-6">
@@ -174,7 +170,7 @@ export function StatisticsCards({ stats, previousStats, isLoading = false }: Sta
           </div>
         </CardContent>
       </Card>
-      
+
       {/* Total Usage Days */}
       <Card>
         <CardContent className="pt-6">
@@ -195,7 +191,7 @@ export function StatisticsCards({ stats, previousStats, isLoading = false }: Sta
           </div>
         </CardContent>
       </Card>
-      
+
       {/* Average Satisfaction */}
       <Card>
         <CardContent className="pt-6">
@@ -218,7 +214,7 @@ export function StatisticsCards({ stats, previousStats, isLoading = false }: Sta
           </div>
         </CardContent>
       </Card>
-      
+
       {/* Usage Frequency */}
       <Card>
         <CardContent className="pt-6">
@@ -234,13 +230,16 @@ export function StatisticsCards({ stats, previousStats, isLoading = false }: Sta
           </div>
           <div className="mt-4">
             <Badge variant="outline" className="text-xs">
-              {stats.usageFrequency > 2 ? 'High Activity' : 
-               stats.usageFrequency > 1 ? 'Moderate Activity' : 'Low Activity'}
+              {stats.usageFrequency > 2
+                ? 'High Activity'
+                : stats.usageFrequency > 1
+                  ? 'Moderate Activity'
+                  : 'Low Activity'}
             </Badge>
           </div>
         </CardContent>
       </Card>
-      
+
       {/* Most Used Quilt */}
       <Card className="hover:shadow-md transition-shadow cursor-pointer">
         <CardContent className="pt-6">
@@ -265,7 +264,7 @@ export function StatisticsCards({ stats, previousStats, isLoading = false }: Sta
           </div>
         </CardContent>
       </Card>
-      
+
       {/* Maintenance Alerts */}
       <Card>
         <CardContent className="pt-6">
@@ -284,9 +283,9 @@ export function StatisticsCards({ stats, previousStats, isLoading = false }: Sta
             )}
           </div>
           <div className="mt-4">
-            <Button 
-              variant={stats.maintenanceAlerts > 0 ? "default" : "outline"} 
-              size="sm" 
+            <Button
+              variant={stats.maintenanceAlerts > 0 ? 'default' : 'outline'}
+              size="sm"
               className="w-full text-xs"
             >
               {stats.maintenanceAlerts > 0 ? 'View Alerts' : 'All Good'}

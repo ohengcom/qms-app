@@ -4,8 +4,21 @@ import { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import {
   Calendar,
@@ -15,7 +28,7 @@ import {
   Clock,
   MapPin,
   User,
-  Thermometer
+  Thermometer,
 } from 'lucide-react';
 
 interface UsagePeriod {
@@ -42,28 +55,43 @@ const USAGE_TYPE_COLORS = {
 };
 
 const MONTHS = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December'
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
 ];
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-export function UsageCalendar({ usagePeriods, quiltName, onDateSelect, onPeriodSelect }: UsageCalendarProps) {
+export function UsageCalendar({
+  usagePeriods,
+  quiltName,
+  onDateSelect,
+  onPeriodSelect,
+}: UsageCalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [viewMode, setViewMode] = useState<'month' | 'year'>('month');
-  
+
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth();
-  
+
   // Create a map of dates to usage periods for quick lookup
   const usageMap = useMemo(() => {
     const map = new Map<string, UsagePeriod[]>();
-    
+
     usagePeriods.forEach(period => {
       const startDate = new Date(period.startDate);
       const endDate = period.endDate ? new Date(period.endDate) : new Date();
-      
+
       // Add all dates in the period to the map
       const current = new Date(startDate);
       while (current <= endDate) {
@@ -75,18 +103,18 @@ export function UsageCalendar({ usagePeriods, quiltName, onDateSelect, onPeriodS
         current.setDate(current.getDate() + 1);
       }
     });
-    
+
     return map;
   }, [usagePeriods]);
-  
+
   const getDaysInMonth = (year: number, month: number) => {
     return new Date(year, month + 1, 0).getDate();
   };
-  
+
   const getFirstDayOfMonth = (year: number, month: number) => {
     return new Date(year, month, 1).getDay();
   };
-  
+
   const navigateMonth = (direction: 'prev' | 'next') => {
     setCurrentDate(prev => {
       const newDate = new Date(prev);
@@ -98,7 +126,7 @@ export function UsageCalendar({ usagePeriods, quiltName, onDateSelect, onPeriodS
       return newDate;
     });
   };
-  
+
   const navigateYear = (direction: 'prev' | 'next') => {
     setCurrentDate(prev => {
       const newDate = new Date(prev);
@@ -110,25 +138,23 @@ export function UsageCalendar({ usagePeriods, quiltName, onDateSelect, onPeriodS
       return newDate;
     });
   };
-  
+
   const handleDateClick = (day: number) => {
     const clickedDate = new Date(currentYear, currentMonth, day);
     setSelectedDate(clickedDate);
     onDateSelect?.(clickedDate);
   };
-  
+
   const renderMonthView = () => {
     const daysInMonth = getDaysInMonth(currentYear, currentMonth);
     const firstDay = getFirstDayOfMonth(currentYear, currentMonth);
     const days = [];
-    
+
     // Add empty cells for days before the first day of the month
     for (let i = 0; i < firstDay; i++) {
-      days.push(
-        <div key={`empty-${i}`} className="h-12 border border-gray-100" />
-      );
+      days.push(<div key={`empty-${i}`} className="h-12 border border-gray-100" />);
     }
-    
+
     // Add cells for each day of the month
     for (let day = 1; day <= daysInMonth; day++) {
       const date = new Date(currentYear, currentMonth, day);
@@ -136,14 +162,14 @@ export function UsageCalendar({ usagePeriods, quiltName, onDateSelect, onPeriodS
       const periodsOnDate = usageMap.get(dateKey) || [];
       const isToday = date.toDateString() === new Date().toDateString();
       const isSelected = selectedDate?.toDateString() === date.toDateString();
-      
+
       days.push(
         <div
           key={day}
           className={cn(
-            "h-12 border border-gray-100 p-1 cursor-pointer hover:bg-gray-50 relative",
-            isToday && "bg-blue-50 border-blue-200",
-            isSelected && "bg-blue-100 border-blue-300"
+            'h-12 border border-gray-100 p-1 cursor-pointer hover:bg-gray-50 relative',
+            isToday && 'bg-blue-50 border-blue-200',
+            isSelected && 'bg-blue-100 border-blue-300'
           )}
           onClick={() => handleDateClick(day)}
         >
@@ -154,8 +180,9 @@ export function UsageCalendar({ usagePeriods, quiltName, onDateSelect, onPeriodS
                 <div
                   key={`${period.id}-${index}`}
                   className={cn(
-                    "h-1 flex-1 rounded-full",
-                    USAGE_TYPE_COLORS[period.usageType as keyof typeof USAGE_TYPE_COLORS] || 'bg-gray-400'
+                    'h-1 flex-1 rounded-full',
+                    USAGE_TYPE_COLORS[period.usageType as keyof typeof USAGE_TYPE_COLORS] ||
+                      'bg-gray-400'
                   )}
                   title={`${period.usageType} - ${period.location || 'No location'}`}
                 />
@@ -168,12 +195,15 @@ export function UsageCalendar({ usagePeriods, quiltName, onDateSelect, onPeriodS
         </div>
       );
     }
-    
+
     return (
       <div className="grid grid-cols-7 gap-0 border border-gray-200 rounded-lg overflow-hidden">
         {/* Day headers */}
         {DAYS.map(day => (
-          <div key={day} className="h-8 bg-gray-50 border-b border-gray-200 flex items-center justify-center text-xs font-medium text-gray-600">
+          <div
+            key={day}
+            className="h-8 bg-gray-50 border-b border-gray-200 flex items-center justify-center text-xs font-medium text-gray-600"
+          >
             {day}
           </div>
         ))}
@@ -182,29 +212,33 @@ export function UsageCalendar({ usagePeriods, quiltName, onDateSelect, onPeriodS
       </div>
     );
   };
-  
+
   const renderYearView = () => {
     const months = [];
-    
+
     for (let month = 0; month < 12; month++) {
       const monthUsage = usagePeriods.filter(period => {
         const startMonth = new Date(period.startDate).getMonth();
         const startYear = new Date(period.startDate).getFullYear();
         const endMonth = period.endDate ? new Date(period.endDate).getMonth() : startMonth;
         const endYear = period.endDate ? new Date(period.endDate).getFullYear() : startYear;
-        
-        return (startYear === currentYear && startMonth <= month && month <= endMonth) ||
-               (startYear < currentYear && endYear >= currentYear) ||
-               (startYear === currentYear && startMonth <= month) ||
-               (endYear === currentYear && month <= endMonth);
+
+        return (
+          (startYear === currentYear && startMonth <= month && month <= endMonth) ||
+          (startYear < currentYear && endYear >= currentYear) ||
+          (startYear === currentYear && startMonth <= month) ||
+          (endYear === currentYear && month <= endMonth)
+        );
       });
-      
+
       months.push(
         <div
           key={month}
           className={cn(
-            "p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 text-center",
-            month === new Date().getMonth() && currentYear === new Date().getFullYear() && "bg-blue-50 border-blue-200"
+            'p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 text-center',
+            month === new Date().getMonth() &&
+              currentYear === new Date().getFullYear() &&
+              'bg-blue-50 border-blue-200'
           )}
           onClick={() => {
             setCurrentDate(new Date(currentYear, month, 1));
@@ -217,32 +251,30 @@ export function UsageCalendar({ usagePeriods, quiltName, onDateSelect, onPeriodS
           </div>
           {monthUsage.length > 0 && (
             <div className="flex justify-center space-x-1 mt-2">
-              {Array.from(new Set(monthUsage.map(p => p.usageType))).slice(0, 3).map(type => (
-                <div
-                  key={type}
-                  className={cn(
-                    "w-2 h-2 rounded-full",
-                    USAGE_TYPE_COLORS[type as keyof typeof USAGE_TYPE_COLORS] || 'bg-gray-400'
-                  )}
-                />
-              ))}
+              {Array.from(new Set(monthUsage.map(p => p.usageType)))
+                .slice(0, 3)
+                .map(type => (
+                  <div
+                    key={type}
+                    className={cn(
+                      'w-2 h-2 rounded-full',
+                      USAGE_TYPE_COLORS[type as keyof typeof USAGE_TYPE_COLORS] || 'bg-gray-400'
+                    )}
+                  />
+                ))}
             </div>
           )}
         </div>
       );
     }
-    
-    return (
-      <div className="grid grid-cols-3 md:grid-cols-4 gap-4">
-        {months}
-      </div>
-    );
+
+    return <div className="grid grid-cols-3 md:grid-cols-4 gap-4">{months}</div>;
   };
-  
-  const selectedDatePeriods = selectedDate 
+
+  const selectedDatePeriods = selectedDate
     ? usageMap.get(selectedDate.toISOString().split('T')[0]) || []
     : [];
-  
+
   return (
     <Card>
       <CardHeader>
@@ -252,7 +284,10 @@ export function UsageCalendar({ usagePeriods, quiltName, onDateSelect, onPeriodS
             <span>Usage Calendar</span>
           </div>
           <div className="flex items-center space-x-2">
-            <Select value={viewMode} onValueChange={(value: 'month' | 'year') => setViewMode(value)}>
+            <Select
+              value={viewMode}
+              onValueChange={(value: 'month' | 'year') => setViewMode(value)}
+            >
               <SelectTrigger className="w-24">
                 <SelectValue />
               </SelectTrigger>
@@ -263,63 +298,58 @@ export function UsageCalendar({ usagePeriods, quiltName, onDateSelect, onPeriodS
             </Select>
           </div>
         </CardTitle>
-        <CardDescription>
-          Visual timeline of usage periods for {quiltName}
-        </CardDescription>
+        <CardDescription>Visual timeline of usage periods for {quiltName}</CardDescription>
       </CardHeader>
-      
+
       <CardContent className="space-y-4">
         {/* Navigation */}
         <div className="flex items-center justify-between">
           <Button
             variant="outline"
             size="sm"
-            onClick={() => viewMode === 'month' ? navigateMonth('prev') : navigateYear('prev')}
+            onClick={() => (viewMode === 'month' ? navigateMonth('prev') : navigateYear('prev'))}
           >
             <ChevronLeft className="w-4 h-4" />
           </Button>
-          
+
           <div className="text-center">
             <h3 className="text-lg font-semibold">
-              {viewMode === 'month' 
-                ? `${MONTHS[currentMonth]} ${currentYear}`
-                : currentYear
-              }
+              {viewMode === 'month' ? `${MONTHS[currentMonth]} ${currentYear}` : currentYear}
             </h3>
           </div>
-          
+
           <Button
             variant="outline"
             size="sm"
-            onClick={() => viewMode === 'month' ? navigateMonth('next') : navigateYear('next')}
+            onClick={() => (viewMode === 'month' ? navigateMonth('next') : navigateYear('next'))}
           >
             <ChevronRight className="w-4 h-4" />
           </Button>
         </div>
-        
+
         {/* Calendar */}
         {viewMode === 'month' ? renderMonthView() : renderYearView()}
-        
+
         {/* Legend */}
         <div className="flex flex-wrap items-center gap-4 pt-4 border-t">
           <span className="text-sm font-medium text-gray-600">Usage Types:</span>
           {Object.entries(USAGE_TYPE_COLORS).map(([type, color]) => (
             <div key={type} className="flex items-center space-x-2">
-              <div className={cn("w-3 h-3 rounded-full", color)} />
+              <div className={cn('w-3 h-3 rounded-full', color)} />
               <span className="text-xs text-gray-600">{type.replace('_', ' ')}</span>
             </div>
           ))}
         </div>
-        
+
         {/* Selected Date Details */}
         {selectedDate && selectedDatePeriods.length > 0 && (
           <div className="mt-4 p-4 bg-gray-50 rounded-lg">
             <h4 className="font-medium mb-3">
-              {selectedDate.toLocaleDateString('en-US', { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
+              {selectedDate.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
               })}
             </h4>
             <div className="space-y-2">
@@ -330,12 +360,17 @@ export function UsageCalendar({ usagePeriods, quiltName, onDateSelect, onPeriodS
                   onClick={() => onPeriodSelect?.(period)}
                 >
                   <div className="flex items-center space-x-3">
-                    <div className={cn(
-                      "w-3 h-3 rounded-full",
-                      USAGE_TYPE_COLORS[period.usageType as keyof typeof USAGE_TYPE_COLORS] || 'bg-gray-400'
-                    )} />
+                    <div
+                      className={cn(
+                        'w-3 h-3 rounded-full',
+                        USAGE_TYPE_COLORS[period.usageType as keyof typeof USAGE_TYPE_COLORS] ||
+                          'bg-gray-400'
+                      )}
+                    />
                     <div>
-                      <div className="text-sm font-medium">{period.usageType.replace('_', ' ')}</div>
+                      <div className="text-sm font-medium">
+                        {period.usageType.replace('_', ' ')}
+                      </div>
                       {period.location && (
                         <div className="text-xs text-gray-500 flex items-center">
                           <MapPin className="w-3 h-3 mr-1" />

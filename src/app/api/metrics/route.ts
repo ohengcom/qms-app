@@ -5,11 +5,11 @@ import { db } from '@/lib/neon';
 export async function GET() {
   try {
     const startTime = Date.now();
-    
+
     // Collect application metrics - TODO: Implement with Neon
     const totalQuilts = 0; // await db.countQuilts();
     const activeUsage = 0; // TODO: Implement with Neon
-    const totalUsers = 0; // TODO: Implement with Neon  
+    const totalUsers = 0; // TODO: Implement with Neon
     const recentActivity = 0; // TODO: Implement with Neon
 
     // Database connection time
@@ -17,7 +17,7 @@ export async function GET() {
 
     // Memory usage
     const memoryUsage = process.memoryUsage();
-    
+
     // Uptime
     const uptime = process.uptime();
 
@@ -68,14 +68,13 @@ qms_build_info{version="${process.env.npm_package_version || '1.0.0'}",environme
       headers: {
         'Content-Type': 'text/plain; version=0.0.4; charset=utf-8',
         'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0'
-      }
+        Pragma: 'no-cache',
+        Expires: '0',
+      },
     });
-
   } catch (error) {
     console.error('Metrics collection failed:', error);
-    
+
     // Return basic metrics even if database is down
     const basicMetrics = `
 # HELP qms_up Application availability
@@ -96,8 +95,8 @@ qms_memory_usage_bytes{type="heapUsed"} ${process.memoryUsage().heapUsed}
     return new Response(basicMetrics, {
       status: 503,
       headers: {
-        'Content-Type': 'text/plain; version=0.0.4; charset=utf-8'
-      }
+        'Content-Type': 'text/plain; version=0.0.4; charset=utf-8',
+      },
     });
   }
 }

@@ -4,20 +4,19 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { DatePicker } from '@/components/ui/date-picker';
 import { useToast } from '@/hooks/useToast';
 import { api } from '@/lib/trpc';
-import { 
-  Download, 
-  FileSpreadsheet, 
-  Calendar, 
-  Filter,
-  Loader2,
-  CheckCircle 
-} from 'lucide-react';
+import { Download, FileSpreadsheet, Calendar, Filter, Loader2, CheckCircle } from 'lucide-react';
 
 interface ExportOptionsProps {
   type: 'quilts' | 'usage' | 'maintenance';
@@ -36,41 +35,41 @@ export function ExportOptions({ type }: ExportOptionsProps) {
       end: new Date(), // Today
     },
   });
-  
+
   const { success, error } = useToast();
 
   // Export mutations
   const exportQuiltsMutation = api.importExport.exportQuiltsToExcel.useMutation({
-    onSuccess: (data) => {
+    onSuccess: data => {
       downloadFile(data.fileData, data.filename);
       success('Export completed', `Successfully exported ${data.totalRecords} quilts`);
       setIsExporting(false);
     },
-    onError: (err) => {
+    onError: err => {
       error('Export failed', err.message);
       setIsExporting(false);
     },
   });
 
   const exportUsageMutation = api.importExport.exportUsageReportToExcel.useMutation({
-    onSuccess: (data) => {
+    onSuccess: data => {
       downloadFile(data.fileData, data.filename);
       success('Export completed', `Successfully exported ${data.totalRecords} usage records`);
       setIsExporting(false);
     },
-    onError: (err) => {
+    onError: err => {
       error('Export failed', err.message);
       setIsExporting(false);
     },
   });
 
   const exportMaintenanceMutation = api.importExport.exportMaintenanceReportToExcel.useMutation({
-    onSuccess: (data) => {
+    onSuccess: data => {
       downloadFile(data.fileData, data.filename);
       success('Export completed', `Successfully exported ${data.totalRecords} maintenance records`);
       setIsExporting(false);
     },
-    onError: (err) => {
+    onError: err => {
       error('Export failed', err.message);
       setIsExporting(false);
     },
@@ -85,8 +84,8 @@ export function ExportOptions({ type }: ExportOptionsProps) {
         byteNumbers[i] = byteCharacters.charCodeAt(i);
       }
       const byteArray = new Uint8Array(byteNumbers);
-      const blob = new Blob([byteArray], { 
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+      const blob = new Blob([byteArray], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       });
 
       // Create download link
@@ -174,9 +173,7 @@ export function ExportOptions({ type }: ExportOptionsProps) {
             {getIcon()}
             {getTitle()}
           </CardTitle>
-          <CardDescription>
-            {getDescription()}
-          </CardDescription>
+          <CardDescription>{getDescription()}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Filters for Quilts */}
@@ -186,13 +183,14 @@ export function ExportOptions({ type }: ExportOptionsProps) {
                 <Filter className="h-4 w-4 text-gray-600" />
                 <Label className="text-sm font-medium">Filters</Label>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="season">Season</Label>
-                  <Select value={filters.season} onValueChange={(value) => 
-                    setFilters(prev => ({ ...prev, season: value }))
-                  }>
+                  <Select
+                    value={filters.season}
+                    onValueChange={value => setFilters(prev => ({ ...prev, season: value }))}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="All seasons" />
                     </SelectTrigger>
@@ -207,9 +205,10 @@ export function ExportOptions({ type }: ExportOptionsProps) {
 
                 <div className="space-y-2">
                   <Label htmlFor="status">Status</Label>
-                  <Select value={filters.status} onValueChange={(value) => 
-                    setFilters(prev => ({ ...prev, status: value }))
-                  }>
+                  <Select
+                    value={filters.status}
+                    onValueChange={value => setFilters(prev => ({ ...prev, status: value }))}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="All statuses" />
                     </SelectTrigger>
@@ -229,19 +228,19 @@ export function ExportOptions({ type }: ExportOptionsProps) {
                     id="location"
                     placeholder="Filter by location"
                     value={filters.location}
-                    onChange={(e) => setFilters(prev => ({ ...prev, location: e.target.value }))}
+                    onChange={e => setFilters(prev => ({ ...prev, location: e.target.value }))}
                   />
                 </div>
               </div>
 
               <div className="space-y-3">
                 <Label className="text-sm font-medium">Include Additional Data</Label>
-                
+
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id="includeUsageHistory"
                     checked={filters.includeUsageHistory}
-                    onCheckedChange={(checked) => 
+                    onCheckedChange={checked =>
                       setFilters(prev => ({ ...prev, includeUsageHistory: !!checked }))
                     }
                   />
@@ -254,7 +253,7 @@ export function ExportOptions({ type }: ExportOptionsProps) {
                   <Checkbox
                     id="includeMaintenanceRecords"
                     checked={filters.includeMaintenanceRecords}
-                    onCheckedChange={(checked) => 
+                    onCheckedChange={checked =>
                       setFilters(prev => ({ ...prev, includeMaintenanceRecords: !!checked }))
                     }
                   />
@@ -273,16 +272,16 @@ export function ExportOptions({ type }: ExportOptionsProps) {
                 <Calendar className="h-4 w-4 text-gray-600" />
                 <Label className="text-sm font-medium">Date Range</Label>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Start Date</Label>
                   <DatePicker
                     date={filters.dateRange.start}
-                    onDateChange={(date) => 
-                      setFilters(prev => ({ 
-                        ...prev, 
-                        dateRange: { ...prev.dateRange, start: date || new Date() }
+                    onDateChange={date =>
+                      setFilters(prev => ({
+                        ...prev,
+                        dateRange: { ...prev.dateRange, start: date || new Date() },
                       }))
                     }
                   />
@@ -292,10 +291,10 @@ export function ExportOptions({ type }: ExportOptionsProps) {
                   <Label>End Date</Label>
                   <DatePicker
                     date={filters.dateRange.end}
-                    onDateChange={(date) => 
-                      setFilters(prev => ({ 
-                        ...prev, 
-                        dateRange: { ...prev.dateRange, end: date || new Date() }
+                    onDateChange={date =>
+                      setFilters(prev => ({
+                        ...prev,
+                        dateRange: { ...prev.dateRange, end: date || new Date() },
                       }))
                     }
                   />
@@ -306,11 +305,7 @@ export function ExportOptions({ type }: ExportOptionsProps) {
 
           {/* Export Button */}
           <div className="flex justify-end">
-            <Button 
-              onClick={handleExport}
-              disabled={isExporting}
-              className="min-w-[150px]"
-            >
+            <Button onClick={handleExport} disabled={isExporting} className="min-w-[150px]">
               {isExporting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

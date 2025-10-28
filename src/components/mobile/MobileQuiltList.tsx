@@ -22,7 +22,7 @@ import {
   Square,
   Snowflake,
   Sun,
-  Leaf
+  Leaf,
 } from 'lucide-react';
 
 // Mock data for demonstration
@@ -120,20 +120,21 @@ export function MobileQuiltList() {
 
   // Filter quilts based on search and filters
   const filteredQuilts = mockQuilts.filter(quilt => {
-    const matchesSearch = !debouncedSearchValue || 
+    const matchesSearch =
+      !debouncedSearchValue ||
       quilt.name.toLowerCase().includes(debouncedSearchValue.toLowerCase()) ||
       quilt.brand?.toLowerCase().includes(debouncedSearchValue.toLowerCase()) ||
       quilt.location.toLowerCase().includes(debouncedSearchValue.toLowerCase());
-    
+
     const matchesSeason = !selectedSeason || quilt.season === selectedSeason;
     const matchesStatus = !selectedStatus || quilt.currentStatus === selectedStatus;
-    
+
     return matchesSearch && matchesSeason && matchesStatus;
   });
 
   return (
-    <MobileLayout 
-      title="Quilts" 
+    <MobileLayout
+      title="Quilts"
       subtitle={`${filteredQuilts.length} quilts`}
       showFAB={true}
       fabAction={handleAddQuilt}
@@ -148,14 +149,14 @@ export function MobileQuiltList() {
               <Input
                 placeholder="Search quilts..."
                 value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
+                onChange={e => setSearchValue(e.target.value)}
                 className="pl-10 h-12 text-base"
               />
             </div>
-            
+
             <div className="flex space-x-2">
               <TouchButton
-                variant={showFilters ? "default" : "outline"}
+                variant={showFilters ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setShowFilters(!showFilters)}
                 className="flex-shrink-0"
@@ -163,7 +164,7 @@ export function MobileQuiltList() {
                 <Filter className="h-4 w-4 mr-2" />
                 Filters
               </TouchButton>
-              
+
               {(selectedSeason || selectedStatus) && (
                 <TouchButton
                   variant="ghost"
@@ -186,28 +187,31 @@ export function MobileQuiltList() {
                   <div>
                     <label className="text-sm font-medium mb-2 block">Season</label>
                     <div className="flex space-x-2">
-                      {['WINTER', 'SPRING_AUTUMN', 'SUMMER'].map((season) => (
+                      {['WINTER', 'SPRING_AUTUMN', 'SUMMER'].map(season => (
                         <TouchButton
                           key={season}
-                          variant={selectedSeason === season ? "default" : "outline"}
+                          variant={selectedSeason === season ? 'default' : 'outline'}
                           size="sm"
                           onClick={() => setSelectedSeason(selectedSeason === season ? '' : season)}
                           className="flex-1 text-xs"
                         >
-                          {season === 'WINTER' ? 'Winter' : 
-                           season === 'SPRING_AUTUMN' ? 'Spring/Autumn' : 'Summer'}
+                          {season === 'WINTER'
+                            ? 'Winter'
+                            : season === 'SPRING_AUTUMN'
+                              ? 'Spring/Autumn'
+                              : 'Summer'}
                         </TouchButton>
                       ))}
                     </div>
                   </div>
-                  
+
                   <div>
                     <label className="text-sm font-medium mb-2 block">Status</label>
                     <div className="grid grid-cols-2 gap-2">
-                      {['AVAILABLE', 'IN_USE', 'STORAGE', 'MAINTENANCE'].map((status) => (
+                      {['AVAILABLE', 'IN_USE', 'STORAGE', 'MAINTENANCE'].map(status => (
                         <TouchButton
                           key={status}
-                          variant={selectedStatus === status ? "default" : "outline"}
+                          variant={selectedStatus === status ? 'default' : 'outline'}
                           size="sm"
                           onClick={() => setSelectedStatus(selectedStatus === status ? '' : status)}
                           className="text-xs"
@@ -225,7 +229,7 @@ export function MobileQuiltList() {
           {/* Quilt List */}
           <MobileSection>
             <div className="space-y-3 px-4">
-              {filteredQuilts.map((quilt) => (
+              {filteredQuilts.map(quilt => (
                 <SwipeableCard
                   key={quilt.id}
                   onSwipeLeft={() => handleEditQuilt(quilt)}
@@ -237,14 +241,12 @@ export function MobileQuiltList() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center space-x-2 mb-2">
                             {getSeasonIcon(quilt.season)}
-                            <h3 className="font-medium text-gray-900 truncate">
-                              {quilt.name}
-                            </h3>
+                            <h3 className="font-medium text-gray-900 truncate">{quilt.name}</h3>
                             <Badge variant="outline" className="text-xs">
                               #{quilt.itemNumber}
                             </Badge>
                           </div>
-                          
+
                           <div className="space-y-1 text-sm text-gray-600">
                             <div className="flex items-center space-x-2">
                               <MapPin className="h-3 w-3" />
@@ -253,7 +255,9 @@ export function MobileQuiltList() {
                             <div className="flex items-center space-x-4">
                               <div className="flex items-center space-x-1">
                                 <Ruler className="h-3 w-3" />
-                                <span>{quilt.lengthCm}×{quilt.widthCm}cm</span>
+                                <span>
+                                  {quilt.lengthCm}×{quilt.widthCm}cm
+                                </span>
                               </div>
                               <div className="flex items-center space-x-1">
                                 <Weight className="h-3 w-3" />
@@ -261,7 +265,7 @@ export function MobileQuiltList() {
                               </div>
                             </div>
                           </div>
-                          
+
                           <div className="flex items-center justify-between mt-3">
                             <Badge className={getStatusColor(quilt.currentStatus)}>
                               {quilt.currentStatus.replace('_', ' ').toLowerCase()}
@@ -269,7 +273,7 @@ export function MobileQuiltList() {
                             <span className="text-xs text-gray-500">{quilt.brand}</span>
                           </div>
                         </div>
-                        
+
                         <div className="flex flex-col space-y-2 ml-4">
                           <TouchButton
                             variant="ghost"
@@ -279,7 +283,7 @@ export function MobileQuiltList() {
                           >
                             <Eye className="h-4 w-4" />
                           </TouchButton>
-                          
+
                           {quilt.currentStatus === 'AVAILABLE' ? (
                             <TouchButton
                               variant="outline"
@@ -314,17 +318,16 @@ export function MobileQuiltList() {
                   </Card>
                 </SwipeableCard>
               ))}
-              
+
               {filteredQuilts.length === 0 && (
                 <Card>
                   <CardContent className="p-8 text-center">
                     <Package className="h-12 w-12 text-gray-300 mx-auto mb-4" />
                     <h3 className="text-lg font-medium text-gray-900 mb-2">No quilts found</h3>
                     <p className="text-gray-600 mb-4">
-                      {debouncedSearchValue 
+                      {debouncedSearchValue
                         ? 'Try adjusting your search or filters'
-                        : 'Add your first quilt to get started'
-                      }
+                        : 'Add your first quilt to get started'}
                     </p>
                     <TouchButton onClick={handleAddQuilt}>
                       <Plus className="h-4 w-4 mr-2" />
@@ -335,7 +338,7 @@ export function MobileQuiltList() {
               )}
             </div>
           </MobileSection>
-          
+
           {/* Swipe Instructions */}
           {filteredQuilts.length > 0 && (
             <div className="px-4 pb-4">

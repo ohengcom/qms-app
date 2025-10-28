@@ -59,20 +59,16 @@ export function MobileLayout({
   return (
     <div className="lg:hidden min-h-screen bg-gray-50">
       {/* Mobile Header */}
-      {title && (
-        <MobileHeader
-          title={title}
-          subtitle={subtitle}
-          actions={<MobileNavigation />}
-        />
-      )}
+      {title && <MobileHeader title={title} subtitle={subtitle} actions={<MobileNavigation />} />}
 
       {/* Main Content */}
-      <main className={cn(
-        'pb-20', // Space for bottom navigation
-        title && 'pt-0', // No top padding if header is present
-        className
-      )}>
+      <main
+        className={cn(
+          'pb-20', // Space for bottom navigation
+          title && 'pt-0', // No top padding if header is present
+          className
+        )}
+      >
         {children}
       </main>
 
@@ -116,10 +112,10 @@ interface MobileCardLayoutProps {
   className?: string;
 }
 
-export function MobileCardLayout({ 
-  children, 
+export function MobileCardLayout({
+  children,
   spacing = 'normal',
-  className 
+  className,
 }: MobileCardLayoutProps) {
   const spacingClasses = {
     tight: 'space-y-2 p-3',
@@ -127,15 +123,7 @@ export function MobileCardLayout({
     loose: 'space-y-6 p-6',
   };
 
-  return (
-    <div className={cn(
-      'lg:hidden',
-      spacingClasses[spacing],
-      className
-    )}>
-      {children}
-    </div>
-  );
+  return <div className={cn('lg:hidden', spacingClasses[spacing], className)}>{children}</div>;
 }
 
 // Mobile-optimized grid
@@ -146,12 +134,7 @@ interface MobileGridProps {
   className?: string;
 }
 
-export function MobileGrid({ 
-  children, 
-  columns = 1, 
-  gap = 'md',
-  className 
-}: MobileGridProps) {
+export function MobileGrid({ children, columns = 1, gap = 'md', className }: MobileGridProps) {
   const gridClasses = {
     1: 'grid-cols-1',
     2: 'grid-cols-2',
@@ -164,12 +147,7 @@ export function MobileGrid({
   };
 
   return (
-    <div className={cn(
-      'lg:hidden grid',
-      gridClasses[columns],
-      gapClasses[gap],
-      className
-    )}>
+    <div className={cn('lg:hidden grid', gridClasses[columns], gapClasses[gap], className)}>
       {children}
     </div>
   );
@@ -183,11 +161,11 @@ interface MobileListProps {
   className?: string;
 }
 
-export function MobileList({ 
-  children, 
-  dividers = true, 
+export function MobileList({
+  children,
+  dividers = true,
   padding = 'md',
-  className 
+  className,
 }: MobileListProps) {
   const paddingClasses = {
     none: '',
@@ -197,12 +175,14 @@ export function MobileList({
   };
 
   return (
-    <div className={cn(
-      'lg:hidden',
-      dividers && 'divide-y divide-gray-200',
-      paddingClasses[padding],
-      className
-    )}>
+    <div
+      className={cn(
+        'lg:hidden',
+        dividers && 'divide-y divide-gray-200',
+        paddingClasses[padding],
+        className
+      )}
+    >
       {children}
     </div>
   );
@@ -217,30 +197,22 @@ interface MobileSectionProps {
   headerActions?: React.ReactNode;
 }
 
-export function MobileSection({ 
-  title, 
-  subtitle, 
-  children, 
+export function MobileSection({
+  title,
+  subtitle,
+  children,
   className,
-  headerActions 
+  headerActions,
 }: MobileSectionProps) {
   return (
     <section className={cn('lg:hidden', className)}>
       {(title || subtitle || headerActions) && (
         <div className="flex items-center justify-between mb-4 px-4">
           <div>
-            {title && (
-              <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
-            )}
-            {subtitle && (
-              <p className="text-sm text-gray-600 mt-1">{subtitle}</p>
-            )}
+            {title && <h2 className="text-lg font-semibold text-gray-900">{title}</h2>}
+            {subtitle && <p className="text-sm text-gray-600 mt-1">{subtitle}</p>}
           </div>
-          {headerActions && (
-            <div className="flex items-center space-x-2">
-              {headerActions}
-            </div>
-          )}
+          {headerActions && <div className="flex items-center space-x-2">{headerActions}</div>}
         </div>
       )}
       {children}

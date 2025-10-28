@@ -4,15 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import {
-  AlertTriangle,
-  Info,
-  CheckCircle,
-  X,
-  Bell,
-  Clock,
-  Zap
-} from 'lucide-react';
+import { AlertTriangle, Info, CheckCircle, X, Bell, Clock, Zap } from 'lucide-react';
 
 interface Alert {
   type: 'info' | 'warning' | 'success' | 'error';
@@ -57,15 +49,15 @@ export function DashboardAlerts({ alerts, isLoading = false, onDismissAll }: Das
             <CheckCircle className="mr-2 h-5 w-5 text-green-600" />
             System Status
           </CardTitle>
-          <CardDescription>
-            All systems are running smoothly
-          </CardDescription>
+          <CardDescription>All systems are running smoothly</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-center py-4">
             <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-2" />
             <p className="text-sm text-gray-600">No alerts or notifications</p>
-            <p className="text-xs text-gray-400 mt-1">Your quilt management system is operating normally</p>
+            <p className="text-xs text-gray-400 mt-1">
+              Your quilt management system is operating normally
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -101,20 +93,32 @@ export function DashboardAlerts({ alerts, isLoading = false, onDismissAll }: Das
   const getPriorityBadge = (priority: Alert['priority']) => {
     switch (priority) {
       case 'high':
-        return <Badge variant="destructive" className="text-xs">High</Badge>;
+        return (
+          <Badge variant="destructive" className="text-xs">
+            High
+          </Badge>
+        );
       case 'medium':
-        return <Badge variant="default" className="text-xs">Medium</Badge>;
+        return (
+          <Badge variant="default" className="text-xs">
+            Medium
+          </Badge>
+        );
       default:
-        return <Badge variant="secondary" className="text-xs">Low</Badge>;
+        return (
+          <Badge variant="secondary" className="text-xs">
+            Low
+          </Badge>
+        );
     }
   };
 
   const formatTimestamp = (timestamp?: Date) => {
     if (!timestamp) return 'Just now';
-    
+
     const now = new Date();
     const diffInMinutes = Math.floor((now.getTime() - timestamp.getTime()) / (1000 * 60));
-    
+
     if (diffInMinutes < 1) return 'Just now';
     if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
     if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`;
@@ -125,9 +129,9 @@ export function DashboardAlerts({ alerts, isLoading = false, onDismissAll }: Das
   const sortedAlerts = [...alerts].sort((a, b) => {
     const priorityOrder = { high: 3, medium: 2, low: 1 };
     const priorityDiff = priorityOrder[b.priority] - priorityOrder[a.priority];
-    
+
     if (priorityDiff !== 0) return priorityDiff;
-    
+
     const aTime = a.timestamp?.getTime() || 0;
     const bTime = b.timestamp?.getTime() || 0;
     return bTime - aTime;
@@ -153,9 +157,7 @@ export function DashboardAlerts({ alerts, isLoading = false, onDismissAll }: Das
             </Button>
           )}
         </CardTitle>
-        <CardDescription>
-          Important notifications and system alerts
-        </CardDescription>
+        <CardDescription>Important notifications and system alerts</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
@@ -163,19 +165,15 @@ export function DashboardAlerts({ alerts, isLoading = false, onDismissAll }: Das
             <div
               key={index}
               className={cn(
-                "p-4 rounded-lg border-2 transition-all duration-200",
+                'p-4 rounded-lg border-2 transition-all duration-200',
                 getAlertStyles(alert.type)
               )}
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-start space-x-3 flex-1">
-                  <div className="flex-shrink-0 mt-0.5">
-                    {getAlertIcon(alert.type)}
-                  </div>
+                  <div className="flex-shrink-0 mt-0.5">{getAlertIcon(alert.type)}</div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900">
-                      {alert.message}
-                    </p>
+                    <p className="text-sm font-medium text-gray-900">{alert.message}</p>
                     <div className="flex items-center space-x-2 mt-1">
                       {getPriorityBadge(alert.priority)}
                       <div className="flex items-center text-xs text-gray-500">
@@ -185,7 +183,7 @@ export function DashboardAlerts({ alerts, isLoading = false, onDismissAll }: Das
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center space-x-2 ml-4">
                   {alert.actionLabel && alert.onAction && (
                     <Button
@@ -211,7 +209,7 @@ export function DashboardAlerts({ alerts, isLoading = false, onDismissAll }: Das
               </div>
             </div>
           ))}
-          
+
           {alerts.length > 5 && (
             <div className="text-center pt-2 border-t border-gray-100">
               <Button variant="ghost" size="sm" className="text-xs">

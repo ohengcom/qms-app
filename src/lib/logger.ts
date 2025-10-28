@@ -11,7 +11,7 @@ const LOG_LEVELS: LogLevel = {
   ERROR: 0,
   WARN: 1,
   INFO: 2,
-  DEBUG: 3
+  DEBUG: 3,
 };
 
 class Logger {
@@ -41,7 +41,7 @@ class Logger {
       message,
       ...(meta && { meta }),
       pid: process.pid,
-      environment: process.env.NODE_ENV || 'development'
+      environment: process.env.NODE_ENV || 'development',
     };
 
     return JSON.stringify(logEntry);
@@ -57,9 +57,9 @@ class Logger {
           name: error.name,
           message: error.message,
           stack: error.stack,
-          ...(error.cause && { cause: error.cause })
-        }
-      })
+          ...(error.cause && { cause: error.cause }),
+        },
+      }),
     };
 
     console.error(this.formatMessage('ERROR', message, errorMeta));
@@ -103,7 +103,7 @@ class Logger {
       duration: `${duration}ms`,
       userAgent: req.headers['user-agent'],
       ip: req.headers['x-forwarded-for'] || req.connection.remoteAddress,
-      referer: req.headers.referer
+      referer: req.headers.referer,
     };
 
     if (res.statusCode >= 400) {
@@ -118,7 +118,7 @@ class Logger {
     const logData = {
       operation,
       table,
-      duration: `${duration}ms`
+      duration: `${duration}ms`,
     };
 
     if (error) {
@@ -133,18 +133,22 @@ class Logger {
     const logData = {
       event,
       ...(userId && { userId }),
-      ...meta
+      ...meta,
     };
 
     this.info(`Business Event: ${event}`, logData);
   }
 
   // Security event logging
-  logSecurityEvent(event: string, severity: 'low' | 'medium' | 'high' | 'critical', meta?: any): void {
+  logSecurityEvent(
+    event: string,
+    severity: 'low' | 'medium' | 'high' | 'critical',
+    meta?: any
+  ): void {
     const logData = {
       event,
       severity,
-      ...meta
+      ...meta,
     };
 
     if (severity === 'critical' || severity === 'high') {
@@ -158,7 +162,7 @@ class Logger {
     try {
       // Integration with error tracking services like Sentry, Bugsnag, etc.
       // This is a placeholder for actual implementation
-      
+
       if (process.env.SENTRY_DSN) {
         // Sentry integration would go here
         // Sentry.captureException(error, { extra: meta });
@@ -175,8 +179,8 @@ class Logger {
             stack: error?.stack,
             meta,
             timestamp: new Date().toISOString(),
-            environment: process.env.NODE_ENV
-          })
+            environment: process.env.NODE_ENV,
+          }),
         });
       }
     } catch (trackingError) {
@@ -196,7 +200,7 @@ export const authLogger = new Logger('QMS:Auth');
 export function createRequestLogger() {
   return (req: any, res: any, next: any) => {
     const start = Date.now();
-    
+
     res.on('finish', () => {
       const duration = Date.now() - start;
       apiLogger.logRequest(req, res, duration);
@@ -210,22 +214,22 @@ export function createRequestLogger() {
 export function logErrorBoundary(error: Error, errorInfo: any): void {
   logger.error('React Error Boundary caught an error', error, {
     componentStack: errorInfo.componentStack,
-    errorBoundary: true
+    errorBoundary: true,
   });
 }
 
 // Unhandled error logging
 if (typeof window === 'undefined') {
   // Server-side error handling
-  process.on('uncaughtException', (error) => {
+  process.on('uncaughtException', error => {
     logger.error('Uncaught Exception', error, { fatal: true });
     process.exit(1);
   });
 
   process.on('unhandledRejection', (reason, promise) => {
-    logger.error('Unhandled Rejection', reason as Error, { 
+    logger.error('Unhandled Rejection', reason as Error, {
       promise: promise.toString(),
-      fatal: false 
+      fatal: false,
     });
   });
 }

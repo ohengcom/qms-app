@@ -34,19 +34,13 @@ export default function ExportPage() {
               <FileSpreadsheet className="mr-2 h-5 w-5 text-blue-600" />
               Quilt Collection
             </CardTitle>
-            <CardDescription>
-              Export your complete quilt inventory
-            </CardDescription>
+            <CardDescription>Export your complete quilt inventory</CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-gray-600 mb-4">
               Export all quilts with details, usage history, and maintenance records
             </p>
-            <Button 
-              variant="outline" 
-              className="w-full"
-              onClick={() => setActiveTab('quilts')}
-            >
+            <Button variant="outline" className="w-full" onClick={() => setActiveTab('quilts')}>
               <Download className="mr-2 h-4 w-4" />
               Export Quilts
             </Button>
@@ -59,19 +53,13 @@ export default function ExportPage() {
               <Calendar className="mr-2 h-5 w-5 text-green-600" />
               Usage Reports
             </CardTitle>
-            <CardDescription>
-              Export usage analytics and patterns
-            </CardDescription>
+            <CardDescription>Export usage analytics and patterns</CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-gray-600 mb-4">
               Generate reports for specific date ranges and usage patterns
             </p>
-            <Button 
-              variant="outline" 
-              className="w-full"
-              onClick={() => setActiveTab('usage')}
-            >
+            <Button variant="outline" className="w-full" onClick={() => setActiveTab('usage')}>
               <Download className="mr-2 h-4 w-4" />
               Export Usage
             </Button>
@@ -84,16 +72,14 @@ export default function ExportPage() {
               <Settings className="mr-2 h-5 w-5 text-purple-600" />
               Maintenance Reports
             </CardTitle>
-            <CardDescription>
-              Export maintenance history and schedules
-            </CardDescription>
+            <CardDescription>Export maintenance history and schedules</CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-gray-600 mb-4">
               Track maintenance activities and upcoming service needs
             </p>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="w-full"
               onClick={() => setActiveTab('maintenance')}
             >
