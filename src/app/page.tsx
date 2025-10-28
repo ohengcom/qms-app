@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useDashboardStats } from '@/hooks/useDashboard';
 import { useLanguage } from '@/lib/language-provider';
 import { Loading } from '@/components/ui/loading';
@@ -74,29 +75,28 @@ export default function DashboardPage() {
       <div className="mt-8 bg-white p-6 rounded-lg shadow">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('dashboard.actions.title')}</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <button className="p-4 border border-gray-300 rounded-lg hover:bg-gray-50 text-center">
+          <Link href="/quilts" className="p-4 border border-gray-300 rounded-lg hover:bg-gray-50 text-center transition-colors">
             <div className="text-2xl mb-2">📦</div>
             <div className="text-sm font-medium">{t('dashboard.actions.viewQuilts')}</div>
-          </button>
-          <button className="p-4 border border-gray-300 rounded-lg hover:bg-gray-50 text-center">
+          </Link>
+          <Link href="/usage" className="p-4 border border-gray-300 rounded-lg hover:bg-gray-50 text-center transition-colors">
             <div className="text-2xl mb-2">⏰</div>
             <div className="text-sm font-medium">{t('dashboard.actions.usageTracking')}</div>
-          </button>
-          <button className="p-4 border border-gray-300 rounded-lg hover:bg-gray-50 text-center">
+          </Link>
+          <Link href="/import" className="p-4 border border-gray-300 rounded-lg hover:bg-gray-50 text-center transition-colors">
             <div className="text-2xl mb-2">📥</div>
             <div className="text-sm font-medium">{t('dashboard.actions.importData')}</div>
-          </button>
-          <button className="p-4 border border-gray-300 rounded-lg hover:bg-gray-50 text-center">
+          </Link>
+          <Link href="/export" className="p-4 border border-gray-300 rounded-lg hover:bg-gray-50 text-center transition-colors">
             <div className="text-2xl mb-2">📤</div>
             <div className="text-sm font-medium">{t('dashboard.actions.exportData')}</div>
-          </button>
+          </Link>
         </div>
       </div>
 
       <div className="mt-8 p-4 bg-green-50 border border-green-200 rounded-lg">
         <p className="text-green-800">
-          ✅ <strong>Success!</strong> The QMS application is now running with optimized tech stack.
-          Dashboard data loaded via tRPC successfully.
+          ✅ <strong>{t('dashboard.success.title')}</strong> {t('dashboard.success.message')}
         </p>
       </div>
 

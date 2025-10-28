@@ -51,6 +51,10 @@ export const translations = {
         importData: '导入数据',
         exportData: '导出数据',
       },
+      success: {
+        title: '成功！',
+        message: 'QMS 应用程序正在运行，仪表板数据已成功加载。',
+      },
     },
     
     // 被子管理
@@ -238,6 +242,10 @@ export const translations = {
         usageTracking: 'Usage Tracking',
         importData: 'Import Data',
         exportData: 'Export Data',
+      },
+      success: {
+        title: 'Success!',
+        message: 'QMS application is running and dashboard data loaded successfully.',
       },
     },
     

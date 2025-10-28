@@ -198,8 +198,16 @@ export function AppLayout({ children }: AppLayoutProps) {
                   </div>
                   <input
                     type="search"
-                    placeholder="Search quilts..."
+                    placeholder={t('quilts.actions.search')}
                     className="block w-full rounded-md border-0 bg-gray-50 py-1.5 pl-10 pr-3 text-gray-900 placeholder:text-gray-400 focus:bg-white focus:ring-2 focus:ring-blue-500 sm:text-sm"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        const searchTerm = (e.target as HTMLInputElement).value;
+                        if (searchTerm.trim()) {
+                          window.location.href = `/quilts?search=${encodeURIComponent(searchTerm)}`;
+                        }
+                      }
+                    }}
                   />
                 </div>
               </div>
@@ -210,7 +218,15 @@ export function AppLayout({ children }: AppLayoutProps) {
                 <LanguageSwitcher />
 
                 {/* Notifications */}
-                <Button variant="ghost" size="sm" className="relative">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="relative"
+                  onClick={() => {
+                    // TODO: Implement notifications panel
+                    alert(t('common.comingSoon'));
+                  }}
+                >
                   <Bell className="h-5 w-5" />
                   <span className="sr-only">View notifications</span>
                   {/* Notification badge */}
@@ -223,7 +239,15 @@ export function AppLayout({ children }: AppLayoutProps) {
                 <div className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200" />
 
                 {/* Profile */}
-                <Button variant="ghost" size="sm" className="flex items-center gap-x-2">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="flex items-center gap-x-2"
+                  onClick={() => {
+                    // TODO: Implement user profile menu
+                    alert(t('common.comingSoon'));
+                  }}
+                >
                   <User className="h-5 w-5" />
                   <span className="hidden lg:block text-sm font-medium">Admin</span>
                 </Button>
