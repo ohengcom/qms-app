@@ -1,158 +1,139 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { useState } from 'react';
+import dynamic from 'next/dynamic';
+import { QuiltList } from '@/components/quilts/QuiltList';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
+import { Loading } from '@/components/ui/loading';
+
+// Dynamic imports for large components
+const QuiltForm = dynamic(
+  () => import('@/components/quilts/QuiltForm').then(mod => ({ default: mod.QuiltForm })),
+  {
+    loading: () => <Loading text="Loading form..." />,
+    ssr: false,
+  }
+);
+
+const QuiltDetail = dynamic(
+  () => import('@/components/quilts/QuiltDetail').then(mod => ({ default: mod.QuiltDetail })),
+  {
+    loading: () => <Loading text="Loading details..." />,
+    ssr: false,
+  }
+);
 
 export default function QuiltsPage() {
-  const [quilts, setQuilts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedQuilt, setSelectedQuilt] = useState<any>(null);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showDetailSheet, setShowDetailSheet] = useState(false);
 
-  useEffect(() => {
-    fetch('/api/quilts')
-      .then(res => res.json())
-      .then(data => {
-        setQuilts(data.quilts || []);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Error:', err);
-        setError(err.message);
-        setLoading(false);
-      });
-  }, []);
+  const handleCreateQuilt = () => {
+    setShowCreateDialog(true);
+  };
 
-  const filteredQuilts = quilts.filter(quilt =>
-    quilt.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    quilt.itemNumber.toString().includes(searchTerm) ||
-    quilt.fillMaterial?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleEditQuilt = (quilt: any) => {
+    setSelectedQuilt(quilt);
+    setShowEditDialog(true);
+  };
 
-  if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-center h-64">
-          <div className="text-lg">Loading quilts...</div>
-        </div>
-      </div>
-    );
-  }
+  const handleViewQuilt = (quilt: any) => {
+    setSelectedQuilt(quilt);
+    setShowDetailSheet(true);
+  };
 
-  if (error) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <h2 className="text-lg font-semibold text-red-800">Error loading quilts</h2>
-          <p className="text-red-600">{error}</p>
-        </div>
-      </div>
-    );
-  }
+  const handleCreateSuccess = () => {
+    setShowCreateDialog(false);
+    // Trigger refetch by closing and reopening would work, or we can use a key
+    window.location.reload(); // Simple solution for now
+  };
+
+  const handleEditSuccess = () => {
+    setShowEditDialog(false);
+    setSelectedQuilt(null);
+    window.location.reload(); // Simple solution for now
+  };
+
+  const handleCancel = () => {
+    setShowCreateDialog(false);
+    setShowEditDialog(false);
+    setSelectedQuilt(null);
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Quilt Collection</h1>
-          <p className="text-gray-500">Manage your quilts and track their usage</p>
-        </div>
-        <Button>
-          <Plus className="w-4 h-4 mr-2" />
-          Add Quilt
-        </Button>
-      </div>
+      <QuiltList
+        onCreateQuilt={handleCreateQuilt}
+        onEditQuilt={handleEditQuilt}
+        onViewQuilt={handleViewQuilt}
+      />
 
-      {/* Search */}
-      <div className="mb-6">
-        <input
-          type="text"
-          placeholder="Search quilts by name, number, or material..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
+      {/* Create Quilt Dialog */}
+      <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Add New Quilt</DialogTitle>
+            <DialogDescription>
+              Add a new quilt to your collection with detailed information and specifications.
+            </DialogDescription>
+          </DialogHeader>
+          <QuiltForm onSuccess={handleCreateSuccess} onCancel={handleCancel} />
+        </DialogContent>
+      </Dialog>
 
-      {/* Stats */}
-      <div className="mb-6 text-sm text-gray-600">
-        Showing {filteredQuilts.length} of {quilts.length} quilts
-      </div>
-
-      {/* Quilts Grid */}
-      {filteredQuilts.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-gray-500 mb-4">
-            {searchTerm ? 'No quilts match your search' : 'No quilts found'}
-          </p>
-          {!searchTerm && (
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
-              Add Your First Quilt
-            </Button>
+      {/* Edit Quilt Dialog */}
+      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Quilt</DialogTitle>
+            <DialogDescription>
+              Update the information and specifications for this quilt.
+            </DialogDescription>
+          </DialogHeader>
+          {selectedQuilt && (
+            <QuiltForm
+              initialData={selectedQuilt}
+              onSuccess={handleEditSuccess}
+              onCancel={handleCancel}
+            />
           )}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredQuilts.map((quilt) => (
-            <div
-              key={quilt.id}
-              className="border rounded-lg p-6 bg-white shadow hover:shadow-lg transition-shadow"
-            >
-              <div className="flex justify-between items-start mb-3">
-                <h3 className="font-bold text-lg">{quilt.name}</h3>
-                <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                  #{quilt.itemNumber}
-                </span>
-              </div>
-              
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Season:</span>
-                  <span className="font-medium">{quilt.season}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Size:</span>
-                  <span>{quilt.lengthCm} × {quilt.widthCm} cm</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Weight:</span>
-                  <span>{quilt.weightGrams}g</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Material:</span>
-                  <span className="truncate ml-2">{quilt.fillMaterial}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Location:</span>
-                  <span className="truncate ml-2">{quilt.location}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Status:</span>
-                  <span className={`px-2 py-0.5 rounded text-xs ${
-                    quilt.currentStatus === 'AVAILABLE' ? 'bg-green-100 text-green-800' :
-                    quilt.currentStatus === 'IN_USE' ? 'bg-blue-100 text-blue-800' :
-                    'bg-gray-100 text-gray-800'
-                  }`}>
-                    {quilt.currentStatus}
-                  </span>
-                </div>
-              </div>
+        </DialogContent>
+      </Dialog>
 
-              <div className="mt-4 pt-4 border-t flex gap-2">
-                <Button size="sm" variant="outline" className="flex-1">
-                  View
-                </Button>
-                <Button size="sm" variant="outline" className="flex-1">
-                  Edit
-                </Button>
-              </div>
+      {/* Quilt Detail Sheet */}
+      <Sheet open={showDetailSheet} onOpenChange={setShowDetailSheet}>
+        <SheetContent className="w-full sm:max-w-4xl overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>Quilt Details</SheetTitle>
+            <SheetDescription>
+              View detailed information, usage history, and analytics for this quilt.
+            </SheetDescription>
+          </SheetHeader>
+          {selectedQuilt && (
+            <div className="mt-6">
+              <QuiltDetail
+                quilt={selectedQuilt}
+                onBack={() => setShowDetailSheet(false)}
+                onEdit={handleEditQuilt}
+              />
             </div>
-          ))}
-        </div>
-      )}
+          )}
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
