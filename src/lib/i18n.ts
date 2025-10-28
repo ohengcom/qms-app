@@ -66,6 +66,12 @@ export const translations = {
         addFirst: '添加您的第一床被子',
         search: '搜索被子...',
       },
+      views: {
+        card: '卡片',
+        list: '列表',
+        name: '名称',
+        actions: '操作',
+      },
       table: {
         itemNumber: '编号',
         season: '季节',
@@ -258,6 +264,12 @@ export const translations = {
         add: 'Add Quilt',
         addFirst: 'Add Your First Quilt',
         search: 'Search quilts...',
+      },
+      views: {
+        card: 'Cards',
+        list: 'List',
+        name: 'Name',
+        actions: 'Actions',
       },
       table: {
         itemNumber: 'Item #',

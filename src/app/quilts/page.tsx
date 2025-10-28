@@ -247,7 +247,7 @@ export default function QuiltsPage() {
               className="h-8 px-3"
             >
               <Grid3X3 className="w-4 h-4 mr-1" />
-              卡片 / Cards
+              {t('quilts.views.card')}
             </Button>
             <Button
               variant={viewMode === 'list' ? 'default' : 'ghost'}
@@ -256,7 +256,7 @@ export default function QuiltsPage() {
               className="h-8 px-3"
             >
               <List className="w-4 h-4 mr-1" />
-              列表 / List
+              {t('quilts.views.list')}
             </Button>
           </div>
         </div>
@@ -348,7 +348,7 @@ export default function QuiltsPage() {
                     onClick={() => handleChangeStatus(quilt)}
                   >
                     <RotateCcw className="w-3 h-3 mr-1" />
-                    状态 / Status
+                    {t('quilts.table.status')}
                   </Button>
                   <Button 
                     variant="outline" 
@@ -379,13 +379,13 @@ export default function QuiltsPage() {
             {/* Table Header */}
             <div className="grid grid-cols-12 gap-4 p-4 bg-gray-50 border-b font-medium text-sm text-gray-700">
               <div className="col-span-2">{t('quilts.table.itemNumber')}</div>
-              <div className="col-span-2">名称 / Name</div>
+              <div className="col-span-2">{t('quilts.views.name')}</div>
               <div className="col-span-1">{t('quilts.table.season')}</div>
               <div className="col-span-1">{t('quilts.table.size')}</div>
               <div className="col-span-1">{t('quilts.table.weight')}</div>
               <div className="col-span-2">{t('quilts.table.material')}</div>
               <div className="col-span-1">{t('quilts.table.status')}</div>
-              <div className="col-span-2">操作 / Actions</div>
+              <div className="col-span-2">{t('quilts.views.actions')}</div>
             </div>
             
             {/* Table Rows */}
@@ -419,7 +419,7 @@ export default function QuiltsPage() {
                       variant="outline" 
                       size="sm"
                       onClick={() => handleChangeStatus(quilt)}
-                      title="更改状态 / Change Status"
+                      title={t('language') === 'zh' ? '更改状态' : 'Change Status'}
                     >
                       <RotateCcw className="w-3 h-3" />
                     </Button>
@@ -427,7 +427,7 @@ export default function QuiltsPage() {
                       variant="outline" 
                       size="sm"
                       onClick={() => handleEditQuilt(quilt)}
-                      title="编辑 / Edit"
+                      title={t('common.edit')}
                     >
                       <Edit className="w-3 h-3" />
                     </Button>
@@ -436,7 +436,7 @@ export default function QuiltsPage() {
                       size="sm"
                       className="text-red-600 hover:text-red-700 hover:bg-red-50"
                       onClick={() => handleDeleteQuilt(quilt)}
-                      title="删除 / Delete"
+                      title={t('common.delete')}
                     >
                       <Trash2 className="w-3 h-3" />
                     </Button>
