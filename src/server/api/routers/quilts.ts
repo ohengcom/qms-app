@@ -15,6 +15,13 @@ import {
 import { db } from '@/lib/neon';
 
 export const quiltsRouter = createTRPCRouter({
+  // Simple test endpoint
+  test: publicProcedure
+    .query(async () => {
+      console.log('tRPC quilts.test: Simple test endpoint called');
+      return { message: 'tRPC is working!', timestamp: new Date().toISOString() };
+    }),
+
   // Get all quilts with filtering and pagination
   getAll: publicProcedure
     .query(async ({ ctx }) => {
