@@ -205,6 +205,7 @@ export const translations = {
       search: '搜索',
       notes: '备注',
       comingSoon: '即将推出',
+      back: '返回',
     },
   },
   en: {
@@ -397,6 +398,7 @@ export const translations = {
       search: 'Search',
       notes: 'Notes',
       comingSoon: 'Coming Soon',
+      back: 'Back',
     },
   },
 };

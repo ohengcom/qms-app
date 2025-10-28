@@ -224,8 +224,10 @@ export function AppLayout({ children }: AppLayoutProps) {
                   className="relative"
                   onClick={() => {
                     // TODO: Implement notifications panel
-                    alert(t('common.comingSoon'));
+                    const message = t('common.comingSoon') + ' - ' + (t('language') === 'zh' ? '通知功能' : 'Notifications');
+                    alert(message);
                   }}
+                  title={t('language') === 'zh' ? '查看通知 (即将推出)' : 'View notifications (Coming Soon)'}
                 >
                   <Bell className="h-5 w-5" />
                   <span className="sr-only">View notifications</span>
@@ -245,8 +247,10 @@ export function AppLayout({ children }: AppLayoutProps) {
                   className="flex items-center gap-x-2"
                   onClick={() => {
                     // TODO: Implement user profile menu
-                    alert(t('common.comingSoon'));
+                    const message = t('common.comingSoon') + ' - ' + (t('language') === 'zh' ? '用户设置' : 'User Profile');
+                    alert(message);
                   }}
+                  title={t('language') === 'zh' ? '用户设置 (即将推出)' : 'User Profile (Coming Soon)'}
                 >
                   <User className="h-5 w-5" />
                   <span className="hidden lg:block text-sm font-medium">Admin</span>
