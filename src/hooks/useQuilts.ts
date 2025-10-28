@@ -1,11 +1,24 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/trpc';
 import type { QuiltSearchInput } from '@/lib/validations/quilt';
 
 export function useQuilts(searchParams?: QuiltSearchInput) {
-  // For now, ignore search params since we simplified the API
-  return api.quilts.getAll.useQuery();
+  // Temporarily use direct API instead of tRPC to bypass tRPC issues
+  return useQuery({
+    queryKey: ['quilts', 'getAll'],
+    queryFn: async () => {
+      console.log('useQuilts: Fetching from direct API...');
+      const response = await fetch('/api/quilts');
+      if (!response.ok) {
+        throw new Error('Failed to fetch quilts');
+      }
+      const data = await response.json();
+      console.log('useQuilts: Received data:', data);
+      return data;
+    },
+  });
 }
 
 export function useQuilt(id: string) {
