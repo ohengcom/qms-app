@@ -178,6 +178,44 @@ export default function UsageTrackingPage() {
                 <p className="text-sm">{selectedQuilt.notes}</p>
               </div>
             )}
+
+            {/* Usage History */}
+            <div className="pt-4 border-t">
+              <h3 className="font-medium mb-3">Usage History</h3>
+              {selectedQuilt.usagePeriods && selectedQuilt.usagePeriods.length > 0 ? (
+                <div className="space-y-2">
+                  {selectedQuilt.usagePeriods.map((period: any, index: number) => (
+                    <div key={index} className="p-3 bg-gray-50 rounded-lg">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <p className="text-sm font-medium">
+                            Usage Period #{selectedQuilt.usagePeriods.length - index}
+                          </p>
+                          <p className="text-xs text-gray-600 mt-1">
+                            Started: {new Date(period.startDate).toLocaleDateString()}
+                          </p>
+                          {period.endDate && (
+                            <p className="text-xs text-gray-600">
+                              Ended: {new Date(period.endDate).toLocaleDateString()}
+                            </p>
+                          )}
+                          {period.notes && (
+                            <p className="text-xs text-gray-700 mt-1">{period.notes}</p>
+                          )}
+                        </div>
+                        {!period.endDate && (
+                          <Badge variant="default" className="text-xs">
+                            Active
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">No usage history recorded yet</p>
+              )}
+            </div>
           </CardContent>
         </Card>
       ) : (
