@@ -170,7 +170,7 @@ export function QuiltDetail({ quilt, onBack, onEdit }: QuiltDetailProps) {
 
   const handleDelete = async () => {
     try {
-      await deleteQuilt.mutateAsync({ id: quilt.id });
+      await deleteQuilt.mutateAsync(quilt.id);
       toast.success('Quilt deleted', `${quilt.name} has been removed from your collection`);
       onBack?.();
     } catch (error) {
