@@ -4,7 +4,7 @@
 
 > **Production-Ready Intelligent Inventory Management for Home Bedding**
 
-A sophisticated Next.js application that transforms simple Excel-based quilt tracking into an intelligent inventory management system with seasonal recommendations, usage analytics, predictive insights, PWA capabilities, and enterprise-grade deployment features.
+A modern Next.js application with tRPC and Neon PostgreSQL that transforms simple Excel-based quilt tracking into an intelligent inventory management system. Currently deployed at **https://qms-app-omega.vercel.app**
 
 ## 🌟 Features
 
@@ -60,14 +60,13 @@ A sophisticated Next.js application that transforms simple Excel-based quilt tra
 
 ## 🏗️ Application Architecture
 
-### 🚀 **Next.js Production Application** (Main Implementation)
+### 🚀 **Next.js Production Application** (Current Implementation)
 ```
 qms/                            # Production-ready Next.js application
 ├── src/
-│   ├── app/                   # Next.js 14 App Router
-│   │   ├── api/               # API routes (health, metrics, tRPC)
+│   ├── app/                   # Next.js 16 App Router
+│   │   ├── api/               # API routes (health, metrics, db-test, setup)
 │   │   ├── quilts/            # Quilt management pages
-│   │   ├── dashboard/         # Analytics dashboard
 │   │   ├── import/            # Data import functionality
 │   │   ├── export/            # Data export functionality
 │   │   ├── seasonal/          # Seasonal analytics
@@ -75,29 +74,18 @@ qms/                            # Production-ready Next.js application
 │   ├── components/            # React components
 │   │   ├── ui/                # Reusable UI components (Radix UI)
 │   │   ├── quilts/            # Quilt-specific components
-│   │   ├── dashboard/         # Dashboard widgets
-│   │   ├── mobile/            # Mobile PWA components
-│   │   ├── layout/            # Layout and navigation
-│   │   ├── import/            # Import functionality
-│   │   ├── export/            # Export functionality
-│   │   ├── seasonal/          # Seasonal features
-│   │   └── usage/             # Usage tracking
-│   ├── hooks/                 # Custom React hooks
+│   │   └── mobile/            # Mobile PWA components
+│   ├── hooks/                 # Custom React hooks (tRPC)
 │   ├── lib/                   # Utilities and configurations
+│   │   ├── neon.ts           # Neon Serverless Driver database operations
+│   │   ├── trpc.ts           # tRPC client configuration
+│   │   └── validations/       # Zod schemas for type safety
 │   ├── server/                # Server-side code
 │   │   ├── api/routers/       # tRPC API routes
 │   │   └── services/          # Business logic services
-│   └── styles/                # Global and mobile styles
-├── src/lib/neon.ts           # Neon Serverless Driver database operations
-├── monitoring/                # Prometheus, Grafana configuration
-├── nginx/                     # Reverse proxy configuration
-├── scripts/                   # Deployment and maintenance scripts
+│   └── styles/                # Global styles
 ├── public/                    # PWA assets (manifest, service worker)
-├── Dockerfile                 # Container configuration
-├── docker-compose.prod.yml    # Production Docker setup
-├── docker-compose.monitoring.yml # Monitoring stack
-├── DEPLOYMENT.md              # Deployment guide
-├── MONITORING.md              # Monitoring setup
+├── .kiro/specs/              # Development specifications
 └── README.md                  # Application documentation
 ```
 
@@ -109,13 +97,11 @@ qms/                            # Production-ready Next.js application
 └── tasks.md                 # Implementation task breakdown
 ```
 
-### 🗂️ **Legacy Prototypes** (Reference Only)
-The project includes some legacy prototype implementations that were used during development:
-- `frontend/` - Vue.js prototype (not actively maintained)
-- `backend/` - FastAPI prototype (not actively maintained)  
-- `workers/` - Cloudflare Workers experiment (not actively maintained)
-
-**Note**: The main application is the Next.js implementation in `qms-app/`. The legacy prototypes are kept for reference but are not part of the production system.
+### 🗂️ **Current Status**
+- **Production Application**: Next.js 16 with tRPC and Neon PostgreSQL
+- **Deployment**: Vercel (https://qms-app-omega.vercel.app)
+- **Database**: Neon Serverless PostgreSQL with 16 quilts imported
+- **Features**: Dashboard, quilt management, search/filtering, usage tracking
 
 ## 🚀 Quick Start
 
@@ -124,7 +110,7 @@ The project includes some legacy prototype implementations that were used during
 - Docker and Docker Compose (for production deployment)
 - PostgreSQL (for production) or SQLite (for development)
 
-### 🎯 **Next.js Application Setup**
+### 🎯 **Application Setup**
 
 #### Development Setup
 ```bash
@@ -133,50 +119,40 @@ npm install
 
 # Set up environment
 cp .env.example .env.local
-# Edit .env.local with your database URL
+# Edit .env.local with your Neon database URL
 
 # Start development server
 npm run dev
 ```
 
-#### Deployment Configuration
-**For Vercel/Netlify/Other Platforms:**
-1. Leave **Root Directory** blank (uses project root)
-2. The platform will automatically detect the Next.js application
-3. Configure environment variables in your platform's dashboard
+#### Current Deployment
+The application is currently deployed on **Vercel** at:
+- **Production URL**: https://qms-app-omega.vercel.app
+- **Database**: Neon Serverless PostgreSQL
+- **Features**: Real-time dashboard, quilt management, Excel import/export
 
-**For Docker:**
+#### Local Development
 ```bash
-docker build -t qms-app .
-docker run -p 3000:3000 qms-app
-```
+# Install dependencies
+npm install
 
-#### Production Deployment
-```bash
-cd qms-app
+# Start development server
+npm run dev
 
-# Configure production environment
-cp .env.production .env.local
-# Edit with production values
-
-# Deploy with Docker
-./scripts/deploy.sh
-
-# Setup monitoring (optional)
-./scripts/setup-monitoring.sh
+# Access at http://localhost:3000
 ```
 
 ### 🌐 **Access Points**
 
+#### Production (Live)
+- **Application**: https://qms-app-omega.vercel.app
+- **Health Check**: https://qms-app-omega.vercel.app/api/health
+- **Database Test**: https://qms-app-omega.vercel.app/api/db-test
+
 #### Development
 - **Application**: http://localhost:3000
 - **Health Check**: http://localhost:3000/api/health
-- **Metrics**: http://localhost:3000/api/metrics
-
-#### Production
-- **Application**: https://your-domain.com
-- **Grafana Dashboard**: http://localhost:3001 (admin/admin123)
-- **Prometheus Metrics**: http://localhost:9090
+- **Database Test**: http://localhost:3000/api/db-test
 
 ## 📊 Data Management
 
@@ -286,12 +262,12 @@ The application uses **tRPC** for type-safe API communication. All API endpoints
 ### Technology Stack
 
 #### Core Technologies
-- **Frontend**: Next.js 14, React 19, TypeScript, Tailwind CSS
+- **Frontend**: Next.js 16, React 19, TypeScript, Tailwind CSS
 - **Backend**: tRPC, Neon Serverless Driver, PostgreSQL
 - **UI Components**: Radix UI, Lucide Icons, Custom Components
-- **Mobile**: PWA, Service Workers, Touch Gestures, Offline Support
-- **Monitoring**: Prometheus, Grafana, Structured Logging
-- **Deployment**: Docker, Nginx, CI/CD Pipeline
+- **Database**: Neon Serverless PostgreSQL (16 quilts imported)
+- **Deployment**: Vercel (Production), GitHub integration
+- **Type Safety**: End-to-end TypeScript with tRPC and Zod validation
 
 #### Development Tools
 - **Code Quality**: ESLint, Prettier, TypeScript

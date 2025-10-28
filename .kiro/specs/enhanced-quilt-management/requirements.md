@@ -1,8 +1,12 @@
-# Requirements Document
+# Requirements Document - IN PROGRESS 🚧
 
 ## Introduction
 
-This document outlines the requirements for enhancing the existing Quilts Management System (QMS) to provide improved user experience, better data management, and additional intelligent features for managing home quilts inventory. The system will build upon the existing FastAPI backend and Vue.js frontend to create a more comprehensive and user-friendly quilt management solution.
+This document outlines the requirements for enhancing the Quilts Management System (QMS). **CURRENT STATUS**: Core functionality has been implemented with Next.js + tRPC + Neon PostgreSQL and deployed to production. Advanced features are planned for future development phases.
+
+**Production URL**: https://qms-app-omega.vercel.app
+**Current Features**: Dashboard, quilt management, search/filtering, usage tracking
+**Database**: 16 quilts imported and active
 
 ## Glossary
 
