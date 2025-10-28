@@ -6,9 +6,7 @@ import { Loading } from '@/components/ui/loading';
 export default function DashboardPage() {
   const { data: stats, isLoading, error } = useDashboardStats();
 
-  console.log('Dashboard Page - isLoading:', isLoading);
-  console.log('Dashboard Page - error:', error);
-  console.log('Dashboard Page - stats:', stats);
+
 
   if (isLoading) {
     return (
@@ -100,13 +98,7 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      {/* Debug Info */}
-      <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-        <h3 className="font-semibold mb-2">Debug Info:</h3>
-        <pre className="text-xs text-gray-600 overflow-auto">
-          {JSON.stringify({ stats, isLoading, error }, null, 2)}
-        </pre>
-      </div>
+
     </div>
   );
 }

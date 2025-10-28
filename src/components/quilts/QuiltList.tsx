@@ -60,8 +60,7 @@ export function QuiltList({ onCreateQuilt, onEditQuilt, onViewQuilt }: QuiltList
   const quilts: any[] = quiltsData?.quilts || [];
   const totalCount = quiltsData?.total || 0;
 
-  console.log('QuiltList: Final quilts array:', quilts);
-  console.log('QuiltList: Final quilts length:', quilts.length);
+
 
   const handleSortChange = (field: SortField) => {
     if (field === sortField) {
@@ -167,19 +166,7 @@ export function QuiltList({ onCreateQuilt, onEditQuilt, onViewQuilt }: QuiltList
         </div>
       </div>
 
-      {/* Debug Info */}
-      <div className="bg-yellow-100 p-4 rounded mb-4">
-        <p>
-          <strong>Debug Info (useQuilts hook):</strong>
-        </p>
-        <p>isLoading: {isLoading.toString()}</p>
-        <p>error: {error ? (error as any)?.message || 'error exists' : 'null'}</p>
-        <p>quiltsData: {quiltsData ? 'exists' : 'null'}</p>
-        <p>quilts.length: {quilts.length}</p>
-        <p>totalCount: {totalCount}</p>
-        <p>First quilt ID: {quilts[0]?.id || 'none'}</p>
-        <p>First quilt name: {quilts[0]?.name || 'none'}</p>
-      </div>
+
 
       {/* Content */}
       {isLoading ? (
