@@ -164,6 +164,30 @@ export const translations = {
       SUMMER: '夏季',
     },
     
+    // 分析
+    analytics: {
+      title: '分析',
+      subtitle: '被子使用情况分析和趋势',
+      comingSoon: '即将推出',
+      description: '这个页面将显示详细的使用分析和趋势图表。',
+    },
+
+    // 维护
+    maintenance: {
+      title: '维护',
+      subtitle: '被子护理和维护记录',
+      comingSoon: '即将推出',
+      description: '这个页面将帮助您跟踪被子的护理和维护历史。',
+    },
+
+    // 报告
+    reports: {
+      title: '报告',
+      subtitle: '导出和报告功能',
+      comingSoon: '即将推出',
+      description: '这个页面将提供各种报告和数据导出功能。',
+    },
+
     // 通用
     common: {
       loading: '加载中...',
@@ -176,6 +200,7 @@ export const translations = {
       add: '添加',
       search: '搜索',
       notes: '备注',
+      comingSoon: '即将推出',
     },
   },
   en: {
@@ -327,6 +352,30 @@ export const translations = {
       SUMMER: 'Summer',
     },
     
+    // 分析
+    analytics: {
+      title: 'Analytics',
+      subtitle: 'Quilt usage analytics and trends',
+      comingSoon: 'Coming Soon',
+      description: 'This page will display detailed usage analytics and trend charts.',
+    },
+
+    // 维护
+    maintenance: {
+      title: 'Maintenance',
+      subtitle: 'Quilt care and maintenance records',
+      comingSoon: 'Coming Soon',
+      description: 'This page will help you track quilt care and maintenance history.',
+    },
+
+    // 报告
+    reports: {
+      title: 'Reports',
+      subtitle: 'Export and reporting features',
+      comingSoon: 'Coming Soon',
+      description: 'This page will provide various reporting and data export features.',
+    },
+
     // 通用
     common: {
       loading: 'Loading...',
@@ -339,6 +388,7 @@ export const translations = {
       add: 'Add',
       search: 'Search',
       notes: 'Notes',
+      comingSoon: 'Coming Soon',
     },
   },
 };
