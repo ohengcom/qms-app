@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/lib/language-provider';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,7 +12,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Package, Eye, EyeOff, Loader2 } from 'lucide-react';
 
 export default function LoginPage() {
-  const router = useRouter();
+  const searchParams = useSearchParams();
   const { t } = useLanguage();
 
   const [password, setPassword] = useState('');
@@ -36,9 +36,11 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (res.ok) {
-        // Login successful, redirect to dashboard
-        router.push('/');
-        router.refresh();
+        // Login successful, redirect to original page or dashboard
+        const from = searchParams.get('from') || '/';
+
+        // Use window.location for a full page reload to ensure cookies are set
+        window.location.href = from;
       } else {
         // Show error message
         setError(data.message || t('auth.invalidPassword'));
