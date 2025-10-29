@@ -93,8 +93,8 @@ This task list breaks down the Phase 1 improvements into actionable implementati
 
 ### 🌐 Translation System Enhancement
 
-- [ ] 5. Audit and complete translations
-  - [ ] 5.1 Create translation audit script
+- [x] 5. Audit and complete translations
+  - [x] 5.1 Create translation audit script
     - Create `scripts/audit-translations.ts`
     - Scan all components for untranslated text
     - Generate coverage report
@@ -102,7 +102,7 @@ This task list breaks down the Phase 1 improvements into actionable implementati
     - _Requirements: 13.8_
     - _Files: scripts/audit-translations.ts_
 
-  - [ ] 5.2 Add missing translations to i18n.ts
+  - [x] 5.2 Add missing translations to i18n.ts
     - Add import/export page translations
     - Add analytics page translations
     - Add reports page translations
@@ -114,7 +114,7 @@ This task list breaks down the Phase 1 improvements into actionable implementati
     - _Requirements: 13.1, 13.2, 13.4_
     - _Files: src/lib/i18n.ts_
 
-  - [ ] 5.3 Update components with translations
+  - [x] 5.3 Update components with translations
     - Update `src/app/import/page.tsx`
     - Update `src/app/export/page.tsx`
     - Update `src/app/analytics/page.tsx`

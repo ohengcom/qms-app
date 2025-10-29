@@ -45,9 +45,7 @@ export function NotificationPanel({ onClose }: NotificationPanelProps) {
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
-          <h3 className="font-semibold text-gray-900">
-            {lang === 'zh' ? '通知历史' : 'Notification History'}
-          </h3>
+          <h3 className="font-semibold text-gray-900">{t('notifications.title')}</h3>
           <div className="flex items-center gap-2">
             {notifications.length > 0 && (
               <>
@@ -56,7 +54,7 @@ export function NotificationPanel({ onClose }: NotificationPanelProps) {
                   size="sm"
                   onClick={markAllAsRead}
                   className="h-8 px-2"
-                  title={lang === 'zh' ? '全部标记为已读' : 'Mark all as read'}
+                  title={t('notifications.markAllAsRead')}
                 >
                   <CheckCheck className="w-4 h-4" />
                 </Button>
@@ -65,7 +63,7 @@ export function NotificationPanel({ onClose }: NotificationPanelProps) {
                   size="sm"
                   onClick={clearAll}
                   className="h-8 px-2 text-red-600 hover:text-red-700 hover:bg-red-50"
-                  title={lang === 'zh' ? '清空全部' : 'Clear all'}
+                  title={t('notifications.clearAll')}
                 >
                   <Trash2 className="w-4 h-4" />
                 </Button>
@@ -82,7 +80,7 @@ export function NotificationPanel({ onClose }: NotificationPanelProps) {
           {notifications.length === 0 ? (
             <div className="p-8 text-center text-gray-500">
               <Info className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-              <p>{lang === 'zh' ? '暂无通知' : 'No notifications'}</p>
+              <p>{t('notifications.noNotifications')}</p>
             </div>
           ) : (
             <div className="divide-y divide-gray-100">

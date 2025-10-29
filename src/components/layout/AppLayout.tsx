@@ -28,38 +28,38 @@ const getNavigation = (t: (key: string) => string) => [
     name: t('navigation.dashboard'),
     href: '/',
     icon: Home,
-    description: 'Overview and quick stats',
+    description: t('dashboardSpecific.overviewAndStats'),
   },
   {
     name: t('navigation.quilts'),
     href: '/quilts',
     icon: Package,
-    description: 'Manage your quilt collection',
+    description: t('dashboardSpecific.manageCollection'),
   },
   {
     name: t('navigation.usage'),
     href: '/usage',
     icon: Calendar,
-    description: 'Track quilt usage periods',
+    description: t('dashboardSpecific.trackUsagePeriods'),
   },
   {
     name: t('navigation.analytics'),
     href: '/analytics',
     icon: BarChart3,
-    description: 'Usage insights and trends',
+    description: t('dashboardSpecific.usageInsightsAndTrends'),
   },
 
   {
     name: t('navigation.reports'),
     href: '/reports',
     icon: FileText,
-    description: 'Export and reporting',
+    description: t('dashboardSpecific.exportAndReporting'),
   },
   {
     name: t('navigation.settings'),
     href: '/settings',
     icon: Settings,
-    description: 'App configuration',
+    description: t('dashboardSpecific.appConfiguration'),
   },
 ];
 

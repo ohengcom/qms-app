@@ -150,9 +150,7 @@ export default function DashboardPage() {
         <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
           <div className="flex items-center gap-2">
             <Activity className="w-5 h-5 text-green-600" />
-            <h2 className="text-lg font-semibold text-gray-900">
-              {lang === 'zh' ? '当前在用被子' : 'Currently In Use'}
-            </h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t('pages.currentlyInUse')}</h2>
             <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded-full">
               {inUseQuilts.length}
             </span>
@@ -160,9 +158,7 @@ export default function DashboardPage() {
         </div>
         <div className="divide-y divide-gray-200">
           {inUseQuilts.length === 0 ? (
-            <div className="px-6 py-8 text-center text-gray-500">
-              {lang === 'zh' ? '暂无在用被子' : 'No quilts currently in use'}
-            </div>
+            <div className="px-6 py-8 text-center text-gray-500">{t('pages.noQuiltsInUse')}</div>
           ) : (
             inUseQuilts.map((quilt: any) => (
               <div key={quilt.id} className="px-6 py-4 hover:bg-gray-50 transition-colors">
@@ -189,13 +185,13 @@ export default function DashboardPage() {
                       </div>
                       <div className="flex items-center gap-4 mt-1 text-xs text-gray-600">
                         <span>
-                          {lang === 'zh' ? '填充物' : 'Fill'}: {quilt.fillMaterial}
+                          {t('pages.fillMaterial')}: {quilt.fillMaterial}
                         </span>
                         <span>
-                          {lang === 'zh' ? '重量' : 'Weight'}: {quilt.weightGrams}g
+                          {t('pages.weight')}: {quilt.weightGrams}g
                         </span>
                         <span>
-                          {lang === 'zh' ? '位置' : 'Location'}: {quilt.location}
+                          {t('pages.location')}: {quilt.location}
                         </span>
                       </div>
                     </div>
@@ -204,7 +200,7 @@ export default function DashboardPage() {
                     href={`/quilts?search=${quilt.name}`}
                     className="text-sm text-blue-600 hover:text-blue-700 font-medium"
                   >
-                    {lang === 'zh' ? '查看详情' : 'View Details'}
+                    {t('pages.viewDetails')}
                   </Link>
                 </div>
               </div>
@@ -218,9 +214,7 @@ export default function DashboardPage() {
         <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
           <div className="flex items-center gap-2">
             <History className="w-5 h-5 text-purple-600" />
-            <h2 className="text-lg font-semibold text-gray-900">
-              {lang === 'zh' ? '往年今日在用被子' : 'Historical Usage - Same Day'}
-            </h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t('pages.historicalUsage')}</h2>
             <span className="text-sm text-gray-500">
               ({today.getMonth() + 1}/{today.getDate()})
             </span>
@@ -229,7 +223,7 @@ export default function DashboardPage() {
         <div className="divide-y divide-gray-200">
           {historicalUsage.length === 0 ? (
             <div className="px-6 py-8 text-center text-gray-500">
-              {lang === 'zh' ? '暂无历史使用记录' : 'No historical usage records'}
+              {t('pages.noHistoricalRecords')}
             </div>
           ) : (
             historicalUsage.map((record: any) => (

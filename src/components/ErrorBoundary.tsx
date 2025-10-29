@@ -77,14 +77,17 @@ export class ErrorBoundary extends Component<Props, State> {
               </div>
 
               <h1 className="text-2xl font-bold text-gray-900 text-center mb-2">
-                出错了 / Something went wrong
+                出错了 / Something Went Wrong
               </h1>
 
               <p className="text-gray-600 text-center mb-6">
-                应用程序遇到了意外错误。请尝试刷新页面或返回首页。
+                应用程序遇到了意外错误。
                 <br />
-                The application encountered an unexpected error. Please try refreshing the page or
-                return to home.
+                The application encountered an unexpected error.
+                <br />
+                请尝试刷新页面或返回首页。
+                <br />
+                Please try refreshing the page or return to home.
               </p>
 
               {/* Error details (only in development) */}
@@ -111,17 +114,17 @@ export class ErrorBoundary extends Component<Props, State> {
               <div className="flex flex-col gap-3">
                 <Button onClick={this.handleReset} className="w-full">
                   <RefreshCw className="w-4 h-4 mr-2" />
-                  重试 / Try Again
+                  重试 / Retry
                 </Button>
 
                 <Button onClick={this.handleReload} variant="outline" className="w-full">
                   <RefreshCw className="w-4 h-4 mr-2" />
-                  刷新页面 / Reload Page
+                  刷新页面 / Refresh Page
                 </Button>
 
                 <Button onClick={this.handleGoHome} variant="outline" className="w-full">
                   <Home className="w-4 h-4 mr-2" />
-                  返回首页 / Go Home
+                  返回首页 / Back to Home
                 </Button>
               </div>
             </div>
