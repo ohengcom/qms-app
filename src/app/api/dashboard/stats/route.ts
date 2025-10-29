@@ -48,12 +48,14 @@ export async function GET() {
 
     // Get historical usage data for this day in previous years
     const today = new Date();
-    const monthDay = `${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    const currentMonth = today.getMonth() + 1;
+    const currentDay = today.getDate();
+    const monthDay = `${String(currentMonth).padStart(2, '0')}-${String(currentDay).padStart(2, '0')}`;
 
     let historicalUsage: any[] = [];
     try {
-      // Query usage periods from previous years on this same date
-      // Check if the usage period includes today's month-day in previous years
+      // Query usage periods from previous years where today's month-day falls within the usage period
+      // This checks if the quilt was being used on this same date in previous years
       const result = await sql`
         SELECT 
           up.id,
@@ -67,9 +69,16 @@ export async function GET() {
         FROM usage_periods up
         JOIN quilts q ON up.quilt_id = q.id
         WHERE 
-          TO_CHAR(up.start_date, 'MM-DD') = ${monthDay}
-          AND EXTRACT(YEAR FROM up.start_date) < EXTRACT(YEAR FROM CURRENT_DATE)
-          AND (up.end_date IS NULL OR up.end_date >= up.start_date)
+          EXTRACT(YEAR FROM up.start_date) < EXTRACT(YEAR FROM CURRENT_DATE)
+          AND (
+            -- Check if today's month-day falls within the usage period
+            (EXTRACT(MONTH FROM up.start_date) < ${currentMonth} OR 
+             (EXTRACT(MONTH FROM up.start_date) = ${currentMonth} AND EXTRACT(DAY FROM up.start_date) <= ${currentDay}))
+            AND
+            (up.end_date IS NULL OR 
+             EXTRACT(MONTH FROM up.end_date) > ${currentMonth} OR 
+             (EXTRACT(MONTH FROM up.end_date) = ${currentMonth} AND EXTRACT(DAY FROM up.end_date) >= ${currentDay}))
+          )
         ORDER BY up.start_date DESC
         LIMIT 20
       `;
@@ -85,7 +94,9 @@ export async function GET() {
         year: parseInt(row.year),
       }));
 
-      console.log(`Found ${historicalUsage.length} historical usage records for ${monthDay}`);
+      console.log(
+        `Found ${historicalUsage.length} historical usage records for ${monthDay} (including periods)`
+      );
     } catch (error) {
       console.error('Error fetching historical usage:', error);
       // Continue without historical data if query fails
