@@ -17,15 +17,15 @@ export default function QuiltsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  
+
   // Dialog states
   const [quiltDialogOpen, setQuiltDialogOpen] = useState(false);
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
   const [selectedQuilt, setSelectedQuilt] = useState<any>(null);
-  
-  // View mode state
-  const [viewMode, setViewMode] = useState<'card' | 'list'>('card');
-  
+
+  // View mode state - list is default
+  const [viewMode, setViewMode] = useState<'card' | 'list'>('list');
+
   const { t } = useLanguage();
   const searchParams = useSearchParams();
   const urlSearchTerm = searchParams.get('search') || '';
@@ -62,15 +62,16 @@ export default function QuiltsPage() {
       return;
     }
 
-    const filtered = quilts.filter(quilt => 
-      quilt.name?.toLowerCase().includes(term.toLowerCase()) ||
-      quilt.itemNumber?.toString().includes(term) ||
-      quilt.fillMaterial?.toLowerCase().includes(term.toLowerCase()) ||
-      quilt.location?.toLowerCase().includes(term.toLowerCase()) ||
-      quilt.season?.toLowerCase().includes(term.toLowerCase()) ||
-      quilt.currentStatus?.toLowerCase().includes(term.toLowerCase())
+    const filtered = quilts.filter(
+      quilt =>
+        quilt.name?.toLowerCase().includes(term.toLowerCase()) ||
+        quilt.itemNumber?.toString().includes(term) ||
+        quilt.fillMaterial?.toLowerCase().includes(term.toLowerCase()) ||
+        quilt.location?.toLowerCase().includes(term.toLowerCase()) ||
+        quilt.season?.toLowerCase().includes(term.toLowerCase()) ||
+        quilt.currentStatus?.toLowerCase().includes(term.toLowerCase())
     );
-    
+
     setFilteredQuilts(filtered);
   };
 
@@ -97,7 +98,11 @@ export default function QuiltsPage() {
   };
 
   const handleDeleteQuilt = async (quilt: any) => {
-    if (!confirm(`确定要删除被子 "${quilt.name}" 吗？\nAre you sure you want to delete quilt "${quilt.name}"?`)) {
+    if (
+      !confirm(
+        `确定要删除被子 "${quilt.name}" 吗？\nAre you sure you want to delete quilt "${quilt.name}"?`
+      )
+    ) {
       return;
     }
 
@@ -133,7 +138,7 @@ export default function QuiltsPage() {
 
         if (response.ok) {
           const updatedQuilt = await response.json();
-          const updatedQuilts = quilts.map(q => q.id === selectedQuilt.id ? updatedQuilt : q);
+          const updatedQuilts = quilts.map(q => (q.id === selectedQuilt.id ? updatedQuilt : q));
           setQuilts(updatedQuilts);
           handleSearch(searchTerm); // Re-apply search filter
           // TODO: Show success toast
@@ -174,7 +179,7 @@ export default function QuiltsPage() {
 
       if (response.ok) {
         const updatedQuilt = await response.json();
-        const updatedQuilts = quilts.map(q => q.id === quiltId ? updatedQuilt : q);
+        const updatedQuilts = quilts.map(q => (q.id === quiltId ? updatedQuilt : q));
         setQuilts(updatedQuilts);
         handleSearch(searchTerm); // Re-apply search filter
         // TODO: Show success toast
@@ -237,7 +242,7 @@ export default function QuiltsPage() {
               className="pl-10"
             />
           </div>
-          
+
           {/* View Mode Toggle */}
           <div className="flex items-center space-x-1 bg-gray-100 rounded-lg p-1">
             <Button
@@ -264,10 +269,11 @@ export default function QuiltsPage() {
         {/* Search Results Info */}
         {searchTerm && (
           <div className="mt-4 text-sm text-gray-600">
-            {t('quilts.messages.showing')} {filteredQuilts.length} {t('quilts.messages.of')} {quilts.length} {t('quilts.messages.quilts')}
+            {t('quilts.messages.showing')} {filteredQuilts.length} {t('quilts.messages.of')}{' '}
+            {quilts.length} {t('quilts.messages.quilts')}
             {searchTerm && (
               <span className="ml-2">
-                - {t('common.search')}: "{searchTerm}"
+                - {t('common.search')}: &ldquo;{searchTerm}&rdquo;
               </span>
             )}
           </div>
@@ -283,10 +289,9 @@ export default function QuiltsPage() {
               {searchTerm ? t('quilts.messages.noQuiltsFound') : t('quilts.actions.addFirst')}
             </h3>
             <p className="text-gray-600 text-center mb-4">
-              {searchTerm 
-                ? `没有找到包含 "${searchTerm}" 的被子` 
-                : '开始添加您的第一床被子来管理您的收藏'
-              }
+              {searchTerm
+                ? `没有找到包含 "${searchTerm}" 的被子`
+                : '开始添加您的第一床被子来管理您的收藏'}
             </p>
             {!searchTerm && (
               <Button onClick={handleAddQuilt}>
@@ -299,22 +304,28 @@ export default function QuiltsPage() {
       ) : viewMode === 'card' ? (
         /* Card View */
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredQuilts.map((quilt) => (
+          {filteredQuilts.map(quilt => (
             <Card key={quilt.id} className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
                   <span>{quilt.name}</span>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    quilt.currentStatus === 'AVAILABLE' ? 'bg-green-100 text-green-800' :
-                    quilt.currentStatus === 'IN_USE' ? 'bg-blue-100 text-blue-800' :
-                    quilt.currentStatus === 'STORAGE' ? 'bg-gray-100 text-gray-800' :
-                    'bg-yellow-100 text-yellow-800'
-                  }`}>
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      quilt.currentStatus === 'AVAILABLE'
+                        ? 'bg-green-100 text-green-800'
+                        : quilt.currentStatus === 'IN_USE'
+                          ? 'bg-blue-100 text-blue-800'
+                          : quilt.currentStatus === 'STORAGE'
+                            ? 'bg-gray-100 text-gray-800'
+                            : 'bg-yellow-100 text-yellow-800'
+                    }`}
+                  >
                     {t(`status.${quilt.currentStatus}`)}
                   </span>
                 </CardTitle>
                 <CardDescription>
-                  {t('quilts.table.itemNumber')}{quilt.itemNumber}
+                  {t('quilts.table.itemNumber')}
+                  {quilt.itemNumber}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -325,7 +336,9 @@ export default function QuiltsPage() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">{t('quilts.table.size')}:</span>
-                    <span>{quilt.lengthCm} x {quilt.widthCm} cm</span>
+                    <span>
+                      {quilt.lengthCm} x {quilt.widthCm} cm
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">{t('quilts.table.weight')}:</span>
@@ -341,27 +354,27 @@ export default function QuiltsPage() {
                   </div>
                 </div>
                 <div className="mt-4 flex space-x-2">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
+                    size="sm"
                     className="flex-1"
                     onClick={() => handleChangeStatus(quilt)}
                   >
                     <RotateCcw className="w-3 h-3 mr-1" />
                     {t('quilts.table.status')}
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
+                    size="sm"
                     className="flex-1"
                     onClick={() => handleEditQuilt(quilt)}
                   >
                     <Edit className="w-3 h-3 mr-1" />
                     {t('common.edit')}
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
+                    size="sm"
                     className="text-red-600 hover:text-red-700 hover:bg-red-50"
                     onClick={() => handleDeleteQuilt(quilt)}
                   >
@@ -387,52 +400,62 @@ export default function QuiltsPage() {
               <div className="col-span-1">{t('quilts.table.status')}</div>
               <div className="col-span-2">{t('quilts.views.actions')}</div>
             </div>
-            
+
             {/* Table Rows */}
             <div className="divide-y">
-              {filteredQuilts.map((quilt) => (
-                <div key={quilt.id} className="grid grid-cols-12 gap-4 p-4 hover:bg-gray-50 transition-colors">
+              {filteredQuilts.map(quilt => (
+                <div
+                  key={quilt.id}
+                  className="grid grid-cols-12 gap-4 p-4 hover:bg-gray-50 transition-colors"
+                >
                   <div className="col-span-2 font-medium">#{quilt.itemNumber}</div>
                   <div className="col-span-2">
                     <div className="font-medium">{quilt.name}</div>
                     <div className="text-sm text-gray-500">{quilt.location}</div>
                   </div>
                   <div className="col-span-1 text-sm">{t(`season.${quilt.season}`)}</div>
-                  <div className="col-span-1 text-sm">{quilt.lengthCm}×{quilt.widthCm}</div>
+                  <div className="col-span-1 text-sm">
+                    {quilt.lengthCm}×{quilt.widthCm}
+                  </div>
                   <div className="col-span-1 text-sm">{quilt.weightGrams}g</div>
                   <div className="col-span-2 text-sm">
                     <div>{quilt.fillMaterial}</div>
                     <div className="text-gray-500">{quilt.color}</div>
                   </div>
                   <div className="col-span-1">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      quilt.currentStatus === 'AVAILABLE' ? 'bg-green-100 text-green-800' :
-                      quilt.currentStatus === 'IN_USE' ? 'bg-blue-100 text-blue-800' :
-                      quilt.currentStatus === 'STORAGE' ? 'bg-gray-100 text-gray-800' :
-                      'bg-yellow-100 text-yellow-800'
-                    }`}>
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        quilt.currentStatus === 'AVAILABLE'
+                          ? 'bg-green-100 text-green-800'
+                          : quilt.currentStatus === 'IN_USE'
+                            ? 'bg-blue-100 text-blue-800'
+                            : quilt.currentStatus === 'STORAGE'
+                              ? 'bg-gray-100 text-gray-800'
+                              : 'bg-yellow-100 text-yellow-800'
+                      }`}
+                    >
                       {t(`status.${quilt.currentStatus}`)}
                     </span>
                   </div>
                   <div className="col-span-2 flex space-x-1">
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       size="sm"
                       onClick={() => handleChangeStatus(quilt)}
                       title={t('language') === 'zh' ? '更改状态' : 'Change Status'}
                     >
                       <RotateCcw className="w-3 h-3" />
                     </Button>
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       size="sm"
                       onClick={() => handleEditQuilt(quilt)}
                       title={t('common.edit')}
                     >
                       <Edit className="w-3 h-3" />
                     </Button>
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       size="sm"
                       className="text-red-600 hover:text-red-700 hover:bg-red-50"
                       onClick={() => handleDeleteQuilt(quilt)}
