@@ -206,8 +206,8 @@ This task list breaks down the Phase 1 improvements into actionable implementati
     - _Requirements: 4.3_
     - _Files: src/lib/validations/usage.ts_
 
-- [ ] 13. Update forms with enhanced validation
-  - [ ] 13.1 Update quilt add/edit form
+- [x] 13. Update forms with enhanced validation
+  - [x] 13.1 Update quilt add/edit form
     - Update `src/app/quilts/page.tsx`
     - Integrate new validation schema
     - Add inline error messages
@@ -216,7 +216,7 @@ This task list breaks down the Phase 1 improvements into actionable implementati
     - _Requirements: 4.1, 4.2_
     - _Files: src/app/quilts/page.tsx_
 
-  - [ ] 13.2 Update usage tracking forms
+  - [x] 13.2 Update usage tracking forms
     - Update `src/app/usage/page.tsx`
     - Add date validation
     - Add inline errors
@@ -224,7 +224,7 @@ This task list breaks down the Phase 1 improvements into actionable implementati
     - _Requirements: 4.3_
     - _Files: src/app/usage/page.tsx_
 
-  - [ ] 13.3 Update import validation
+  - [x] 13.3 Update import validation
     - Update `src/app/import/page.tsx`
     - Add comprehensive validation
     - Show validation errors per row
@@ -232,8 +232,8 @@ This task list breaks down the Phase 1 improvements into actionable implementati
     - _Requirements: 4.1, 4.5_
     - _Files: src/app/import/page.tsx_
 
-- [ ] 14. Implement data quality reports
-  - [ ] 14.1 Create data quality API
+- [x] 14. Implement data quality reports
+  - [x] 14.1 Create data quality API
     - Create `src/app/api/data-quality/route.ts`
     - Scan for incomplete records
     - Identify inconsistencies
@@ -241,7 +241,7 @@ This task list breaks down the Phase 1 improvements into actionable implementati
     - _Requirements: 4.5_
     - _Files: src/app/api/data-quality/route.ts_
 
-  - [ ] 14.2 Create data quality page
+  - [x] 14.2 Create data quality page
     - Create `src/app/data-quality/page.tsx`
     - Display quality metrics
     - Show problematic records
