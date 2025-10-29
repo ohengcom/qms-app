@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/lib/language-provider';
 import { Button } from '@/components/ui/button';
@@ -10,13 +10,12 @@ import { Loading } from '@/components/ui/loading';
 import { QuiltDialog } from '@/components/quilts/QuiltDialog';
 import { StatusChangeDialog } from '@/components/quilts/StatusChangeDialog';
 import { toast, getToastMessage } from '@/lib/toast';
+import { useQuilts, useCreateQuilt, useUpdateQuilt, useDeleteQuilt } from '@/hooks/useQuilts';
 
 export default function QuiltsPage() {
-  const [quilts, setQuilts] = useState<any[]>([]);
-  const [filteredQuilts, setFilteredQuilts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const searchParams = useSearchParams();
+  const urlSearchTerm = searchParams.get('search') || '';
+  const [searchTerm, setSearchTerm] = useState(urlSearchTerm);
 
   // Dialog states
   const [quiltDialogOpen, setQuiltDialogOpen] = useState(false);
@@ -28,58 +27,34 @@ export default function QuiltsPage() {
   const [isSelectMode, setIsSelectMode] = useState(false);
 
   const { t } = useLanguage();
-  const searchParams = useSearchParams();
-  const urlSearchTerm = searchParams.get('search') || '';
 
-  // Load quilts data
-  useEffect(() => {
-    fetch('/api/quilts')
-      .then(res => res.json())
-      .then(data => {
-        const quiltsData = data.quilts || [];
-        setQuilts(quiltsData);
-        setFilteredQuilts(quiltsData);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Error:', err);
-        setError(err.message);
-        setLoading(false);
-      });
-  }, []);
+  // React Query hooks
+  const { data: quiltsData, isLoading, error } = useQuilts();
+  const createQuiltMutation = useCreateQuilt();
+  const updateQuiltMutation = useUpdateQuilt();
+  const deleteQuiltMutation = useDeleteQuilt();
 
-  // Handle URL search parameter
-  useEffect(() => {
-    if (urlSearchTerm) {
-      setSearchTerm(urlSearchTerm);
-      handleSearch(urlSearchTerm);
-    }
-  }, [urlSearchTerm, quilts]);
+  const quilts = quiltsData?.quilts || [];
 
-  // Search functionality
-  const handleSearch = (term: string) => {
-    if (!term.trim()) {
-      setFilteredQuilts(quilts);
-      return;
+  // Memoized filtered quilts
+  const filteredQuilts = useMemo(() => {
+    if (!searchTerm.trim()) {
+      return quilts;
     }
 
-    const filtered = quilts.filter(
-      quilt =>
-        quilt.name?.toLowerCase().includes(term.toLowerCase()) ||
-        quilt.itemNumber?.toString().includes(term) ||
-        quilt.fillMaterial?.toLowerCase().includes(term.toLowerCase()) ||
-        quilt.location?.toLowerCase().includes(term.toLowerCase()) ||
-        quilt.season?.toLowerCase().includes(term.toLowerCase()) ||
-        quilt.currentStatus?.toLowerCase().includes(term.toLowerCase())
+    return quilts.filter(
+      (quilt: any) =>
+        quilt.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        quilt.itemNumber?.toString().includes(searchTerm) ||
+        quilt.fillMaterial?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        quilt.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        quilt.season?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        quilt.currentStatus?.toLowerCase().includes(searchTerm.toLowerCase())
     );
-
-    setFilteredQuilts(filtered);
-  };
+  }, [quilts, searchTerm]);
 
   const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearchTerm(value);
-    handleSearch(value);
+    setSearchTerm(e.target.value);
   };
 
   // CRUD operations
@@ -111,19 +86,9 @@ export default function QuiltsPage() {
     const toastId = toast.loading(getToastMessage('deleting', lang));
 
     try {
-      const response = await fetch(`/api/quilts/${quilt.id}`, {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        const updatedQuilts = quilts.filter(q => q.id !== quilt.id);
-        setQuilts(updatedQuilts);
-        handleSearch(searchTerm);
-        toast.dismiss(toastId);
-        toast.success(getToastMessage('deleteSuccess', lang));
-      } else {
-        throw new Error('Failed to delete quilt');
-      }
+      await deleteQuiltMutation.mutateAsync(quilt.id);
+      toast.dismiss(toastId);
+      toast.success(getToastMessage('deleteSuccess', lang));
     } catch (error) {
       console.error('Error deleting quilt:', error);
       toast.dismiss(toastId);
@@ -151,7 +116,7 @@ export default function QuiltsPage() {
     if (selectedIds.size === filteredQuilts.length) {
       setSelectedIds(new Set());
     } else {
-      setSelectedIds(new Set(filteredQuilts.map(q => q.id)));
+      setSelectedIds(new Set(filteredQuilts.map((q: any) => q.id)));
     }
   };
 
@@ -179,23 +144,19 @@ export default function QuiltsPage() {
 
     try {
       const deletePromises = Array.from(selectedIds).map(id =>
-        fetch(`/api/quilts/${id}`, { method: 'DELETE' })
+        deleteQuiltMutation.mutateAsync(id)
       );
 
-      const results = await Promise.all(deletePromises);
-      const successCount = results.filter(r => r.ok).length;
+      await Promise.all(deletePromises);
 
-      const updatedQuilts = quilts.filter(q => !selectedIds.has(q.id));
-      setQuilts(updatedQuilts);
-      handleSearch(searchTerm);
       setSelectedIds(new Set());
       setIsSelectMode(false);
 
       toast.dismiss(toastId);
       toast.success(
         lang === 'zh'
-          ? `成功删除 ${successCount} 个被子`
-          : `Successfully deleted ${successCount} quilts`
+          ? `成功删除 ${selectedIds.size} 个被子`
+          : `Successfully deleted ${selectedIds.size} quilts`
       );
     } catch (error) {
       console.error('Error batch deleting quilts:', error);
@@ -210,37 +171,11 @@ export default function QuiltsPage() {
 
     try {
       if (isUpdate) {
-        const response = await fetch(`/api/quilts/${selectedQuilt.id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data),
-        });
-
-        if (response.ok) {
-          const updatedQuilt = await response.json();
-          const updatedQuilts = quilts.map(q => (q.id === selectedQuilt.id ? updatedQuilt : q));
-          setQuilts(updatedQuilts);
-          handleSearch(searchTerm);
-          toast.success(getToastMessage('updateSuccess', lang));
-        } else {
-          throw new Error('Failed to update quilt');
-        }
+        await updateQuiltMutation.mutateAsync({ id: selectedQuilt.id, data });
+        toast.success(getToastMessage('updateSuccess', lang));
       } else {
-        const response = await fetch('/api/quilts', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data),
-        });
-
-        if (response.ok) {
-          const newQuilt = await response.json();
-          const updatedQuilts = [newQuilt, ...quilts];
-          setQuilts(updatedQuilts);
-          handleSearch(searchTerm);
-          toast.success(getToastMessage('createSuccess', lang));
-        } else {
-          throw new Error('Failed to create quilt');
-        }
+        await createQuiltMutation.mutateAsync(data);
+        toast.success(getToastMessage('createSuccess', lang));
       }
     } catch (error) {
       console.error('Error saving quilt:', error);
@@ -253,21 +188,12 @@ export default function QuiltsPage() {
     const lang = t('language') === 'zh' ? 'zh' : 'en';
 
     try {
-      const response = await fetch(`/api/quilts/${quiltId}/status`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus }),
+      // Use update mutation to change status
+      await updateQuiltMutation.mutateAsync({
+        id: quiltId,
+        data: { currentStatus: newStatus },
       });
-
-      if (response.ok) {
-        const updatedQuilt = await response.json();
-        const updatedQuilts = quilts.map(q => (q.id === quiltId ? updatedQuilt : q));
-        setQuilts(updatedQuilts);
-        handleSearch(searchTerm);
-        toast.success(getToastMessage('updateSuccess', lang));
-      } else {
-        throw new Error('Failed to update status');
-      }
+      toast.success(getToastMessage('updateSuccess', lang));
     } catch (error) {
       console.error('Error updating status:', error);
       toast.error(getToastMessage('updateError', lang));
@@ -275,7 +201,7 @@ export default function QuiltsPage() {
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center h-96">
         <Loading text={t('common.loading')} />
@@ -288,7 +214,7 @@ export default function QuiltsPage() {
       <div className="p-6">
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
           <h2 className="text-lg font-semibold text-red-800">{t('common.error')}</h2>
-          <p className="text-red-600">{error}</p>
+          <p className="text-red-600">{error instanceof Error ? error.message : String(error)}</p>
         </div>
       </div>
     );
@@ -427,7 +353,7 @@ export default function QuiltsPage() {
                   </td>
                 </tr>
               ) : (
-                filteredQuilts.map(quilt => (
+                filteredQuilts.map((quilt: any) => (
                   <tr key={quilt.id} className="hover:bg-gray-50 transition-colors">
                     {isSelectMode && (
                       <td className="px-4 py-3">
