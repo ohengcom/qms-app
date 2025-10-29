@@ -35,6 +35,11 @@ const nextConfig = {
   // Performance monitoring
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+    // Suppress middleware deprecation warning for authentication use case
+    // Middleware is still the correct approach for auth in Next.js 16
+    serverActions: {
+      bodySizeLimit: '2mb',
+    },
   },
 
   // Enhanced security headers

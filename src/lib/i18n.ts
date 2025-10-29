@@ -16,6 +16,25 @@ export interface LanguageContextType {
 // 翻译内容
 export const translations = {
   zh: {
+    // 认证
+    auth: {
+      login: '登录',
+      logout: '退出登录',
+      password: '密码',
+      passwordPlaceholder: '请输入密码',
+      rememberMe: '记住我（30天）',
+      loginTitle: 'QMS 被子管理系统',
+      loginSubtitle: '请登录以继续',
+      loginButton: '登录',
+      loggingIn: '登录中...',
+      invalidPassword: '密码错误',
+      tooManyAttempts: '尝试次数过多，请15分钟后再试',
+      sessionExpired: '会话已过期，请重新登录',
+      loginSuccess: '登录成功',
+      logoutSuccess: '已退出登录',
+      logoutConfirm: '确定要退出登录吗？',
+    },
+
     // 导航和通用
     navigation: {
       dashboard: '仪表板',
@@ -26,7 +45,7 @@ export const translations = {
       reports: '报告',
       settings: '设置',
     },
-    
+
     // 仪表板
     dashboard: {
       title: '被子管理系统',
@@ -56,7 +75,7 @@ export const translations = {
         message: 'QMS 应用程序正在运行，仪表板数据已成功加载。',
       },
     },
-    
+
     // 被子管理
     quilts: {
       title: '被子收藏',
@@ -113,7 +132,7 @@ export const translations = {
         newStatus: '新状态',
       },
     },
-    
+
     // 使用跟踪
     usage: {
       title: '使用跟踪',
@@ -142,7 +161,7 @@ export const translations = {
         notes: '备注',
       },
     },
-    
+
     // 设置
     settings: {
       title: '设置',
@@ -183,7 +202,7 @@ export const translations = {
         saveSuccess: '设置保存成功！',
       },
     },
-    
+
     // 状态
     status: {
       AVAILABLE: '可用',
@@ -191,14 +210,14 @@ export const translations = {
       STORAGE: '存储中',
       MAINTENANCE: '维护中',
     },
-    
+
     // 季节
     season: {
       WINTER: '冬季',
       SPRING_AUTUMN: '春秋',
       SUMMER: '夏季',
     },
-    
+
     // 分析
     analytics: {
       title: '分析',
@@ -240,7 +259,26 @@ export const translations = {
     },
   },
   en: {
-    // 导航和通用
+    // Authentication
+    auth: {
+      login: 'Login',
+      logout: 'Logout',
+      password: 'Password',
+      passwordPlaceholder: 'Enter your password',
+      rememberMe: 'Remember me (30 days)',
+      loginTitle: 'QMS Quilt Management System',
+      loginSubtitle: 'Please login to continue',
+      loginButton: 'Login',
+      loggingIn: 'Logging in...',
+      invalidPassword: 'Invalid password',
+      tooManyAttempts: 'Too many attempts. Please try again in 15 minutes',
+      sessionExpired: 'Session expired. Please login again',
+      loginSuccess: 'Login successful',
+      logoutSuccess: 'Logged out successfully',
+      logoutConfirm: 'Are you sure you want to logout?',
+    },
+
+    // Navigation and Common
     navigation: {
       dashboard: 'Dashboard',
       quilts: 'Quilts',
@@ -250,7 +288,7 @@ export const translations = {
       reports: 'Reports',
       settings: 'Settings',
     },
-    
+
     // 仪表板
     dashboard: {
       title: 'Quilt Management System',
@@ -280,7 +318,7 @@ export const translations = {
         message: 'QMS application is running and dashboard data loaded successfully.',
       },
     },
-    
+
     // 被子管理
     quilts: {
       title: 'Quilt Collection',
@@ -337,7 +375,7 @@ export const translations = {
         newStatus: 'New Status',
       },
     },
-    
+
     // 使用跟踪
     usage: {
       title: 'Usage Tracking',
@@ -366,7 +404,7 @@ export const translations = {
         notes: 'Notes',
       },
     },
-    
+
     // 设置
     settings: {
       title: 'Settings',
@@ -407,7 +445,7 @@ export const translations = {
         saveSuccess: 'Settings saved successfully!',
       },
     },
-    
+
     // 状态
     status: {
       AVAILABLE: 'Available',
@@ -415,14 +453,14 @@ export const translations = {
       STORAGE: 'Storage',
       MAINTENANCE: 'Maintenance',
     },
-    
+
     // 季节
     season: {
       WINTER: 'Winter',
       SPRING_AUTUMN: 'Spring/Autumn',
       SUMMER: 'Summer',
     },
-    
+
     // 分析
     analytics: {
       title: 'Analytics',
@@ -469,7 +507,7 @@ export const translations = {
 export function getNestedTranslation(obj: any, key: string): string | undefined {
   const keys = key.split('.');
   let current = obj;
-  
+
   for (const k of keys) {
     if (current && typeof current === 'object' && k in current) {
       current = current[k];
@@ -477,7 +515,7 @@ export function getNestedTranslation(obj: any, key: string): string | undefined 
       return undefined;
     }
   }
-  
+
   return typeof current === 'string' ? current : undefined;
 }
 

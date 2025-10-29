@@ -236,25 +236,26 @@ export function AppLayout({ children }: AppLayoutProps) {
                 {/* Separator */}
                 <div className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200" />
 
-                {/* Profile */}
+                {/* Logout */}
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="flex items-center gap-x-2"
-                  onClick={() => {
-                    // TODO: Implement user profile menu
-                    const message =
-                      t('common.comingSoon') +
-                      ' - ' +
-                      (t('language') === 'zh' ? '用户设置' : 'User Profile');
-                    alert(message);
+                  className="flex items-center gap-x-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                  onClick={async () => {
+                    if (confirm(t('auth.logoutConfirm'))) {
+                      try {
+                        await fetch('/api/auth/logout', { method: 'POST' });
+                        window.location.href = '/login';
+                      } catch (error) {
+                        console.error('Logout error:', error);
+                        alert('Failed to logout. Please try again.');
+                      }
+                    }
                   }}
-                  title={
-                    t('language') === 'zh' ? '用户设置 (即将推出)' : 'User Profile (Coming Soon)'
-                  }
+                  title={t('auth.logout')}
                 >
                   <User className="h-5 w-5" />
-                  <span className="hidden lg:block text-sm font-medium">Admin</span>
+                  <span className="hidden lg:block text-sm font-medium">{t('auth.logout')}</span>
                 </Button>
               </div>
             </div>
