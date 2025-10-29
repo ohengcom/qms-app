@@ -23,9 +23,9 @@ export default function QuiltsPage() {
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
   const [selectedQuilt, setSelectedQuilt] = useState<any>(null);
 
-  // Batch operation states - TODO: Implement batch operations UI
-  // const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  // const [isSelectMode, setIsSelectMode] = useState(false);
+  // Batch operation states
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [isSelectMode, setIsSelectMode] = useState(false);
 
   const { t } = useLanguage();
   const searchParams = useSearchParams();
@@ -131,74 +131,78 @@ export default function QuiltsPage() {
     }
   };
 
-  // Batch operations - TODO: Implement UI for these functions
-  // const toggleSelectMode = () => {
-  //   setIsSelectMode(!isSelectMode);
-  //   setSelectedIds(new Set());
-  // };
+  // Batch operations
+  const toggleSelectMode = () => {
+    setIsSelectMode(!isSelectMode);
+    setSelectedIds(new Set());
+  };
 
-  // const toggleSelectQuilt = (id: string) => {
-  //   const newSelected = new Set(selectedIds);
-  //   if (newSelected.has(id)) {
-  //     newSelected.delete(id);
-  //   } else {
-  //     newSelected.add(id);
-  //   }
-  //   setSelectedIds(newSelected);
-  // };
+  const toggleSelectQuilt = (id: string) => {
+    const newSelected = new Set(selectedIds);
+    if (newSelected.has(id)) {
+      newSelected.delete(id);
+    } else {
+      newSelected.add(id);
+    }
+    setSelectedIds(newSelected);
+  };
 
-  // const selectAll = () => {
-  //   if (selectedIds.size === filteredQuilts.length) {
-  //     setSelectedIds(new Set());
-  //   } else {
-  //     setSelectedIds(new Set(filteredQuilts.map(q => q.id)));
-  //   }
-  // };
+  const selectAll = () => {
+    if (selectedIds.size === filteredQuilts.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredQuilts.map(q => q.id)));
+    }
+  };
 
-  // const handleBatchDelete = async () => {
-  //   if (selectedIds.size === 0) {
-  //     const lang = t('language') === 'zh' ? 'zh' : 'en';
-  //     toast.warning(getToastMessage('selectItems', lang));
-  //     return;
-  //   }
+  const handleBatchDelete = async () => {
+    if (selectedIds.size === 0) {
+      const lang = t('language') === 'zh' ? 'zh' : 'en';
+      toast.warning(getToastMessage('selectItems', lang));
+      return;
+    }
 
-  //   if (
-  //     !window.confirm(
-  //       `确定要删除选中的 ${selectedIds.size} 个被子吗？\nAre you sure you want to delete ${selectedIds.size} selected quilts?`
-  //     )
-  //   ) {
-  //     return;
-  //   }
+    if (
+      !window.confirm(
+        `确定要删除选中的 ${selectedIds.size} 个被子吗？\nAre you sure you want to delete ${selectedIds.size} selected quilts?`
+      )
+    ) {
+      return;
+    }
 
-  //   const lang = t('language') === 'zh' ? 'zh' : 'en';
-  //   const toastId = toast.loading(
-  //     lang === 'zh' ? `正在删除 ${selectedIds.size} 个被子...` : `Deleting ${selectedIds.size} quilts...`
-  //   );
+    const lang = t('language') === 'zh' ? 'zh' : 'en';
+    const toastId = toast.loading(
+      lang === 'zh'
+        ? `正在删除 ${selectedIds.size} 个被子...`
+        : `Deleting ${selectedIds.size} quilts...`
+    );
 
-  //   try {
-  //     const deletePromises = Array.from(selectedIds).map(id =>
-  //       fetch(`/api/quilts/${id}`, { method: 'DELETE' })
-  //     );
+    try {
+      const deletePromises = Array.from(selectedIds).map(id =>
+        fetch(`/api/quilts/${id}`, { method: 'DELETE' })
+      );
 
-  //     const results = await Promise.all(deletePromises);
-  //     const successCount = results.filter(r => r.ok).length;
+      const results = await Promise.all(deletePromises);
+      const successCount = results.filter(r => r.ok).length;
 
-  //     const updatedQuilts = quilts.filter(q => !selectedIds.has(q.id));
-  //     setQuilts(updatedQuilts);
-  //     handleSearch(searchTerm);
-  //     setSelectedIds(new Set());
-  //     setIsSelectMode(false);
+      const updatedQuilts = quilts.filter(q => !selectedIds.has(q.id));
+      setQuilts(updatedQuilts);
+      handleSearch(searchTerm);
+      setSelectedIds(new Set());
+      setIsSelectMode(false);
 
-  //     toast.dismiss(toastId);
-  //     toast.success(
-  //       lang === 'zh' ? `成功删除 ${successCount} 个被子` : `Successfully deleted ${successCount} quilts`
-  //     );
-  //   } catch (error) {
-  //     console.error('Error batch deleting quilts:', error);
-  //     toast.dismiss(toastId);
-  //     toast.error(getToastMessage('deleteError', lang));
-  //   }
-  // };
+      toast.dismiss(toastId);
+      toast.success(
+        lang === 'zh'
+          ? `成功删除 ${successCount} 个被子`
+          : `Successfully deleted ${successCount} quilts`
+      );
+    } catch (error) {
+      console.error('Error batch deleting quilts:', error);
+      toast.dismiss(toastId);
+      toast.error(getToastMessage('deleteError', lang));
+    }
+  };
 
   const handleSaveQuilt = async (data: any) => {
     const lang = t('language') === 'zh' ? 'zh' : 'en';
@@ -297,14 +301,50 @@ export default function QuiltsPage() {
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">{t('quilts.title')}</h1>
           <p className="text-sm text-gray-500 mt-1">
-            {filteredQuilts.length} {t('quilts.messages.of')} {quilts.length}{' '}
-            {t('quilts.messages.quilts')}
+            {isSelectMode && selectedIds.size > 0
+              ? `${t('language') === 'zh' ? '已选择' : 'Selected'} ${selectedIds.size} ${t('quilts.messages.quilts')}`
+              : `${filteredQuilts.length} ${t('quilts.messages.of')} {quilts.length} ${t('quilts.messages.quilts')}`}
           </p>
         </div>
-        <Button onClick={handleAddQuilt} size="sm">
-          <Plus className="w-4 h-4 mr-2" />
-          {t('quilts.actions.add')}
-        </Button>
+        <div className="flex items-center gap-2">
+          {isSelectMode ? (
+            <>
+              <Button onClick={selectAll} variant="outline" size="sm">
+                {selectedIds.size === filteredQuilts.length
+                  ? t('language') === 'zh'
+                    ? '取消全选'
+                    : 'Deselect All'
+                  : t('language') === 'zh'
+                    ? '全选'
+                    : 'Select All'}
+              </Button>
+              <Button
+                onClick={handleBatchDelete}
+                variant="destructive"
+                size="sm"
+                disabled={selectedIds.size === 0}
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                {t('language') === 'zh' ? '删除选中' : 'Delete Selected'} ({selectedIds.size})
+              </Button>
+              <Button onClick={toggleSelectMode} variant="outline" size="sm">
+                {t('language') === 'zh' ? '取消' : 'Cancel'}
+              </Button>
+            </>
+          ) : (
+            <>
+              {filteredQuilts.length > 0 && (
+                <Button onClick={toggleSelectMode} variant="outline" size="sm">
+                  {t('language') === 'zh' ? '批量操作' : 'Batch Operations'}
+                </Button>
+              )}
+              <Button onClick={handleAddQuilt} size="sm">
+                <Plus className="w-4 h-4 mr-2" />
+                {t('quilts.actions.add')}
+              </Button>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Search and Filters */}
@@ -331,6 +371,18 @@ export default function QuiltsPage() {
           <table className="w-full">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-200">
+                {isSelectMode && (
+                  <th className="px-4 py-3 w-12">
+                    <input
+                      type="checkbox"
+                      checked={
+                        selectedIds.size === filteredQuilts.length && filteredQuilts.length > 0
+                      }
+                      onChange={selectAll}
+                      className="w-4 h-4 rounded border-gray-300"
+                    />
+                  </th>
+                )}
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {t('quilts.table.itemNumber')}
                 </th>
@@ -363,7 +415,10 @@ export default function QuiltsPage() {
             <tbody className="divide-y divide-gray-200">
               {filteredQuilts.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="px-4 py-12 text-center text-gray-500">
+                  <td
+                    colSpan={isSelectMode ? 10 : 9}
+                    className="px-4 py-12 text-center text-gray-500"
+                  >
                     {searchTerm
                       ? `${t('language') === 'zh' ? '没有找到匹配的被子' : 'No quilts found matching'} "${searchTerm}"`
                       : t('language') === 'zh'
@@ -374,6 +429,16 @@ export default function QuiltsPage() {
               ) : (
                 filteredQuilts.map(quilt => (
                   <tr key={quilt.id} className="hover:bg-gray-50 transition-colors">
+                    {isSelectMode && (
+                      <td className="px-4 py-3">
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.has(quilt.id)}
+                          onChange={() => toggleSelectQuilt(quilt.id)}
+                          className="w-4 h-4 rounded border-gray-300"
+                        />
+                      </td>
+                    )}
                     <td className="px-4 py-3 text-sm font-medium text-gray-900">
                       #{quilt.itemNumber}
                     </td>
