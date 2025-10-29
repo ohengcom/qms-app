@@ -121,6 +121,17 @@ export function AppLayout({ children }: AppLayoutProps) {
                   );
                 })}
               </nav>
+              {/* Version display */}
+              <div className="flex-shrink-0 border-t border-gray-200 p-4">
+                <div className="text-center">
+                  <p className="text-xs text-gray-400">
+                    Version {process.env.NEXT_PUBLIC_APP_VERSION || '0.2.1'}
+                  </p>
+                  <p className="text-xs text-gray-300 mt-1">
+                    {new Date().toISOString().split('T')[0]}
+                  </p>
+                </div>
+              </div>
             </div>
           </SheetContent>
         </Sheet>
@@ -167,6 +178,17 @@ export function AppLayout({ children }: AppLayoutProps) {
                 );
               })}
             </nav>
+            {/* Version display */}
+            <div className="flex-shrink-0 border-t border-gray-200 p-4">
+              <div className="text-center">
+                <p className="text-xs text-gray-400">
+                  Version {process.env.NEXT_PUBLIC_APP_VERSION || '0.2.1'}
+                </p>
+                <p className="text-xs text-gray-300 mt-1">
+                  {new Date().toISOString().split('T')[0]}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
