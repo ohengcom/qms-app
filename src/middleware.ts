@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyJWT } from '@/lib/auth';
+// import { verifyJWT } from '@/lib/auth'; // Temporarily disabled
 
 // Define protected routes that require authentication
-const protectedPaths = [
+// Temporarily disabled - will be used when auth is re-enabled
+
+const _protectedPaths = [
   '/quilts',
   '/usage',
   '/import',
@@ -15,7 +17,9 @@ const protectedPaths = [
 ];
 
 // Define API routes that require authentication
-const protectedApiPaths = [
+// Temporarily disabled - will be used when auth is re-enabled
+
+const _protectedApiPaths = [
   '/api/quilts',
   '/api/usage',
   '/api/import',
@@ -24,7 +28,14 @@ const protectedApiPaths = [
   '/api/reports',
 ];
 
-export function middleware(request: NextRequest) {
+export function middleware(_request: NextRequest) {
+  // TEMPORARY: Authentication disabled for development
+  // TODO: Re-enable after configuring Vercel environment variables
+
+  // Allow all requests to pass through
+  return NextResponse.next();
+
+  /* AUTHENTICATION CODE - TEMPORARILY DISABLED
   const { pathname } = request.nextUrl;
 
   // Allow login page and auth API routes
@@ -72,6 +83,7 @@ export function middleware(request: NextRequest) {
     response.cookies.delete('qms-session');
     return response;
   }
+  */
 }
 
 // Configure which routes to run middleware on
