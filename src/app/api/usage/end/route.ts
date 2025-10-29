@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     // Move to usage_periods table
     await sql`
       INSERT INTO usage_periods (
-        id, quilt_id, started_at, ended_at, usage_type, notes, created_at
+        id, quilt_id, start_date, end_date, usage_type, notes, created_at
       ) VALUES (
         ${usagePeriodId}, 
         ${quiltId}, 

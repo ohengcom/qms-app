@@ -38,14 +38,14 @@ export async function GET(
     const usageHistory = await sql`
       SELECT 
         id,
-        started_at,
-        ended_at,
+        start_date as started_at,
+        end_date as ended_at,
         usage_type,
         notes,
         created_at
       FROM usage_periods 
       WHERE quilt_id = ${quiltId}
-      ORDER BY started_at DESC
+      ORDER BY start_date DESC
     `;
 
     // Get current usage if any

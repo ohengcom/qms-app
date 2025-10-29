@@ -11,8 +11,8 @@ export async function GET(request: NextRequest) {
       SELECT 
         up.id,
         up.quilt_id,
-        up.started_at,
-        up.ended_at,
+        up.start_date as started_at,
+        up.end_date as ended_at,
         up.usage_type,
         up.notes,
         up.created_at,
@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
         q.current_status
       FROM usage_periods up
       JOIN quilts q ON up.quilt_id = q.id
-      ORDER BY up.started_at DESC
+      ORDER BY up.start_date DESC
       LIMIT 100
     `;
 
