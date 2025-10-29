@@ -124,15 +124,15 @@ This task list breaks down the Phase 1 improvements into actionable implementati
     - _Requirements: 13.1, 13.2_
     - _Files: Multiple component files_
 
-- [ ] 6. Implement language persistence
-  - [ ] 6.1 Create language storage utility
+- [x] 6. Implement language persistence
+  - [x] 6.1 Create language storage utility
     - Create `src/lib/language-storage.ts`
     - Implement localStorage get/set functions
     - Add default language fallback
     - _Requirements: 13.3_
     - _Files: src/lib/language-storage.ts_
 
-  - [ ] 6.2 Update LanguageProvider with persistence
+  - [x] 6.2 Update LanguageProvider with persistence
     - Update `src/lib/language-provider.tsx`
     - Load language from localStorage on mount
     - Save language to localStorage on change
@@ -140,8 +140,8 @@ This task list breaks down the Phase 1 improvements into actionable implementati
     - _Requirements: 13.3, 13.6_
     - _Files: src/lib/language-provider.tsx_
 
-- [ ] 7. Implement date and number formatting
-  - [ ] 7.1 Create formatting utilities
+- [x] 7. Implement date and number formatting
+  - [x] 7.1 Create formatting utilities
     - Create `src/lib/formatters.ts`
     - Implement date formatting (Chinese/English)
     - Implement number formatting
@@ -149,7 +149,7 @@ This task list breaks down the Phase 1 improvements into actionable implementati
     - _Requirements: 13.7_
     - _Files: src/lib/formatters.ts_
 
-  - [ ] 7.2 Update components to use formatters
+  - [x] 7.2 Update components to use formatters
     - Update dashboard date displays
     - Update usage tracking dates
     - Update quilt weight displays
@@ -250,8 +250,8 @@ This task list breaks down the Phase 1 improvements into actionable implementati
 
 ### ✅ Enhanced Validation System
 
-- [ ] 11. Create bilingual error messages
-  - [ ] 11.1 Create validation message file
+- [x] 11. Create bilingual error messages
+  - [x] 11.1 Create validation message file
     - Create `src/lib/validations/error-messages.ts`
     - Add Chinese error messages
     - Add English error messages
@@ -259,7 +259,7 @@ This task list breaks down the Phase 1 improvements into actionable implementati
     - _Requirements: 4.1, 13.4_
     - _Files: src/lib/validations/error-messages.ts_
 
-  - [ ] 11.2 Update i18n with validation keys
+  - [x] 11.2 Update i18n with validation keys
     - Update `src/lib/i18n.ts`
     - Add validation message keys
     - Add field-specific errors
@@ -267,8 +267,8 @@ This task list breaks down the Phase 1 improvements into actionable implementati
     - _Requirements: 4.1, 13.4_
     - _Files: src/lib/i18n.ts_
 
-- [ ] 12. Enhance quilt validation
-  - [ ] 12.1 Update quilt validation schema
+- [x] 12. Enhance quilt validation
+  - [x] 12.1 Update quilt validation schema
     - Update `src/lib/validations/quilt.ts`
     - Add stricter validation rules
     - Implement custom refinements
@@ -277,7 +277,7 @@ This task list breaks down the Phase 1 improvements into actionable implementati
     - _Requirements: 4.1, 4.3_
     - _Files: src/lib/validations/quilt.ts_
 
-  - [ ] 12.2 Add duplicate item number check
+  - [x] 12.2 Add duplicate item number check
     - Create API endpoint for validation
     - Implement real-time duplicate check
     - Add to quilt form validation
@@ -285,7 +285,7 @@ This task list breaks down the Phase 1 improvements into actionable implementati
     - _Requirements: 4.2_
     - _Files: src/app/api/quilts/validate/route.ts_
 
-  - [ ] 12.3 Add date range validation
+  - [x] 12.3 Add date range validation
     - Create date validation utilities
     - Validate usage period dates
     - Ensure end date > start date
