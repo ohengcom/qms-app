@@ -41,23 +41,21 @@ export async function POST() {
       const id = crypto.randomUUID();
 
       await sql`
-        INSERT INTO usage_records (
+        INSERT INTO usage_periods (
           id,
           quilt_id,
           start_date,
           end_date,
           usage_type,
           notes,
-          created_at,
-          updated_at
+          created_at
         ) VALUES (
           ${id},
           ${randomQuilt.id},
           ${startDate.toISOString()},
           ${endDate.toISOString()},
-          'PERSONAL',
+          'REGULAR',
           ${`Historical usage record for ${year}`},
-          ${new Date().toISOString()},
           ${new Date().toISOString()}
         )
       `;
@@ -96,20 +94,20 @@ export async function GET() {
 
     const result = await sql`
       SELECT 
-        u.id,
-        u.quilt_id as "quiltId",
-        u.start_date as "startDate",
-        u.end_date as "endDate",
+        up.id,
+        up.quilt_id as "quiltId",
+        up.start_date as "startDate",
+        up.end_date as "endDate",
         q.name as "quiltName",
         q.item_number as "itemNumber",
         q.season,
-        EXTRACT(YEAR FROM u.start_date) as year
-      FROM usage_records u
-      JOIN quilts q ON u.quilt_id = q.id
+        EXTRACT(YEAR FROM up.start_date) as year
+      FROM usage_periods up
+      JOIN quilts q ON up.quilt_id = q.id
       WHERE 
-        TO_CHAR(u.start_date, 'MM-DD') = ${monthDay}
-        AND EXTRACT(YEAR FROM u.start_date) < EXTRACT(YEAR FROM CURRENT_DATE)
-      ORDER BY u.start_date DESC
+        TO_CHAR(up.start_date, 'MM-DD') = ${monthDay}
+        AND EXTRACT(YEAR FROM up.start_date) < EXTRACT(YEAR FROM CURRENT_DATE)
+      ORDER BY up.start_date DESC
     `;
 
     return NextResponse.json({

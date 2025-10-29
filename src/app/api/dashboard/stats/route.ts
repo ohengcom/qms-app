@@ -52,24 +52,25 @@ export async function GET() {
 
     let historicalUsage: any[] = [];
     try {
-      // Query usage records from previous years on this same date
+      // Query usage periods from previous years on this same date
+      // Check if the usage period includes today's month-day in previous years
       const result = await sql`
         SELECT 
-          u.id,
-          u.quilt_id as "quiltId",
-          u.start_date as "startDate",
-          u.end_date as "endDate",
+          up.id,
+          up.quilt_id as "quiltId",
+          up.start_date as "startDate",
+          up.end_date as "endDate",
           q.name as "quiltName",
           q.item_number as "itemNumber",
           q.season,
-          EXTRACT(YEAR FROM u.start_date) as year
-        FROM usage_records u
-        JOIN quilts q ON u.quilt_id = q.id
+          EXTRACT(YEAR FROM up.start_date) as year
+        FROM usage_periods up
+        JOIN quilts q ON up.quilt_id = q.id
         WHERE 
-          TO_CHAR(u.start_date, 'MM-DD') = ${monthDay}
-          AND EXTRACT(YEAR FROM u.start_date) < EXTRACT(YEAR FROM CURRENT_DATE)
-          AND (u.end_date IS NULL OR u.end_date >= u.start_date)
-        ORDER BY u.start_date DESC
+          TO_CHAR(up.start_date, 'MM-DD') = ${monthDay}
+          AND EXTRACT(YEAR FROM up.start_date) < EXTRACT(YEAR FROM CURRENT_DATE)
+          AND (up.end_date IS NULL OR up.end_date >= up.start_date)
+        ORDER BY up.start_date DESC
         LIMIT 20
       `;
 
@@ -83,6 +84,8 @@ export async function GET() {
         endDate: row.endDate,
         year: parseInt(row.year),
       }));
+
+      console.log(`Found ${historicalUsage.length} historical usage records for ${monthDay}`);
     } catch (error) {
       console.error('Error fetching historical usage:', error);
       // Continue without historical data if query fails
