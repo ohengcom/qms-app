@@ -70,7 +70,7 @@ export default function ReportsPage() {
       </div>
 
       {/* Modern Export Options */}
-      <Card className="mb-8 shadow-soft border-gray-100 hover-lift">
+      <Card className="mb-8 shadow-md border-gray-100 hover-lift">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2 text-xl">
             <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
@@ -117,7 +117,7 @@ export default function ReportsPage() {
 
       {/* Modern Report Types */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <Card className="shadow-soft border-gray-100 hover-lift">
+        <Card className="shadow-md border-gray-100 hover-lift">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2 text-xl">
               <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
@@ -207,7 +207,7 @@ export default function ReportsPage() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-soft border-gray-100 hover-lift">
+        <Card className="shadow-md border-gray-100 hover-lift">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2 text-xl">
               <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
@@ -299,7 +299,7 @@ export default function ReportsPage() {
       </div>
 
       {/* Modern Quick Actions */}
-      <Card className="shadow-soft border-gray-100">
+      <Card className="shadow-md border-gray-100">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2 text-xl">
             <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-600 rounded-lg flex items-center justify-center">

@@ -53,7 +53,7 @@ export default function DashboardPage() {
 
       {/* Modern Stats Cards with hover effects */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="group bg-white p-6 rounded-xl shadow-soft hover-lift border border-gray-100 relative overflow-hidden">
+        <div className="group bg-white p-6 rounded-xl shadow-md hover-lift border border-gray-100 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110" />
           <div className="relative">
             <div className="flex items-center justify-between mb-3">
@@ -71,7 +71,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="group bg-white p-6 rounded-xl shadow-soft hover-lift border border-gray-100 relative overflow-hidden">
+        <div className="group bg-white p-6 rounded-xl shadow-md hover-lift border border-gray-100 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110" />
           <div className="relative">
             <div className="flex items-center justify-between mb-3">
@@ -87,7 +87,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="group bg-white p-6 rounded-xl shadow-soft hover-lift border border-gray-100 relative overflow-hidden">
+        <div className="group bg-white p-6 rounded-xl shadow-md hover-lift border border-gray-100 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110" />
           <div className="relative">
             <div className="flex items-center justify-between mb-3">
@@ -105,7 +105,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="group bg-white p-6 rounded-xl shadow-soft hover-lift border border-gray-100 relative overflow-hidden">
+        <div className="group bg-white p-6 rounded-xl shadow-md hover-lift border border-gray-100 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-500/10 to-amber-500/10 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110" />
           <div className="relative">
             <div className="flex items-center justify-between mb-3">
@@ -123,7 +123,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Modern Quick Actions */}
-      <div className="mt-8 bg-white p-8 rounded-xl shadow-soft border border-gray-100">
+      <div className="mt-8 bg-white p-8 rounded-xl shadow-md border border-gray-100">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('dashboard.actions.title')}</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Link
@@ -174,7 +174,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Modern Success Banner */}
-      <div className="mt-8 p-5 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl shadow-soft">
+      <div className="mt-8 p-5 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl shadow-md">
         <div className="flex items-center">
           <div className="flex-shrink-0 w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
             <span className="text-white text-xl">✓</span>
