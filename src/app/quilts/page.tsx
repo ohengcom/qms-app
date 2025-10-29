@@ -9,6 +9,7 @@ import { Search, Plus, Edit, Trash2, RotateCcw, Filter } from 'lucide-react';
 import { Loading } from '@/components/ui/loading';
 import { QuiltDialog } from '@/components/quilts/QuiltDialog';
 import { StatusChangeDialog } from '@/components/quilts/StatusChangeDialog';
+import { toast, getToastMessage } from '@/lib/toast';
 
 export default function QuiltsPage() {
   const [quilts, setQuilts] = useState<any[]>([]);
@@ -21,6 +22,10 @@ export default function QuiltsPage() {
   const [quiltDialogOpen, setQuiltDialogOpen] = useState(false);
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
   const [selectedQuilt, setSelectedQuilt] = useState<any>(null);
+
+  // Batch operation states - TODO: Implement batch operations UI
+  // const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  // const [isSelectMode, setIsSelectMode] = useState(false);
 
   const { t } = useLanguage();
   const searchParams = useSearchParams();
@@ -95,12 +100,15 @@ export default function QuiltsPage() {
 
   const handleDeleteQuilt = async (quilt: any) => {
     if (
-      !confirm(
+      !window.confirm(
         `确定要删除被子 "${quilt.name}" 吗？\nAre you sure you want to delete quilt "${quilt.name}"?`
       )
     ) {
       return;
     }
+
+    const lang = t('language') === 'zh' ? 'zh' : 'en';
+    const toastId = toast.loading(getToastMessage('deleting', lang));
 
     try {
       const response = await fetch(`/api/quilts/${quilt.id}`, {
@@ -111,17 +119,93 @@ export default function QuiltsPage() {
         const updatedQuilts = quilts.filter(q => q.id !== quilt.id);
         setQuilts(updatedQuilts);
         handleSearch(searchTerm);
+        toast.dismiss(toastId);
+        toast.success(getToastMessage('deleteSuccess', lang));
       } else {
         throw new Error('Failed to delete quilt');
       }
     } catch (error) {
       console.error('Error deleting quilt:', error);
+      toast.dismiss(toastId);
+      toast.error(getToastMessage('deleteError', lang));
     }
   };
 
+  // Batch operations - TODO: Implement UI for these functions
+  // const toggleSelectMode = () => {
+  //   setIsSelectMode(!isSelectMode);
+  //   setSelectedIds(new Set());
+  // };
+
+  // const toggleSelectQuilt = (id: string) => {
+  //   const newSelected = new Set(selectedIds);
+  //   if (newSelected.has(id)) {
+  //     newSelected.delete(id);
+  //   } else {
+  //     newSelected.add(id);
+  //   }
+  //   setSelectedIds(newSelected);
+  // };
+
+  // const selectAll = () => {
+  //   if (selectedIds.size === filteredQuilts.length) {
+  //     setSelectedIds(new Set());
+  //   } else {
+  //     setSelectedIds(new Set(filteredQuilts.map(q => q.id)));
+  //   }
+  // };
+
+  // const handleBatchDelete = async () => {
+  //   if (selectedIds.size === 0) {
+  //     const lang = t('language') === 'zh' ? 'zh' : 'en';
+  //     toast.warning(getToastMessage('selectItems', lang));
+  //     return;
+  //   }
+
+  //   if (
+  //     !window.confirm(
+  //       `确定要删除选中的 ${selectedIds.size} 个被子吗？\nAre you sure you want to delete ${selectedIds.size} selected quilts?`
+  //     )
+  //   ) {
+  //     return;
+  //   }
+
+  //   const lang = t('language') === 'zh' ? 'zh' : 'en';
+  //   const toastId = toast.loading(
+  //     lang === 'zh' ? `正在删除 ${selectedIds.size} 个被子...` : `Deleting ${selectedIds.size} quilts...`
+  //   );
+
+  //   try {
+  //     const deletePromises = Array.from(selectedIds).map(id =>
+  //       fetch(`/api/quilts/${id}`, { method: 'DELETE' })
+  //     );
+
+  //     const results = await Promise.all(deletePromises);
+  //     const successCount = results.filter(r => r.ok).length;
+
+  //     const updatedQuilts = quilts.filter(q => !selectedIds.has(q.id));
+  //     setQuilts(updatedQuilts);
+  //     handleSearch(searchTerm);
+  //     setSelectedIds(new Set());
+  //     setIsSelectMode(false);
+
+  //     toast.dismiss(toastId);
+  //     toast.success(
+  //       lang === 'zh' ? `成功删除 ${successCount} 个被子` : `Successfully deleted ${successCount} quilts`
+  //     );
+  //   } catch (error) {
+  //     console.error('Error batch deleting quilts:', error);
+  //     toast.dismiss(toastId);
+  //     toast.error(getToastMessage('deleteError', lang));
+  //   }
+  // };
+
   const handleSaveQuilt = async (data: any) => {
+    const lang = t('language') === 'zh' ? 'zh' : 'en';
+    const isUpdate = !!selectedQuilt;
+
     try {
-      if (selectedQuilt) {
+      if (isUpdate) {
         const response = await fetch(`/api/quilts/${selectedQuilt.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -133,6 +217,7 @@ export default function QuiltsPage() {
           const updatedQuilts = quilts.map(q => (q.id === selectedQuilt.id ? updatedQuilt : q));
           setQuilts(updatedQuilts);
           handleSearch(searchTerm);
+          toast.success(getToastMessage('updateSuccess', lang));
         } else {
           throw new Error('Failed to update quilt');
         }
@@ -148,17 +233,21 @@ export default function QuiltsPage() {
           const updatedQuilts = [newQuilt, ...quilts];
           setQuilts(updatedQuilts);
           handleSearch(searchTerm);
+          toast.success(getToastMessage('createSuccess', lang));
         } else {
           throw new Error('Failed to create quilt');
         }
       }
     } catch (error) {
       console.error('Error saving quilt:', error);
+      toast.error(getToastMessage(isUpdate ? 'updateError' : 'createError', lang));
       throw error;
     }
   };
 
   const handleStatusChange = async (quiltId: string, newStatus: string) => {
+    const lang = t('language') === 'zh' ? 'zh' : 'en';
+
     try {
       const response = await fetch(`/api/quilts/${quiltId}/status`, {
         method: 'PATCH',
@@ -171,11 +260,13 @@ export default function QuiltsPage() {
         const updatedQuilts = quilts.map(q => (q.id === quiltId ? updatedQuilt : q));
         setQuilts(updatedQuilts);
         handleSearch(searchTerm);
+        toast.success(getToastMessage('updateSuccess', lang));
       } else {
         throw new Error('Failed to update status');
       }
     } catch (error) {
       console.error('Error updating status:', error);
+      toast.error(getToastMessage('updateError', lang));
       throw error;
     }
   };

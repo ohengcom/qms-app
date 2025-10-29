@@ -6,6 +6,7 @@ import { LanguageProvider } from '@/lib/language-provider';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
+import { Toaster as SonnerToaster } from 'sonner';
 import { RoutePreloader } from '@/components/performance/RoutePreloader';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -63,6 +64,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <RoutePreloader />
               <AppLayout>{children}</AppLayout>
               <Toaster />
+              <SonnerToaster position="top-right" richColors closeButton />
             </TRPCProvider>
           </LanguageProvider>
         </ErrorBoundary>
