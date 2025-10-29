@@ -1,11 +1,19 @@
 import { toast as sonnerToast } from 'sonner';
+import { useNotificationStore } from './notification-store';
 
-// Toast utility with bilingual support
+// Toast utility with bilingual support and notification history
 export const toast = {
   success: (message: string, description?: string) => {
     sonnerToast.success(message, {
       description,
       duration: 3000,
+    });
+
+    // Add to notification history
+    useNotificationStore.getState().addNotification({
+      type: 'success',
+      message,
+      description,
     });
   },
 
@@ -14,6 +22,13 @@ export const toast = {
       description,
       duration: 4000,
     });
+
+    // Add to notification history
+    useNotificationStore.getState().addNotification({
+      type: 'error',
+      message,
+      description,
+    });
   },
 
   info: (message: string, description?: string) => {
@@ -21,12 +36,26 @@ export const toast = {
       description,
       duration: 3000,
     });
+
+    // Add to notification history
+    useNotificationStore.getState().addNotification({
+      type: 'info',
+      message,
+      description,
+    });
   },
 
   warning: (message: string, description?: string) => {
     sonnerToast.warning(message, {
       description,
       duration: 3500,
+    });
+
+    // Add to notification history
+    useNotificationStore.getState().addNotification({
+      type: 'warning',
+      message,
+      description,
     });
   },
 

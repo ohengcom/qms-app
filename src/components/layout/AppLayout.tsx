@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { useLanguage } from '@/lib/language-provider';
+import { useNotificationStore } from '@/lib/notification-store';
+import { NotificationPanel } from '@/components/NotificationPanel';
 import {
   Home,
   Package,
@@ -67,8 +69,10 @@ interface AppLayoutProps {
 
 export function AppLayout({ children }: AppLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [notificationPanelOpen, setNotificationPanelOpen] = useState(false);
   const pathname = usePathname();
   const { t } = useLanguage();
+  const unreadCount = useNotificationStore(state => state.getUnreadCount());
 
   const navigation = getNavigation(t);
 
@@ -216,26 +220,17 @@ export function AppLayout({ children }: AppLayoutProps) {
                   variant="ghost"
                   size="sm"
                   className="relative"
-                  onClick={() => {
-                    // TODO: Implement notifications panel
-                    const message =
-                      t('common.comingSoon') +
-                      ' - ' +
-                      (t('language') === 'zh' ? '通知功能' : 'Notifications');
-                    alert(message);
-                  }}
-                  title={
-                    t('language') === 'zh'
-                      ? '查看通知 (即将推出)'
-                      : 'View notifications (Coming Soon)'
-                  }
+                  onClick={() => setNotificationPanelOpen(true)}
+                  title={t('language') === 'zh' ? '查看通知历史' : 'View notification history'}
                 >
                   <Bell className="h-5 w-5" />
                   <span className="sr-only">View notifications</span>
-                  {/* Notification badge */}
-                  <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-xs text-white flex items-center justify-center">
-                    2
-                  </span>
+                  {/* Notification badge - only show if there are unread notifications */}
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-xs text-white flex items-center justify-center">
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
+                  )}
                 </Button>
 
                 {/* Separator */}
@@ -271,6 +266,11 @@ export function AppLayout({ children }: AppLayoutProps) {
           </main>
         </div>
       </div>
+
+      {/* Notification Panel */}
+      {notificationPanelOpen && (
+        <NotificationPanel onClose={() => setNotificationPanelOpen(false)} />
+      )}
     </div>
   );
 }
