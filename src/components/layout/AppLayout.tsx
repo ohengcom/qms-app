@@ -19,7 +19,6 @@ import {
   User,
   Calendar,
   FileText,
-  Wrench,
 } from 'lucide-react';
 
 const getNavigation = (t: (key: string) => string) => [
@@ -47,12 +46,7 @@ const getNavigation = (t: (key: string) => string) => [
     icon: BarChart3,
     description: 'Usage insights and trends',
   },
-  {
-    name: t('navigation.maintenance'),
-    href: '/maintenance',
-    icon: Wrench,
-    description: 'Care and maintenance records',
-  },
+
   {
     name: t('navigation.reports'),
     href: '/reports',
@@ -75,7 +69,7 @@ export function AppLayout({ children }: AppLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
   const { t } = useLanguage();
-  
+
   const navigation = getNavigation(t);
 
   return (
@@ -200,7 +194,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                     type="search"
                     placeholder={t('quilts.actions.search')}
                     className="block w-full rounded-md border-0 bg-gray-50 py-1.5 pl-10 pr-3 text-gray-900 placeholder:text-gray-400 focus:bg-white focus:ring-2 focus:ring-blue-500 sm:text-sm"
-                    onKeyDown={(e) => {
+                    onKeyDown={e => {
                       if (e.key === 'Enter') {
                         const searchTerm = (e.target as HTMLInputElement).value;
                         if (searchTerm.trim()) {
@@ -218,16 +212,23 @@ export function AppLayout({ children }: AppLayoutProps) {
                 <LanguageSwitcher />
 
                 {/* Notifications */}
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
+                <Button
+                  variant="ghost"
+                  size="sm"
                   className="relative"
                   onClick={() => {
                     // TODO: Implement notifications panel
-                    const message = t('common.comingSoon') + ' - ' + (t('language') === 'zh' ? '通知功能' : 'Notifications');
+                    const message =
+                      t('common.comingSoon') +
+                      ' - ' +
+                      (t('language') === 'zh' ? '通知功能' : 'Notifications');
                     alert(message);
                   }}
-                  title={t('language') === 'zh' ? '查看通知 (即将推出)' : 'View notifications (Coming Soon)'}
+                  title={
+                    t('language') === 'zh'
+                      ? '查看通知 (即将推出)'
+                      : 'View notifications (Coming Soon)'
+                  }
                 >
                   <Bell className="h-5 w-5" />
                   <span className="sr-only">View notifications</span>
@@ -241,16 +242,21 @@ export function AppLayout({ children }: AppLayoutProps) {
                 <div className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200" />
 
                 {/* Profile */}
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
+                <Button
+                  variant="ghost"
+                  size="sm"
                   className="flex items-center gap-x-2"
                   onClick={() => {
                     // TODO: Implement user profile menu
-                    const message = t('common.comingSoon') + ' - ' + (t('language') === 'zh' ? '用户设置' : 'User Profile');
+                    const message =
+                      t('common.comingSoon') +
+                      ' - ' +
+                      (t('language') === 'zh' ? '用户设置' : 'User Profile');
                     alert(message);
                   }}
-                  title={t('language') === 'zh' ? '用户设置 (即将推出)' : 'User Profile (Coming Soon)'}
+                  title={
+                    t('language') === 'zh' ? '用户设置 (即将推出)' : 'User Profile (Coming Soon)'
+                  }
                 >
                   <User className="h-5 w-5" />
                   <span className="hidden lg:block text-sm font-medium">Admin</span>
