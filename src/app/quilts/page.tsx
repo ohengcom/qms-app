@@ -3,10 +3,9 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/lib/language-provider';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Plus, Package, Edit, Trash2, RotateCcw, Grid3X3, List } from 'lucide-react';
+import { Search, Plus, Edit, Trash2, RotateCcw, Filter } from 'lucide-react';
 import { Loading } from '@/components/ui/loading';
 import { QuiltDialog } from '@/components/quilts/QuiltDialog';
 import { StatusChangeDialog } from '@/components/quilts/StatusChangeDialog';
@@ -22,9 +21,6 @@ export default function QuiltsPage() {
   const [quiltDialogOpen, setQuiltDialogOpen] = useState(false);
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
   const [selectedQuilt, setSelectedQuilt] = useState<any>(null);
-
-  // View mode state - list is default
-  const [viewMode, setViewMode] = useState<'card' | 'list'>('list');
 
   const { t } = useLanguage();
   const searchParams = useSearchParams();
@@ -112,24 +108,20 @@ export default function QuiltsPage() {
       });
 
       if (response.ok) {
-        // Remove from local state
         const updatedQuilts = quilts.filter(q => q.id !== quilt.id);
         setQuilts(updatedQuilts);
-        handleSearch(searchTerm); // Re-apply search filter
-        // TODO: Show success toast
+        handleSearch(searchTerm);
       } else {
         throw new Error('Failed to delete quilt');
       }
     } catch (error) {
       console.error('Error deleting quilt:', error);
-      // TODO: Show error toast
     }
   };
 
   const handleSaveQuilt = async (data: any) => {
     try {
       if (selectedQuilt) {
-        // Update existing quilt
         const response = await fetch(`/api/quilts/${selectedQuilt.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -140,13 +132,11 @@ export default function QuiltsPage() {
           const updatedQuilt = await response.json();
           const updatedQuilts = quilts.map(q => (q.id === selectedQuilt.id ? updatedQuilt : q));
           setQuilts(updatedQuilts);
-          handleSearch(searchTerm); // Re-apply search filter
-          // TODO: Show success toast
+          handleSearch(searchTerm);
         } else {
           throw new Error('Failed to update quilt');
         }
       } else {
-        // Create new quilt
         const response = await fetch('/api/quilts', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -157,15 +147,14 @@ export default function QuiltsPage() {
           const newQuilt = await response.json();
           const updatedQuilts = [newQuilt, ...quilts];
           setQuilts(updatedQuilts);
-          handleSearch(searchTerm); // Re-apply search filter
-          // TODO: Show success toast
+          handleSearch(searchTerm);
         } else {
           throw new Error('Failed to create quilt');
         }
       }
     } catch (error) {
       console.error('Error saving quilt:', error);
-      throw error; // Re-throw to be handled by the dialog
+      throw error;
     }
   };
 
@@ -181,30 +170,27 @@ export default function QuiltsPage() {
         const updatedQuilt = await response.json();
         const updatedQuilts = quilts.map(q => (q.id === quiltId ? updatedQuilt : q));
         setQuilts(updatedQuilts);
-        handleSearch(searchTerm); // Re-apply search filter
-        // TODO: Show success toast
+        handleSearch(searchTerm);
       } else {
         throw new Error('Failed to update status');
       }
     } catch (error) {
       console.error('Error updating status:', error);
-      throw error; // Re-throw to be handled by the dialog
+      throw error;
     }
   };
 
   if (loading) {
     return (
-      <div className="p-8">
-        <div className="flex items-center justify-center">
-          <Loading text={t('common.loading')} />
-        </div>
+      <div className="flex items-center justify-center h-96">
+        <Loading text={t('common.loading')} />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-8">
+      <div className="p-6">
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
           <h2 className="text-lg font-semibold text-red-800">{t('common.error')}</h2>
           <p className="text-red-600">{error}</p>
@@ -214,262 +200,161 @@ export default function QuiltsPage() {
   }
 
   return (
-    <div className="p-8">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">{t('quilts.title')}</h1>
-            <p className="text-gray-600">{t('quilts.subtitle')}</p>
-          </div>
-          <Button onClick={handleAddQuilt}>
-            <Plus className="w-4 h-4 mr-2" />
-            {t('quilts.actions.add')}
-          </Button>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold text-gray-900">{t('quilts.title')}</h1>
+          <p className="text-sm text-gray-500 mt-1">
+            {filteredQuilts.length} {t('quilts.messages.of')} {quilts.length}{' '}
+            {t('quilts.messages.quilts')}
+          </p>
         </div>
-
-        {/* Search Bar and View Toggle */}
-        <div className="flex items-center justify-between">
-          <div className="relative max-w-md">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-4 w-4 text-gray-400" />
-            </div>
-            <Input
-              type="search"
-              placeholder={t('quilts.actions.search')}
-              value={searchTerm}
-              onChange={onSearchChange}
-              className="pl-10"
-            />
-          </div>
-
-          {/* View Mode Toggle */}
-          <div className="flex items-center space-x-1 bg-gray-100 rounded-lg p-1">
-            <Button
-              variant={viewMode === 'card' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setViewMode('card')}
-              className="h-8 px-3"
-            >
-              <Grid3X3 className="w-4 h-4 mr-1" />
-              {t('quilts.views.card')}
-            </Button>
-            <Button
-              variant={viewMode === 'list' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setViewMode('list')}
-              className="h-8 px-3"
-            >
-              <List className="w-4 h-4 mr-1" />
-              {t('quilts.views.list')}
-            </Button>
-          </div>
-        </div>
-
-        {/* Search Results Info */}
-        {searchTerm && (
-          <div className="mt-4 text-sm text-gray-600">
-            {t('quilts.messages.showing')} {filteredQuilts.length} {t('quilts.messages.of')}{' '}
-            {quilts.length} {t('quilts.messages.quilts')}
-            {searchTerm && (
-              <span className="ml-2">
-                - {t('common.search')}: &ldquo;{searchTerm}&rdquo;
-              </span>
-            )}
-          </div>
-        )}
+        <Button onClick={handleAddQuilt} size="sm">
+          <Plus className="w-4 h-4 mr-2" />
+          {t('quilts.actions.add')}
+        </Button>
       </div>
 
-      {/* Quilts Display */}
-      {filteredQuilts.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <Package className="w-12 h-12 text-gray-400 mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              {searchTerm ? t('quilts.messages.noQuiltsFound') : t('quilts.actions.addFirst')}
-            </h3>
-            <p className="text-gray-600 text-center mb-4">
-              {searchTerm
-                ? `没有找到包含 "${searchTerm}" 的被子`
-                : '开始添加您的第一床被子来管理您的收藏'}
-            </p>
-            {!searchTerm && (
-              <Button onClick={handleAddQuilt}>
-                <Plus className="w-4 h-4 mr-2" />
-                {t('quilts.actions.add')}
-              </Button>
-            )}
-          </CardContent>
-        </Card>
-      ) : viewMode === 'card' ? (
-        /* Card View */
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredQuilts.map(quilt => (
-            <Card key={quilt.id} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span>{quilt.name}</span>
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      quilt.currentStatus === 'AVAILABLE'
-                        ? 'bg-green-100 text-green-800'
-                        : quilt.currentStatus === 'IN_USE'
-                          ? 'bg-blue-100 text-blue-800'
-                          : quilt.currentStatus === 'STORAGE'
-                            ? 'bg-gray-100 text-gray-800'
-                            : 'bg-yellow-100 text-yellow-800'
-                    }`}
-                  >
-                    {t(`status.${quilt.currentStatus}`)}
-                  </span>
-                </CardTitle>
-                <CardDescription>
-                  {t('quilts.table.itemNumber')}
-                  {quilt.itemNumber}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">{t('quilts.table.season')}:</span>
-                    <span>{t(`season.${quilt.season}`)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">{t('quilts.table.size')}:</span>
-                    <span>
-                      {quilt.lengthCm} x {quilt.widthCm} cm
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">{t('quilts.table.weight')}:</span>
-                    <span>{quilt.weightGrams}g</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">{t('quilts.table.material')}:</span>
-                    <span>{quilt.fillMaterial}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">{t('quilts.table.location')}:</span>
-                    <span>{quilt.location}</span>
-                  </div>
-                </div>
-                <div className="mt-4 flex space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex-1"
-                    onClick={() => handleChangeStatus(quilt)}
-                  >
-                    <RotateCcw className="w-3 h-3 mr-1" />
-                    {t('quilts.table.status')}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex-1"
-                    onClick={() => handleEditQuilt(quilt)}
-                  >
-                    <Edit className="w-3 h-3 mr-1" />
-                    {t('common.edit')}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                    onClick={() => handleDeleteQuilt(quilt)}
-                  >
-                    <Trash2 className="w-3 h-3" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+      {/* Search and Filters */}
+      <div className="flex items-center gap-3">
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Input
+            type="search"
+            placeholder={t('quilts.actions.search')}
+            value={searchTerm}
+            onChange={onSearchChange}
+            className="pl-9 h-9"
+          />
         </div>
-      ) : (
-        /* List View */
-        <Card>
-          <CardContent className="p-0">
-            {/* Table Header */}
-            <div className="grid grid-cols-12 gap-4 p-4 bg-gray-50 border-b font-medium text-sm text-gray-700">
-              <div className="col-span-2">{t('quilts.table.itemNumber')}</div>
-              <div className="col-span-2">{t('quilts.views.name')}</div>
-              <div className="col-span-1">{t('quilts.table.season')}</div>
-              <div className="col-span-1">{t('quilts.table.size')}</div>
-              <div className="col-span-1">{t('quilts.table.weight')}</div>
-              <div className="col-span-2">{t('quilts.table.material')}</div>
-              <div className="col-span-1">{t('quilts.table.status')}</div>
-              <div className="col-span-2">{t('quilts.views.actions')}</div>
-            </div>
+        <Button variant="outline" size="sm">
+          <Filter className="w-4 h-4 mr-2" />
+          {t('language') === 'zh' ? '筛选' : 'Filter'}
+        </Button>
+      </div>
 
-            {/* Table Rows */}
-            <div className="divide-y">
-              {filteredQuilts.map(quilt => (
-                <div
-                  key={quilt.id}
-                  className="grid grid-cols-12 gap-4 p-4 hover:bg-gray-50 transition-colors"
-                >
-                  <div className="col-span-2 font-medium">#{quilt.itemNumber}</div>
-                  <div className="col-span-2">
-                    <div className="font-medium">{quilt.name}</div>
-                    <div className="text-sm text-gray-500">{quilt.location}</div>
-                  </div>
-                  <div className="col-span-1 text-sm">{t(`season.${quilt.season}`)}</div>
-                  <div className="col-span-1 text-sm">
-                    {quilt.lengthCm}×{quilt.widthCm}
-                  </div>
-                  <div className="col-span-1 text-sm">{quilt.weightGrams}g</div>
-                  <div className="col-span-2 text-sm">
-                    <div>{quilt.fillMaterial}</div>
-                    <div className="text-gray-500">{quilt.color}</div>
-                  </div>
-                  <div className="col-span-1">
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        quilt.currentStatus === 'AVAILABLE'
-                          ? 'bg-green-100 text-green-800'
-                          : quilt.currentStatus === 'IN_USE'
-                            ? 'bg-blue-100 text-blue-800'
-                            : quilt.currentStatus === 'STORAGE'
-                              ? 'bg-gray-100 text-gray-800'
-                              : 'bg-yellow-100 text-yellow-800'
-                      }`}
-                    >
-                      {t(`status.${quilt.currentStatus}`)}
-                    </span>
-                  </div>
-                  <div className="col-span-2 flex space-x-1">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleChangeStatus(quilt)}
-                      title={t('language') === 'zh' ? '更改状态' : 'Change Status'}
-                    >
-                      <RotateCcw className="w-3 h-3" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleEditQuilt(quilt)}
-                      title={t('common.edit')}
-                    >
-                      <Edit className="w-3 h-3" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                      onClick={() => handleDeleteQuilt(quilt)}
-                      title={t('common.delete')}
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      {/* Professional Data Table */}
+      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="bg-gray-50 border-b border-gray-200">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('quilts.table.itemNumber')}
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('quilts.views.name')}
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('quilts.table.season')}
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('quilts.table.size')}
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('quilts.table.weight')}
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('quilts.table.material')}
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('quilts.table.location')}
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('quilts.table.status')}
+                </th>
+                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('quilts.views.actions')}
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {filteredQuilts.length === 0 ? (
+                <tr>
+                  <td colSpan={9} className="px-4 py-12 text-center text-gray-500">
+                    {searchTerm
+                      ? `${t('language') === 'zh' ? '没有找到匹配的被子' : 'No quilts found matching'} "${searchTerm}"`
+                      : t('language') === 'zh'
+                        ? '暂无被子数据'
+                        : 'No quilts yet'}
+                  </td>
+                </tr>
+              ) : (
+                filteredQuilts.map(quilt => (
+                  <tr key={quilt.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                      #{quilt.itemNumber}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="text-sm font-medium text-gray-900">{quilt.name}</div>
+                      <div className="text-xs text-gray-500">{quilt.brand || '-'}</div>
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-700">
+                      {t(`season.${quilt.season}`)}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-700">
+                      {quilt.lengthCm}×{quilt.widthCm}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-700">{quilt.weightGrams}g</td>
+                    <td className="px-4 py-3">
+                      <div className="text-sm text-gray-900">{quilt.fillMaterial}</div>
+                      <div className="text-xs text-gray-500">{quilt.color}</div>
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-700">{quilt.location}</td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
+                          quilt.currentStatus === 'AVAILABLE'
+                            ? 'bg-green-50 text-green-700 border border-green-200'
+                            : quilt.currentStatus === 'IN_USE'
+                              ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                              : quilt.currentStatus === 'STORAGE'
+                                ? 'bg-gray-50 text-gray-700 border border-gray-200'
+                                : 'bg-yellow-50 text-yellow-700 border border-yellow-200'
+                        }`}
+                      >
+                        {t(`status.${quilt.currentStatus}`)}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleChangeStatus(quilt)}
+                          className="h-8 w-8 p-0"
+                          title={t('language') === 'zh' ? '更改状态' : 'Change Status'}
+                        >
+                          <RotateCcw className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleEditQuilt(quilt)}
+                          className="h-8 w-8 p-0"
+                          title={t('common.edit')}
+                        >
+                          <Edit className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteQuilt(quilt)}
+                          className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                          title={t('common.delete')}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       {/* Dialogs */}
       <QuiltDialog
