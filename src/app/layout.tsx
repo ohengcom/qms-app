@@ -8,31 +8,7 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Toaster } from '@/components/ui/toaster';
 import { Toaster as SonnerToaster } from 'sonner';
 import { RoutePreloader } from '@/components/performance/RoutePreloader';
-import { useEffect } from 'react';
-
-// Client component for global error handling setup
-function GlobalErrorHandler() {
-  useEffect(() => {
-    // Setup global error handlers
-    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
-      console.error('Unhandled promise rejection:', event.reason);
-    };
-
-    const handleError = (event: ErrorEvent) => {
-      console.error('Global error:', event.error);
-    };
-
-    window.addEventListener('unhandledrejection', handleUnhandledRejection);
-    window.addEventListener('error', handleError);
-
-    return () => {
-      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
-      window.removeEventListener('error', handleError);
-    };
-  }, []);
-
-  return null;
-}
+import { GlobalErrorHandler } from '@/components/GlobalErrorHandler';
 
 const inter = Inter({ subsets: ['latin'] });
 
