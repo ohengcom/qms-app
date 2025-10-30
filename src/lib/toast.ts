@@ -1,12 +1,26 @@
-import { toast as sonnerToast } from 'sonner';
+import { toast as sonnerToast, ExternalToast } from 'sonner';
 import { useNotificationStore } from './notification-store';
+
+// Enhanced toast configuration
+const defaultToastConfig: ExternalToast = {
+  duration: 3000,
+  closeButton: true,
+  className: 'toast-custom',
+  style: {
+    borderRadius: '0.75rem',
+    padding: '1rem',
+    fontSize: '0.875rem',
+  },
+};
 
 // Toast utility with bilingual support and notification history
 export const toast = {
-  success: (message: string, description?: string) => {
+  success: (message: string, description?: string, config?: ExternalToast) => {
     sonnerToast.success(message, {
+      ...defaultToastConfig,
       description,
       duration: 3000,
+      ...config,
     });
 
     // Add to notification history
@@ -17,10 +31,12 @@ export const toast = {
     });
   },
 
-  error: (message: string, description?: string) => {
+  error: (message: string, description?: string, config?: ExternalToast) => {
     sonnerToast.error(message, {
+      ...defaultToastConfig,
       description,
-      duration: 4000,
+      duration: 5000, // Longer duration for errors
+      ...config,
     });
 
     // Add to notification history
@@ -31,10 +47,12 @@ export const toast = {
     });
   },
 
-  info: (message: string, description?: string) => {
+  info: (message: string, description?: string, config?: ExternalToast) => {
     sonnerToast.info(message, {
+      ...defaultToastConfig,
       description,
       duration: 3000,
+      ...config,
     });
 
     // Add to notification history
@@ -45,10 +63,12 @@ export const toast = {
     });
   },
 
-  warning: (message: string, description?: string) => {
+  warning: (message: string, description?: string, config?: ExternalToast) => {
     sonnerToast.warning(message, {
+      ...defaultToastConfig,
       description,
-      duration: 3500,
+      duration: 4000,
+      ...config,
     });
 
     // Add to notification history
@@ -59,8 +79,11 @@ export const toast = {
     });
   },
 
-  loading: (message: string) => {
-    return sonnerToast.loading(message);
+  loading: (message: string, config?: ExternalToast) => {
+    return sonnerToast.loading(message, {
+      ...defaultToastConfig,
+      ...config,
+    });
   },
 
   promise: <T>(
@@ -69,13 +92,26 @@ export const toast = {
       loading: string;
       success: string;
       error: string;
-    }
+    },
+    config?: ExternalToast
   ) => {
-    return sonnerToast.promise(promise, messages);
+    return sonnerToast.promise(promise, {
+      ...messages,
+      ...defaultToastConfig,
+      ...config,
+    });
   },
 
   dismiss: (toastId?: string | number) => {
     sonnerToast.dismiss(toastId);
+  },
+
+  // Custom toast with full control
+  custom: (message: string, config?: ExternalToast) => {
+    return sonnerToast(message, {
+      ...defaultToastConfig,
+      ...config,
+    });
   },
 };
 
