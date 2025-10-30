@@ -314,6 +314,9 @@ export default function QuiltsPage() {
                   {t('quilts.views.name')}
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('quilts.table.brand')}
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {t('quilts.table.season')}
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -369,10 +372,7 @@ export default function QuiltsPage() {
                     <td className="px-4 py-3 text-sm font-medium text-gray-900">
                       #{quilt.itemNumber}
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="text-sm font-medium text-gray-900">{quilt.name}</div>
-                      <div className="text-xs text-gray-500">{quilt.brand || '-'}</div>
-                    </td>
+                    <td className="px-4 py-3 text-sm font-medium text-gray-900">{quilt.name}</td>
                     <td className="px-4 py-3 text-sm text-gray-700">
                       {t(`season.${quilt.season}`)}
                     </td>
