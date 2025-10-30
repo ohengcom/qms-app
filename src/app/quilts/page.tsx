@@ -98,42 +98,25 @@ export default function QuiltsPage() {
         if (aValue == null) return 1;
         if (bValue == null) return -1;
 
-        // Special handling for size field (format: "200x230")
+        // Special handling for size field - sort by lengthCm first, then widthCm
         if (sortField === 'size') {
-          const parseSize = (size: string) => {
-            if (!size) return { length: 0, width: 0 };
-            const parts = size.split('x').map((s) => parseInt(s.trim()) || 0);
-            return { length: parts[0] || 0, width: parts[1] || 0 };
-          };
-
-          const aSize = parseSize(aValue);
-          const bSize = parseSize(bValue);
+          const aLength = a.lengthCm || 0;
+          const bLength = b.lengthCm || 0;
+          const aWidth = a.widthCm || 0;
+          const bWidth = b.widthCm || 0;
 
           // First compare by length
-          if (aSize.length !== bSize.length) {
-            return sortDirection === 'asc'
-              ? aSize.length - bSize.length
-              : bSize.length - aSize.length;
+          if (aLength !== bLength) {
+            return sortDirection === 'asc' ? aLength - bLength : bLength - aLength;
           }
           // If length is the same, compare by width
-          return sortDirection === 'asc'
-            ? aSize.width - bSize.width
-            : bSize.width - aSize.width;
+          return sortDirection === 'asc' ? aWidth - bWidth : bWidth - aWidth;
         }
 
-        // Special handling for weight field (format: "2.5kg" or "2.5")
+        // Special handling for weight field - sort by weightGrams
         if (sortField === 'weight') {
-          const parseWeight = (weight: any) => {
-            if (weight == null) return 0;
-            // If it's already a number, return it
-            if (typeof weight === 'number') return weight;
-            // If it's a string, extract the numeric value
-            const numStr = String(weight).replace(/[^\d.]/g, '');
-            return parseFloat(numStr) || 0;
-          };
-
-          const aWeight = parseWeight(aValue);
-          const bWeight = parseWeight(bValue);
+          const aWeight = a.weightGrams || 0;
+          const bWeight = b.weightGrams || 0;
 
           return sortDirection === 'asc' ? aWeight - bWeight : bWeight - aWeight;
         }
