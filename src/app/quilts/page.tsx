@@ -289,12 +289,12 @@ export default function QuiltsPage() {
         </Button>
       </div>
 
-      {/* Professional Data Table */}
-      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+      {/* Enhanced Professional Data Table */}
+      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-gray-50 border-b border-gray-200">
+              <tr className="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-300">
                 {isSelectMode && (
                   <th className="px-4 py-3 w-12">
                     <input
@@ -354,8 +354,16 @@ export default function QuiltsPage() {
                   </td>
                 </tr>
               ) : (
-                filteredQuilts.map((quilt: any) => (
-                  <tr key={quilt.id} className="hover:bg-gray-50 transition-colors">
+                filteredQuilts.map((quilt: any, index: number) => (
+                  <tr
+                    key={quilt.id}
+                    className={`
+                      transition-all duration-150 ease-in-out
+                      hover:bg-blue-50 hover:shadow-sm
+                      ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}
+                      border-b border-gray-100 last:border-b-0
+                    `}
+                  >
                     {isSelectMode && (
                       <td className="px-4 py-3">
                         <input
