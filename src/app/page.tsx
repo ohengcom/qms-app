@@ -106,64 +106,86 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Stats Grid */}
+      {/* Enhanced Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Quilts Card */}
-        <div className="card-elevated bg-white rounded-lg p-5">
+        <div className="group relative bg-gradient-to-br from-blue-50 to-white border-2 border-blue-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1">
           <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">
-                {t('dashboard.stats.totalQuilts')}
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <Package className="w-4 h-4 text-blue-600" />
+                <p className="text-sm font-medium text-blue-900">
+                  {t('dashboard.stats.totalQuilts')}
+                </p>
+              </div>
+              <p className="text-3xl font-bold text-blue-600 mt-2">{overview.totalQuilts}</p>
+              <p className="text-xs text-blue-600/70 mt-1">
+                {lang === 'zh' ? '总收藏' : 'Total Collection'}
               </p>
-              <p className="text-3xl font-bold text-foreground mt-2">{overview.totalQuilts}</p>
             </div>
-            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-              <Package className="w-6 h-6 text-primary" />
+            <div className="w-14 h-14 rounded-full bg-blue-500 flex items-center justify-center shadow-lg">
+              <Package className="w-7 h-7 text-white" />
             </div>
           </div>
         </div>
 
         {/* In Use Card */}
-        <div className="card-elevated bg-white rounded-lg p-5">
+        <div className="group relative bg-gradient-to-br from-green-50 to-white border-2 border-green-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1">
           <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">
-                {t('dashboard.stats.inUse')}
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <Activity className="w-4 h-4 text-green-600" />
+                <p className="text-sm font-medium text-green-900">{t('dashboard.stats.inUse')}</p>
+              </div>
+              <p className="text-3xl font-bold text-green-600 mt-2">{overview.inUseCount}</p>
+              <p className="text-xs text-green-600/70 mt-1">
+                {lang === 'zh' ? '使用中' : 'Currently Active'}
               </p>
-              <p className="text-3xl font-bold text-foreground mt-2">{overview.inUseCount}</p>
             </div>
-            <div className="w-12 h-12 rounded-full bg-success/10 flex items-center justify-center">
-              <Activity className="w-6 h-6 text-success" />
+            <div className="w-14 h-14 rounded-full bg-green-500 flex items-center justify-center shadow-lg">
+              <Activity className="w-7 h-7 text-white" />
             </div>
           </div>
         </div>
 
         {/* Available Card */}
-        <div className="card-elevated bg-white rounded-lg p-5">
+        <div className="group relative bg-gradient-to-br from-purple-50 to-white border-2 border-purple-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1">
           <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">
-                {t('dashboard.stats.available')}
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <Package className="w-4 h-4 text-purple-600" />
+                <p className="text-sm font-medium text-purple-900">
+                  {t('dashboard.stats.available')}
+                </p>
+              </div>
+              <p className="text-3xl font-bold text-purple-600 mt-2">{overview.availableCount}</p>
+              <p className="text-xs text-purple-600/70 mt-1">
+                {lang === 'zh' ? '可用' : 'Ready to Use'}
               </p>
-              <p className="text-3xl font-bold text-foreground mt-2">{overview.availableCount}</p>
             </div>
-            <div className="w-12 h-12 rounded-full bg-accent flex items-center justify-center">
-              <Package className="w-6 h-6 text-accent-foreground" />
+            <div className="w-14 h-14 rounded-full bg-purple-500 flex items-center justify-center shadow-lg">
+              <Package className="w-7 h-7 text-white" />
             </div>
           </div>
         </div>
 
         {/* Storage Card */}
-        <div className="card-elevated bg-white rounded-lg p-5">
+        <div className="group relative bg-gradient-to-br from-orange-50 to-white border-2 border-orange-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1">
           <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">
-                {t('dashboard.stats.storage')}
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <Archive className="w-4 h-4 text-orange-600" />
+                <p className="text-sm font-medium text-orange-900">
+                  {t('dashboard.stats.storage')}
+                </p>
+              </div>
+              <p className="text-3xl font-bold text-orange-600 mt-2">{overview.storageCount}</p>
+              <p className="text-xs text-orange-600/70 mt-1">
+                {lang === 'zh' ? '已存储' : 'In Storage'}
               </p>
-              <p className="text-3xl font-bold text-foreground mt-2">{overview.storageCount}</p>
             </div>
-            <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
-              <Archive className="w-6 h-6 text-muted-foreground" />
+            <div className="w-14 h-14 rounded-full bg-orange-500 flex items-center justify-center shadow-lg">
+              <Archive className="w-7 h-7 text-white" />
             </div>
           </div>
         </div>
