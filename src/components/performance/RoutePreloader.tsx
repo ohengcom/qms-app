@@ -30,12 +30,22 @@ export function RoutePreloader({ routes = DEFAULT_PRELOAD_ROUTES }: RoutePreload
   useEffect(() => {
     const handleMouseEnter = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
+      
+      // Check if target has closest method (is an HTML element)
+      if (!target || typeof target.closest !== 'function') {
+        return;
+      }
+
       const link = target.closest('a[href]') as HTMLAnchorElement;
 
       if (link && link.href) {
-        const url = new URL(link.href);
-        if (url.origin === window.location.origin) {
-          router.prefetch(url.pathname);
+        try {
+          const url = new URL(link.href);
+          if (url.origin === window.location.origin) {
+            router.prefetch(url.pathname);
+          }
+        } catch (error) {
+          // Invalid URL, ignore
         }
       }
     };
