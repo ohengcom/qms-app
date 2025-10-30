@@ -263,97 +263,60 @@ export const db = {
     }
   },
 
-  // Update quilt
+  // Update quilt - only updates provided fields
   async updateQuilt(id: string, data: any) {
     try {
       console.log('Updating quilt:', id, 'with data:', data);
 
-      const now = new Date().toISOString();
-
-      // Build dynamic UPDATE query based on provided fields
-      const updates: string[] = [];
-      const values: any[] = [];
-      let paramIndex = 1;
-
-      // Only update fields that are provided
-      if (data.name !== undefined) {
-        updates.push(`name = $${paramIndex++}`);
-        values.push(data.name);
-      }
-      if (data.season !== undefined) {
-        updates.push(`season = $${paramIndex++}`);
-        values.push(data.season);
-      }
-      if (data.lengthCm !== undefined) {
-        updates.push(`length_cm = $${paramIndex++}`);
-        values.push(data.lengthCm);
-      }
-      if (data.widthCm !== undefined) {
-        updates.push(`width_cm = $${paramIndex++}`);
-        values.push(data.widthCm);
-      }
-      if (data.weightGrams !== undefined) {
-        updates.push(`weight_grams = $${paramIndex++}`);
-        values.push(data.weightGrams);
-      }
-      if (data.fillMaterial !== undefined) {
-        updates.push(`fill_material = $${paramIndex++}`);
-        values.push(data.fillMaterial);
-      }
-      if (data.materialDetails !== undefined) {
-        updates.push(`material_details = $${paramIndex++}`);
-        values.push(data.materialDetails || null);
-      }
-      if (data.color !== undefined) {
-        updates.push(`color = $${paramIndex++}`);
-        values.push(data.color);
-      }
-      if (data.brand !== undefined) {
-        updates.push(`brand = $${paramIndex++}`);
-        values.push(data.brand || null);
-      }
-      if (data.purchaseDate !== undefined) {
-        updates.push(`purchase_date = $${paramIndex++}`);
-        values.push(data.purchaseDate || null);
-      }
-      if (data.location !== undefined) {
-        updates.push(`location = $${paramIndex++}`);
-        values.push(data.location);
-      }
-      if (data.packagingInfo !== undefined) {
-        updates.push(`packaging_info = $${paramIndex++}`);
-        values.push(data.packagingInfo || null);
-      }
-      if (data.currentStatus !== undefined) {
-        updates.push(`current_status = $${paramIndex++}`);
-        values.push(data.currentStatus);
-      }
-      if (data.notes !== undefined) {
-        updates.push(`notes = $${paramIndex++}`);
-        values.push(data.notes || null);
-      }
-
-      // Always update updated_at
-      updates.push(`updated_at = $${paramIndex++}`);
-      values.push(now);
-
-      if (updates.length === 1) {
-        // Only updated_at, nothing else to update
-        console.log('No fields to update');
+      // Get current quilt data first
+      const current = await sql`SELECT * FROM quilts WHERE id = ${id}`;
+      
+      if (current.length === 0) {
+        console.log('Quilt not found:', id);
         return null;
       }
 
-      // Add id for WHERE clause
-      values.push(id);
+      const currentQuilt = current[0];
+      const now = new Date().toISOString();
 
-      const query = `
-        UPDATE quilts 
-        SET ${updates.join(', ')}
-        WHERE id = $${paramIndex}
+      // Merge current data with updates
+      const updates = {
+        name: data.name !== undefined ? data.name : currentQuilt.name,
+        season: data.season !== undefined ? data.season : currentQuilt.season,
+        length_cm: data.lengthCm !== undefined ? data.lengthCm : currentQuilt.length_cm,
+        width_cm: data.widthCm !== undefined ? data.widthCm : currentQuilt.width_cm,
+        weight_grams: data.weightGrams !== undefined ? data.weightGrams : currentQuilt.weight_grams,
+        fill_material: data.fillMaterial !== undefined ? data.fillMaterial : currentQuilt.fill_material,
+        material_details: data.materialDetails !== undefined ? (data.materialDetails || null) : currentQuilt.material_details,
+        color: data.color !== undefined ? data.color : currentQuilt.color,
+        brand: data.brand !== undefined ? (data.brand || null) : currentQuilt.brand,
+        purchase_date: data.purchaseDate !== undefined ? (data.purchaseDate || null) : currentQuilt.purchase_date,
+        location: data.location !== undefined ? data.location : currentQuilt.location,
+        packaging_info: data.packagingInfo !== undefined ? (data.packagingInfo || null) : currentQuilt.packaging_info,
+        current_status: data.currentStatus !== undefined ? data.currentStatus : currentQuilt.current_status,
+        notes: data.notes !== undefined ? (data.notes || null) : currentQuilt.notes,
+      };
+
+      const result = await sql`
+        UPDATE quilts SET 
+          name = ${updates.name},
+          season = ${updates.season},
+          length_cm = ${updates.length_cm},
+          width_cm = ${updates.width_cm},
+          weight_grams = ${updates.weight_grams},
+          fill_material = ${updates.fill_material},
+          material_details = ${updates.material_details},
+          color = ${updates.color},
+          brand = ${updates.brand},
+          purchase_date = ${updates.purchase_date},
+          location = ${updates.location},
+          packaging_info = ${updates.packaging_info},
+          current_status = ${updates.current_status},
+          notes = ${updates.notes},
+          updated_at = ${now}
+        WHERE id = ${id}
         RETURNING *
       `;
-
-      const result = await executeQuery(query, values);
 
       console.log('Quilt updated successfully:', result[0]);
       return result[0] || null;
