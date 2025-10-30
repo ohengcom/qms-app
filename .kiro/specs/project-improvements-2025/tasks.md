@@ -354,8 +354,8 @@ This task list breaks down the Phase 1 improvements into actionable implementati
     - _Requirements: 15.2_
     - _Files: src/app/quilts/page.tsx_
 
-- [ ] 20. Create loading skeleton components
-  - [ ] 20.1 Create Skeleton component
+- [-] 20. Create loading skeleton components
+  - [x] 20.1 Create Skeleton component
     - Create `src/components/ui/skeleton.tsx`
     - Implement pulse animation
     - Add shimmer effect variant
@@ -363,7 +363,7 @@ This task list breaks down the Phase 1 improvements into actionable implementati
     - _Requirements: 15.8_
     - _Files: src/components/ui/skeleton.tsx_
 
-  - [ ] 20.2 Create skeleton layouts
+  - [x] 20.2 Create skeleton layouts
     - Create card skeleton
     - Create table skeleton
     - Create form skeleton

@@ -1,13 +1,26 @@
+import * as React from 'react';
+import { cva, type VariantProps } from 'class-variance-authority';
+
 import { cn } from '@/lib/utils';
 
-function Skeleton({ className, ...props }: React.ComponentProps<'div'>) {
-  return (
-    <div
-      data-slot="skeleton"
-      className={cn('bg-accent animate-pulse rounded-md', className)}
-      {...props}
-    />
-  );
+const skeletonVariants = cva('animate-pulse rounded-md bg-muted', {
+  variants: {
+    variant: {
+      default: 'animate-pulse',
+      shimmer: 'animate-shimmer',
+    },
+  },
+  defaultVariants: {
+    variant: 'default',
+  },
+});
+
+export interface SkeletonProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof skeletonVariants> {}
+
+function Skeleton({ className, variant, ...props }: SkeletonProps) {
+  return <div className={cn(skeletonVariants({ variant }), className)} {...props} />;
 }
 
-export { Skeleton };
+export { Skeleton, skeletonVariants };
