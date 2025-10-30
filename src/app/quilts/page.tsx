@@ -16,6 +16,9 @@ import {
   SearchX,
   Grid3x3,
   List,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { TableSkeleton } from '@/components/ui/skeleton-layouts';
@@ -42,6 +45,10 @@ export default function QuiltsPage() {
   // View mode state
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
 
+  // Sorting state
+  const [sortField, setSortField] = useState<string | null>(null);
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+
   const { t } = useLanguage();
 
   // React Query hooks
@@ -52,25 +59,75 @@ export default function QuiltsPage() {
 
   const quilts = quiltsData?.quilts || [];
 
-  // Memoized filtered quilts
+  // Sorting function
+  const handleSort = (field: string) => {
+    if (sortField === field) {
+      // Toggle direction if same field
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      // New field, default to ascending
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  // Memoized filtered and sorted quilts
   const filteredQuilts = useMemo(() => {
-    if (!searchTerm.trim()) {
-      return quilts;
+    let result = quilts;
+
+    // Apply search filter
+    if (searchTerm.trim()) {
+      result = result.filter(
+        (quilt: any) =>
+          quilt.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          quilt.itemNumber?.toString().includes(searchTerm) ||
+          quilt.fillMaterial?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          quilt.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          quilt.season?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          quilt.currentStatus?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
     }
 
-    return quilts.filter(
-      (quilt: any) =>
-        quilt.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        quilt.itemNumber?.toString().includes(searchTerm) ||
-        quilt.fillMaterial?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        quilt.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        quilt.season?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        quilt.currentStatus?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [quilts, searchTerm]);
+    // Apply sorting
+    if (sortField) {
+      result = [...result].sort((a: any, b: any) => {
+        let aValue = a[sortField];
+        let bValue = b[sortField];
+
+        // Handle null/undefined values
+        if (aValue == null) return 1;
+        if (bValue == null) return -1;
+
+        // Convert to string for comparison if needed
+        if (typeof aValue === 'string') {
+          aValue = aValue.toLowerCase();
+          bValue = bValue.toLowerCase();
+        }
+
+        // Compare values
+        if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+        if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
+
+    return result;
+  }, [quilts, searchTerm, sortField, sortDirection]);
 
   const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
+  };
+
+  // Render sort icon
+  const renderSortIcon = (field: string) => {
+    if (sortField !== field) {
+      return <ArrowUpDown className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-50 transition-opacity" />;
+    }
+    return sortDirection === 'asc' ? (
+      <ArrowUp className="w-3 h-3 ml-1 text-blue-600" />
+    ) : (
+      <ArrowDown className="w-3 h-3 ml-1 text-blue-600" />
+    );
   };
 
   // CRUD operations
@@ -388,32 +445,95 @@ export default function QuiltsPage() {
                       />
                     </th>
                   )}
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('quilts.table.itemNumber')}
+                  <th
+                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
+                    onDoubleClick={() => handleSort('itemNumber')}
+                    title={t('language') === 'zh' ? '双击排序' : 'Double-click to sort'}
+                  >
+                    <div className="flex items-center">
+                      {t('quilts.table.itemNumber')}
+                      {renderSortIcon('itemNumber')}
+                    </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('quilts.views.name')}
+                  <th
+                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
+                    onDoubleClick={() => handleSort('name')}
+                    title={t('language') === 'zh' ? '双击排序' : 'Double-click to sort'}
+                  >
+                    <div className="flex items-center">
+                      {t('quilts.views.name')}
+                      {renderSortIcon('name')}
+                    </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('quilts.table.season')}
+                  <th
+                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
+                    onDoubleClick={() => handleSort('season')}
+                    title={t('language') === 'zh' ? '双击排序' : 'Double-click to sort'}
+                  >
+                    <div className="flex items-center">
+                      {t('quilts.table.season')}
+                      {renderSortIcon('season')}
+                    </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('quilts.table.size')}
+                  <th
+                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
+                    onDoubleClick={() => handleSort('size')}
+                    title={t('language') === 'zh' ? '双击排序' : 'Double-click to sort'}
+                  >
+                    <div className="flex items-center">
+                      {t('quilts.table.size')}
+                      {renderSortIcon('size')}
+                    </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('quilts.table.weight')}
+                  <th
+                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
+                    onDoubleClick={() => handleSort('weight')}
+                    title={t('language') === 'zh' ? '双击排序' : 'Double-click to sort'}
+                  >
+                    <div className="flex items-center">
+                      {t('quilts.table.weight')}
+                      {renderSortIcon('weight')}
+                    </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('quilts.table.material')}
+                  <th
+                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
+                    onDoubleClick={() => handleSort('fillMaterial')}
+                    title={t('language') === 'zh' ? '双击排序' : 'Double-click to sort'}
+                  >
+                    <div className="flex items-center">
+                      {t('quilts.table.material')}
+                      {renderSortIcon('fillMaterial')}
+                    </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('quilts.table.color')}
+                  <th
+                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
+                    onDoubleClick={() => handleSort('color')}
+                    title={t('language') === 'zh' ? '双击排序' : 'Double-click to sort'}
+                  >
+                    <div className="flex items-center">
+                      {t('quilts.table.color')}
+                      {renderSortIcon('color')}
+                    </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('quilts.table.location')}
+                  <th
+                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
+                    onDoubleClick={() => handleSort('location')}
+                    title={t('language') === 'zh' ? '双击排序' : 'Double-click to sort'}
+                  >
+                    <div className="flex items-center">
+                      {t('quilts.table.location')}
+                      {renderSortIcon('location')}
+                    </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('quilts.table.status')}
+                  <th
+                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
+                    onDoubleClick={() => handleSort('currentStatus')}
+                    title={t('language') === 'zh' ? '双击排序' : 'Double-click to sort'}
+                  >
+                    <div className="flex items-center">
+                      {t('quilts.table.status')}
+                      {renderSortIcon('currentStatus')}
+                    </div>
                   </th>
                   <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t('quilts.views.actions')}
