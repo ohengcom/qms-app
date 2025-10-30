@@ -2,9 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/lib/language-provider';
-import { Edit, Trash2, CalendarIcon } from 'lucide-react';
+import { Edit, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
 import {
   Dialog,
   DialogContent,
@@ -21,16 +20,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Calendar } from '@/components/ui/calendar';
 import { toast } from '@/lib/toast';
 
 interface UsageRecord {
@@ -60,10 +53,10 @@ interface EditUsageRecordDialogProps {
 }
 
 const USAGE_TYPE_OPTIONS = [
-  { value: 'REGULAR', key: 'regularuse' },
-  { value: 'GUEST', key: 'guestuse' },
-  { value: 'SPECIAL_OCCASION', key: 'specialoccasion' },
-  { value: 'SEASONAL_ROTATION', key: 'seasonalrotation' },
+  { value: 'REGULAR', labelZh: '常规使用', labelEn: 'Regular Use' },
+  { value: 'GUEST', labelZh: '客人使用', labelEn: 'Guest Use' },
+  { value: 'SPECIAL_OCCASION', labelZh: '特殊场合', labelEn: 'Special Occasion' },
+  { value: 'SEASONAL_ROTATION', labelZh: '季节轮换', labelEn: 'Seasonal Rotation' },
 ];
 
 export function EditUsageRecordDialog({
@@ -201,38 +194,15 @@ export function EditUsageRecordDialog({
           {/* Start Date */}
           <div className="space-y-2">
             <Label htmlFor="startDate">{t('usage.edit.startDate')} *</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    'w-full justify-start text-left font-normal',
-                    !formData.startDate && 'text-muted-foreground'
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {formData.startDate ? (
-                    format(new Date(formData.startDate), 'PPP')
-                  ) : (
-                    <span>{t('usage.edit.pickDate')}</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={formData.startDate ? new Date(formData.startDate) : undefined}
-                  onSelect={(date) => {
-                    setFormData({
-                      ...formData,
-                      startDate: date ? format(date, 'yyyy-MM-dd') : '',
-                    });
-                  }}
-                  disabled={(date) => date > new Date()}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+            <Input
+              id="startDate"
+              type="date"
+              value={formData.startDate}
+              onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+              max={new Date().toISOString().split('T')[0]}
+              required
+              className="w-full"
+            />
           </div>
 
           {/* End Date */}
@@ -243,38 +213,14 @@ export function EditUsageRecordDialog({
                 ({t('usage.edit.leaveEmptyIfActive')})
               </span>
             </Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    'w-full justify-start text-left font-normal',
-                    !formData.endDate && 'text-muted-foreground'
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {formData.endDate ? (
-                    format(new Date(formData.endDate), 'PPP')
-                  ) : (
-                    <span>{t('usage.edit.pickDateOptional')}</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={formData.endDate ? new Date(formData.endDate) : undefined}
-                  onSelect={(date) => {
-                    setFormData({
-                      ...formData,
-                      endDate: date ? format(date, 'yyyy-MM-dd') : '',
-                    });
-                  }}
-                  disabled={(date) => date > new Date()}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+            <Input
+              id="endDate"
+              type="date"
+              value={formData.endDate}
+              onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+              max={new Date().toISOString().split('T')[0]}
+              className="w-full"
+            />
             {formData.endDate && (
               <Button
                 type="button"
@@ -301,7 +247,7 @@ export function EditUsageRecordDialog({
               <SelectContent>
                 {USAGE_TYPE_OPTIONS.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
-                    {t(`usage.edit.${option.key}`)}
+                    {language === 'zh' ? option.labelZh : option.labelEn}
                   </SelectItem>
                 ))}
               </SelectContent>
