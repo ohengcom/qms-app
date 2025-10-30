@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
@@ -26,7 +26,6 @@ import {
   Package,
   Calendar,
   Weight,
-  MapPin,
 } from 'lucide-react';
 
 interface QuiltListProps {
@@ -61,15 +60,6 @@ export function QuiltList({ onCreateQuilt, onEditQuilt, onViewQuilt }: QuiltList
   const totalCount = quiltsData?.total || 0;
 
 
-
-  const handleSortChange = (field: SortField) => {
-    if (field === sortField) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortOrder('asc');
-    }
-  };
 
   const toggleSortOrder = () => {
     setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
@@ -183,12 +173,12 @@ export function QuiltList({ onCreateQuilt, onEditQuilt, onViewQuilt }: QuiltList
               : 'Start building your quilt collection by adding your first quilt.'
           }
           action={
-            onCreateQuilt ? (
-              <Button onClick={onCreateQuilt}>
-                <Plus className="w-4 h-4 mr-2" />
-                Add Your First Quilt
-              </Button>
-            ) : undefined
+            onCreateQuilt
+              ? {
+                  label: 'Add Your First Quilt',
+                  onClick: onCreateQuilt,
+                }
+              : undefined
           }
         />
       ) : (

@@ -5,9 +5,21 @@ import { useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/lib/language-provider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Plus, Edit, Trash2, RotateCcw, Filter } from 'lucide-react';
+import {
+  Search,
+  Plus,
+  Edit,
+  Trash2,
+  RotateCcw,
+  Filter,
+  PackageOpen,
+  SearchX,
+  Grid3x3,
+  List,
+} from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { TableSkeleton } from '@/components/ui/skeleton-layouts';
+import { EmptyState } from '@/components/ui/empty-state';
 import { QuiltDialog } from '@/components/quilts/QuiltDialog';
 import { StatusChangeDialog } from '@/components/quilts/StatusChangeDialog';
 import { toast, getToastMessage } from '@/lib/toast';
@@ -26,6 +38,9 @@ export default function QuiltsPage() {
   // Batch operation states
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isSelectMode, setIsSelectMode] = useState(false);
+
+  // View mode state
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
 
   const { t } = useLanguage();
 
@@ -271,6 +286,31 @@ export default function QuiltsPage() {
             </>
           ) : (
             <>
+              {/* View Mode Toggle */}
+              <div className="flex items-center border border-gray-200 rounded-md overflow-hidden">
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`px-3 py-1.5 text-sm transition-colors ${
+                    viewMode === 'list'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-white text-gray-600 hover:bg-gray-50'
+                  }`}
+                  title={t('language') === 'zh' ? '列表视图' : 'List View'}
+                >
+                  <List className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`px-3 py-1.5 text-sm transition-colors ${
+                    viewMode === 'grid'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-white text-gray-600 hover:bg-gray-50'
+                  }`}
+                  title={t('language') === 'zh' ? '网格视图' : 'Grid View'}
+                >
+                  <Grid3x3 className="w-4 h-4" />
+                </button>
+              </div>
               {filteredQuilts.length > 0 && (
                 <Button onClick={toggleSelectMode} variant="outline" size="sm">
                   {t('language') === 'zh' ? '批量操作' : 'Batch Operations'}
@@ -303,156 +343,308 @@ export default function QuiltsPage() {
         </Button>
       </div>
 
-      {/* Enhanced Professional Data Table */}
-      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-300">
-                {isSelectMode && (
-                  <th className="px-4 py-3 w-12">
-                    <input
-                      type="checkbox"
-                      checked={
-                        selectedIds.size === filteredQuilts.length && filteredQuilts.length > 0
-                      }
-                      onChange={selectAll}
-                      className="w-4 h-4 rounded border-gray-300"
-                    />
+      {/* List View - Enhanced Professional Data Table */}
+      {viewMode === 'list' && (
+        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-300">
+                  {isSelectMode && (
+                    <th className="px-4 py-3 w-12">
+                      <input
+                        type="checkbox"
+                        checked={
+                          selectedIds.size === filteredQuilts.length && filteredQuilts.length > 0
+                        }
+                        onChange={selectAll}
+                        className="w-4 h-4 rounded border-gray-300"
+                      />
+                    </th>
+                  )}
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('quilts.table.itemNumber')}
                   </th>
-                )}
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {t('quilts.table.itemNumber')}
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {t('quilts.views.name')}
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {t('quilts.table.season')}
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {t('quilts.table.size')}
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {t('quilts.table.weight')}
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {t('quilts.table.material')}
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {t('quilts.table.color')}
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {t('quilts.table.location')}
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {t('quilts.table.status')}
-                </th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {t('quilts.views.actions')}
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {filteredQuilts.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={isSelectMode ? 11 : 10}
-                    className="px-4 py-12 text-center text-gray-500"
-                  >
-                    {searchTerm
-                      ? `${t('language') === 'zh' ? '没有找到匹配的被子' : 'No quilts found matching'} "${searchTerm}"`
-                      : t('language') === 'zh'
-                        ? '暂无被子数据'
-                        : 'No quilts yet'}
-                  </td>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('quilts.views.name')}
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('quilts.table.season')}
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('quilts.table.size')}
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('quilts.table.weight')}
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('quilts.table.material')}
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('quilts.table.color')}
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('quilts.table.location')}
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('quilts.table.status')}
+                  </th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('quilts.views.actions')}
+                  </th>
                 </tr>
-              ) : (
-                filteredQuilts.map((quilt: any, index: number) => (
-                  <tr
-                    key={quilt.id}
-                    className={`
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {filteredQuilts.length === 0 ? (
+                  <tr>
+                    <td colSpan={isSelectMode ? 11 : 10} className="px-4">
+                      <EmptyState
+                        icon={searchTerm ? SearchX : PackageOpen}
+                        title={
+                          searchTerm
+                            ? `${t('language') === 'zh' ? '没有找到匹配的被子' : 'No quilts found matching'} "${searchTerm}"`
+                            : t('language') === 'zh'
+                              ? '暂无被子数据'
+                              : 'No quilts yet'
+                        }
+                        description={
+                          searchTerm
+                            ? t('language') === 'zh'
+                              ? '尝试调整搜索条件或筛选器'
+                              : 'Try adjusting your search or filters'
+                            : t('language') === 'zh'
+                              ? '点击"添加被子"按钮创建第一条记录'
+                              : 'Click "Add Quilt" to create your first record'
+                        }
+                        action={
+                          !searchTerm
+                            ? {
+                                label: t('language') === 'zh' ? '添加被子' : 'Add Quilt',
+                                onClick: () => {
+                                  setSelectedQuilt(null);
+                                  setQuiltDialogOpen(true);
+                                },
+                              }
+                            : undefined
+                        }
+                      />
+                    </td>
+                  </tr>
+                ) : (
+                  filteredQuilts.map((quilt: any, index: number) => (
+                    <tr
+                      key={quilt.id}
+                      className={`
                       transition-all duration-150 ease-in-out
                       hover:bg-blue-50 hover:shadow-sm
                       ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}
                       border-b border-gray-100 last:border-b-0
                     `}
-                  >
-                    {isSelectMode && (
-                      <td className="px-4 py-3">
-                        <input
-                          type="checkbox"
-                          checked={selectedIds.has(quilt.id)}
-                          onChange={() => toggleSelectQuilt(quilt.id)}
-                          className="w-4 h-4 rounded border-gray-300"
-                        />
+                    >
+                      {isSelectMode && (
+                        <td className="px-4 py-3">
+                          <input
+                            type="checkbox"
+                            checked={selectedIds.has(quilt.id)}
+                            onChange={() => toggleSelectQuilt(quilt.id)}
+                            className="w-4 h-4 rounded border-gray-300"
+                          />
+                        </td>
+                      )}
+                      <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                        #{quilt.itemNumber}
                       </td>
-                    )}
-                    <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                      #{quilt.itemNumber}
-                    </td>
-                    <td className="px-4 py-3 text-sm font-medium text-gray-900">{quilt.name}</td>
-                    <td className="px-4 py-3 text-sm text-gray-700">
-                      {t(`season.${quilt.season}`)}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-700">
-                      {quilt.lengthCm}×{quilt.widthCm}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-700">{quilt.weightGrams}g</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{quilt.fillMaterial}</td>
-                    <td className="px-4 py-3 text-sm text-gray-700">{quilt.color || '-'}</td>
-                    <td className="px-4 py-3 text-sm text-gray-700">{quilt.location}</td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
-                          quilt.currentStatus === 'IN_USE'
-                            ? 'bg-green-50 text-green-700 border border-green-200'
-                            : quilt.currentStatus === 'STORAGE'
-                              ? 'bg-orange-50 text-orange-700 border border-orange-200'
-                              : 'bg-yellow-50 text-yellow-700 border border-yellow-200'
-                        }`}
-                      >
-                        {t(`status.${quilt.currentStatus}`)}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleChangeStatus(quilt)}
-                          className="h-8 w-8 p-0"
-                          title={t('language') === 'zh' ? '更改状态' : 'Change Status'}
+                      <td className="px-4 py-3 text-sm font-medium text-gray-900">{quilt.name}</td>
+                      <td className="px-4 py-3 text-sm text-gray-700">
+                        {t(`season.${quilt.season}`)}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-700">
+                        {quilt.lengthCm}×{quilt.widthCm}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-700">{quilt.weightGrams}g</td>
+                      <td className="px-4 py-3 text-sm text-gray-900">{quilt.fillMaterial}</td>
+                      <td className="px-4 py-3 text-sm text-gray-700">{quilt.color || '-'}</td>
+                      <td className="px-4 py-3 text-sm text-gray-700">{quilt.location}</td>
+                      <td className="px-4 py-3">
+                        <span
+                          className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
+                            quilt.currentStatus === 'IN_USE'
+                              ? 'bg-green-50 text-green-700 border border-green-200'
+                              : quilt.currentStatus === 'STORAGE'
+                                ? 'bg-orange-50 text-orange-700 border border-orange-200'
+                                : 'bg-yellow-50 text-yellow-700 border border-yellow-200'
+                          }`}
                         >
-                          <RotateCcw className="h-3.5 w-3.5" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleEditQuilt(quilt)}
-                          className="h-8 w-8 p-0"
-                          title={t('common.edit')}
-                        >
-                          <Edit className="h-3.5 w-3.5" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDeleteQuilt(quilt)}
-                          className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-                          title={t('common.delete')}
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                          {t(`status.${quilt.currentStatus}`)}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <div className="flex items-center justify-end gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleChangeStatus(quilt)}
+                            className="h-8 w-8 p-0"
+                            title={t('language') === 'zh' ? '更改状态' : 'Change Status'}
+                          >
+                            <RotateCcw className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleEditQuilt(quilt)}
+                            className="h-8 w-8 p-0"
+                            title={t('common.edit')}
+                          >
+                            <Edit className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteQuilt(quilt)}
+                            className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                            title={t('common.delete')}
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Grid View */}
+      {viewMode === 'grid' && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {filteredQuilts.length === 0 ? (
+            <div className="col-span-full">
+              <EmptyState
+                icon={searchTerm ? SearchX : PackageOpen}
+                title={
+                  searchTerm
+                    ? `${t('language') === 'zh' ? '没有找到匹配的被子' : 'No quilts found matching'} "${searchTerm}"`
+                    : t('language') === 'zh'
+                      ? '暂无被子数据'
+                      : 'No quilts yet'
+                }
+                description={
+                  searchTerm
+                    ? t('language') === 'zh'
+                      ? '尝试调整搜索条件或筛选器'
+                      : 'Try adjusting your search or filters'
+                    : t('language') === 'zh'
+                      ? '点击"添加被子"按钮创建第一条记录'
+                      : 'Click "Add Quilt" to create your first record'
+                }
+                action={
+                  !searchTerm
+                    ? {
+                        label: t('language') === 'zh' ? '添加被子' : 'Add Quilt',
+                        onClick: () => {
+                          setSelectedQuilt(null);
+                          setQuiltDialogOpen(true);
+                        },
+                      }
+                    : undefined
+                }
+              />
+            </div>
+          ) : (
+            filteredQuilts.map((quilt: any) => (
+              <div
+                key={quilt.id}
+                className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all duration-200 hover:-translate-y-1"
+              >
+                {/* Season Color Indicator */}
+                <div
+                  className={`h-2 w-full rounded-t-lg mb-3 ${
+                    quilt.season === 'WINTER'
+                      ? 'bg-blue-500'
+                      : quilt.season === 'SUMMER'
+                        ? 'bg-yellow-500'
+                        : 'bg-green-500'
+                  }`}
+                />
+
+                {/* Card Header */}
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-lg text-gray-900 mb-1">{quilt.name}</h3>
+                    <p className="text-sm text-gray-500">#{quilt.itemNumber}</p>
+                  </div>
+                  {/* Status Badge */}
+                  <span
+                    className={`px-2 py-1 text-xs font-medium rounded ${
+                      quilt.currentStatus === 'IN_USE'
+                        ? 'bg-green-100 text-green-800'
+                        : quilt.currentStatus === 'STORAGE'
+                          ? 'bg-blue-100 text-blue-800'
+                          : 'bg-yellow-100 text-yellow-800'
+                    }`}
+                  >
+                    {t(`status.${quilt.currentStatus}`)}
+                  </span>
+                </div>
+
+                {/* Card Details */}
+                <div className="space-y-2 mb-4">
+                  <div className="flex items-center text-sm">
+                    <span className="text-gray-500 w-20">{t('quilts.table.season')}:</span>
+                    <span className="font-medium">{t(`season.${quilt.season}`)}</span>
+                  </div>
+                  <div className="flex items-center text-sm">
+                    <span className="text-gray-500 w-20">{t('quilts.table.fillMaterial')}:</span>
+                    <span className="font-medium">{quilt.fillMaterial}</span>
+                  </div>
+                  <div className="flex items-center text-sm">
+                    <span className="text-gray-500 w-20">{t('quilts.table.weight')}:</span>
+                    <span className="font-medium">{quilt.weightGrams}g</span>
+                  </div>
+                  <div className="flex items-center text-sm">
+                    <span className="text-gray-500 w-20">{t('quilts.table.location')}:</span>
+                    <span className="font-medium">{quilt.location}</span>
+                  </div>
+                </div>
+
+                {/* Card Actions */}
+                <div className="flex items-center gap-2 pt-3 border-t border-gray-100">
+                  <Button
+                    onClick={() => handleEditQuilt(quilt)}
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                  >
+                    <Edit className="w-3 h-3 mr-1" />
+                    {t('quilts.actions.edit')}
+                  </Button>
+                  <Button
+                    onClick={() => handleChangeStatus(quilt)}
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                  >
+                    <RotateCcw className="w-3 h-3 mr-1" />
+                    {t('language') === 'zh' ? '状态' : 'Status'}
+                  </Button>
+                  <Button
+                    onClick={() => handleDeleteQuilt(quilt)}
+                    variant="outline"
+                    size="sm"
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </Button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      )}
 
       {/* Dialogs */}
       <QuiltDialog

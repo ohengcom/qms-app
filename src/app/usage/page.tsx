@@ -5,7 +5,8 @@ import { useLanguage } from '@/lib/language-provider';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { TableSkeleton } from '@/components/ui/skeleton-layouts';
-import { Clock, Package, BarChart3, ArrowLeft, Eye } from 'lucide-react';
+import { Clock, Package, BarChart3, ArrowLeft, Eye, PackageOpen } from 'lucide-react';
+import { EmptyState } from '@/components/ui/empty-state';
 
 interface UsageRecord {
   id: string;
@@ -245,9 +246,16 @@ export default function UsageTrackingPage() {
               <tbody className="divide-y divide-gray-200">
                 {usageHistory.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="px-4 py-12 text-center text-gray-500">
-                      <Package className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-                      <p>{t('language') === 'zh' ? '暂无使用记录' : 'No usage records'}</p>
+                    <td colSpan={8} className="px-4">
+                      <EmptyState
+                        icon={PackageOpen}
+                        title={t('language') === 'zh' ? '暂无使用记录' : 'No usage records'}
+                        description={
+                          t('language') === 'zh'
+                            ? '开始使用被子后，记录将显示在这里'
+                            : 'Usage records will appear here once you start tracking'
+                        }
+                      />
                     </td>
                   </tr>
                 ) : (
