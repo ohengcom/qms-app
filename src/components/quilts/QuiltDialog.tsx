@@ -35,17 +35,33 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     season: 'WINTER',
-    lengthCm: '',
-    widthCm: '',
-    weightGrams: '',
-    fillMaterial: '',
+    lengthCm: '210',
+    widthCm: '150',
+    weightGrams: '2000',
+    fillMaterial: '棉',
     materialDetails: '',
-    color: '',
-    brand: '',
+    color: '白',
+    brand: '无',
     location: '',
     currentStatus: 'MAINTENANCE',
     notes: '',
   });
+
+  // Generate preview name based on form data
+  const generatePreviewName = () => {
+    const brand = formData.brand || '无';
+    const color = formData.color || '白';
+    const weight = formData.weightGrams || '2000';
+
+    const seasonMap: Record<string, string> = {
+      WINTER: '冬',
+      SPRING_AUTUMN: '春秋',
+      SUMMER: '夏',
+    };
+    const season = seasonMap[formData.season] || '通用';
+
+    return `${brand}${color}${weight}克${season}被`;
+  };
 
   // Reset form when dialog opens/closes or quilt changes
   useEffect(() => {
@@ -69,13 +85,13 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
         // Add mode - reset to defaults with MAINTENANCE status
         setFormData({
           season: 'WINTER',
-          lengthCm: '',
-          widthCm: '',
-          weightGrams: '',
-          fillMaterial: '',
+          lengthCm: '210',
+          widthCm: '150',
+          weightGrams: '2000',
+          fillMaterial: '棉',
           materialDetails: '',
-          color: '',
-          brand: '',
+          color: '白',
+          brand: '无',
           location: '',
           currentStatus: 'MAINTENANCE',
           notes: '',
@@ -135,21 +151,25 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Show read-only name and number in edit mode */}
-          {quilt && (
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
-              <div className="grid grid-cols-2 gap-4">
+          {/* Show auto-generated name preview */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="grid grid-cols-2 gap-4">
+              {quilt && (
                 <div>
-                  <Label className="text-xs text-gray-500">{t('quilts.table.itemNumber')}</Label>
+                  <Label className="text-xs text-blue-600">{t('quilts.table.itemNumber')}</Label>
                   <p className="text-sm font-medium text-gray-900">#{quilt.itemNumber}</p>
                 </div>
-                <div>
-                  <Label className="text-xs text-gray-500">{t('quilts.form.name')}</Label>
-                  <p className="text-sm font-medium text-gray-900">{quilt.name}</p>
-                </div>
+              )}
+              <div className={quilt ? '' : 'col-span-2'}>
+                <Label className="text-xs text-blue-600">
+                  {quilt ? t('quilts.form.name') : '预览名称（自动生成）'}
+                </Label>
+                <p className="text-sm font-medium text-gray-900">
+                  {quilt ? quilt.name : generatePreviewName()}
+                </p>
               </div>
             </div>
-          )}
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Basic Information */}
