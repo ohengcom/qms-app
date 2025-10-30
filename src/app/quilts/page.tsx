@@ -90,6 +90,7 @@ export default function QuiltsPage() {
 
     // Apply sorting
     if (sortField) {
+      console.log('Applying sort:', { sortField, sortDirection, resultCount: result.length });
       result = [...result].sort((a: any, b: any) => {
         let aValue = a[sortField];
         let bValue = b[sortField];
@@ -105,6 +106,8 @@ export default function QuiltsPage() {
           const aWidth = a.widthCm || 0;
           const bWidth = b.widthCm || 0;
 
+          console.log('Sorting size:', { aLength, bLength, aWidth, bWidth, sortDirection });
+
           // First compare by length
           if (aLength !== bLength) {
             return sortDirection === 'asc' ? aLength - bLength : bLength - aLength;
@@ -117,6 +120,8 @@ export default function QuiltsPage() {
         if (sortField === 'weight') {
           const aWeight = a.weightGrams || 0;
           const bWeight = b.weightGrams || 0;
+
+          console.log('Sorting weight:', { aWeight, bWeight, sortDirection });
 
           return sortDirection === 'asc' ? aWeight - bWeight : bWeight - aWeight;
         }
