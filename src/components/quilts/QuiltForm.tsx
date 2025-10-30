@@ -337,31 +337,16 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                     )}
                   />
 
+                  {/* Status field is hidden - use "Change Status" button instead */}
+                  {/* This ensures usage tracking automation works correctly */}
                   <FormField
                     control={form.control}
                     name="currentStatus"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Status</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select status" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {STATUS_OPTIONS.map(option => (
-                              <SelectItem key={option.value} value={option.value}>
-                                <div>
-                                  <div className="font-medium">{option.label}</div>
-                                  <div className="text-xs text-gray-500">{option.description}</div>
-                                </div>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormDescription>Current availability status</FormDescription>
-                        <FormMessage />
+                      <FormItem className="hidden">
+                        <FormControl>
+                          <input type="hidden" {...field} />
+                        </FormControl>
                       </FormItem>
                     )}
                   />
