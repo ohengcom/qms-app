@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/lib/language-provider';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { TableSkeleton } from '@/components/ui/skeleton-layouts';
 import { Clock, Package, BarChart3, ArrowLeft, Eye } from 'lucide-react';
 
 interface UsageRecord {
@@ -109,8 +111,29 @@ export default function UsageTrackingPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <div className="text-center text-gray-500">{t('common.loading')}</div>
+      <div className="space-y-6">
+        {/* Header Skeleton */}
+        <div className="flex items-center justify-between">
+          <Skeleton className="h-8 w-32" />
+        </div>
+        {/* Stats Skeleton */}
+        <div className="grid grid-cols-3 gap-4">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="bg-white border border-gray-200 rounded-lg p-4">
+              <div className="flex items-center gap-3">
+                <Skeleton className="h-10 w-10 rounded-lg" />
+                <div className="space-y-2 flex-1">
+                  <Skeleton className="h-6 w-16" />
+                  <Skeleton className="h-3 w-20" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        {/* Table Skeleton */}
+        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm p-4">
+          <TableSkeleton rows={6} columns={6} />
+        </div>
       </div>
     );
   }

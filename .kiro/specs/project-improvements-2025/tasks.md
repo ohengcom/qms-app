@@ -336,8 +336,8 @@ This task list breaks down the Phase 1 improvements into actionable implementati
     - _Requirements: 15.5_
     - _Files: src/components/ui/checkbox.tsx_
 
-- [ ] 19. Enhance table components
-  - [ ] 19.1 Update table styles
+- [x] 19. Enhance table components
+  - [x] 19.1 Update table styles
     - Update `src/components/ui/table.tsx`
     - Add zebra striping
     - Add hover row highlighting
@@ -346,7 +346,7 @@ This task list breaks down the Phase 1 improvements into actionable implementati
     - _Requirements: 15.2_
     - _Files: src/components/ui/table.tsx_
 
-  - [ ] 19.2 Update quilt list table
+  - [x] 19.2 Update quilt list table
     - Update `src/app/quilts/page.tsx`
     - Apply new table styles
     - Add row actions on hover
@@ -371,7 +371,7 @@ This task list breaks down the Phase 1 improvements into actionable implementati
     - _Requirements: 15.8_
     - _Files: src/components/ui/skeleton-layouts.tsx_
 
-  - [ ] 20.3 Replace loading spinners with skeletons
+  - [-] 20.3 Replace loading spinners with skeletons
     - Update dashboard loading
     - Update quilt list loading
     - Update usage tracking loading

@@ -4,7 +4,8 @@ import Link from 'next/link';
 import { useDashboardStats } from '@/hooks/useDashboard';
 import { useWeather } from '@/hooks/useWeather';
 import { useLanguage } from '@/lib/language-provider';
-import { Loading } from '@/components/ui/loading';
+import { DashboardStatsSkeleton, CardSkeleton } from '@/components/ui/skeleton-layouts';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Package, Activity, Archive, Calendar, Cloud, History } from 'lucide-react';
 
 export default function DashboardPage() {
@@ -29,8 +30,19 @@ export default function DashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <Loading />
+      <div className="space-y-6">
+        {/* Header Skeleton */}
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-4 w-64" />
+        </div>
+        {/* Stats Cards Skeleton */}
+        <DashboardStatsSkeleton cards={4} />
+        {/* Charts Skeleton */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <CardSkeleton className="h-80" />
+          <CardSkeleton className="h-80" />
+        </div>
       </div>
     );
   }

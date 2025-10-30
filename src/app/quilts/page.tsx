@@ -6,7 +6,8 @@ import { useLanguage } from '@/lib/language-provider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, Plus, Edit, Trash2, RotateCcw, Filter } from 'lucide-react';
-import { Loading } from '@/components/ui/loading';
+import { Skeleton } from '@/components/ui/skeleton';
+import { TableSkeleton } from '@/components/ui/skeleton-layouts';
 import { QuiltDialog } from '@/components/quilts/QuiltDialog';
 import { StatusChangeDialog } from '@/components/quilts/StatusChangeDialog';
 import { toast, getToastMessage } from '@/lib/toast';
@@ -201,8 +202,21 @@ export default function QuiltsPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <Loading text={t('common.loading')} />
+      <div className="space-y-6">
+        {/* Header Skeleton */}
+        <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            <Skeleton className="h-8 w-32" />
+            <Skeleton className="h-4 w-48" />
+          </div>
+          <Skeleton className="h-9 w-24" />
+        </div>
+        {/* Search Skeleton */}
+        <Skeleton className="h-10 w-full max-w-md" />
+        {/* Table Skeleton */}
+        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm p-4">
+          <TableSkeleton rows={8} columns={10} />
+        </div>
       </div>
     );
   }
