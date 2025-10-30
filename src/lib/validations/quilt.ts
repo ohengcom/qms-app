@@ -39,9 +39,15 @@ const baseQuiltSchemaObject = z.object({
     .number()
     .int('Item number must be an integer')
     .positive('Item number must be positive')
-    .max(99999, 'Item number must be less than 100000'),
+    .max(99999, 'Item number must be less than 100000')
+    .optional(), // Optional for create, will be auto-generated
   groupId: z.number().int().positive().optional(),
-  name: z.string().min(1, 'Name is required').max(100, 'Name too long (max 100 characters)').trim(),
+  name: z
+    .string()
+    .min(1, 'Name is required')
+    .max(100, 'Name too long (max 100 characters)')
+    .trim()
+    .optional(), // Optional for create, will be auto-generated
   season: z.enum(['WINTER', 'SPRING_AUTUMN', 'SUMMER'], {
     errorMap: () => ({ message: 'Invalid season. Must be WINTER, SPRING_AUTUMN, or SUMMER' }),
   }),

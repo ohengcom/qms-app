@@ -2,11 +2,24 @@
 
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/lib/language-provider';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2 } from 'lucide-react';
 
@@ -21,8 +34,6 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
   const { t } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
-    itemNumber: '',
     season: 'WINTER',
     lengthCm: '',
     widthCm: '',
@@ -32,7 +43,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
     color: '',
     brand: '',
     location: '',
-    currentStatus: 'AVAILABLE',
+    currentStatus: 'MAINTENANCE',
     notes: '',
   });
 
@@ -42,8 +53,6 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
       if (quilt) {
         // Edit mode - populate with existing data
         setFormData({
-          name: quilt.name || '',
-          itemNumber: quilt.itemNumber?.toString() || '',
           season: quilt.season || 'WINTER',
           lengthCm: quilt.lengthCm?.toString() || '',
           widthCm: quilt.widthCm?.toString() || '',
@@ -53,14 +62,12 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
           color: quilt.color || '',
           brand: quilt.brand || '',
           location: quilt.location || '',
-          currentStatus: quilt.currentStatus || 'AVAILABLE',
+          currentStatus: quilt.currentStatus || 'MAINTENANCE',
           notes: quilt.notes || '',
         });
       } else {
-        // Add mode - reset to defaults
+        // Add mode - reset to defaults with MAINTENANCE status
         setFormData({
-          name: '',
-          itemNumber: '',
           season: 'WINTER',
           lengthCm: '',
           widthCm: '',
@@ -70,7 +77,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
           color: '',
           brand: '',
           location: '',
-          currentStatus: 'AVAILABLE',
+          currentStatus: 'MAINTENANCE',
           notes: '',
         });
       }
@@ -84,17 +91,21 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
     try {
       const data = {
         ...formData,
-        itemNumber: parseInt(formData.itemNumber) || 0,
         lengthCm: parseFloat(formData.lengthCm) || 0,
         widthCm: parseFloat(formData.widthCm) || 0,
         weightGrams: parseFloat(formData.weightGrams) || 0,
       };
 
       if (quilt) {
-        // Edit mode - include ID
-        await onSave({ ...data, id: quilt.id });
+        // Edit mode - include ID (name and itemNumber are read-only in edit mode)
+        await onSave({
+          ...data,
+          id: quilt.id,
+          name: quilt.name,
+          itemNumber: quilt.itemNumber,
+        });
       } else {
-        // Add mode
+        // Add mode - backend will generate name and itemNumber
         await onSave(data);
       }
 
@@ -124,34 +135,30 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Show read-only name and number in edit mode */}
+          {quilt && (
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-xs text-gray-500">{t('quilts.table.itemNumber')}</Label>
+                  <p className="text-sm font-medium text-gray-900">#{quilt.itemNumber}</p>
+                </div>
+                <div>
+                  <Label className="text-xs text-gray-500">{t('quilts.form.name')}</Label>
+                  <p className="text-sm font-medium text-gray-900">{quilt.name}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Basic Information */}
             <div className="space-y-2">
-              <Label htmlFor="name">{t('quilts.form.name')} *</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => handleInputChange('name', e.target.value)}
-                placeholder={t('quilts.form.namePlaceholder')}
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="itemNumber">{t('quilts.table.itemNumber')} *</Label>
-              <Input
-                id="itemNumber"
-                type="number"
-                value={formData.itemNumber}
-                onChange={(e) => handleInputChange('itemNumber', e.target.value)}
-                placeholder="001"
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
               <Label htmlFor="season">{t('quilts.table.season')}</Label>
-              <Select value={formData.season} onValueChange={(value) => handleInputChange('season', value)}>
+              <Select
+                value={formData.season}
+                onValueChange={value => handleInputChange('season', value)}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -165,7 +172,10 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
 
             <div className="space-y-2">
               <Label htmlFor="currentStatus">{t('quilts.table.status')}</Label>
-              <Select value={formData.currentStatus} onValueChange={(value) => handleInputChange('currentStatus', value)}>
+              <Select
+                value={formData.currentStatus}
+                onValueChange={value => handleInputChange('currentStatus', value)}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -186,7 +196,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
                 type="number"
                 step="0.1"
                 value={formData.lengthCm}
-                onChange={(e) => handleInputChange('lengthCm', e.target.value)}
+                onChange={e => handleInputChange('lengthCm', e.target.value)}
                 placeholder="200"
               />
             </div>
@@ -198,7 +208,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
                 type="number"
                 step="0.1"
                 value={formData.widthCm}
-                onChange={(e) => handleInputChange('widthCm', e.target.value)}
+                onChange={e => handleInputChange('widthCm', e.target.value)}
                 placeholder="150"
               />
             </div>
@@ -210,7 +220,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
                 type="number"
                 step="1"
                 value={formData.weightGrams}
-                onChange={(e) => handleInputChange('weightGrams', e.target.value)}
+                onChange={e => handleInputChange('weightGrams', e.target.value)}
                 placeholder="2000"
               />
             </div>
@@ -220,7 +230,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
               <Input
                 id="color"
                 value={formData.color}
-                onChange={(e) => handleInputChange('color', e.target.value)}
+                onChange={e => handleInputChange('color', e.target.value)}
                 placeholder={t('quilts.form.colorPlaceholder')}
               />
             </div>
@@ -231,7 +241,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
               <Input
                 id="fillMaterial"
                 value={formData.fillMaterial}
-                onChange={(e) => handleInputChange('fillMaterial', e.target.value)}
+                onChange={e => handleInputChange('fillMaterial', e.target.value)}
                 placeholder={t('quilts.form.materialPlaceholder')}
               />
             </div>
@@ -241,7 +251,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
               <Input
                 id="brand"
                 value={formData.brand}
-                onChange={(e) => handleInputChange('brand', e.target.value)}
+                onChange={e => handleInputChange('brand', e.target.value)}
                 placeholder={t('quilts.form.brandPlaceholder')}
               />
             </div>
@@ -251,7 +261,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
               <Input
                 id="location"
                 value={formData.location}
-                onChange={(e) => handleInputChange('location', e.target.value)}
+                onChange={e => handleInputChange('location', e.target.value)}
                 placeholder={t('quilts.form.locationPlaceholder')}
               />
             </div>
@@ -263,7 +273,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
             <Textarea
               id="materialDetails"
               value={formData.materialDetails}
-              onChange={(e) => handleInputChange('materialDetails', e.target.value)}
+              onChange={e => handleInputChange('materialDetails', e.target.value)}
               placeholder={t('quilts.form.materialDetailsPlaceholder')}
               rows={2}
             />
@@ -274,7 +284,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
             <Textarea
               id="notes"
               value={formData.notes}
-              onChange={(e) => handleInputChange('notes', e.target.value)}
+              onChange={e => handleInputChange('notes', e.target.value)}
               placeholder={t('quilts.form.notesPlaceholder')}
               rows={3}
             />

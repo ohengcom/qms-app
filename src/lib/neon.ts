@@ -54,7 +54,7 @@ export async function executeQuery<T = any>(queryText: string, params: any[] = [
 export const db = {
   // Get all quilts with optional filtering
   async getQuilts(
-    filters: {
+    _filters: {
       season?: string;
       status?: string;
       location?: string;
@@ -152,13 +152,52 @@ export const db = {
     }
   },
 
+  // Helper function to generate quilt name
+  generateQuiltName(data: any): string {
+    // Format: "品牌"+"颜色"+"重量"+重量单位"+"季节"+被
+    // Example: 百思寒褐色1100克春秋被
+    const brand = data.brand || '未知品牌';
+    const color = data.color || '未知颜色';
+    const weight = data.weightGrams || 0;
+
+    // Map season to Chinese
+    const seasonMap: Record<string, string> = {
+      WINTER: '冬',
+      SPRING_AUTUMN: '春秋',
+      SUMMER: '夏',
+    };
+    const season = seasonMap[data.season] || '通用';
+
+    return `${brand}${color}${weight}克${season}被`;
+  },
+
+  // Get next item number
+  async getNextItemNumber(): Promise<number> {
+    try {
+      const result = await sql`
+        SELECT COALESCE(MAX(item_number), 0) + 1 as next_number
+        FROM quilts
+      `;
+      return result[0]?.next_number || 1;
+    } catch (error) {
+      console.error('Get next item number error:', error);
+      return 1;
+    }
+  },
+
   // Create quilt
   async createQuilt(data: any) {
     try {
       console.log('Creating quilt with data:', data);
-      
+
       const id = crypto.randomUUID();
       const now = new Date().toISOString();
+
+      // Auto-generate item number and name
+      const itemNumber = await this.getNextItemNumber();
+      const name = this.generateQuiltName(data);
+
+      console.log('Generated itemNumber:', itemNumber, 'name:', name);
 
       // Use Neon's tagged template literal syntax directly
       const result = await sql`
@@ -168,9 +207,9 @@ export const db = {
           packaging_info, current_status, notes, created_at, updated_at
         ) VALUES (
           ${id},
-          ${data.itemNumber},
+          ${itemNumber},
           ${data.groupId || null},
-          ${data.name},
+          ${name},
           ${data.season},
           ${data.lengthCm},
           ${data.widthCm},
@@ -182,7 +221,7 @@ export const db = {
           ${data.purchaseDate || null},
           ${data.location},
           ${data.packagingInfo || null},
-          ${data.currentStatus || 'AVAILABLE'},
+          ${data.currentStatus || 'MAINTENANCE'},
           ${data.notes || null},
           ${now},
           ${now}
@@ -228,7 +267,7 @@ export const db = {
   async updateQuilt(id: string, data: any) {
     try {
       console.log('Updating quilt:', id, 'with data:', data);
-      
+
       const now = new Date().toISOString();
 
       const result = await sql`
@@ -264,15 +303,15 @@ export const db = {
   async deleteQuilt(id: string) {
     try {
       console.log('Deleting quilt:', id);
-      
+
       // First delete any related records (current_usage, usage_periods, maintenance_records)
       await sql`DELETE FROM current_usage WHERE quilt_id = ${id}`;
       await sql`DELETE FROM usage_periods WHERE quilt_id = ${id}`;
       await sql`DELETE FROM maintenance_records WHERE quilt_id = ${id}`;
-      
+
       // Then delete the quilt
       const result = await sql`DELETE FROM quilts WHERE id = ${id} RETURNING id`;
-      
+
       console.log('Quilt deleted successfully:', result.length > 0);
       return result.length > 0;
     } catch (error) {
@@ -285,7 +324,7 @@ export const db = {
   async updateQuiltStatus(id: string, status: string) {
     try {
       console.log('Updating quilt status:', id, 'to:', status);
-      
+
       const now = new Date().toISOString();
 
       const result = await sql`
