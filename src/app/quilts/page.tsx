@@ -227,7 +227,7 @@ export default function QuiltsPage() {
           <p className="text-sm text-gray-500 mt-1">
             {isSelectMode && selectedIds.size > 0
               ? `${t('language') === 'zh' ? '已选择' : 'Selected'} ${selectedIds.size} ${t('quilts.messages.quilts')}`
-              : `${filteredQuilts.length} ${t('quilts.messages.of')} ${quilts.length} ${t('quilts.messages.quilts')}`}
+              : `${t('quilts.messages.of')} ${quilts.length} ${t('quilts.messages.quilts')}`}
           </p>
         </div>
         <div className="flex items-center gap-2">
