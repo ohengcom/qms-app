@@ -91,7 +91,9 @@ export default function QuiltsPage() {
     // Apply sorting
     if (sortField) {
       console.log('Sorting by:', sortField, 'Direction:', sortDirection);
-      console.log('Sample data:', result[0]);
+      console.log('Total records:', result.length);
+      console.log('All lengthCm values:', result.map((q: any) => ({ id: q.id, lengthCm: q.lengthCm, widthCm: q.widthCm })));
+      console.log('All weightGrams values:', result.map((q: any) => ({ id: q.id, weightGrams: q.weightGrams })));
       
       result = [...result].sort((a: any, b: any) => {
         let aValue = a[sortField];
