@@ -32,7 +32,7 @@ export async function POST(
     if (oldStatus === 'IN_USE' && newStatus !== 'IN_USE') {
       console.log('Ending active usage record...');
       const recordEndDate = endDate || new Date().toISOString().split('T')[0];
-      usageRecord = await db.endUsageRecord(id, recordEndDate);
+      usageRecord = await db.endUsageRecord(id, recordEndDate, notes);
     }
 
     // Update quilt status
