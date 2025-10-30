@@ -121,6 +121,23 @@ export default function QuiltsPage() {
             : bSize.width - aSize.width;
         }
 
+        // Special handling for weight field (format: "2.5kg" or "2.5")
+        if (sortField === 'weight') {
+          const parseWeight = (weight: any) => {
+            if (weight == null) return 0;
+            // If it's already a number, return it
+            if (typeof weight === 'number') return weight;
+            // If it's a string, extract the numeric value
+            const numStr = String(weight).replace(/[^\d.]/g, '');
+            return parseFloat(numStr) || 0;
+          };
+
+          const aWeight = parseWeight(aValue);
+          const bWeight = parseWeight(bValue);
+
+          return sortDirection === 'asc' ? aWeight - bWeight : bWeight - aWeight;
+        }
+
         // Convert to string for comparison if needed
         if (typeof aValue === 'string') {
           aValue = aValue.toLowerCase();
