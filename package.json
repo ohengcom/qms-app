@@ -25,6 +25,7 @@
     "audit-translations": "tsx scripts/audit-translations.ts",
     "update-quilt-names": "tsx scripts/update-quilt-names.ts",
     "migrate-status": "tsx scripts/migrate-available-to-storage.ts",
+    "setup-usage-tracking": "tsx scripts/setup-usage-tracking.ts",
     "build:production": "NODE_ENV=production npm run build",
     "start:production": "NODE_ENV=production npm run start",
     "docker:build": "docker build -t qms-app .",

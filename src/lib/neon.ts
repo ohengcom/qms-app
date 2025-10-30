@@ -358,4 +358,133 @@ export const db = {
       return [];
     }
   },
+
+  // ========== Usage Tracking Functions ==========
+
+  /**
+   * Create a new usage record when quilt status changes to IN_USE
+   */
+  async createUsageRecord(quiltId: string, startDate: string, notes?: string) {
+    try {
+      console.log('Creating usage record for quilt:', quiltId);
+
+      const id = crypto.randomUUID();
+      const now = new Date().toISOString();
+
+      const result = await sql`
+        INSERT INTO usage_records (
+          id, quilt_id, start_date, end_date, status, usage_type, notes, created_at, updated_at
+        ) VALUES (
+          ${id},
+          ${quiltId},
+          ${startDate},
+          NULL,
+          'ACTIVE',
+          'REGULAR',
+          ${notes || null},
+          ${now},
+          ${now}
+        ) RETURNING *
+      `;
+
+      console.log('Usage record created successfully:', result[0]);
+      return result[0];
+    } catch (error) {
+      console.error('Create usage record error:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * End the active usage record when quilt status changes from IN_USE
+   */
+  async endUsageRecord(quiltId: string, endDate: string) {
+    try {
+      console.log('Ending usage record for quilt:', quiltId);
+
+      const now = new Date().toISOString();
+
+      const result = await sql`
+        UPDATE usage_records SET 
+          end_date = ${endDate},
+          status = 'COMPLETED',
+          updated_at = ${now}
+        WHERE quilt_id = ${quiltId}
+          AND end_date IS NULL
+        RETURNING *
+      `;
+
+      console.log('Usage record ended successfully:', result[0]);
+      return result[0] || null;
+    } catch (error) {
+      console.error('End usage record error:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get the active usage record for a quilt
+   */
+  async getActiveUsageRecord(quiltId: string) {
+    try {
+      const result = await sql`
+        SELECT * FROM usage_records
+        WHERE quilt_id = ${quiltId}
+          AND end_date IS NULL
+        LIMIT 1
+      `;
+
+      return result[0] || null;
+    } catch (error) {
+      console.error('Get active usage record error:', error);
+      return null;
+    }
+  },
+
+  /**
+   * Update a usage record
+   */
+  async updateUsageRecord(id: string, data: any) {
+    try {
+      console.log('Updating usage record:', id, 'with data:', data);
+
+      const now = new Date().toISOString();
+
+      const result = await sql`
+        UPDATE usage_records SET 
+          start_date = ${data.startDate},
+          end_date = ${data.endDate || null},
+          status = ${data.status || 'ACTIVE'},
+          usage_type = ${data.usageType || 'REGULAR'},
+          notes = ${data.notes || null},
+          updated_at = ${now}
+        WHERE id = ${id}
+        RETURNING *
+      `;
+
+      console.log('Usage record updated successfully:', result[0]);
+      return result[0] || null;
+    } catch (error) {
+      console.error('Update usage record error:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get all usage records for a quilt
+   */
+  async getUsageRecordsByQuiltId(quiltId: string) {
+    try {
+      const result = await sql`
+        SELECT * FROM usage_records
+        WHERE quilt_id = ${quiltId}
+        ORDER BY start_date DESC
+      `;
+
+      return result;
+    } catch (error) {
+      console.error('Get usage records by quilt ID error:', error);
+      return [];
+    }
+  },
 };

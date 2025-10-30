@@ -198,16 +198,42 @@ export default function QuiltsPage() {
     }
   };
 
-  const handleStatusChange = async (quiltId: string, newStatus: string) => {
+  const handleStatusChange = async (
+    quiltId: string,
+    newStatus: string,
+    options?: { startDate?: string; endDate?: string; notes?: string }
+  ) => {
     const lang = t('language') === 'zh' ? 'zh' : 'en';
 
     try {
-      // Use update mutation to change status
+      // Use smart status update API
+      const response = await fetch(`/api/quilts/${quiltId}/status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          newStatus,
+          startDate: options?.startDate,
+          endDate: options?.endDate,
+          notes: options?.notes,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update status');
+      }
+
+      const result = await response.json();
+
+      // Invalidate queries to refresh data
       await updateQuiltMutation.mutateAsync({
         id: quiltId,
         data: { currentStatus: newStatus },
       });
-      toast.success(getToastMessage('updateSuccess', lang));
+
+      toast.success(
+        result.message ||
+          (lang === 'zh' ? '状态更新成功' : 'Status updated successfully')
+      );
     } catch (error) {
       console.error('Error updating status:', error);
       toast.error(getToastMessage('updateError', lang));
