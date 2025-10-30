@@ -5,8 +5,9 @@ import { useLanguage } from '@/lib/language-provider';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { TableSkeleton } from '@/components/ui/skeleton-layouts';
-import { Clock, Package, BarChart3, ArrowLeft, Eye, PackageOpen } from 'lucide-react';
+import { Clock, Package, BarChart3, ArrowLeft, Eye, PackageOpen, Edit, Trash2 } from 'lucide-react';
 import { EmptyState } from '@/components/ui/empty-state';
+import { EditUsageRecordDialog } from '@/components/usage/EditUsageRecordDialog';
 
 interface UsageRecord {
   id: string;
@@ -95,6 +96,8 @@ export default function UsageTrackingPage() {
     setSelectedQuilt(null);
     setSelectedQuiltUsage([]);
   };
+
+
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString(t('language') === 'zh' ? 'zh-CN' : 'en-US', {
@@ -297,15 +300,38 @@ export default function UsageTrackingPage() {
                         </span>
                       </td>
                       <td className="px-4 py-3 text-right">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleRecordClick(record)}
-                          className="h-8 px-3"
-                        >
-                          <Eye className="h-3.5 w-3.5 mr-1" />
-                          {t('language') === 'zh' ? '查看' : 'View'}
-                        </Button>
+                        <div className="flex items-center justify-end gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleRecordClick(record)}
+                            className="h-8 px-3"
+                          >
+                            <Eye className="h-3.5 w-3.5 mr-1" />
+                            {t('language') === 'zh' ? '查看' : 'View'}
+                          </Button>
+                          <EditUsageRecordDialog
+                            record={{
+                              id: record.id,
+                              quiltId: record.quiltId,
+                              startedAt: record.startedAt,
+                              endedAt: record.endedAt,
+                              usageType: record.usageType,
+                              notes: record.notes,
+                              quiltName: record.quiltName,
+                              itemNumber: record.itemNumber,
+                              color: record.color,
+                              isActive: record.isActive,
+                            }}
+                            onUpdate={loadUsageHistory}
+                            onDelete={loadUsageHistory}
+                            trigger={
+                              <Button variant="ghost" size="sm" className="h-8 px-2">
+                                <Edit className="h-3.5 w-3.5" />
+                              </Button>
+                            }
+                          />
+                        </div>
                       </td>
                     </tr>
                   ))
