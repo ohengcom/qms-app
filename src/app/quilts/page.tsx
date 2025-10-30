@@ -143,9 +143,7 @@ export default function QuiltsPage() {
     );
 
     try {
-      const deletePromises = Array.from(selectedIds).map(id =>
-        deleteQuiltMutation.mutateAsync(id)
-      );
+      const deletePromises = Array.from(selectedIds).map(id => deleteQuiltMutation.mutateAsync(id));
 
       await Promise.all(deletePromises);
 
@@ -328,6 +326,9 @@ export default function QuiltsPage() {
                   {t('quilts.table.material')}
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('quilts.table.color')}
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {t('quilts.table.location')}
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -342,7 +343,7 @@ export default function QuiltsPage() {
               {filteredQuilts.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={isSelectMode ? 10 : 9}
+                    colSpan={isSelectMode ? 11 : 10}
                     className="px-4 py-12 text-center text-gray-500"
                   >
                     {searchTerm
@@ -379,10 +380,8 @@ export default function QuiltsPage() {
                       {quilt.lengthCm}×{quilt.widthCm}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-700">{quilt.weightGrams}g</td>
-                    <td className="px-4 py-3">
-                      <div className="text-sm text-gray-900">{quilt.fillMaterial}</div>
-                      <div className="text-xs text-gray-500">{quilt.color}</div>
-                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{quilt.fillMaterial}</td>
+                    <td className="px-4 py-3 text-sm text-gray-700">{quilt.color || '-'}</td>
                     <td className="px-4 py-3 text-sm text-gray-700">{quilt.location}</td>
                     <td className="px-4 py-3">
                       <span
