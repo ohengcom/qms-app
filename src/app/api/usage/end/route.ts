@@ -50,17 +50,19 @@ export async function POST(request: NextRequest) {
 
     console.log('Usage ended successfully');
 
+    const usage = activeUsage[0];
+
     return NextResponse.json({
       success: true,
       message: 'Usage ended successfully',
       usagePeriod: {
-        id: usagePeriodId,
+        id: usage.id,
         quiltId,
-        startedAt: usage.started_at,
+        startedAt: usage.start_date,
         endedAt: now,
         usageType: usage.usage_type,
-        notes: notes || usage.notes
-      }
+        notes: notes || usage.notes,
+      },
     });
 
   } catch (error) {
