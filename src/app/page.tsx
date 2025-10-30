@@ -96,94 +96,110 @@ export default function DashboardPage() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white border border-gray-200 rounded-lg p-5">
+        {/* Total Quilts Card */}
+        <div className="card-elevated bg-white rounded-lg p-5">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">{t('dashboard.stats.totalQuilts')}</p>
-              <p className="text-3xl font-semibold text-gray-900 mt-2">{overview.totalQuilts}</p>
+              <p className="text-sm font-medium text-muted-foreground">
+                {t('dashboard.stats.totalQuilts')}
+              </p>
+              <p className="text-3xl font-bold text-foreground mt-2">{overview.totalQuilts}</p>
             </div>
-            <div className="p-3 bg-blue-50 rounded-lg">
-              <Package className="w-6 h-6 text-blue-600" />
+            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <Package className="w-6 h-6 text-primary" />
             </div>
           </div>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-lg p-5">
+        {/* In Use Card */}
+        <div className="card-elevated bg-white rounded-lg p-5">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">{t('dashboard.stats.inUse')}</p>
-              <p className="text-3xl font-semibold text-gray-900 mt-2">{overview.inUseCount}</p>
+              <p className="text-sm font-medium text-muted-foreground">
+                {t('dashboard.stats.inUse')}
+              </p>
+              <p className="text-3xl font-bold text-foreground mt-2">{overview.inUseCount}</p>
             </div>
-            <div className="p-3 bg-green-50 rounded-lg">
-              <Activity className="w-6 h-6 text-green-600" />
+            <div className="w-12 h-12 rounded-full bg-success/10 flex items-center justify-center">
+              <Activity className="w-6 h-6 text-success" />
             </div>
           </div>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-lg p-5">
+        {/* Available Card */}
+        <div className="card-elevated bg-white rounded-lg p-5">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">{t('dashboard.stats.available')}</p>
-              <p className="text-3xl font-semibold text-gray-900 mt-2">{overview.availableCount}</p>
+              <p className="text-sm font-medium text-muted-foreground">
+                {t('dashboard.stats.available')}
+              </p>
+              <p className="text-3xl font-bold text-foreground mt-2">{overview.availableCount}</p>
             </div>
-            <div className="p-3 bg-purple-50 rounded-lg">
-              <Package className="w-6 h-6 text-purple-600" />
+            <div className="w-12 h-12 rounded-full bg-accent flex items-center justify-center">
+              <Package className="w-6 h-6 text-accent-foreground" />
             </div>
           </div>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-lg p-5">
+        {/* Storage Card */}
+        <div className="card-elevated bg-white rounded-lg p-5">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">{t('dashboard.stats.storage')}</p>
-              <p className="text-3xl font-semibold text-gray-900 mt-2">{overview.storageCount}</p>
+              <p className="text-sm font-medium text-muted-foreground">
+                {t('dashboard.stats.storage')}
+              </p>
+              <p className="text-3xl font-bold text-foreground mt-2">{overview.storageCount}</p>
             </div>
-            <div className="p-3 bg-gray-50 rounded-lg">
-              <Archive className="w-6 h-6 text-gray-600" />
+            <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+              <Archive className="w-6 h-6 text-muted-foreground" />
             </div>
           </div>
         </div>
       </div>
 
       {/* Currently In Use Quilts - List View */}
-      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+      <div className="card-elevated bg-white rounded-lg overflow-hidden">
+        <div className="px-6 py-4 border-b border-border bg-muted/30">
           <div className="flex items-center gap-2">
-            <Activity className="w-5 h-5 text-green-600" />
-            <h2 className="text-lg font-semibold text-gray-900">{t('pages.currentlyInUse')}</h2>
-            <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded-full">
+            <div className="w-8 h-8 rounded-full bg-success/10 flex items-center justify-center">
+              <Activity className="w-4 h-4 text-success" />
+            </div>
+            <h2 className="text-lg font-semibold text-foreground">{t('pages.currentlyInUse')}</h2>
+            <span className="px-2 py-0.5 bg-success/10 text-success text-xs font-medium rounded-full">
               {inUseQuilts.length}
             </span>
           </div>
         </div>
-        <div className="divide-y divide-gray-200">
+        <div className="divide-y divide-border">
           {inUseQuilts.length === 0 ? (
-            <div className="px-6 py-8 text-center text-gray-500">{t('pages.noQuiltsInUse')}</div>
+            <div className="px-6 py-8 text-center text-muted-foreground">
+              {t('pages.noQuiltsInUse')}
+            </div>
           ) : (
             inUseQuilts.map((quilt: any) => (
-              <div key={quilt.id} className="px-6 py-4 hover:bg-gray-50 transition-colors">
+              <div key={quilt.id} className="px-6 py-4 table-row-hover">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4 flex-1">
-                    <div className="flex items-center justify-center w-10 h-10 bg-green-50 rounded-lg">
-                      <Package className="w-5 h-5 text-green-600" />
+                    <div className="flex items-center justify-center w-10 h-10 bg-success/10 rounded-lg">
+                      <Package className="w-5 h-5 text-success" />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-medium text-gray-900">{quilt.name}</span>
-                        <span className="text-xs text-gray-500">#{quilt.itemNumber}</span>
+                        <span className="font-medium text-foreground">{quilt.name}</span>
+                        <span className="text-xs text-muted-foreground">#{quilt.itemNumber}</span>
                         <span
                           className={`px-2 py-0.5 text-xs font-medium rounded ${
                             quilt.season === 'WINTER'
-                              ? 'bg-blue-100 text-blue-700'
+                              ? 'bg-info/10 text-info'
                               : quilt.season === 'SUMMER'
-                                ? 'bg-orange-100 text-orange-700'
-                                : 'bg-green-100 text-green-700'
+                                ? 'bg-warning/10 text-warning'
+                                : 'bg-success/10 text-success'
                           }`}
                         >
                           {t(`season.${quilt.season}`)}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 mt-1 text-xs text-gray-600">
+                      <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">
                         <span>
                           {t('pages.fillMaterial')}: {quilt.fillMaterial}
                         </span>
@@ -198,7 +214,7 @@ export default function DashboardPage() {
                   </div>
                   <Link
                     href={`/quilts?search=${quilt.name}`}
-                    className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                    className="text-sm text-primary hover:text-primary/80 font-medium transition-colors"
                   >
                     {t('pages.viewDetails')}
                   </Link>
@@ -210,46 +226,50 @@ export default function DashboardPage() {
       </div>
 
       {/* Historical Usage - Same Day in Previous Years - List View */}
-      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+      <div className="card-elevated bg-white rounded-lg overflow-hidden">
+        <div className="px-6 py-4 border-b border-border bg-muted/30">
           <div className="flex items-center gap-2">
-            <History className="w-5 h-5 text-purple-600" />
-            <h2 className="text-lg font-semibold text-gray-900">{t('pages.historicalUsage')}</h2>
-            <span className="text-sm text-gray-500">
+            <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center">
+              <History className="w-4 h-4 text-accent-foreground" />
+            </div>
+            <h2 className="text-lg font-semibold text-foreground">{t('pages.historicalUsage')}</h2>
+            <span className="text-sm text-muted-foreground">
               ({today.getMonth() + 1}/{today.getDate()})
             </span>
           </div>
         </div>
-        <div className="divide-y divide-gray-200">
+        <div className="divide-y divide-border">
           {historicalUsage.length === 0 ? (
-            <div className="px-6 py-8 text-center text-gray-500">
+            <div className="px-6 py-8 text-center text-muted-foreground">
               {t('pages.noHistoricalRecords')}
             </div>
           ) : (
             historicalUsage.map((record: any) => (
-              <div key={record.id} className="px-6 py-4 hover:bg-gray-50 transition-colors">
+              <div key={record.id} className="px-6 py-4 table-row-hover">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4 flex-1">
-                    <div className="flex items-center justify-center w-10 h-10 bg-purple-50 rounded-lg">
-                      <span className="text-sm font-semibold text-purple-700">{record.year}</span>
+                    <div className="flex items-center justify-center w-10 h-10 bg-accent rounded-lg">
+                      <span className="text-sm font-semibold text-accent-foreground">
+                        {record.year}
+                      </span>
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-medium text-gray-900">{record.quiltName}</span>
-                        <span className="text-xs text-gray-500">#{record.itemNumber}</span>
+                        <span className="font-medium text-foreground">{record.quiltName}</span>
+                        <span className="text-xs text-muted-foreground">#{record.itemNumber}</span>
                         <span
                           className={`px-2 py-0.5 text-xs font-medium rounded ${
                             record.season === 'WINTER'
-                              ? 'bg-blue-100 text-blue-700'
+                              ? 'bg-info/10 text-info'
                               : record.season === 'SUMMER'
-                                ? 'bg-orange-100 text-orange-700'
-                                : 'bg-green-100 text-green-700'
+                                ? 'bg-warning/10 text-warning'
+                                : 'bg-success/10 text-success'
                           }`}
                         >
                           {t(`season.${record.season}`)}
                         </span>
                       </div>
-                      <div className="text-xs text-gray-600 mt-1">
+                      <div className="text-xs text-muted-foreground mt-1">
                         {new Date(record.startDate).toLocaleDateString(
                           lang === 'zh' ? 'zh-CN' : 'en-US',
                           { year: 'numeric', month: 'long', day: 'numeric' }

@@ -273,8 +273,8 @@ This task list breaks down the Phase 1 improvements into actionable implementati
     - _Requirements: 15.1, 15.7_
     - _Files: src/app/globals.css_
 
-- [ ] 16. Enhance card components
-  - [ ] 16.1 Create card variants
+- [x] 16. Enhance card components
+  - [x] 16.1 Create card variants
     - Update `src/components/ui/card.tsx`
     - Add elevated variant
     - Add interactive variant
@@ -283,7 +283,7 @@ This task list breaks down the Phase 1 improvements into actionable implementati
     - _Requirements: 15.2, 15.9_
     - _Files: src/components/ui/card.tsx_
 
-  - [ ] 16.2 Update dashboard cards
+  - [x] 16.2 Update dashboard cards
     - Update `src/app/page.tsx`
     - Apply new card variants
     - Add icons to stat cards
