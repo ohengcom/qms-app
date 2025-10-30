@@ -98,6 +98,29 @@ export default function QuiltsPage() {
         if (aValue == null) return 1;
         if (bValue == null) return -1;
 
+        // Special handling for size field (format: "200x230")
+        if (sortField === 'size') {
+          const parseSize = (size: string) => {
+            if (!size) return { length: 0, width: 0 };
+            const parts = size.split('x').map((s) => parseInt(s.trim()) || 0);
+            return { length: parts[0] || 0, width: parts[1] || 0 };
+          };
+
+          const aSize = parseSize(aValue);
+          const bSize = parseSize(bValue);
+
+          // First compare by length
+          if (aSize.length !== bSize.length) {
+            return sortDirection === 'asc'
+              ? aSize.length - bSize.length
+              : bSize.length - aSize.length;
+          }
+          // If length is the same, compare by width
+          return sortDirection === 'asc'
+            ? aSize.width - bSize.width
+            : bSize.width - aSize.width;
+        }
+
         // Convert to string for comparison if needed
         if (typeof aValue === 'string') {
           aValue = aValue.toLowerCase();
