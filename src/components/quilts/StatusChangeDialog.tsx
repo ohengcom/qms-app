@@ -2,9 +2,22 @@
 
 import { useState } from 'react';
 import { useLanguage } from '@/lib/language-provider';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Loader2 } from 'lucide-react';
 
@@ -15,10 +28,15 @@ interface StatusChangeDialogProps {
   onStatusChange: (quiltId: string, newStatus: string) => Promise<void>;
 }
 
-export function StatusChangeDialog({ open, onOpenChange, quilt, onStatusChange }: StatusChangeDialogProps) {
+export function StatusChangeDialog({
+  open,
+  onOpenChange,
+  quilt,
+  onStatusChange,
+}: StatusChangeDialogProps) {
   const { t } = useLanguage();
   const [loading, setLoading] = useState(false);
-  const [newStatus, setNewStatus] = useState(quilt?.currentStatus || 'AVAILABLE');
+  const [newStatus, setNewStatus] = useState(quilt?.currentStatus || 'STORAGE');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,11 +56,14 @@ export function StatusChangeDialog({ open, onOpenChange, quilt, onStatusChange }
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'AVAILABLE': return 'text-green-600';
-      case 'IN_USE': return 'text-blue-600';
-      case 'STORAGE': return 'text-gray-600';
-      case 'MAINTENANCE': return 'text-yellow-600';
-      default: return 'text-gray-600';
+      case 'IN_USE':
+        return 'text-green-600';
+      case 'STORAGE':
+        return 'text-orange-600';
+      case 'MAINTENANCE':
+        return 'text-yellow-600';
+      default:
+        return 'text-gray-600';
     }
   };
 
@@ -52,10 +73,9 @@ export function StatusChangeDialog({ open, onOpenChange, quilt, onStatusChange }
         <DialogHeader>
           <DialogTitle>{t('quilts.dialogs.changeStatus')}</DialogTitle>
           <DialogDescription>
-            {t('language') === 'zh' 
+            {t('language') === 'zh'
               ? `更改被子 "${quilt?.name}" 的状态`
-              : `Change status for quilt "${quilt?.name}"`
-            }
+              : `Change status for quilt "${quilt?.name}"`}
           </DialogDescription>
         </DialogHeader>
 
@@ -74,14 +94,11 @@ export function StatusChangeDialog({ open, onOpenChange, quilt, onStatusChange }
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="AVAILABLE">
-                  <span className="text-green-600">{t('status.AVAILABLE')}</span>
-                </SelectItem>
                 <SelectItem value="IN_USE">
-                  <span className="text-blue-600">{t('status.IN_USE')}</span>
+                  <span className="text-green-600">{t('status.IN_USE')}</span>
                 </SelectItem>
                 <SelectItem value="STORAGE">
-                  <span className="text-gray-600">{t('status.STORAGE')}</span>
+                  <span className="text-orange-600">{t('status.STORAGE')}</span>
                 </SelectItem>
                 <SelectItem value="MAINTENANCE">
                   <span className="text-yellow-600">{t('status.MAINTENANCE')}</span>

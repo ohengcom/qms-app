@@ -354,7 +354,7 @@ This task list breaks down the Phase 1 improvements into actionable implementati
     - _Requirements: 15.2_
     - _Files: src/app/quilts/page.tsx_
 
-- [-] 20. Create loading skeleton components
+- [x] 20. Create loading skeleton components
   - [x] 20.1 Create Skeleton component
     - Create `src/components/ui/skeleton.tsx`
     - Implement pulse animation
@@ -371,7 +371,7 @@ This task list breaks down the Phase 1 improvements into actionable implementati
     - _Requirements: 15.8_
     - _Files: src/components/ui/skeleton-layouts.tsx_
 
-  - [-] 20.3 Replace loading spinners with skeletons
+  - [x] 20.3 Replace loading spinners with skeletons
     - Update dashboard loading
     - Update quilt list loading
     - Update usage tracking loading
@@ -438,8 +438,8 @@ This task list breaks down the Phase 1 improvements into actionable implementati
 
 ### 🎯 Page-Specific Enhancements
 
-- [ ] 24. Enhance dashboard page
-  - [ ] 24.1 Redesign statistics cards
+- [-] 24. Enhance dashboard page
+  - [x] 24.1 Redesign statistics cards
     - Add icons to each stat
     - Add color coding
     - Add trend indicators

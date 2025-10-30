@@ -37,7 +37,7 @@ export default function DashboardPage() {
           <Skeleton className="h-4 w-64" />
         </div>
         {/* Stats Cards Skeleton */}
-        <DashboardStatsSkeleton cards={4} />
+        <DashboardStatsSkeleton cards={3} />
         {/* Charts Skeleton */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <CardSkeleton className="h-80" />
@@ -62,7 +62,6 @@ export default function DashboardPage() {
   const overview = stats?.overview || {
     totalQuilts: 0,
     inUseCount: 0,
-    availableCount: 0,
     storageCount: 0,
     maintenanceCount: 0,
   };
@@ -106,8 +105,8 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Enhanced Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Enhanced Stats Grid - 3 Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Total Quilts Card */}
         <div className="group relative bg-gradient-to-br from-blue-50 to-white border-2 border-blue-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1">
           <div className="flex items-center justify-between">
@@ -144,27 +143,6 @@ export default function DashboardPage() {
             </div>
             <div className="w-14 h-14 rounded-full bg-green-500 flex items-center justify-center shadow-lg">
               <Activity className="w-7 h-7 text-white" />
-            </div>
-          </div>
-        </div>
-
-        {/* Available Card */}
-        <div className="group relative bg-gradient-to-br from-purple-50 to-white border-2 border-purple-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1">
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <Package className="w-4 h-4 text-purple-600" />
-                <p className="text-sm font-medium text-purple-900">
-                  {t('dashboard.stats.available')}
-                </p>
-              </div>
-              <p className="text-3xl font-bold text-purple-600 mt-2">{overview.availableCount}</p>
-              <p className="text-xs text-purple-600/70 mt-1">
-                {lang === 'zh' ? '可用' : 'Ready to Use'}
-              </p>
-            </div>
-            <div className="w-14 h-14 rounded-full bg-purple-500 flex items-center justify-center shadow-lg">
-              <Package className="w-7 h-7 text-white" />
             </div>
           </div>
         </div>

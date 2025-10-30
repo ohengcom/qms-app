@@ -200,7 +200,6 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="AVAILABLE">{t('status.AVAILABLE')}</SelectItem>
                   <SelectItem value="IN_USE">{t('status.IN_USE')}</SelectItem>
                   <SelectItem value="STORAGE">{t('status.STORAGE')}</SelectItem>
                   <SelectItem value="MAINTENANCE">{t('status.MAINTENANCE')}</SelectItem>

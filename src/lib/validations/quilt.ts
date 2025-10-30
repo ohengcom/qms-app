@@ -89,11 +89,11 @@ const baseQuiltSchemaObject = z.object({
     .trim(),
   packagingInfo: z.string().max(200, 'Packaging info too long (max 200 characters)').optional(),
   currentStatus: z
-    .enum(['AVAILABLE', 'IN_USE', 'MAINTENANCE', 'STORAGE'], {
+    .enum(['IN_USE', 'MAINTENANCE', 'STORAGE'], {
       errorMap: () => ({ message: 'Invalid status' }),
     })
     .optional()
-    .default('AVAILABLE'),
+    .default('STORAGE'),
   notes: z.string().max(1000, 'Notes too long (max 1000 characters)').optional(),
   imageUrl: z.string().url('Invalid image URL').optional().or(z.literal('')),
   thumbnailUrl: z.string().url('Invalid thumbnail URL').optional().or(z.literal('')),
@@ -223,7 +223,7 @@ export const endCurrentUsageSchema = z.object({
 // Search and Filter Schemas
 export const quiltFiltersSchema = z.object({
   season: z.enum(['WINTER', 'SPRING_AUTUMN', 'SUMMER']).optional(),
-  status: z.enum(['AVAILABLE', 'IN_USE', 'MAINTENANCE', 'STORAGE']).optional(),
+  status: z.enum(['IN_USE', 'MAINTENANCE', 'STORAGE']).optional(),
   location: z.string().optional(),
   brand: z.string().optional(),
   minWeight: z.number().int().positive().optional(),

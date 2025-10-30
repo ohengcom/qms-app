@@ -405,13 +405,11 @@ export default function QuiltsPage() {
                     <td className="px-4 py-3">
                       <span
                         className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
-                          quilt.currentStatus === 'AVAILABLE'
+                          quilt.currentStatus === 'IN_USE'
                             ? 'bg-green-50 text-green-700 border border-green-200'
-                            : quilt.currentStatus === 'IN_USE'
-                              ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                              : quilt.currentStatus === 'STORAGE'
-                                ? 'bg-gray-50 text-gray-700 border border-gray-200'
-                                : 'bg-yellow-50 text-yellow-700 border border-yellow-200'
+                            : quilt.currentStatus === 'STORAGE'
+                              ? 'bg-orange-50 text-orange-700 border border-orange-200'
+                              : 'bg-yellow-50 text-yellow-700 border border-yellow-200'
                         }`}
                       >
                         {t(`status.${quilt.currentStatus}`)}
