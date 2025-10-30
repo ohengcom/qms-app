@@ -233,9 +233,8 @@ export default function UsageTrackingPage() {
                       <td className="px-4 py-3 text-sm font-medium text-gray-900">
                         #{record.itemNumber}
                       </td>
-                      <td className="px-4 py-3">
-                        <div className="text-sm font-medium text-gray-900">{record.quiltName}</div>
-                        <div className="text-xs text-gray-500">{record.color}</div>
+                      <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                        {record.quiltName}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-700">
                         {t(`season.${record.season}`)}
