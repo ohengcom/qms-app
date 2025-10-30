@@ -14,13 +14,9 @@ import {
   Cloud,
   History,
   PackageOpen,
-  Plus,
-  BarChart3,
-  FileText,
 } from 'lucide-react';
 import { PageTransition } from '@/components/motion/PageTransition';
 import { AnimatedList, AnimatedListItem } from '@/components/motion/AnimatedList';
-import { AnimatedCard } from '@/components/motion/AnimatedCard';
 import { EmptyState } from '@/components/ui/empty-state';
 
 export default function DashboardPage() {
@@ -184,81 +180,6 @@ export default function DashboardPage() {
             </div>
           </AnimatedListItem>
         </AnimatedList>
-
-        {/* Quick Actions Section */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Link href="/quilts">
-            <AnimatedCard className="p-4 hover:border-primary/50 transition-colors cursor-pointer h-full">
-              <div className="flex flex-col items-center text-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
-                  <Plus className="w-6 h-6 text-blue-600" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-sm text-foreground">
-                    {lang === 'zh' ? '添加被子' : 'Add Quilt'}
-                  </h3>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {lang === 'zh' ? '创建新记录' : 'Create new record'}
-                  </p>
-                </div>
-              </div>
-            </AnimatedCard>
-          </Link>
-
-          <Link href="/usage">
-            <AnimatedCard className="p-4 hover:border-primary/50 transition-colors cursor-pointer h-full">
-              <div className="flex flex-col items-center text-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
-                  <Activity className="w-6 h-6 text-green-600" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-sm text-foreground">
-                    {lang === 'zh' ? '使用跟踪' : 'Track Usage'}
-                  </h3>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {lang === 'zh' ? '记录使用情况' : 'Record usage'}
-                  </p>
-                </div>
-              </div>
-            </AnimatedCard>
-          </Link>
-
-          <Link href="/analytics">
-            <AnimatedCard className="p-4 hover:border-primary/50 transition-colors cursor-pointer h-full">
-              <div className="flex flex-col items-center text-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
-                  <BarChart3 className="w-6 h-6 text-purple-600" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-sm text-foreground">
-                    {lang === 'zh' ? '数据分析' : 'Analytics'}
-                  </h3>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {lang === 'zh' ? '查看统计' : 'View statistics'}
-                  </p>
-                </div>
-              </div>
-            </AnimatedCard>
-          </Link>
-
-          <Link href="/reports">
-            <AnimatedCard className="p-4 hover:border-primary/50 transition-colors cursor-pointer h-full">
-              <div className="flex flex-col items-center text-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center">
-                  <FileText className="w-6 h-6 text-orange-600" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-sm text-foreground">
-                    {lang === 'zh' ? '报表' : 'Reports'}
-                  </h3>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {lang === 'zh' ? '生成报表' : 'Generate reports'}
-                  </p>
-                </div>
-              </div>
-            </AnimatedCard>
-          </Link>
-        </div>
 
         {/* Currently In Use Quilts - List View */}
         <div className="card-elevated bg-white rounded-lg overflow-hidden">
