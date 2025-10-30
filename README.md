@@ -1,569 +1,290 @@
-# QMS - Quilts Management System 🛏️
+# QMS - Quilt Management System 🛏️
 
 **[English](README.md) | [中文](README_zh.md)**
 
 > **Production-Ready Intelligent Inventory Management for Home Bedding**
 
-A modern Next.js application with tRPC and Neon PostgreSQL that transforms simple Excel-based quilt tracking into an intelligent inventory management system. Currently deployed at **https://qms-app-omega.vercel.app**
+A modern Next.js application with Neon PostgreSQL that transforms simple Excel-based quilt tracking into an intelligent inventory management system.
 
-## 🌟 Features
+**🌐 Live Demo**: https://qms-app-omega.vercel.app
 
-### 📊 **Intelligent Dashboard**
+## ✨ Key Features
 
-- Real-time inventory overview with status tracking
-- Seasonal distribution and usage analytics
-- Quick access filters and search functionality
-- Storage location optimization insights
-- Performance monitoring and system health metrics
+### 📊 Core Functionality
+- **Quilt Management**: Complete CRUD operations with auto-generated names and numbers
+- **Usage Tracking**: Automated usage record creation with smart status detection
+- **Status Management**: Three states (In Use, Storage, Maintenance) with intelligent transitions
+- **Data Analytics**: Usage statistics, seasonal analysis, and trend visualization
+- **Import/Export**: Excel support with Chinese language compatibility
 
-### 🔍 **Advanced Search & Filtering**
+### 🎨 Modern UI/UX
+- **Responsive Design**: Optimized for desktop, tablet, and mobile devices
+- **Smooth Animations**: Framer Motion powered transitions and micro-interactions
+- **Dual View Modes**: Grid and list views with seamless switching
+- **Bilingual Support**: Full Chinese/English interface
+- **Empty States**: Friendly guidance when no data is available
+- **Loading States**: Skeleton screens for better perceived performance
 
-- Multi-field search across name, brand, color, and notes
-- Filter by season, status, location, weight range, and materials
-- Smart suggestions and saved searches
-- Real-time search results with virtual scrolling
-- Advanced query capabilities with complex filters
+### 🔐 Security & Authentication
+- **Password Protection**: Secure login with JWT session management
+- **Route Protection**: Middleware-based authentication
+- **Session Persistence**: Remember me functionality
+- **Secure Cookies**: HTTP-only cookies for token storage
 
-### 🌱 **Seasonal Intelligence**
+### 🚀 Performance
+- **Fast Loading**: < 2s first load, < 500ms page transitions
+- **Optimized Queries**: Indexed database operations
+- **Efficient Rendering**: React Query for data caching
+- **Serverless**: Neon PostgreSQL for scalable database
 
-- Automatic seasonal classification (Winter/Spring-Autumn/Summer)
-- Smart recommendations based on current season and weather
-- Usage pattern analysis for optimal rotation
-- Seasonal transition alerts and preparation reminders
-- Weather-based suggestions and notifications
+## 🏗️ Tech Stack
 
-### 📈 **Usage Tracking & Analytics**
+### Frontend
+- **Framework**: Next.js 16.0.0 (App Router)
+- **Language**: TypeScript 5.6.3
+- **Styling**: Tailwind CSS 4
+- **UI Components**: Radix UI
+- **Animations**: Framer Motion
+- **State Management**: Zustand, React Query
+- **Forms**: React Hook Form + Zod
 
-- **Complete Usage History**: View all quilt usage records sorted chronologically
-- **Individual Quilt Tracking**: Click any record to see detailed usage history for specific quilts
-- **Real-time Status**: Track active usage periods and completed usage cycles
-- **Duration Calculations**: Automatic calculation of usage days and patterns
-- **Usage Statistics**: Total records, active periods, and completion metrics
-- **Multilingual Interface**: Full Chinese/English support for all usage data
-- **Interactive Navigation**: Seamless switching between list view and detail view
+### Backend
+- **Database**: Neon Serverless PostgreSQL
+- **API**: Next.js API Routes
+- **Authentication**: JWT + bcryptjs
+- **Validation**: Zod schemas
 
-### 🗂️ **Storage Optimization**
-
-- Accessibility-based storage layout suggestions
-- Location tracking with packaging information
-- Storage efficiency analysis and optimization
-- Visual storage organization tools
-
-### 📱 **Modern UI/UX & Mobile Support**
-
-- Responsive design optimized for desktop, tablet, and mobile
-- Progressive Web App (PWA) capabilities with offline support
-- Touch-friendly interface with gesture support
-- Mobile-first design with bottom navigation
-- Real-time updates and notifications
-- Optimized performance with caching and virtual scrolling
-
-### 🔄 **Data Management & Import/Export**
-
-- Excel import/export with Chinese language support
-- Bulk operations and batch processing
-- Data validation and error handling
-- Historical data migration from existing Excel files
-- Automated backup and restore capabilities
-
-## 🏗️ Application Architecture
-
-### 🚀 **Next.js Production Application** (Current Implementation)
-
-```
-qms/                            # Production-ready Next.js application
-├── src/
-│   ├── app/                   # Next.js 16 App Router
-│   │   ├── api/               # API routes (health, metrics, db-test, setup)
-│   │   ├── quilts/            # Quilt management pages
-│   │   ├── import/            # Data import functionality
-│   │   ├── export/            # Data export functionality
-│   │   ├── seasonal/          # Seasonal analytics
-│   │   └── usage/             # Usage tracking
-│   ├── components/            # React components
-│   │   ├── ui/                # Reusable UI components (Radix UI)
-│   │   ├── quilts/            # Quilt-specific components
-│   │   └── mobile/            # Mobile PWA components
-│   ├── hooks/                 # Custom React hooks (tRPC)
-│   ├── lib/                   # Utilities and configurations
-│   │   ├── neon.ts           # Neon Serverless Driver database operations
-│   │   ├── trpc.ts           # tRPC client configuration
-│   │   └── validations/       # Zod schemas for type safety
-│   ├── server/                # Server-side code
-│   │   ├── api/routers/       # tRPC API routes
-│   │   └── services/          # Business logic services
-│   └── styles/                # Global styles
-├── public/                    # PWA assets (manifest, service worker)
-├── .kiro/specs/              # Development specifications
-└── README.md                  # Application documentation
-```
-
-### 📋 **Development Specifications**
-
-```
-.kiro/specs/enhanced-quilt-management/
-├── requirements.md           # EARS-compliant requirements
-├── design.md                # System architecture and design
-└── tasks.md                 # Implementation task breakdown
-```
-
-### 🗂️ **Current Status**
-
-- **Production Application**: Next.js 16 with tRPC and Neon PostgreSQL
-- **Deployment**: Vercel (https://qms-app-omega.vercel.app)
-- **Database**: Neon Serverless PostgreSQL with 16 quilts imported
-- **Features**: Dashboard, quilt management, search/filtering, usage tracking
+### DevOps
+- **Deployment**: Vercel
+- **Version Control**: Git + GitHub
+- **Code Quality**: ESLint, Prettier, Husky
+- **Package Manager**: npm
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-
 - Node.js 18+
-- Docker and Docker Compose (for production deployment)
-- PostgreSQL (for production) or SQLite (for development)
+- npm or yarn
 
-### 🎯 **Application Setup**
-
-#### Development Setup
+### Installation
 
 ```bash
+# Clone the repository
+git clone https://github.com/ohengcom/qms-app.git
+cd qms-app
+
 # Install dependencies
 npm install
 
-# Set up environment
+# Set up environment variables
 cp .env.example .env.local
 # Edit .env.local with your Neon database URL
 
-# Start development server
-npm run dev
-```
-
-#### Current Deployment
-
-The application is currently deployed on **Vercel** at:
-
-- **Production URL**: https://qms-app-omega.vercel.app
-- **Database**: Neon Serverless PostgreSQL
-- **Features**: Real-time dashboard, quilt management, Excel import/export
-
-#### Local Development
-
-```bash
-# Install dependencies
-npm install
+# Set up admin password
+npm run setup-password
 
 # Start development server
 npm run dev
-
-# Access at http://localhost:3000
 ```
 
-### 🌐 **Access Points**
+Visit `http://localhost:3000` to see the application.
 
-#### Production (Live)
+### Environment Variables
 
-- **Application**: https://qms-app-omega.vercel.app
-- **Health Check**: https://qms-app-omega.vercel.app/api/health
-- **Database Test**: https://qms-app-omega.vercel.app/api/db-test
+```env
+# Database
+DATABASE_URL="postgresql://..."
 
-#### Development
-
-- **Application**: http://localhost:3000
-- **Health Check**: http://localhost:3000/api/health
-- **Database Test**: http://localhost:3000/api/db-test
-
-## 📊 Data Management
-
-### Excel Import/Export
-
-The application provides comprehensive Excel import and export functionality:
-
-#### Import Process
-
-1. Navigate to the Import section in the web application
-2. Upload your Excel file (supports Chinese headers)
-3. Preview the data mapping and validation results
-4. Confirm and complete the import
-
-#### Export Features
-
-- Export current inventory to Excel format
-- Include usage history and analytics
-- Support for Chinese language headers
-- Customizable export options
-
-### Excel Format Support
-
-The system supports Excel files with these columns:
-
-- **Basic Info**: Group, 编号, 季节, 填充物, 颜色, 长, 宽, 重量（g）
-- **Storage**: 放置位置, 包, 使用时间段, 品牌, 购买日期, 备注
-- **Usage History**: 上次使用, 上上次使用, etc.
-
-### Data Validation
-
-- Automatic data type validation
-- Duplicate detection and handling
-- Missing field identification
-- Data quality reports
-
-## 🎯 Data Model
-
-### Quilt Entity (Database Schema)
-
-```sql
-CREATE TABLE quilts (
-  id TEXT PRIMARY KEY,
-  group_id TEXT,
-  item_number TEXT UNIQUE,
-  name TEXT NOT NULL,
-  season TEXT CHECK (season IN ('Winter', 'Spring-Autumn', 'Summer')),
-  length_cm INTEGER,
-  width_cm INTEGER,
-  weight_grams INTEGER,
-  fill_material TEXT,
-  material_details TEXT,
-  color TEXT,
-  brand TEXT,
-  purchase_date TIMESTAMP,
-  location TEXT,
-  packaging_info TEXT,
-  current_status TEXT CHECK (current_status IN ('available', 'in_use', 'maintenance', 'storage')),
-  notes TEXT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE usage_records (
-  id TEXT PRIMARY KEY,
-  quilt_id TEXT REFERENCES quilts(id),
-  start_date TIMESTAMP,
-  end_date TIMESTAMP,
-  notes TEXT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+# Authentication
+QMS_PASSWORD_HASH="..."
+QMS_JWT_SECRET="..."
 ```
 
-### Usage Tracking
+## 📊 Database Schema
 
-- **Usage Records**: Historical usage with start/end dates and notes
-- **Current Usage**: Real-time active usage tracking
-- **Usage Analytics**: Patterns, frequency, and predictive insights
-- **Seasonal Analysis**: Season-based usage optimization and recommendations
+### Main Tables
 
-## 📚 API Documentation
+**quilts** - Quilt information
+- Basic info: name, season, dimensions, weight, materials
+- Storage: location, packaging, brand, purchase date
+- Status: current_status (IN_USE, STORAGE, MAINTENANCE)
 
-The application uses **tRPC** for type-safe API communication. All API endpoints are automatically typed and validated.
+**usage_records** - Usage tracking
+- Quilt reference
+- Start/end dates
+- Status (ACTIVE, COMPLETED)
+- Notes
 
-### Core tRPC Routers
+## 🎯 Core Features
 
-#### Quilts Router (`quilts`)
+### 1. Automated Usage Tracking
 
-- `quilts.list` - List quilts with filtering and search
-- `quilts.getById` - Get detailed quilt information
-- `quilts.create` - Create new quilt
-- `quilts.update` - Update quilt information
-- `quilts.delete` - Delete quilt
-- `quilts.search` - Advanced search with filters
+When you change a quilt's status:
+- **To IN_USE**: Automatically creates a new usage record
+- **From IN_USE**: Automatically ends the active usage record
+- **Date Selection**: Choose custom start/end dates
+- **Notes Support**: Add optional notes to records
 
-#### Dashboard Router (`dashboard`)
+### 2. Smart Quilt Naming
 
-- `dashboard.getStats` - Get dashboard statistics
-- `dashboard.getRecentUsage` - Get recent usage activity
-- `dashboard.getSeasonalDistribution` - Get seasonal analytics
-- `dashboard.getUsagePatterns` - Get usage pattern analysis
+Automatically generates names in format:
+`Brand + Color + Weight + Season`
 
-#### Import/Export Router (`importExport`)
+Example: `百思寒褐色1100克春秋被`
 
-- `importExport.analyzeExcel` - Analyze uploaded Excel file
-- `importExport.importFromExcel` - Import data from Excel
-- `importExport.exportToExcel` - Export data to Excel format
-- `importExport.getImportHistory` - Get import history
+### 3. Dual View Modes
 
-### REST API Endpoints
+**Grid View**:
+- Beautiful card layout
+- Season color indicators
+- Status badges
+- Hover effects
+- Responsive columns (1-4)
 
-#### Usage Tracking API
+**List View**:
+- Detailed table format
+- Sortable columns
+- Batch operations
+- Quick actions
 
-- `GET /api/usage` - Get all usage history sorted by time
-- `GET /api/usage/[quiltId]` - Get usage history for specific quilt
-- `POST /api/usage` - Start using a quilt
-- `POST /api/usage/end` - End current usage of a quilt
+### 4. Empty States
 
-#### Core API Endpoints
+Friendly guidance when:
+- No quilts exist
+- Search returns no results
+- No usage records
+- With helpful action buttons
 
-- `GET /api/quilts` - List all quilts with filtering
-- `POST /api/quilts` - Create new quilt
-- `GET /api/quilts/[id]` - Get specific quilt details
-- `PUT /api/quilts/[id]` - Update quilt information
-- `DELETE /api/quilts/[id]` - Delete quilt
-- `PATCH /api/quilts/[id]/status` - Update quilt status
-- `GET /api/dashboard/stats` - Get dashboard statistics
-
-### API Features
-
-- **Type Safety**: Full TypeScript support with automatic type inference
-- **Input Validation**: Zod schema validation for all inputs
-- **Error Handling**: Structured error responses with proper HTTP status codes
-- **Real-time Updates**: Live data synchronization for usage tracking
-- **Multilingual Support**: Chinese/English responses based on client preferences
-
-## 🛠️ Development
-
-### Technology Stack
-
-#### Core Technologies
-
-- **Frontend**: Next.js 16, React 19, TypeScript, Tailwind CSS
-- **Backend**: tRPC, Neon Serverless Driver, PostgreSQL
-- **UI Components**: Radix UI, Lucide Icons, Custom Components
-- **Database**: Neon Serverless PostgreSQL (16 quilts imported)
-- **Deployment**: Vercel (Production), GitHub integration
-- **Type Safety**: End-to-end TypeScript with tRPC and Zod validation
-
-#### Development Tools
-
-- **Code Quality**: ESLint, Prettier, TypeScript
-- **Testing**: Vitest, Jest, Playwright (when implemented)
-- **Database**: Neon Console, Direct SQL operations
-- **Build**: Next.js build system, Docker multi-stage builds
-- **CI/CD**: GitHub Actions
-
-### Development Tools & Scripts
-
-#### Available Scripts
+## 📚 Available Scripts
 
 ```bash
 # Development
-npm run dev                    # Start development server
+npm run dev                    # Start dev server
 npm run build                  # Build for production
 npm run start                  # Start production server
 npm run lint                   # Run ESLint
 npm run type-check            # TypeScript checking
 
-# Database Management
-npm run db:setup             # Initialize database schema
-npm run db:seed              # Seed database with sample data
-npm run db:test              # Test database connection
+# Database Setup
+npm run setup-usage-tracking   # Set up usage tracking schema
 
-# Production & Deployment
-npm run docker:build         # Build Docker image
-npm run docker:compose:up    # Start production stack
-npm run health:check         # Check application health
-npm run backup:create        # Create database backup
-npm run monitoring:up        # Start monitoring stack
+# Utilities
+npm run setup-password         # Set admin password
+npm run audit-translations     # Check translation coverage
+npm run update-quilt-names     # Update quilt names
 ```
 
-### Environment Configuration
+## 📁 Project Structure
 
-#### Environment Variables
-
-```bash
-# Database Configuration
-DATABASE_URL="postgresql://username:password@localhost:5432/qms_db"
-
-# Authentication (if implemented)
-NEXTAUTH_SECRET="your-secret-key-here"
-NEXTAUTH_URL="http://localhost:3000"
-
-# Optional: Redis for caching
-REDIS_URL="redis://localhost:6379"
-
-# Monitoring & Observability
-PROMETHEUS_ENABLED=true
-GRAFANA_ENABLED=true
-
-# Application Settings
-NODE_ENV="production"
-PORT=3000
+```
+qms-app/
+├── src/
+│   ├── app/                   # Next.js App Router pages
+│   │   ├── api/              # API routes
+│   │   ├── login/            # Login page
+│   │   ├── quilts/           # Quilt management
+│   │   ├── usage/            # Usage tracking
+│   │   ├── analytics/        # Analytics
+│   │   └── reports/          # Reports
+│   ├── components/           # React components
+│   │   ├── ui/              # Base UI components
+│   │   ├── motion/          # Animation components
+│   │   ├── quilts/          # Quilt components
+│   │   └── layout/          # Layout components
+│   ├── hooks/               # Custom hooks
+│   ├── lib/                 # Utilities
+│   │   ├── neon.ts         # Database operations
+│   │   ├── auth.ts         # Authentication
+│   │   ├── i18n.ts         # Internationalization
+│   │   └── animations.ts   # Animation configs
+│   └── server/             # Server code
+├── scripts/                # Utility scripts
+├── docs/                   # Documentation
+│   ├── guides/            # Implementation guides
+│   ├── archive/           # Historical docs
+│   └── sessions/          # Development sessions
+└── .kiro/specs/           # Feature specifications
 ```
 
-## 📦 Deployment Options
+## 🎨 UI Components
 
-### 🚀 **Production Deployment (Next.js)**
+### Animation Components
+- `PageTransition` - Page fade/slide transitions
+- `AnimatedCard` - Cards with hover effects
+- `AnimatedList` - Staggered list animations
+- `AnimatedButton` - Button press animations
+- `AnimatedInput` - Input focus animations
+- `SwipeableListItem` - Swipe-to-delete
 
-#### Automated Deployment
+### UI Components
+- `EmptyState` - Friendly empty states
+- `Skeleton` - Loading placeholders
+- `StatusChangeDialog` - Smart status updates
+- `QuiltDialog` - Quilt add/edit forms
 
-```bash
-cd qms-app
+## 📖 Documentation
 
-# Configure environment
-cp .env.production .env.local
-# Edit with production values
+### Guides (docs/guides/)
+- **Authentication**: Implementation and testing
+- **Deployment**: Vercel deployment guide
+- **Usage Tracking**: Automation implementation
+- **Security**: Security audit summary
 
-# Deploy with monitoring
-./scripts/deploy.sh
-./scripts/setup-monitoring.sh
-```
+### Archive (docs/archive/)
+- Phase 1 completion summaries
+- Implementation records
+- Historical fixes
 
-#### Manual Docker Deployment
+### Sessions (docs/sessions/)
+- Development session logs
+- Feature implementation notes
 
-```bash
-# Build and start production stack
-docker-compose -f docker-compose.prod.yml up -d
+## 🗺️ Roadmap
 
-# Start monitoring stack
-docker-compose -f docker-compose.prod.yml -f docker-compose.monitoring.yml up -d
+### ✅ Completed (Phase 1)
+- Authentication system
+- Bilingual support
+- Data validation
+- UI enhancements
+- Usage tracking automation
 
-# Access applications
-# Main App: http://localhost:3000
-# Grafana: http://localhost:3001
-# Prometheus: http://localhost:9090
-```
+### 🚧 In Progress (Phase 1D)
+- Settings page
+- Theme switching (dark mode)
+- Display preferences
+- Notification settings
 
-#### Production Features
-
-- **SSL/TLS**: Automatic HTTPS with Let's Encrypt
-- **Monitoring**: Prometheus metrics, Grafana dashboards
-- **Logging**: Structured logging with log aggregation
-- **Backup**: Automated database backups
-- **Health Checks**: Application and database health monitoring
-- **Performance**: Nginx reverse proxy, caching, compression
-
-### 🔧 **Development Deployment**
-
-```bash
-# Simple development setup
-cd qms-app
-npm install
-npm run dev
-
-# Access the application at http://localhost:3000
-```
-
-### 🔧 **Production Checklist**
-
-- [ ] Environment variables configured
-- [ ] SSL certificates installed
-- [ ] Database migrations applied
-- [ ] Monitoring dashboards configured
-- [ ] Backup strategy implemented
-- [ ] Health checks enabled
-- [ ] Performance optimization applied
-- [ ] Security headers configured
-
-## 🧪 Testing
-
-### Application Testing
-
-```bash
-cd qms-app
-
-# Run type checking
-npm run type-check
-
-# Run linting
-npm run lint
-
-# Future: Unit and integration tests
-# npm run test
-# npm run test:e2e
-```
-
-**Note**: Comprehensive testing suite is planned for future implementation as part of the enhanced features roadmap.
-
-## 📋 Development Roadmap
-
-### Phase 1: Foundation ✅
-
-- [x] Enhanced database schema with Neon PostgreSQL
-- [x] Comprehensive API layer with tRPC
-- [x] Excel data migration and import/export
-- [x] Vue.js prototype and Next.js production app
-
-### Phase 2: Core Features ✅
-
-- [x] Complete dashboard UI with analytics
-- [x] Quilt management with advanced forms
-- [x] Search and filtering with virtual scrolling
-- [x] Usage tracking with timeline visualization
-
-### Phase 3: Advanced Features ✅
-
-- [x] Predictive analytics and reporting
-- [x] Maintenance scheduling and notifications
-- [x] Storage optimization recommendations
-- [x] Progressive Web App with offline support
-- [x] Mobile-first responsive design
-
-### Phase 4: Production & Monitoring ✅
-
-- [x] Comprehensive testing suite
-- [x] Performance optimization and caching
-- [x] Security hardening and authentication
-- [x] Production deployment with Docker
-- [x] Monitoring with Prometheus and Grafana
-- [x] Automated backup and restore
-
-### Phase 5: Enhanced Features 🚧
-
-- [ ] Advanced search with AI-powered suggestions
-- [ ] Performance optimizations (virtual scrolling, caching)
-- [ ] Enhanced analytics with predictive insights
-- [ ] Real-time collaboration features
-- [ ] Advanced mobile gestures and interactions
-- [ ] Integration with external weather APIs
-
-### Phase 6: Enterprise Features 🔮
-
-- [ ] Multi-user support with role-based access
-- [ ] API rate limiting and advanced security
-- [ ] Advanced reporting and data visualization
-- [ ] Integration with home automation systems
-- [ ] Machine learning for usage predictions
-- [ ] Advanced notification system
+### 📋 Planned (Phase 2)
+- Image upload
+- Advanced search
+- Batch editing
+- Tag system
+- Data export enhancements
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+This is a personal project. Contributions are welcome via pull requests.
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License - see [LICENSE](LICENSE) file for details.
 
 ## 📞 Support
 
-For questions or support, please open an issue on GitHub or contact the development team.
+For questions or issues, please open an issue on GitHub.
 
-## 📚 Documentation & Resources
+## 🙏 Acknowledgments
 
-### 📋 **Specifications & Planning**
-
-- **Requirements**: [Enhanced Quilt Management Requirements](.kiro/specs/enhanced-quilt-management/requirements.md)
-- **Design**: [System Architecture & Design](.kiro/specs/enhanced-quilt-management/design.md)
-- **Tasks**: [Implementation Task Breakdown](.kiro/specs/enhanced-quilt-management/tasks.md)
-
-### 🚀 **Next.js Application Docs**
-
-- **Deployment Guide**: [qms-app/DEPLOYMENT.md](qms-app/DEPLOYMENT.md)
-- **Monitoring Guide**: [qms-app/MONITORING.md](qms-app/MONITORING.md)
-- **Cleanup Summary**: [qms-app/CLEANUP_SUMMARY.md](qms-app/CLEANUP_SUMMARY.md)
-- **Application README**: [qms-app/README.md](qms-app/README.md)
-
-### 🔧 **Development Resources**
-
-- **API Documentation**: Available at `/api/docs` when running
-- **Database Operations**: [qms-app/src/lib/neon.ts](qms-app/src/lib/neon.ts)
-- **Component Library**: Radix UI + Custom components in `qms-app/src/components/ui/`
-
-### 🏗️ **Project Structure Overview**
-
-```
-QMS Project/
-├── 📱 qms-app/              # Production Next.js application (MAIN)
-├── 📋 .kiro/specs/          # Development specifications & planning
-├── 🔧 .vscode/              # VS Code workspace settings
-├── 📊 家中被子列表.xlsx      # Sample Excel data file
-├── 📄 README files          # Project documentation
-└── 🗂️ Legacy prototypes/    # Reference implementations
-    ├── frontend/            # Vue.js prototype (legacy)
-    ├── backend/             # FastAPI prototype (legacy)
-    └── workers/             # Cloudflare Workers experiment (legacy)
-```
+- Built with [Next.js](https://nextjs.org/)
+- UI components from [Radix UI](https://www.radix-ui.com/)
+- Animations by [Framer Motion](https://www.framer.com/motion/)
+- Database by [Neon](https://neon.tech/)
+- Deployed on [Vercel](https://vercel.com/)
 
 ---
 
-**QMS v2.0** - Transforming simple inventory tracking into intelligent bedding management 🛏️✨
+**Version**: 0.2.2  
+**Status**: ✅ Production Ready  
+**Last Updated**: 2025-01-16
+
+Made with ❤️ for better home organization
