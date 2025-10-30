@@ -34,64 +34,46 @@ export async function GET(
 
     const quilt = quiltInfo[0];
 
-    // Get historical usage periods
-    const usageHistory = await sql`
+    // Get all usage records for this quilt
+    const usageRecords = await sql`
       SELECT 
         id,
         start_date as started_at,
         end_date as ended_at,
         usage_type,
         notes,
-        created_at
-      FROM usage_periods 
+        created_at,
+        updated_at
+      FROM usage_records 
       WHERE quilt_id = ${quiltId}
       ORDER BY start_date DESC
     `;
 
-    // Get current usage if any
-    const currentUsage = await sql`
-      SELECT 
-        id,
-        started_at,
-        usage_type,
-        notes,
-        created_at
-      FROM current_usage 
-      WHERE quilt_id = ${quiltId}
-    `;
+    // Transform usage records
+    const allUsage = usageRecords.map((record: any) => {
+      const isActive = record.ended_at === null;
+      const duration = record.ended_at
+        ? Math.floor((new Date(record.ended_at).getTime() - new Date(record.started_at).getTime()) / (1000 * 60 * 60 * 24))
+        : Math.floor((new Date().getTime() - new Date(record.started_at).getTime()) / (1000 * 60 * 60 * 24));
 
-    // Transform historical usage
-    const transformedHistory = usageHistory.map((record: any) => ({
-      id: record.id,
-      startedAt: record.started_at,
-      endedAt: record.ended_at,
-      usageType: record.usage_type || 'REGULAR',
-      notes: record.notes,
-      isActive: false,
-      duration: Math.floor((new Date(record.ended_at).getTime() - new Date(record.started_at).getTime()) / (1000 * 60 * 60 * 24)),
-      createdAt: record.created_at
-    }));
-
-    // Transform current usage
-    const transformedCurrent = currentUsage.map((record: any) => ({
-      id: record.id,
-      startedAt: record.started_at,
-      endedAt: null,
-      usageType: record.usage_type || 'REGULAR',
-      notes: record.notes,
-      isActive: true,
-      duration: Math.floor((new Date().getTime() - new Date(record.started_at).getTime()) / (1000 * 60 * 60 * 24)),
-      createdAt: record.created_at
-    }));
-
-    // Combine and sort by start time
-    const allUsage = [...transformedCurrent, ...transformedHistory]
-      .sort((a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime());
+      return {
+        id: record.id,
+        startedAt: record.started_at,
+        endedAt: record.ended_at,
+        usageType: record.usage_type || 'REGULAR',
+        notes: record.notes,
+        isActive,
+        duration,
+        createdAt: record.created_at,
+      };
+    });
 
     // Calculate statistics
-    const totalUsageDays = transformedHistory.reduce((sum, usage) => sum + (usage.duration || 0), 0);
-    const averageUsageDays = transformedHistory.length > 0 ? Math.round(totalUsageDays / transformedHistory.length) : 0;
-    const currentUsageDays = transformedCurrent.length > 0 ? transformedCurrent[0].duration : 0;
+    const activeRecords = allUsage.filter(r => r.isActive);
+    const completedRecords = allUsage.filter(r => !r.isActive);
+    const totalUsageDays = completedRecords.reduce((sum, usage) => sum + (usage.duration || 0), 0);
+    const averageUsageDays = completedRecords.length > 0 ? Math.round(totalUsageDays / completedRecords.length) : 0;
+    const currentUsageDays = activeRecords.length > 0 ? activeRecords[0].duration : 0;
 
     console.log(`Found ${allUsage.length} usage records for quilt ${quiltId}`);
 
@@ -108,12 +90,12 @@ export async function GET(
       usage: allUsage,
       stats: {
         totalPeriods: allUsage.length,
-        activePeriods: transformedCurrent.length,
-        completedPeriods: transformedHistory.length,
+        activePeriods: activeRecords.length,
+        completedPeriods: completedRecords.length,
         totalUsageDays,
         averageUsageDays,
         currentUsageDays,
-        lastUsed: allUsage.length > 0 ? allUsage[0].startedAt : null
+        lastUsed: allUsage.length > 0 ? allUsage[0].startedAt : null,
       }
     });
 

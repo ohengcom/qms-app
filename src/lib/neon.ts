@@ -304,9 +304,9 @@ export const db = {
     try {
       console.log('Deleting quilt:', id);
 
-      // First delete any related records (current_usage, usage_periods, maintenance_records)
-      await sql`DELETE FROM current_usage WHERE quilt_id = ${id}`;
-      await sql`DELETE FROM usage_periods WHERE quilt_id = ${id}`;
+      // First delete any related records (usage_records, maintenance_records)
+      // Note: CASCADE should handle this, but we do it explicitly for clarity
+      await sql`DELETE FROM usage_records WHERE quilt_id = ${id}`;
       await sql`DELETE FROM maintenance_records WHERE quilt_id = ${id}`;
 
       // Then delete the quilt
@@ -363,7 +363,6 @@ export const db = {
 
   /**
    * Create a new usage record when quilt status changes to IN_USE
-   * Uses current_usage table for active usage
    */
   async createUsageRecord(quiltId: string, startDate: string, notes?: string) {
     try {
@@ -373,14 +372,17 @@ export const db = {
       const now = new Date().toISOString();
 
       const result = await sql`
-        INSERT INTO current_usage (
-          id, quilt_id, started_at, usage_type, notes
+        INSERT INTO usage_records (
+          id, quilt_id, start_date, end_date, usage_type, notes, created_at, updated_at
         ) VALUES (
           ${id},
           ${quiltId},
           ${startDate},
+          NULL,
           'REGULAR',
-          ${notes || null}
+          ${notes || null},
+          ${now},
+          ${now}
         ) RETURNING *
       `;
 
@@ -394,49 +396,32 @@ export const db = {
 
   /**
    * End the active usage record when quilt status changes from IN_USE
-   * Moves from current_usage to usage_periods
    */
   async endUsageRecord(quiltId: string, endDate: string, notes?: string) {
     try {
       console.log('Ending usage record for quilt:', quiltId);
 
-      // Get the current usage record
-      const currentUsage = await sql`
-        SELECT * FROM current_usage
+      const now = new Date().toISOString();
+
+      // Update the active record by setting end_date
+      const result = await sql`
+        UPDATE usage_records 
+        SET 
+          end_date = ${endDate},
+          notes = COALESCE(${notes}, notes),
+          updated_at = ${now}
         WHERE quilt_id = ${quiltId}
-        LIMIT 1
+          AND end_date IS NULL
+        RETURNING *
       `;
 
-      if (currentUsage.length === 0) {
+      if (result.length === 0) {
         console.log('No active usage record found for quilt:', quiltId);
         return null;
       }
 
-      const usage = currentUsage[0];
-      const periodId = crypto.randomUUID();
-
-      // Create a usage period record
-      await sql`
-        INSERT INTO usage_periods (
-          id, quilt_id, start_date, end_date, usage_type, notes
-        ) VALUES (
-          ${periodId},
-          ${quiltId},
-          ${usage.started_at},
-          ${endDate},
-          ${usage.usage_type || 'REGULAR'},
-          ${notes || usage.notes || null}
-        )
-      `;
-
-      // Delete from current_usage
-      await sql`
-        DELETE FROM current_usage
-        WHERE quilt_id = ${quiltId}
-      `;
-
-      console.log('Usage record ended successfully');
-      return { id: periodId, quiltId, startDate: usage.started_at, endDate };
+      console.log('Usage record ended successfully:', result[0]);
+      return result[0];
     } catch (error) {
       console.error('End usage record error:', error);
       throw error;
@@ -449,8 +434,9 @@ export const db = {
   async getActiveUsageRecord(quiltId: string) {
     try {
       const result = await sql`
-        SELECT * FROM current_usage
+        SELECT * FROM usage_records
         WHERE quilt_id = ${quiltId}
+          AND end_date IS NULL
         LIMIT 1
       `;
 
@@ -468,11 +454,15 @@ export const db = {
     try {
       console.log('Updating usage record:', id, 'with data:', data);
 
+      const now = new Date().toISOString();
+
       const result = await sql`
-        UPDATE current_usage SET 
-          started_at = ${data.startDate},
+        UPDATE usage_records SET 
+          start_date = ${data.startDate},
+          end_date = ${data.endDate || null},
           usage_type = ${data.usageType || 'REGULAR'},
-          notes = ${data.notes || null}
+          notes = ${data.notes || null},
+          updated_at = ${now}
         WHERE id = ${id}
         RETURNING *
       `;
@@ -486,30 +476,26 @@ export const db = {
   },
 
   /**
-   * Get all usage records for a quilt (both current and historical)
+   * Get all usage records for a quilt
    */
   async getUsageRecordsByQuiltId(quiltId: string) {
     try {
-      // Get historical periods
-      const periods = await sql`
+      const result = await sql`
         SELECT 
-          id, quilt_id, start_date as started_at, end_date as ended_at, 
-          usage_type, notes, created_at
-        FROM usage_periods
+          id, 
+          quilt_id, 
+          start_date as started_at, 
+          end_date as ended_at, 
+          usage_type, 
+          notes, 
+          created_at,
+          updated_at
+        FROM usage_records
         WHERE quilt_id = ${quiltId}
         ORDER BY start_date DESC
       `;
 
-      // Get current usage
-      const current = await sql`
-        SELECT 
-          id, quilt_id, started_at, NULL as ended_at,
-          usage_type, notes, created_at
-        FROM current_usage
-        WHERE quilt_id = ${quiltId}
-      `;
-
-      return [...current, ...periods];
+      return result;
     } catch (error) {
       console.error('Get usage records by quilt ID error:', error);
       return [];

@@ -1,7 +1,7 @@
 /**
  * Setup Usage Tracking Database Schema
  * Verifies and optimizes indexes for usage tracking automation
- * Uses existing current_usage and usage_periods tables
+ * Uses unified usage_records table
  */
 
 import { sql } from '@/lib/neon';
@@ -10,39 +10,48 @@ async function setupUsageTracking() {
   console.log('Setting up usage tracking schema...');
 
   try {
-    // 1. Verify tables exist
-    console.log('1. Verifying tables...');
+    // 1. Verify table exists
+    console.log('1. Verifying usage_records table...');
     const tables = await sql`
       SELECT table_name 
       FROM information_schema.tables 
       WHERE table_schema = 'public' 
-        AND table_name IN ('current_usage', 'usage_periods')
+        AND table_name = 'usage_records'
     `;
     
-    const tableNames = tables.map((t: any) => t.table_name);
-    console.log('✓ Found tables:', tableNames);
-
-    if (!tableNames.includes('current_usage')) {
-      throw new Error('current_usage table not found');
+    if (tables.length === 0) {
+      throw new Error('usage_records table not found. Please run database setup first.');
     }
-    if (!tableNames.includes('usage_periods')) {
-      throw new Error('usage_periods table not found');
-    }
+    console.log('✓ usage_records table found');
 
-    // 2. Add indexes for current_usage
-    console.log('2. Creating indexes for current_usage...');
+    // 2. Add indexes
+    console.log('2. Creating indexes...');
     await sql`
-      CREATE INDEX IF NOT EXISTS idx_current_usage_quilt_id
-      ON current_usage(quilt_id)
+      CREATE INDEX IF NOT EXISTS idx_usage_records_quilt_id
+      ON usage_records(quilt_id)
     `;
     console.log('✓ Index on quilt_id created');
 
+    await sql`
+      CREATE INDEX IF NOT EXISTS idx_usage_records_dates
+      ON usage_records(start_date, end_date)
+    `;
+    console.log('✓ Index on dates created');
+
+    await sql`
+      CREATE INDEX IF NOT EXISTS idx_usage_records_active
+      ON usage_records(quilt_id)
+      WHERE end_date IS NULL
+    `;
+    console.log('✓ Index on active records created');
+
     // 3. Add unique constraint: one active record per quilt
-    console.log('3. Creating unique constraint for current_usage...');
+    console.log('3. Creating unique constraint...');
     try {
       await sql`
-        CREATE UNIQUE INDEX IF NOT EXISTS idx_one_current_per_quilt
-        ON current_usage(quilt_id)
+        CREATE UNIQUE INDEX IF NOT EXISTS idx_one_active_per_quilt
+        ON usage_records(quilt_id)
+        WHERE end_date IS NULL
       `;
       console.log('✓ Unique constraint created');
     } catch (error: any) {
@@ -53,55 +62,46 @@ async function setupUsageTracking() {
       }
     }
 
-    // 4. Add indexes for usage_periods
-    console.log('4. Creating indexes for usage_periods...');
-    await sql`
-      CREATE INDEX IF NOT EXISTS idx_usage_periods_quilt_id
-      ON usage_periods(quilt_id)
-    `;
-    await sql`
-      CREATE INDEX IF NOT EXISTS idx_usage_periods_dates
-      ON usage_periods(start_date, end_date)
-    `;
-    console.log('✓ Indexes created');
-
-    // 5. Verify table structures
-    console.log('5. Verifying table structures...');
-    
-    const currentUsageColumns = await sql`
+    // 4. Verify table structure
+    console.log('4. Verifying table structure...');
+    const columns = await sql`
       SELECT column_name, data_type, is_nullable, column_default
       FROM information_schema.columns
-      WHERE table_name = 'current_usage'
+      WHERE table_name = 'usage_records'
       ORDER BY ordinal_position
     `;
-    console.log('✓ current_usage structure:');
-    console.table(currentUsageColumns);
+    console.log('✓ usage_records structure:');
+    console.table(columns);
 
-    const usagePeriodsColumns = await sql`
-      SELECT column_name, data_type, is_nullable, column_default
-      FROM information_schema.columns
-      WHERE table_name = 'usage_periods'
-      ORDER BY ordinal_position
-    `;
-    console.log('✓ usage_periods structure:');
-    console.table(usagePeriodsColumns);
-
-    // 6. Check for duplicate current usage
-    console.log('6. Checking for duplicate current usage...');
+    // 5. Check for duplicate active records
+    console.log('5. Checking for duplicate active records...');
     const duplicates = await sql`
       SELECT quilt_id, COUNT(*) as count
-      FROM current_usage
+      FROM usage_records
+      WHERE end_date IS NULL
       GROUP BY quilt_id
       HAVING COUNT(*) > 1
     `;
 
     if (duplicates.length > 0) {
-      console.warn('⚠ Found duplicate current usage records:');
+      console.warn('⚠ Found duplicate active records:');
       console.table(duplicates);
       console.warn('Please manually resolve these duplicates before proceeding.');
     } else {
-      console.log('✓ No duplicate current usage records found');
+      console.log('✓ No duplicate active records found');
     }
+
+    // 6. Show statistics
+    console.log('6. Usage statistics...');
+    const stats = await sql`
+      SELECT 
+        COUNT(*) as total,
+        COUNT(*) FILTER (WHERE end_date IS NULL) as active,
+        COUNT(*) FILTER (WHERE end_date IS NOT NULL) as completed
+      FROM usage_records
+    `;
+    console.log('✓ Statistics:');
+    console.table(stats);
 
     console.log('\n✅ Usage tracking setup completed successfully!');
   } catch (error) {

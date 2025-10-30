@@ -6,95 +6,64 @@ export async function GET(request: NextRequest) {
   try {
     console.log('Getting all usage history...');
 
-    // Get all usage periods with quilt information, sorted by start time (most recent first)
-    const usageHistory = await sql`
+    // Get all usage records with quilt information, sorted by start time (most recent first)
+    const usageRecords = await sql`
       SELECT 
-        up.id,
-        up.quilt_id,
-        up.start_date as started_at,
-        up.end_date as ended_at,
-        up.usage_type,
-        up.notes,
-        up.created_at,
+        ur.id,
+        ur.quilt_id,
+        ur.start_date as started_at,
+        ur.end_date as ended_at,
+        ur.usage_type,
+        ur.notes,
+        ur.created_at,
         q.name as quilt_name,
         q.item_number,
         q.color,
         q.season,
         q.current_status
-      FROM usage_periods up
-      JOIN quilts q ON up.quilt_id = q.id
-      ORDER BY up.start_date DESC
+      FROM usage_records ur
+      JOIN quilts q ON ur.quilt_id = q.id
+      ORDER BY ur.start_date DESC
       LIMIT 100
     `;
 
-    // Also get current usage (ongoing usage)
-    const currentUsage = await sql`
-      SELECT 
-        cu.id,
-        cu.quilt_id,
-        cu.started_at,
-        cu.usage_type,
-        cu.notes,
-        cu.created_at,
-        q.name as quilt_name,
-        q.item_number,
-        q.color,
-        q.season,
-        q.current_status
-      FROM current_usage cu
-      JOIN quilts q ON cu.quilt_id = q.id
-      ORDER BY cu.started_at DESC
-    `;
-
     // Transform the data for frontend consumption
-    const transformedHistory = usageHistory.map((record: any) => ({
-      id: record.id,
-      quiltId: record.quilt_id,
-      quiltName: record.quilt_name,
-      itemNumber: record.item_number,
-      color: record.color,
-      season: record.season,
-      currentStatus: record.current_status,
-      startedAt: record.started_at,
-      endedAt: record.ended_at,
-      usageType: record.usage_type || 'REGULAR',
-      notes: record.notes,
-      isActive: false,
-      duration: record.ended_at ? 
-        Math.floor((new Date(record.ended_at).getTime() - new Date(record.started_at).getTime()) / (1000 * 60 * 60 * 24)) 
-        : null
-    }));
+    const transformedUsage = usageRecords.map((record: any) => {
+      const isActive = record.ended_at === null;
+      const duration = record.ended_at
+        ? Math.floor((new Date(record.ended_at).getTime() - new Date(record.started_at).getTime()) / (1000 * 60 * 60 * 24))
+        : Math.floor((new Date().getTime() - new Date(record.started_at).getTime()) / (1000 * 60 * 60 * 24));
 
-    const transformedCurrent = currentUsage.map((record: any) => ({
-      id: record.id,
-      quiltId: record.quilt_id,
-      quiltName: record.quilt_name,
-      itemNumber: record.item_number,
-      color: record.color,
-      season: record.season,
-      currentStatus: record.current_status,
-      startedAt: record.started_at,
-      endedAt: null,
-      usageType: record.usage_type || 'REGULAR',
-      notes: record.notes,
-      isActive: true,
-      duration: Math.floor((new Date().getTime() - new Date(record.started_at).getTime()) / (1000 * 60 * 60 * 24))
-    }));
+      return {
+        id: record.id,
+        quiltId: record.quilt_id,
+        quiltName: record.quilt_name,
+        itemNumber: record.item_number,
+        color: record.color,
+        season: record.season,
+        currentStatus: record.current_status,
+        startedAt: record.started_at,
+        endedAt: record.ended_at,
+        usageType: record.usage_type || 'REGULAR',
+        notes: record.notes,
+        isActive,
+        duration,
+      };
+    });
 
-    // Combine current and historical usage, sort by start time
-    const allUsage = [...transformedCurrent, ...transformedHistory]
-      .sort((a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime());
+    const activeCount = transformedUsage.filter(r => r.isActive).length;
+    const completedCount = transformedUsage.filter(r => !r.isActive).length;
 
-    console.log(`Found ${allUsage.length} usage records`);
+    console.log(`Found ${transformedUsage.length} usage records`);
 
     return NextResponse.json({
       success: true,
-      usage: allUsage,
+      usage: transformedUsage,
       stats: {
-        total: allUsage.length,
-        active: transformedCurrent.length,
-        completed: transformedHistory.length
-      }
+        total: transformedUsage.length,
+        active: activeCount,
+        completed: completedCount,
+      },
     });
 
   } catch (error) {
@@ -127,7 +96,8 @@ export async function POST(request: NextRequest) {
 
     // Check if quilt is already in use
     const existingUsage = await sql`
-      SELECT id FROM current_usage WHERE quilt_id = ${quiltId}
+      SELECT id FROM usage_records 
+      WHERE quilt_id = ${quiltId} AND end_date IS NULL
     `;
 
     if (existingUsage.length > 0) {
@@ -142,8 +112,12 @@ export async function POST(request: NextRequest) {
 
     // Start usage
     const result = await sql`
-      INSERT INTO current_usage (id, quilt_id, started_at, usage_type, notes, created_at)
-      VALUES (${id}, ${quiltId}, ${now}, ${usageType}, ${notes || null}, ${now})
+      INSERT INTO usage_records (
+        id, quilt_id, start_date, end_date, usage_type, notes, created_at, updated_at
+      )
+      VALUES (
+        ${id}, ${quiltId}, ${now}, NULL, ${usageType}, ${notes || null}, ${now}, ${now}
+      )
       RETURNING *
     `;
 
@@ -159,7 +133,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       usage: result[0],
-      message: 'Usage started successfully'
+      message: 'Usage started successfully',
     });
 
   } catch (error) {

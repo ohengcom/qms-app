@@ -25,6 +25,8 @@
     "audit-translations": "tsx scripts/audit-translations.ts",
     "update-quilt-names": "tsx scripts/update-quilt-names.ts",
     "migrate-status": "tsx scripts/migrate-available-to-storage.ts",
+    "migrate-usage-tables": "tsx scripts/migrate-to-unified-usage-table.ts",
+    "drop-old-usage-tables": "tsx scripts/drop-old-usage-tables.ts",
     "setup-usage-tracking": "tsx scripts/setup-usage-tracking.ts",
     "build:production": "NODE_ENV=production npm run build",
     "start:production": "NODE_ENV=production npm run start",

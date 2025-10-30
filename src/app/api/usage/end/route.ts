@@ -16,40 +16,29 @@ export async function POST(request: NextRequest) {
 
     console.log('Ending usage for quilt:', quiltId);
 
-    // Get current usage record
-    const currentUsage = await sql`
-      SELECT * FROM current_usage WHERE quilt_id = ${quiltId}
+    // Get active usage record
+    const activeUsage = await sql`
+      SELECT * FROM usage_records 
+      WHERE quilt_id = ${quiltId} AND end_date IS NULL
     `;
 
-    if (currentUsage.length === 0) {
+    if (activeUsage.length === 0) {
       return NextResponse.json(
         { success: false, error: 'No active usage found for this quilt' },
         { status: 400 }
       );
     }
 
-    const usage = currentUsage[0];
     const now = new Date().toISOString();
-    const usagePeriodId = crypto.randomUUID();
 
-    // Move to usage_periods table
+    // Update the record to set end_date
     await sql`
-      INSERT INTO usage_periods (
-        id, quilt_id, start_date, end_date, usage_type, notes, created_at
-      ) VALUES (
-        ${usagePeriodId}, 
-        ${quiltId}, 
-        ${usage.started_at}, 
-        ${now}, 
-        ${usage.usage_type}, 
-        ${notes || usage.notes}, 
-        ${usage.created_at}
-      )
-    `;
-
-    // Remove from current_usage
-    await sql`
-      DELETE FROM current_usage WHERE quilt_id = ${quiltId}
+      UPDATE usage_records
+      SET 
+        end_date = ${now},
+        notes = COALESCE(${notes}, notes),
+        updated_at = ${now}
+      WHERE quilt_id = ${quiltId} AND end_date IS NULL
     `;
 
     // Update quilt status to AVAILABLE

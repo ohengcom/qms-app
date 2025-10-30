@@ -143,7 +143,7 @@ export function SeasonalRecommendations({
       .filter(quilt => quilt.currentStatus === 'AVAILABLE')
       .map(quilt => {
         let score = 0;
-        let reasons: string[] = [];
+        const reasons: string[] = [];
 
         // Season match (40% weight)
         if (quilt.season === currentSeason) {

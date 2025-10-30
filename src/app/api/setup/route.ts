@@ -33,30 +33,42 @@ export async function POST() {
       )
     `;
 
-    // Create usage_records table
+    // Create unified usage_records table
     await sql`
       CREATE TABLE IF NOT EXISTS usage_records (
-        id TEXT PRIMARY KEY,
-        quilt_id TEXT REFERENCES quilts(id) ON DELETE CASCADE,
-        start_date TIMESTAMP,
+        id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+        quilt_id TEXT NOT NULL REFERENCES quilts(id) ON DELETE CASCADE,
+        start_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         end_date TIMESTAMP,
-        season_used TEXT,
         usage_type TEXT CHECK (usage_type IN ('REGULAR', 'GUEST', 'SPECIAL_OCCASION', 'SEASONAL_ROTATION')) DEFAULT 'REGULAR',
         notes TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `;
 
-    // Create current_usage table
+    // Create indexes for usage_records
     await sql`
-      CREATE TABLE IF NOT EXISTS current_usage (
-        id TEXT PRIMARY KEY,
-        quilt_id TEXT REFERENCES quilts(id) ON DELETE CASCADE,
-        started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        expected_end_date TIMESTAMP,
-        usage_type TEXT CHECK (usage_type IN ('REGULAR', 'GUEST', 'SPECIAL_OCCASION', 'SEASONAL_ROTATION')) DEFAULT 'REGULAR',
-        notes TEXT
-      )
+      CREATE INDEX IF NOT EXISTS idx_usage_records_quilt_id 
+      ON usage_records(quilt_id)
+    `;
+
+    await sql`
+      CREATE INDEX IF NOT EXISTS idx_usage_records_dates 
+      ON usage_records(start_date, end_date)
+    `;
+
+    await sql`
+      CREATE INDEX IF NOT EXISTS idx_usage_records_active 
+      ON usage_records(quilt_id) 
+      WHERE end_date IS NULL
+    `;
+
+    // Create unique constraint: one active record per quilt
+    await sql`
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_one_active_per_quilt
+      ON usage_records(quilt_id)
+      WHERE end_date IS NULL
     `;
 
     // Check if database is already set up
