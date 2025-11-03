@@ -77,9 +77,30 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             __html: `
               if ('serviceWorker' in navigator) {
                 window.addEventListener('load', function() {
-                  navigator.serviceWorker.register('/sw.js')
+                  navigator.serviceWorker.register('/sw.js', {
+                    updateViaCache: 'none'
+                  })
                     .then(function(registration) {
                       console.log('SW registered: ', registration);
+                      
+                      // Check for updates every 60 seconds
+                      setInterval(function() {
+                        registration.update();
+                      }, 60000);
+                      
+                      // Handle updates
+                      registration.addEventListener('updatefound', function() {
+                        const newWorker = registration.installing;
+                        if (newWorker) {
+                          newWorker.addEventListener('statechange', function() {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                              // New version available, skip waiting and reload
+                              newWorker.postMessage({ type: 'SKIP_WAITING' });
+                              window.location.reload();
+                            }
+                          });
+                        }
+                      });
                     })
                     .catch(function(registrationError) {
                       console.log('SW registration failed: ', registrationError);

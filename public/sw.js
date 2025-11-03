@@ -1,7 +1,7 @@
-const CACHE_NAME = 'qms-app-v2';
-const STATIC_CACHE_NAME = 'qms-static-v2';
-const API_CACHE_NAME = 'qms-api-v2';
-const IMAGE_CACHE_NAME = 'qms-images-v2';
+const CACHE_NAME = 'qms-app-v3';
+const STATIC_CACHE_NAME = 'qms-static-v3';
+const API_CACHE_NAME = 'qms-api-v3';
+const IMAGE_CACHE_NAME = 'qms-images-v3';
 
 // Files to cache for offline functionality
 const STATIC_FILES = [
@@ -70,6 +70,11 @@ self.addEventListener('fetch', event => {
     return;
   }
 
+  // Skip cross-origin requests
+  if (url.origin !== self.location.origin) {
+    return;
+  }
+
   // Handle API requests
   if (url.pathname.startsWith('/api/trpc/')) {
     event.respondWith(handleApiRequest(request));
@@ -85,7 +90,7 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Handle static files
+  // Handle static files - use network-first for authenticated routes
   if (STATIC_FILES.some(file => url.pathname === file || url.pathname.startsWith(file))) {
     event.respondWith(handleStaticRequest(request));
     return;
@@ -100,11 +105,14 @@ async function handleApiRequest(request) {
   const cache = await caches.open(API_CACHE_NAME);
 
   try {
-    // Try network first
-    const networkResponse = await fetch(request);
+    // Try network first with proper redirect handling
+    const networkResponse = await fetch(request, {
+      redirect: 'follow',
+      credentials: 'same-origin',
+    });
 
-    if (networkResponse.ok) {
-      // Cache successful responses
+    // Only cache successful API responses (not redirects)
+    if (networkResponse.ok && networkResponse.type !== 'opaqueredirect') {
       cache.put(request, networkResponse.clone());
     }
 
@@ -181,25 +189,31 @@ async function handleImageRequest(request) {
   }
 }
 
-// Cache-first strategy for static files
+// Network-first strategy for static files (to handle authentication redirects)
 async function handleStaticRequest(request) {
   const cache = await caches.open(STATIC_CACHE_NAME);
-  const cachedResponse = await cache.match(request);
-
-  if (cachedResponse) {
-    return cachedResponse;
-  }
 
   try {
-    const networkResponse = await fetch(request);
+    // Try network first with redirect: 'follow' to handle authentication
+    const networkResponse = await fetch(request, {
+      redirect: 'follow',
+      credentials: 'same-origin',
+    });
 
-    if (networkResponse.ok) {
+    // Don't cache redirects or error responses
+    if (networkResponse.ok && networkResponse.type !== 'opaqueredirect') {
       cache.put(request, networkResponse.clone());
     }
 
     return networkResponse;
   } catch (error) {
     console.log('Failed to fetch static resource:', request.url);
+
+    // Try cache as fallback
+    const cachedResponse = await cache.match(request);
+    if (cachedResponse) {
+      return cachedResponse;
+    }
 
     // Return a basic offline page for navigation requests
     if (request.mode === 'navigate') {
