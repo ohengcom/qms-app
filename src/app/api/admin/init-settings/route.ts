@@ -73,25 +73,33 @@ export async function POST() {
       passwordHash = await hashPassword('admin123');
     }
 
+    const now = new Date().toISOString();
+
     await sql`
-      INSERT INTO system_settings (id, key, value, description)
+      INSERT INTO system_settings (id, key, value, description, created_at, updated_at)
       VALUES (
         uuid_generate_v4(),
         'password_hash',
         ${passwordHash},
-        'Bcrypt hash of the admin password'
+        'Bcrypt hash of the admin password',
+        ${now},
+        ${now}
       )
-      ON CONFLICT (key) DO UPDATE SET value = ${passwordHash}
+      ON CONFLICT (key) DO UPDATE SET 
+        value = ${passwordHash},
+        updated_at = ${now}
     `;
 
     // Initialize app name
     await sql`
-      INSERT INTO system_settings (id, key, value, description)
+      INSERT INTO system_settings (id, key, value, description, created_at, updated_at)
       VALUES (
         uuid_generate_v4(),
         'app_name',
         'QMS - Quilt Management System',
-        'Application display name'
+        'Application display name',
+        ${now},
+        ${now}
       )
       ON CONFLICT (key) DO NOTHING
     `;
