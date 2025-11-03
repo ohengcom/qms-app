@@ -60,30 +60,96 @@ export class UsageRepository extends BaseRepositoryImpl<UsageRecordRow, UsageRec
 
   /**
    * Find all usage records with optional filtering
+   * Returns usage records with joined quilt information
    */
-  async findAll(filters: { quiltId?: string; limit?: number; offset?: number } = {}): Promise<UsageRecord[]> {
+  async findAll(filters: { quiltId?: string; limit?: number; offset?: number } = {}): Promise<any[]> {
     return this.executeQuery(
       async () => {
         const { quiltId, limit = 50, offset = 0 } = filters;
 
-        // If no quiltId filter, get all records
+        // Join with quilts table to get quilt information
         if (!quiltId) {
           const rows = await sql`
-            SELECT * FROM usage_records
-            ORDER BY start_date DESC
+            SELECT 
+              ur.*,
+              q.name as quilt_name,
+              q.item_number,
+              q.color,
+              q.season,
+              q.current_status,
+              CASE 
+                WHEN ur.end_date IS NULL THEN true
+                ELSE false
+              END as is_active,
+              CASE
+                WHEN ur.end_date IS NOT NULL THEN 
+                  EXTRACT(DAY FROM (ur.end_date::timestamp - ur.start_date::timestamp))
+                ELSE NULL
+              END as duration
+            FROM usage_records ur
+            JOIN quilts q ON ur.quilt_id = q.id
+            ORDER BY ur.start_date DESC
             LIMIT ${limit} OFFSET ${offset}
-          ` as UsageRecordRow[];
-          return rows.map(row => this.rowToModel(row));
+          ` as any[];
+          
+          // Transform to expected format
+          return rows.map(row => ({
+            id: row.id,
+            quiltId: row.quilt_id,
+            quiltName: row.quilt_name,
+            itemNumber: row.item_number,
+            color: row.color,
+            season: row.season,
+            currentStatus: row.current_status,
+            startedAt: row.start_date,
+            endedAt: row.end_date,
+            usageType: row.usage_type,
+            notes: row.notes,
+            isActive: row.is_active,
+            duration: row.duration ? Math.floor(row.duration) : null,
+          }));
         }
 
         // With quiltId filter
         const rows = await sql`
-          SELECT * FROM usage_records
-          WHERE quilt_id = ${quiltId}
-          ORDER BY start_date DESC
+          SELECT 
+            ur.*,
+            q.name as quilt_name,
+            q.item_number,
+            q.color,
+            q.season,
+            q.current_status,
+            CASE 
+              WHEN ur.end_date IS NULL THEN true
+              ELSE false
+            END as is_active,
+            CASE
+              WHEN ur.end_date IS NOT NULL THEN 
+                EXTRACT(DAY FROM (ur.end_date::timestamp - ur.start_date::timestamp))
+              ELSE NULL
+            END as duration
+          FROM usage_records ur
+          JOIN quilts q ON ur.quilt_id = q.id
+          WHERE ur.quilt_id = ${quiltId}
+          ORDER BY ur.start_date DESC
           LIMIT ${limit} OFFSET ${offset}
-        ` as UsageRecordRow[];
-        return rows.map(row => this.rowToModel(row));
+        ` as any[];
+        
+        return rows.map(row => ({
+          id: row.id,
+          quiltId: row.quilt_id,
+          quiltName: row.quilt_name,
+          itemNumber: row.item_number,
+          color: row.color,
+          season: row.season,
+          currentStatus: row.current_status,
+          startedAt: row.start_date,
+          endedAt: row.end_date,
+          usageType: row.usage_type,
+          notes: row.notes,
+          isActive: row.is_active,
+          duration: row.duration ? Math.floor(row.duration) : null,
+        }));
       },
       'findAll',
       { filters }
