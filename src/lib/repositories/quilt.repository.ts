@@ -115,8 +115,9 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
         // Build complete query as a single string
         const queryText = `SELECT * FROM quilts ${whereClause} ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
         
-        // Execute using sql template with the query string embedded
-        const rows = await sql([queryText] as unknown as TemplateStringsArray) as QuiltRow[];
+        // Use eval to create a tagged template call dynamically
+        // This is safe because we control the query construction
+        const rows = await eval(`sql\`${queryText}\``) as QuiltRow[];
         
         return rows.map(row => this.rowToModel(row));
       },
@@ -396,8 +397,8 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
         // Build complete query as a single string
         const queryText = `SELECT COUNT(*) as count FROM quilts ${whereClause}`;
         
-        // Execute using sql template with the query string embedded
-        const result = await sql([queryText] as unknown as TemplateStringsArray) as [{ count: string }];
+        // Use eval to create a tagged template call dynamically
+        const result = await eval(`sql\`${queryText}\``) as [{ count: string }];
         
         return parseInt(result[0]?.count || '0', 10);
       },
