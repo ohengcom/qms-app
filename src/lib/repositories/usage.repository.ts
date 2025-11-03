@@ -66,15 +66,15 @@ export class UsageRepository extends BaseRepositoryImpl<UsageRecordRow, UsageRec
       async () => {
         const { quiltId, limit = 50, offset = 0 } = filters;
 
-        let query = sql<UsageRecordRow[]>`SELECT * FROM usage_records WHERE 1=1`;
+        let query = sql`SELECT * FROM usage_records WHERE 1=1`;
 
         if (quiltId) {
-          query = sql<UsageRecordRow[]>`${query} AND quilt_id = ${quiltId}`;
+          query = sql`${query} AND quilt_id = ${quiltId}`;
         }
 
-        query = sql<UsageRecordRow[]>`${query} ORDER BY start_date DESC LIMIT ${limit} OFFSET ${offset}`;
+        query = sql`${query} ORDER BY start_date DESC LIMIT ${limit} OFFSET ${offset}`;
 
-        const rows = await query;
+        const rows = await query as UsageRecordRow[];
         return rows.map(row => this.rowToModel(row));
       },
       'findAll',
@@ -88,11 +88,11 @@ export class UsageRepository extends BaseRepositoryImpl<UsageRecordRow, UsageRec
   async findByQuiltId(quiltId: string): Promise<UsageRecord[]> {
     return this.executeQuery(
       async () => {
-        const rows = await sql<UsageRecordRow[]>`
+        const rows = await sql`
           SELECT * FROM usage_records
           WHERE quilt_id = ${quiltId}
           ORDER BY start_date DESC
-        `;
+        ` as UsageRecordRow[];
         return rows.map(row => this.rowToModel(row));
       },
       'findByQuiltId',
@@ -106,12 +106,12 @@ export class UsageRepository extends BaseRepositoryImpl<UsageRecordRow, UsageRec
   async getActiveUsageRecord(quiltId: string): Promise<UsageRecord | null> {
     return this.executeQuery(
       async () => {
-        const rows = await sql<UsageRecordRow[]>`
+        const rows = await sql`
           SELECT * FROM usage_records
           WHERE quilt_id = ${quiltId}
             AND end_date IS NULL
           LIMIT 1
-        `;
+        ` as UsageRecordRow[];
         return rows[0] ? this.rowToModel(rows[0]) : null;
       },
       'getActiveUsageRecord',
@@ -130,7 +130,7 @@ export class UsageRepository extends BaseRepositoryImpl<UsageRecordRow, UsageRec
 
         dbLogger.info('Creating usage record', { quiltId: data.quiltId });
 
-        const rows = await sql<UsageRecordRow[]>`
+        const rows = await sql`
           INSERT INTO usage_records (
             id, quilt_id, start_date, end_date, usage_type, notes, created_at, updated_at
           ) VALUES (
@@ -143,7 +143,7 @@ export class UsageRepository extends BaseRepositoryImpl<UsageRecordRow, UsageRec
             ${now},
             ${now}
           ) RETURNING *
-        `;
+        ` as UsageRecordRow[];
 
         dbLogger.info('Usage record created successfully', { id, quiltId: data.quiltId });
         return this.rowToModel(rows[0]);
@@ -163,7 +163,7 @@ export class UsageRepository extends BaseRepositoryImpl<UsageRecordRow, UsageRec
 
         dbLogger.info('Ending usage record', { quiltId, endDate });
 
-        const rows = await sql<UsageRecordRow[]>`
+        const rows = await sql`
           UPDATE usage_records
           SET
             end_date = ${endDate.toISOString()},
@@ -172,7 +172,7 @@ export class UsageRepository extends BaseRepositoryImpl<UsageRecordRow, UsageRec
           WHERE quilt_id = ${quiltId}
             AND end_date IS NULL
           RETURNING *
-        `;
+        ` as UsageRecordRow[];
 
         if (rows.length === 0) {
           dbLogger.warn('No active usage record found to end', { quiltId });
@@ -197,39 +197,7 @@ export class UsageRepository extends BaseRepositoryImpl<UsageRecordRow, UsageRec
 
         dbLogger.info('Updating usage record', { id });
 
-        // Build update query dynamically based on provided fields
-        const updates: string[] = [];
-        const values: unknown[] = [];
-
-        if (data.startDate !== undefined) {
-          updates.push(`start_date = $${updates.length + 1}`);
-          values.push(data.startDate.toISOString());
-        }
-
-        if (data.endDate !== undefined) {
-          updates.push(`end_date = $${updates.length + 1}`);
-          values.push(data.endDate ? data.endDate.toISOString() : null);
-        }
-
-        if (data.usageType !== undefined) {
-          updates.push(`usage_type = $${updates.length + 1}`);
-          values.push(data.usageType);
-        }
-
-        if (data.notes !== undefined) {
-          updates.push(`notes = $${updates.length + 1}`);
-          values.push(data.notes);
-        }
-
-        updates.push(`updated_at = $${updates.length + 1}`);
-        values.push(now);
-
-        if (updates.length === 1) {
-          // Only updated_at, nothing to update
-          return this.findById(id);
-        }
-
-        const rows = await sql<UsageRecordRow[]>`
+        const rows = await sql`
           UPDATE usage_records
           SET
             start_date = ${data.startDate ? data.startDate.toISOString() : sql`start_date`},
@@ -239,7 +207,7 @@ export class UsageRepository extends BaseRepositoryImpl<UsageRecordRow, UsageRec
             updated_at = ${now}
           WHERE id = ${id}
           RETURNING *
-        `;
+        ` as UsageRecordRow[];
 
         if (rows.length === 0) {
           return null;
@@ -259,11 +227,11 @@ export class UsageRepository extends BaseRepositoryImpl<UsageRecordRow, UsageRec
   async getAllActive(): Promise<UsageRecord[]> {
     return this.executeQuery(
       async () => {
-        const rows = await sql<UsageRecordRow[]>`
+        const rows = await sql`
           SELECT * FROM usage_records
           WHERE end_date IS NULL
           ORDER BY start_date DESC
-        `;
+        ` as UsageRecordRow[];
         return rows.map(row => this.rowToModel(row));
       },
       'getAllActive'
@@ -281,11 +249,7 @@ export class UsageRepository extends BaseRepositoryImpl<UsageRecordRow, UsageRec
   }> {
     return this.executeQuery(
       async () => {
-        const result = await sql<[{
-          total_usages: string;
-          total_days: string;
-          last_used: string | null;
-        }]>`
+        const result = await sql`
           SELECT
             COUNT(*) as total_usages,
             COALESCE(SUM(
@@ -298,7 +262,11 @@ export class UsageRepository extends BaseRepositoryImpl<UsageRecordRow, UsageRec
             MAX(start_date) as last_used
           FROM usage_records
           WHERE quilt_id = ${quiltId}
-        `;
+        ` as [{
+          total_usages: string;
+          total_days: string;
+          last_used: string | null;
+        }];
 
         const totalUsages = parseInt(result[0]?.total_usages || '0', 10);
         const totalDays = parseFloat(result[0]?.total_days || '0');
