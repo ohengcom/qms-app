@@ -5,7 +5,7 @@ import { useLanguage } from '@/lib/language-provider';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { TableSkeleton } from '@/components/ui/skeleton-layouts';
-import { Clock, Package, BarChart3, ArrowLeft, Eye, PackageOpen, Edit, Trash2 } from 'lucide-react';
+import { Clock, Package, BarChart3, ArrowLeft, Eye, PackageOpen, Edit } from 'lucide-react';
 import { EmptyState } from '@/components/ui/empty-state';
 import { EditUsageRecordDialog } from '@/components/usage/EditUsageRecordDialog';
 import { useUsageRecords, useOverallUsageStats, useQuiltUsageRecords } from '@/hooks/useUsage';
@@ -28,7 +28,7 @@ export default function UsageTrackingPage() {
   const { data: usageData, isLoading: loading } = useUsageRecords();
   const { data: statsData } = useOverallUsageStats();
   const { data: quiltUsageData, isLoading: detailLoading } = useQuiltUsageRecords(
-    selectedQuilt?.id || '',
+    selectedQuilt?.id || ''
   );
 
   // Extract data with superjson wrapper handling
@@ -57,8 +57,6 @@ export default function UsageTrackingPage() {
     setView('list');
     setSelectedQuilt(null);
   };
-
-
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString(t('language') === 'zh' ? 'zh-CN' : 'en-US', {
@@ -188,9 +186,6 @@ export default function UsageTrackingPage() {
                     {t('quilts.views.name')}
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('quilts.table.season')}
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t('usage.labels.started')}
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -210,7 +205,7 @@ export default function UsageTrackingPage() {
               <tbody className="divide-y divide-gray-200">
                 {usageHistory.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="px-4">
+                    <td colSpan={7} className="px-4">
                       <EmptyState
                         icon={PackageOpen}
                         title={t('language') === 'zh' ? '暂无使用记录' : 'No usage records'}
@@ -230,9 +225,6 @@ export default function UsageTrackingPage() {
                       </td>
                       <td className="px-4 py-3 text-sm font-medium text-gray-900">
                         {record.quiltName}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-700">
-                        {t(`season.${record.season}`)}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-700">
                         {formatDate(record.startedAt)}
