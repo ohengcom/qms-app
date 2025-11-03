@@ -17,7 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { useToastContext } from '@/hooks/useToast';
+import { toast } from '@/lib/toast';
 import { useUpdateUsageRecord, useDeleteUsageRecord } from '@/hooks/useUsage';
 
 interface UsageRecord {
@@ -55,7 +55,6 @@ export function EditUsageRecordDialog({
   const [open, setOpen] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const { t } = useLanguage();
-  const toast = useToastContext();
 
   // Use tRPC mutations
   const updateMutation = useUpdateUsageRecord();
