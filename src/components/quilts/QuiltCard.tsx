@@ -107,7 +107,7 @@ export function QuiltCard({ quilt, variant = 'card', onEdit, onView }: QuiltCard
     try {
       await startUsage.mutateAsync({
         quiltId: quilt.id,
-        startedAt: new Date(),
+        startDate: new Date(),
         usageType: 'REGULAR',
       });
       toast.success('Usage started', `Started using ${quilt.name}`);
