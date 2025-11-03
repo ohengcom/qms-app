@@ -1,5 +1,6 @@
 import { createTRPCRouter } from '@/server/api/trpc';
 import { quiltsRouter } from '@/server/api/routers/quilts';
+import { usageRouter } from '@/server/api/routers/usage';
 import { dashboardRouter } from '@/server/api/routers/dashboard';
 import { importExportRouter } from '@/server/api/routers/import-export';
 
@@ -10,6 +11,7 @@ import { importExportRouter } from '@/server/api/routers/import-export';
  */
 export const appRouter = createTRPCRouter({
   quilts: quiltsRouter,
+  usage: usageRouter,
   dashboard: dashboardRouter,
   importExport: importExportRouter,
 });

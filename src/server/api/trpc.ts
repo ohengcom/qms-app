@@ -4,6 +4,7 @@ import superjson from 'superjson';
 import { ZodError } from 'zod';
 
 import { db } from '@/lib/neon';
+import { apiLogger } from '@/lib/logger';
 
 /**
  * 1. CONTEXT
@@ -76,6 +77,87 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
 });
 
 /**
+ * Handle tRPC errors with proper logging and user-friendly messages
+ */
+export function handleTRPCError(
+  error: unknown,
+  operation: string,
+  context?: Record<string, unknown>
+): never {
+  // If it's already a TRPCError, log and re-throw it
+  if (error instanceof TRPCError) {
+    apiLogger.warn(`tRPC ${operation} failed`, {
+      code: error.code,
+      message: error.message,
+      ...context,
+    });
+    throw error;
+  }
+
+  // Log the original error
+  apiLogger.error(`tRPC ${operation} failed`, error as Error, context);
+
+  // Convert to user-friendly TRPCError
+  if (error instanceof Error) {
+    // Check for specific error types
+    if (error.message.includes('not found') || error.message.includes('NOT_FOUND')) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'Resource not found',
+        cause: error,
+      });
+    }
+
+    if (error.message.includes('unauthorized') || error.message.includes('UNAUTHORIZED')) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'Unauthorized access',
+        cause: error,
+      });
+    }
+
+    if (error.message.includes('validation') || error.message.includes('invalid')) {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'Invalid input data',
+        cause: error,
+      });
+    }
+  }
+
+  // Default to internal server error
+  throw new TRPCError({
+    code: 'INTERNAL_SERVER_ERROR',
+    message: 'An unexpected error occurred',
+    cause: error,
+  });
+}
+
+/**
+ * Logging middleware for tRPC procedures
+ */
+const loggingMiddleware = t.middleware(async ({ path, type, next }) => {
+  const start = Date.now();
+
+  apiLogger.debug(`tRPC ${type} ${path} started`);
+
+  const result = await next();
+
+  const duration = Date.now() - start;
+
+  if (result.ok) {
+    apiLogger.debug(`tRPC ${type} ${path} completed`, { duration: `${duration}ms` });
+  } else {
+    apiLogger.warn(`tRPC ${type} ${path} failed`, {
+      duration: `${duration}ms`,
+      error: result.error.message,
+    });
+  }
+
+  return result;
+});
+
+/**
  * 3. ROUTER & PROCEDURE (THE IMPORTANT BIT)
  *
  * These are the pieces you use to build your tRPC API. You should import these a lot in the
@@ -96,7 +178,7 @@ export const createTRPCRouter = t.router;
  * guarantee that a user querying is authorized, but you can still access user session data if they
  * are logged in.
  */
-export const publicProcedure = t.procedure;
+export const publicProcedure = t.procedure.use(loggingMiddleware);
 
 /**
  * Protected (authenticated) procedure
@@ -106,7 +188,7 @@ export const publicProcedure = t.procedure;
  *
  * @see https://trpc.io/docs/procedures
  */
-export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
+export const protectedProcedure = t.procedure.use(loggingMiddleware).use(({ ctx, next }) => {
   if (!ctx.session || !ctx.session.user) {
     throw new TRPCError({ code: 'UNAUTHORIZED' });
   }

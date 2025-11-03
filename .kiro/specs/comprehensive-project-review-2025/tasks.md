@@ -148,7 +148,9 @@
 
 ### Session 3: API Consolidation (1-2 hours)
 
-- [ ] 16. Create tRPC Error Handler
+- [x] 16. Create tRPC Error Handler
+
+
 
 
   - Update `src/server/api/trpc.ts`
@@ -157,7 +159,9 @@
   - Ensure consistent error responses
   - _Requirements: 5_
 
-- [ ] 17. Update Quilts Router
+- [x] 17. Update Quilts Router
+
+
   - Update `src/server/api/routers/quilts.ts`
   - Replace db.* calls with quiltRepository.*
   - Add proper error handling with handleTRPCError
@@ -165,21 +169,27 @@
   - Remove any `any` types
   - _Requirements: 1, 2, 5_
 
-- [ ] 18. Update Usage Router
+- [x] 18. Update Usage Router
+
+
   - Update `src/server/api/routers/usage.ts` (if exists)
   - Replace db.* calls with usageRepository.*
   - Add proper error handling
   - Add logging
   - _Requirements: 2, 5_
 
-- [ ] 19. Remove Duplicate REST APIs
+- [x] 19. Remove Duplicate REST APIs
+
+
   - Audit all files in `src/app/api/`
   - Identify routes covered by tRPC
   - Remove duplicate routes (keep only auth, health, db-test)
   - Update any frontend code using removed routes
   - _Requirements: 5_
 
-- [ ] 20. Test API Consolidation
+- [x] 20. Test API Consolidation
+
+
   - Test all tRPC procedures work correctly
   - Verify authentication is enforced
   - Check error handling works
