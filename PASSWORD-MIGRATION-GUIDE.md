@@ -11,7 +11,7 @@
 #### 1. 运行初始化脚本
 
 ```bash
-npm run tsx scripts/init-system-settings.ts
+npm run init-system-settings
 ```
 
 这个脚本会：
@@ -66,7 +66,7 @@ The system has been upgraded to store passwords in the database instead of envir
 #### 1. Run Initialization Script
 
 ```bash
-npm run tsx scripts/init-system-settings.ts
+npm run init-system-settings
 ```
 
 This script will:
@@ -153,7 +153,7 @@ This ensures the application continues to work during migration.
 **Solution**:
 
 1. Check if the `system_settings` table exists
-2. Run the initialization script
+2. Run the initialization script: `npm run init-system-settings`
 3. Verify `QMS_PASSWORD_HASH` environment variable exists (as fallback)
 
 ### Issue: Password change doesn't work
