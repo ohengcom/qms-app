@@ -182,7 +182,7 @@ export default function QuiltsPage() {
     const toastId = toast.loading(getToastMessage('deleting', lang));
 
     try {
-      await deleteQuiltMutation.mutateAsync(quilt.id);
+      await deleteQuiltMutation.mutateAsync({ id: quilt.id });
       toast.dismiss(toastId);
       toast.success(getToastMessage('deleteSuccess', lang));
     } catch (error) {
@@ -239,7 +239,9 @@ export default function QuiltsPage() {
     );
 
     try {
-      const deletePromises = Array.from(selectedIds).map(id => deleteQuiltMutation.mutateAsync(id));
+      const deletePromises = Array.from(selectedIds).map(id =>
+        deleteQuiltMutation.mutateAsync({ id })
+      );
 
       await Promise.all(deletePromises);
 
