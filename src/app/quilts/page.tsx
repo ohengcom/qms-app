@@ -57,7 +57,8 @@ export default function QuiltsPage() {
   const updateQuiltMutation = useUpdateQuilt();
   const deleteQuiltMutation = useDeleteQuilt();
 
-  const quilts = quiltsData?.quilts || [];
+  // tRPC with superjson wraps data in json property
+  const quilts = quiltsData?.json?.quilts || quiltsData?.quilts || [];
 
   // Sorting function
   const handleSort = (field: string) => {
