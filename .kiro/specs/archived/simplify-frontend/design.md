@@ -7,21 +7,25 @@ This design simplifies the QMS frontend by removing tRPC complexity and implemen
 ## Architecture
 
 ### Current Architecture (Problem)
+
 ```
 Frontend (React) → tRPC Client → tRPC Router → Database Operations
 ```
 
 **Issues:**
+
 - tRPC adds complexity and debugging difficulty
 - Static generation conflicts with dynamic data
 - "No quilts found" despite working API endpoints
 
 ### New Architecture (Solution)
+
 ```
 Frontend (React) → React Query → Next.js API Routes → Database Operations
 ```
 
 **Benefits:**
+
 - Simple, standard Next.js patterns
 - Easy to debug with browser DevTools
 - Direct HTTP requests with clear error messages
@@ -90,6 +94,7 @@ All API routes will return consistent JSON responses:
 ### Quilt API Endpoints
 
 #### GET /api/quilts
+
 ```typescript
 Response: {
   quilts: Quilt[],
@@ -98,38 +103,43 @@ Response: {
 ```
 
 #### GET /api/quilts/[id]
+
 ```typescript
 Response: {
-  quilt: Quilt
+  quilt: Quilt;
 }
 ```
 
 #### POST /api/quilts
+
 ```typescript
-Request: CreateQuiltInput
+Request: CreateQuiltInput;
 Response: {
-  quilt: Quilt
+  quilt: Quilt;
 }
 ```
 
 #### PUT /api/quilts/[id]
+
 ```typescript
-Request: UpdateQuiltInput
+Request: UpdateQuiltInput;
 Response: {
-  quilt: Quilt
+  quilt: Quilt;
 }
 ```
 
 #### DELETE /api/quilts/[id]
+
 ```typescript
 Response: {
-  success: true
+  success: true;
 }
 ```
 
 ### Dashboard API Endpoints
 
 #### GET /api/dashboard/stats
+
 ```typescript
 Response: {
   overview: {
@@ -183,7 +193,7 @@ export function useQuilts() {
 
 export function useCreateQuilt() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async (data: CreateQuiltInput) => {
       const res = await fetch('/api/quilts', {
@@ -214,16 +224,13 @@ export async function GET(request: NextRequest) {
   try {
     const quilts = await db.getQuilts({ limit: 100 });
     const total = await db.countQuilts();
-    
+
     return NextResponse.json({
       quilts,
       total,
     });
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to fetch quilts' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch quilts' }, { status: 500 });
   }
 }
 ```
@@ -243,6 +250,7 @@ if (error) {
 ### Server-Side Error Handling
 
 All API routes will:
+
 1. Wrap operations in try-catch blocks
 2. Return appropriate HTTP status codes
 3. Provide clear error messages
@@ -251,6 +259,7 @@ All API routes will:
 ## Testing Strategy
 
 ### Manual Testing
+
 1. Verify all 16 quilts display on quilts page
 2. Test dashboard statistics accuracy
 3. Test CRUD operations (create, read, update, delete)
@@ -258,6 +267,7 @@ All API routes will:
 5. Verify error states display correctly
 
 ### API Testing
+
 1. Test each endpoint with curl or Postman
 2. Verify response formats match design
 3. Test error scenarios (invalid data, missing fields)

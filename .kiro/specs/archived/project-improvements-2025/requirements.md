@@ -1,5 +1,11 @@
 # Requirements Document - QMS Project Improvements 2025
 
+**状态 / Status**: ❌ 已归档 / Archived  
+**完成度 / Completion**: 30%  
+**最后更新 / Last Updated**: 2025-01-10  
+**归档日期 / Archived Date**: 2025-11-03  
+**归档原因 / Reason**: 被 comprehensive-project-review-2025 取代 / Superseded by comprehensive-project-review-2025
+
 ## Introduction
 
 This document outlines comprehensive improvement recommendations for the Quilts Management System (QMS) based on a thorough review of the current implementation. The QMS application is production-ready with Next.js 16, React 19, tRPC, and Neon PostgreSQL, deployed at https://qms-app-omega.vercel.app with 16 quilts imported.

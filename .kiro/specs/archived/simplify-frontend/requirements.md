@@ -1,5 +1,11 @@
 # Requirements Document
 
+**状态 / Status**: ❌ 已归档 / Archived  
+**完成度 / Completion**: 20%  
+**最后更新 / Last Updated**: 2025-01-08  
+**归档日期 / Archived Date**: 2025-11-03  
+**归档原因 / Reason**: 方法改为增强而非简化 / Approach changed to enhancement rather than simplification
+
 ## Introduction
 
 Simplify the QMS frontend by removing tRPC complexity and using direct Next.js API routes with React Query. The current implementation has persistent issues with tRPC causing "no quilts found" despite the database containing 16 quilts and API endpoints working correctly.

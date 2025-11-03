@@ -5,8 +5,6 @@
 ### Session 1: Code Quality & Database (3 hours)
 
 - [x] 1. Create Logging Utility
-
-
   - Create `src/lib/logger.ts` with LogLevel enum and Logger class
   - Implement debug, info, warn, error methods
   - Add environment-based filtering
@@ -14,9 +12,6 @@
   - _Requirements: 1_
 
 - [x] 2. Replace console.log with logger
-
-
-
   - Search for all console.log statements in src/
   - Replace with appropriate logger calls
   - Remove console.error, console.warn as well
@@ -24,9 +19,6 @@
   - _Requirements: 1_
 
 - [x] 3. Create Database Type Definitions
-
-
-
   - Create `src/lib/database/types.ts`
   - Define QuiltRow interface (snake_case)
   - Define Quilt interface (camelCase)
@@ -35,8 +27,6 @@
   - _Requirements: 1, 2_
 
 - [x] 4. Implement Repository Pattern
-
-
   - Create `src/lib/repositories/base.repository.ts`
   - Create `src/lib/repositories/quilt.repository.ts`
   - Implement findAll, findById, create, update, delete methods
@@ -46,8 +36,6 @@
   - _Requirements: 2_
 
 - [x] 5. Create Usage Repository
-
-
   - Create `src/lib/repositories/usage.repository.ts`
   - Implement createUsageRecord, endUsageRecord methods
   - Implement getActiveUsageRecord, getUsageRecordsByQuiltId
@@ -55,9 +43,6 @@
   - _Requirements: 2_
 
 - [x] 6. Add Error Boundaries
-
-
-
   - Create `src/components/ErrorBoundary.tsx`
   - Add error boundary to app layout
   - Add bilingual error messages
@@ -66,8 +51,6 @@
 ### Session 2: Authentication & Security (3 hours)
 
 - [x] 7. Create Password Utilities
-
-
   - Create `src/lib/auth/password.ts`
   - Implement hashPassword function with bcrypt
   - Implement verifyPassword function
@@ -75,7 +58,6 @@
   - _Requirements: 6_
 
 - [x] 8. Create JWT Utilities
-
   - Create `src/lib/auth/jwt.ts`
   - Implement signToken function
   - Implement verifyToken function
@@ -83,7 +65,6 @@
   - _Requirements: 6_
 
 - [x] 9. Create Rate Limiting
-
   - Create `src/lib/auth/rate-limit.ts`
   - Implement checkRateLimit function (5 attempts per 15 min)
   - Implement resetRateLimit function
@@ -91,7 +72,6 @@
   - _Requirements: 6_
 
 - [x] 10. Create Login Page
-
   - Create `src/app/login/page.tsx`
   - Add password input with show/hide toggle
   - Add "Remember Me" checkbox
@@ -101,7 +81,6 @@
   - _Requirements: 6, 7_
 
 - [x] 11. Create Login API
-
   - Create `src/app/api/auth/login/route.ts`
   - Implement POST handler
   - Add rate limiting check
@@ -112,16 +91,12 @@
   - _Requirements: 6_
 
 - [x] 12. Create Logout API
-
-
   - Create `src/app/api/auth/logout/route.ts`
   - Clear auth-token cookie
   - Add logging
   - _Requirements: 6_
 
 - [x] 13. Update Middleware for Authentication
-
-
   - Update `src/middleware.ts`
   - Add authentication check
   - Define public paths (login, health check)
@@ -130,8 +105,6 @@
   - _Requirements: 6_
 
 - [x] 14. Add Logout Button to Header
-
-
   - Update `src/components/layout/AppLayout.tsx`
   - Add logout button to header
   - Call logout API on click
@@ -139,8 +112,6 @@
   - _Requirements: 6_
 
 - [x] 15. Setup Password Script
-
-
   - Update `scripts/setup-password.ts` if needed
   - Ensure it generates proper bcrypt hash
   - Test password setup flow
@@ -149,10 +120,6 @@
 ### Session 3: API Consolidation (1-2 hours)
 
 - [x] 16. Create tRPC Error Handler
-
-
-
-
   - Update `src/server/api/trpc.ts`
   - Add handleTRPCError utility function
   - Add logging for all errors
@@ -160,27 +127,21 @@
   - _Requirements: 5_
 
 - [x] 17. Update Quilts Router
-
-
   - Update `src/server/api/routers/quilts.ts`
-  - Replace db.* calls with quiltRepository.*
+  - Replace db._ calls with quiltRepository._
   - Add proper error handling with handleTRPCError
   - Add logging for all operations
   - Remove any `any` types
   - _Requirements: 1, 2, 5_
 
 - [x] 18. Update Usage Router
-
-
   - Update `src/server/api/routers/usage.ts` (if exists)
-  - Replace db.* calls with usageRepository.*
+  - Replace db._ calls with usageRepository._
   - Add proper error handling
   - Add logging
   - _Requirements: 2, 5_
 
 - [x] 19. Remove Duplicate REST APIs
-
-
   - Audit all files in `src/app/api/`
   - Identify routes covered by tRPC
   - Remove duplicate routes (keep only auth, health, db-test)
@@ -188,9 +149,6 @@
   - _Requirements: 5_
 
 - [x] 20. Test API Consolidation
-
-
-
   - Test all tRPC procedures work correctly
   - Verify authentication is enforced
   - Check error handling works
@@ -275,7 +233,7 @@
   - Test navigation on mobile
   - _Requirements: 8_
 
-- [ ]* 31. Add Dark Mode Support (Optional)
+- [ ]\* 31. Add Dark Mode Support (Optional)
   - Add theme toggle to header
   - Implement dark mode color scheme
   - Persist theme preference
@@ -320,7 +278,7 @@
   - Document bundle size improvements
   - _Requirements: 4_
 
-- [ ]* 37. Implement Virtual Scrolling (Optional)
+- [ ]\* 37. Implement Virtual Scrolling (Optional)
   - Add virtual scrolling to quilt list if >50 items
   - Use @tanstack/react-virtual
   - Test performance improvement
@@ -350,14 +308,14 @@
   - Update roadmap
   - _Requirements: 9_
 
-- [ ]* 41. Setup Vitest (Optional)
+- [ ]\* 41. Setup Vitest (Optional)
   - Install Vitest and testing dependencies
   - Create `vitest.config.ts`
   - Create test utilities in `src/test/`
   - Add test scripts to package.json
   - _Requirements: 3_
 
-- [ ]* 42. Write Critical Tests (Optional)
+- [ ]\* 42. Write Critical Tests (Optional)
   - Test logger utility
   - Test password hashing/verification
   - Test JWT sign/verify
@@ -367,14 +325,14 @@
 
 ## Optional: Production Monitoring (If Time Permits)
 
-- [ ]* 43. Setup Sentry (Optional)
+- [ ]\* 43. Setup Sentry (Optional)
   - Install @sentry/nextjs
   - Configure Sentry in next.config.js
   - Add Sentry.init() to app
   - Test error tracking
   - _Requirements: 10_
 
-- [ ]* 44. Add Structured Logging (Optional)
+- [ ]\* 44. Add Structured Logging (Optional)
   - Update logger to output JSON in production
   - Add request ID tracking
   - Add user context to logs

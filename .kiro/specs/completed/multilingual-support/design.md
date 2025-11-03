@@ -15,12 +15,12 @@ graph TB
     C --> D[翻译文件]
     B --> E[本地存储管理]
     F[语言切换器] --> B
-    
+
     subgraph "翻译系统"
         D --> G[中文翻译]
         D --> H[英文翻译]
     end
-    
+
     subgraph "状态管理"
         B --> I[当前语言状态]
         E --> J[持久化存储]
@@ -65,7 +65,7 @@ export const translations = {
       dashboard: '仪表板',
       quilts: '被子管理',
       usage: '使用跟踪',
-      settings: '设置'
+      settings: '设置',
     },
     // 仪表板
     dashboard: {
@@ -75,14 +75,14 @@ export const translations = {
         totalQuilts: '被子总数',
         inUse: '使用中',
         available: '可用',
-        storage: '存储中'
-      }
+        storage: '存储中',
+      },
     },
     // 其他模块...
   },
   en: {
     // 对应的英文翻译...
-  }
+  },
 };
 ```
 
@@ -91,7 +91,7 @@ export const translations = {
 ```typescript
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguage] = useState<Language>('zh');
-  
+
   // 从localStorage加载语言偏好
   useEffect(() => {
     const savedLanguage = localStorage.getItem('language') as Language;
@@ -99,18 +99,18 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       setLanguage(savedLanguage);
     }
   }, []);
-  
+
   // 保存语言偏好
   const handleSetLanguage = (lang: Language) => {
     setLanguage(lang);
     localStorage.setItem('language', lang);
   };
-  
+
   // 翻译函数
   const t = (key: string): string => {
     return getNestedTranslation(translations[language], key) || key;
   };
-  
+
   return (
     <LanguageContext.Provider value={{ language, setLanguage: handleSetLanguage, t }}>
       {children}
@@ -124,7 +124,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 ```typescript
 export function LanguageSwitcher() {
   const { language, setLanguage } = useLanguage();
-  
+
   return (
     <Button
       variant="outline"
@@ -157,14 +157,14 @@ export const statusTranslations = {
   AVAILABLE: 'status.AVAILABLE',
   IN_USE: 'status.IN_USE',
   STORAGE: 'status.STORAGE',
-  MAINTENANCE: 'status.MAINTENANCE'
+  MAINTENANCE: 'status.MAINTENANCE',
 };
 
 // 季节翻译
 export const seasonTranslations = {
   WINTER: 'season.WINTER',
   SPRING_AUTUMN: 'season.SPRING_AUTUMN',
-  SUMMER: 'season.SUMMER'
+  SUMMER: 'season.SUMMER',
 };
 ```
 
@@ -179,14 +179,14 @@ export const seasonTranslations = {
 ```typescript
 const t = (key: string): string => {
   const translation = getNestedTranslation(translations[language], key);
-  
+
   if (!translation) {
     if (process.env.NODE_ENV === 'development') {
       console.warn(`Missing translation for key: ${key}`);
     }
     return key;
   }
-  
+
   return translation;
 };
 ```

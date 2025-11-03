@@ -6,13 +6,9 @@
   - _Requirements: 3.1, 3.2, 3.3, 3.4_
 
 - [x] 1.1 Update useQuilts hook
-
-
   - Replace tRPC query with fetch to /api/quilts
   - Implement useCreateQuilt, useUpdateQuilt, useDeleteQuilt mutations
   - _Requirements: 3.1, 3.2, 3.3_
-
-
 
 - [ ] 1.2 Update useDashboard hook
   - Replace tRPC query with fetch to /api/dashboard/stats
@@ -37,8 +33,6 @@
 - [ ] 2.2 Create /api/quilts/[id] route
   - Implement GET for single quilt
   - Implement PUT for updating quilt
-
-
 
   - Implement DELETE for removing quilt
   - _Requirements: 2.4, 2.5_
