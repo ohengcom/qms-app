@@ -25,13 +25,13 @@ const protectedPaths = [
 
 // Define API routes that require authentication
 const protectedApiPaths = [
-  '/api/quilts',
-  '/api/usage',
+  '/api/trpc', // tRPC endpoints (quilts, usage, etc.)
   '/api/import',
   '/api/export',
   '/api/analytics',
   '/api/reports',
-  '/api/trpc',
+  '/api/dashboard',
+  '/api/admin',
 ];
 
 export default function proxy(request: NextRequest) {
