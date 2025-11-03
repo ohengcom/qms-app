@@ -80,36 +80,49 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
       async () => {
         const { season, status, location, brand, search, limit = 20, offset = 0 } = filters;
 
-        let query = sql`SELECT * FROM quilts WHERE 1=1`;
+        // Start with base query - if no filters, just get all
+        if (!season && !status && !location && !brand && !search) {
+          const rows = await sql`
+            SELECT * FROM quilts
+            ORDER BY created_at DESC
+            LIMIT ${limit} OFFSET ${offset}
+          ` as QuiltRow[];
+          return rows.map(row => this.rowToModel(row));
+        }
 
+        // Build filtered query dynamically
+        let queryParts = ['SELECT * FROM quilts WHERE 1=1'];
+        
         if (season) {
-          query = sql`${query} AND season = ${season}`;
+          queryParts.push(`AND season = '${season}'`);
         }
-
+        
         if (status) {
-          query = sql`${query} AND current_status = ${status}`;
+          queryParts.push(`AND current_status = '${status}'`);
         }
-
+        
         if (location) {
-          query = sql`${query} AND location ILIKE ${`%${location}%`}`;
+          queryParts.push(`AND location ILIKE '%${location.replace(/'/g, "''")}%'`);
         }
-
+        
         if (brand) {
-          query = sql`${query} AND brand ILIKE ${`%${brand}%`}`;
+          queryParts.push(`AND brand ILIKE '%${brand.replace(/'/g, "''")}%'`);
         }
-
+        
         if (search) {
-          query = sql`${query} AND (
-            name ILIKE ${`%${search}%`} OR
-            color ILIKE ${`%${search}%`} OR
-            fill_material ILIKE ${`%${search}%`} OR
-            notes ILIKE ${`%${search}%`}
-          )`;
+          const escapedSearch = search.replace(/'/g, "''");
+          queryParts.push(`AND (
+            name ILIKE '%${escapedSearch}%' OR
+            color ILIKE '%${escapedSearch}%' OR
+            fill_material ILIKE '%${escapedSearch}%' OR
+            notes ILIKE '%${escapedSearch}%'
+          )`);
         }
-
-        query = sql`${query} ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
-
-        const rows = await query as QuiltRow[];
+        
+        queryParts.push(`ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`);
+        
+        const queryText = queryParts.join(' ');
+        const rows = await sql([queryText] as any) as QuiltRow[];
         return rows.map(row => this.rowToModel(row));
       },
       'findAll',
@@ -353,34 +366,43 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
       async () => {
         const { season, status, location, brand, search } = filters;
 
-        let query = sql`SELECT COUNT(*) as count FROM quilts WHERE 1=1`;
+        // If no filters, simple count
+        if (!season && !status && !location && !brand && !search) {
+          const result = await sql`SELECT COUNT(*) as count FROM quilts` as [{ count: string }];
+          return parseInt(result[0]?.count || '0', 10);
+        }
 
+        // Build filtered query
+        let queryParts = ['SELECT COUNT(*) as count FROM quilts WHERE 1=1'];
+        
         if (season) {
-          query = sql`${query} AND season = ${season}`;
+          queryParts.push(`AND season = '${season}'`);
         }
-
+        
         if (status) {
-          query = sql`${query} AND current_status = ${status}`;
+          queryParts.push(`AND current_status = '${status}'`);
         }
-
+        
         if (location) {
-          query = sql`${query} AND location ILIKE ${`%${location}%`}`;
+          queryParts.push(`AND location ILIKE '%${location.replace(/'/g, "''")}%'`);
         }
-
+        
         if (brand) {
-          query = sql`${query} AND brand ILIKE ${`%${brand}%`}`;
+          queryParts.push(`AND brand ILIKE '%${brand.replace(/'/g, "''")}%'`);
         }
-
+        
         if (search) {
-          query = sql`${query} AND (
-            name ILIKE ${`%${search}%`} OR
-            color ILIKE ${`%${search}%`} OR
-            fill_material ILIKE ${`%${search}%`} OR
-            notes ILIKE ${`%${search}%`}
-          )`;
+          const escapedSearch = search.replace(/'/g, "''");
+          queryParts.push(`AND (
+            name ILIKE '%${escapedSearch}%' OR
+            color ILIKE '%${escapedSearch}%' OR
+            fill_material ILIKE '%${escapedSearch}%' OR
+            notes ILIKE '%${escapedSearch}%'
+          )`);
         }
-
-        const result = await query as [{ count: string }];
+        
+        const queryText = queryParts.join(' ');
+        const result = await sql([queryText] as any) as [{ count: string }];
         return parseInt(result[0]?.count || '0', 10);
       },
       'count',
