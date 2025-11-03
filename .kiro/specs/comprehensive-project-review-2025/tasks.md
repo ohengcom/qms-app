@@ -140,6 +140,7 @@
 
 - [x] 15. Setup Password Script
 
+
   - Update `scripts/setup-password.ts` if needed
   - Ensure it generates proper bcrypt hash
   - Test password setup flow

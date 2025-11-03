@@ -40,7 +40,8 @@ class Logger {
       context: this.context,
       message,
       ...(meta && { meta }),
-      pid: process.pid,
+      // Only include pid in Node.js environment (not Edge Runtime)
+      ...(typeof process !== 'undefined' && process.pid && { pid: process.pid }),
       environment: process.env.NODE_ENV || 'development',
     };
 
@@ -218,12 +219,15 @@ export function logErrorBoundary(error: Error, errorInfo: any): void {
   });
 }
 
-// Unhandled error logging
-if (typeof window === 'undefined') {
+// Unhandled error logging (only in Node.js runtime, not Edge Runtime)
+if (typeof window === 'undefined' && typeof process !== 'undefined' && process.on) {
   // Server-side error handling
   process.on('uncaughtException', error => {
     logger.error('Uncaught Exception', error, { fatal: true });
-    process.exit(1);
+    // Don't call process.exit in Edge Runtime
+    if (process.exit) {
+      process.exit(1);
+    }
   });
 
   process.on('unhandledRejection', (reason, promise) => {
