@@ -122,7 +122,7 @@ export const settingsRouter = createTRPCRouter({
   getSystemInfo: publicProcedure.query(async () => {
     try {
       return {
-        version: '0.2.2',
+        version: '0.3.0',
         framework: 'Next.js 15.0.3',
         deployment: 'Vercel',
         nodeVersion: process.version,
