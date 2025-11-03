@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useLanguage } from '@/lib/language-provider';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -8,22 +8,7 @@ import { TableSkeleton } from '@/components/ui/skeleton-layouts';
 import { Clock, Package, BarChart3, ArrowLeft, Eye, PackageOpen, Edit, Trash2 } from 'lucide-react';
 import { EmptyState } from '@/components/ui/empty-state';
 import { EditUsageRecordDialog } from '@/components/usage/EditUsageRecordDialog';
-
-interface UsageRecord {
-  id: string;
-  quiltId: string;
-  quiltName: string;
-  itemNumber: number;
-  color: string;
-  season: string;
-  currentStatus: string;
-  startedAt: string;
-  endedAt: string | null;
-  usageType: string;
-  notes: string | null;
-  isActive: boolean;
-  duration: number | null;
-}
+import { useUsageRecords, useOverallUsageStats, useQuiltUsageRecords } from '@/hooks/useUsage';
 
 interface QuiltUsageDetail {
   id: string;
@@ -35,66 +20,42 @@ interface QuiltUsageDetail {
 }
 
 export default function UsageTrackingPage() {
-  const [usageHistory, setUsageHistory] = useState<UsageRecord[]>([]);
-  const [selectedQuiltUsage, setSelectedQuiltUsage] = useState<UsageRecord[]>([]);
   const [selectedQuilt, setSelectedQuilt] = useState<QuiltUsageDetail | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [detailLoading, setDetailLoading] = useState(false);
-  const [stats, setStats] = useState({ total: 0, active: 0, completed: 0 });
   const [view, setView] = useState<'list' | 'detail'>('list');
   const { t } = useLanguage();
 
-  useEffect(() => {
-    loadUsageHistory();
-  }, []);
+  // Use tRPC hooks
+  const { data: usageData, isLoading: loading } = useUsageRecords();
+  const { data: statsData } = useOverallUsageStats();
+  const { data: quiltUsageData, isLoading: detailLoading } = useQuiltUsageRecords(
+    selectedQuilt?.id || '',
+  );
 
-  const loadUsageHistory = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch('/api/usage');
-      const data = await response.json();
+  // Extract data with superjson wrapper handling
+  const usageHistory = (usageData as any)?.json || usageData || [];
+  const stats = (statsData as any)?.json || statsData || { total: 0, active: 0, completed: 0 };
+  const selectedQuiltUsage = (quiltUsageData as any)?.json || quiltUsageData || [];
 
-      if (data.success) {
-        setUsageHistory(data.usage || []);
-        setStats(data.stats || { total: 0, active: 0, completed: 0 });
-      } else {
-        console.error('Failed to load usage history:', data.error);
-      }
-    } catch (error) {
-      console.error('Error loading usage history:', error);
-    } finally {
-      setLoading(false);
-    }
+  const loadUsageHistory = () => {
+    // Refetch is handled by tRPC automatically
   };
 
-  const loadQuiltUsageHistory = async (quiltId: string) => {
-    try {
-      setDetailLoading(true);
-      const response = await fetch(`/api/usage/${quiltId}`);
-      const data = await response.json();
-
-      if (data.success) {
-        setSelectedQuiltUsage(data.usage || []);
-        setSelectedQuilt(data.quilt);
-        setView('detail');
-      } else {
-        console.error('Failed to load quilt usage history:', data.error);
-      }
-    } catch (error) {
-      console.error('Error loading quilt usage history:', error);
-    } finally {
-      setDetailLoading(false);
-    }
-  };
-
-  const handleRecordClick = (record: UsageRecord) => {
-    loadQuiltUsageHistory(record.quiltId);
+  const handleRecordClick = (record: any) => {
+    // Set selected quilt info and switch to detail view
+    setSelectedQuilt({
+      id: record.quiltId,
+      name: record.quiltName || 'Unknown',
+      itemNumber: record.itemNumber || 0,
+      color: record.color || '',
+      season: record.season || '',
+      currentStatus: record.currentStatus || '',
+    });
+    setView('detail');
   };
 
   const handleBackToList = () => {
     setView('list');
     setSelectedQuilt(null);
-    setSelectedQuiltUsage([]);
   };
 
 
