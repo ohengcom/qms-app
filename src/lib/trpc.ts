@@ -14,6 +14,7 @@ const getBaseUrl = () => {
 export const api = createTRPCReact<AppRouter>();
 
 export const trpcConfig = {
+  transformer: superjson,
   links: [
     httpBatchLink({
       url: `${getBaseUrl()}/api/trpc`,
