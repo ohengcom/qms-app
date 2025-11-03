@@ -288,34 +288,21 @@ export default function QuiltsPage() {
     const lang = t('language') === 'zh' ? 'zh' : 'en';
 
     try {
-      // Use smart status update API
-      const response = await fetch(`/api/quilts/${quiltId}/status`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          newStatus,
-          startDate: options?.startDate,
-          endDate: options?.endDate,
-          notes: options?.notes,
-        }),
-      });
+      // Validate status is one of the allowed values
+      const validStatuses = ['IN_USE', 'MAINTENANCE', 'STORAGE'] as const;
+      type ValidStatus = (typeof validStatuses)[number];
 
-      if (!response.ok) {
-        throw new Error('Failed to update status');
+      if (!validStatuses.includes(newStatus as ValidStatus)) {
+        throw new Error('Invalid status value');
       }
 
-      const result = await response.json();
-
-      // Invalidate queries to refresh data
+      // Update quilt status using tRPC
       await updateQuiltMutation.mutateAsync({
         id: quiltId,
-        currentStatus: newStatus,
+        currentStatus: newStatus as ValidStatus,
       });
 
-      toast.success(
-        result.message ||
-          (lang === 'zh' ? '状态更新成功' : 'Status updated successfully')
-      );
+      toast.success(lang === 'zh' ? '状态更新成功' : 'Status updated successfully');
     } catch (error) {
       console.error('Error updating status:', error);
       toast.error(getToastMessage('updateError', lang));
