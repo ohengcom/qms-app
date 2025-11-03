@@ -149,6 +149,8 @@
 ### Session 3: API Consolidation (1-2 hours)
 
 - [ ] 16. Create tRPC Error Handler
+
+
   - Update `src/server/api/trpc.ts`
   - Add handleTRPCError utility function
   - Add logging for all errors

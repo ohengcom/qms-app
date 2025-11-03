@@ -24,7 +24,8 @@ class Logger {
   }
 
   private getLogLevel(): number {
-    const envLevel = process.env.LOG_LEVEL?.toUpperCase() || 'INFO';
+    // Safe access to process.env for Edge Runtime
+    const envLevel = (typeof process !== 'undefined' && process.env?.LOG_LEVEL?.toUpperCase()) || 'INFO';
     return LOG_LEVELS[envLevel as keyof LogLevel] ?? LOG_LEVELS.INFO;
   }
 
@@ -41,8 +42,8 @@ class Logger {
       message,
       ...(meta && { meta }),
       // Only include pid in Node.js environment (not Edge Runtime)
-      ...(typeof process !== 'undefined' && process.pid && { pid: process.pid }),
-      environment: process.env.NODE_ENV || 'development',
+      ...(typeof process !== 'undefined' && typeof process.pid === 'number' ? { pid: process.pid } : {}),
+      environment: (typeof process !== 'undefined' && process.env?.NODE_ENV) || 'development',
     };
 
     return JSON.stringify(logEntry);
@@ -65,8 +66,8 @@ class Logger {
 
     console.error(this.formatMessage('ERROR', message, errorMeta));
 
-    // Send to external error tracking service in production
-    if (process.env.NODE_ENV === 'production') {
+    // Send to external error tracking service in production (only in Node.js runtime)
+    if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'production') {
       this.sendToErrorTracking(message, error, errorMeta);
     }
   }
@@ -163,13 +164,14 @@ class Logger {
     try {
       // Integration with error tracking services like Sentry, Bugsnag, etc.
       // This is a placeholder for actual implementation
+      if (typeof process === 'undefined') return;
 
-      if (process.env.SENTRY_DSN) {
+      if (process.env?.SENTRY_DSN) {
         // Sentry integration would go here
         // Sentry.captureException(error, { extra: meta });
       }
 
-      if (process.env.WEBHOOK_ERROR_URL) {
+      if (process.env?.WEBHOOK_ERROR_URL) {
         // Send to webhook for custom error handling
         await fetch(process.env.WEBHOOK_ERROR_URL, {
           method: 'POST',
@@ -180,7 +182,7 @@ class Logger {
             stack: error?.stack,
             meta,
             timestamp: new Date().toISOString(),
-            environment: process.env.NODE_ENV,
+            environment: process.env?.NODE_ENV,
           }),
         });
       }
@@ -220,22 +222,27 @@ export function logErrorBoundary(error: Error, errorInfo: any): void {
 }
 
 // Unhandled error logging (only in Node.js runtime, not Edge Runtime)
-if (typeof window === 'undefined' && typeof process !== 'undefined' && process.on) {
-  // Server-side error handling
-  process.on('uncaughtException', error => {
-    logger.error('Uncaught Exception', error, { fatal: true });
-    // Don't call process.exit in Edge Runtime
-    if (process.exit) {
-      process.exit(1);
-    }
-  });
-
-  process.on('unhandledRejection', (reason, promise) => {
-    logger.error('Unhandled Rejection', reason as Error, {
-      promise: promise.toString(),
-      fatal: false,
+// This code will only run in Node.js environment, not in Edge Runtime or browser
+if (typeof window === 'undefined' && typeof process !== 'undefined' && typeof process.on === 'function') {
+  try {
+    // Server-side error handling (Node.js only)
+    process.on('uncaughtException', (error: Error) => {
+      logger.error('Uncaught Exception', error, { fatal: true });
+      // Only exit in Node.js environment
+      if (typeof process.exit === 'function') {
+        process.exit(1);
+      }
     });
-  });
+
+    process.on('unhandledRejection', (reason: unknown, promise: Promise<unknown>) => {
+      logger.error('Unhandled Rejection', reason as Error, {
+        promise: String(promise),
+        fatal: false,
+      });
+    });
+  } catch {
+    // Silently fail in Edge Runtime where process.on is not available
+  }
 }
 
 export default logger;

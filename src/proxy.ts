@@ -1,3 +1,10 @@
+/**
+ * Next.js 16 Proxy Configuration
+ * Replaces deprecated middleware.ts
+ * 
+ * Handles authentication and route protection
+ */
+
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyJWT } from '@/lib/auth';
 import { authLogger } from '@/lib/logger';
@@ -26,7 +33,7 @@ const protectedApiPaths = [
   '/api/trpc',
 ];
 
-export function middleware(request: NextRequest) {
+export default function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Allow login page and auth API routes
@@ -83,7 +90,7 @@ export function middleware(request: NextRequest) {
   }
 }
 
-// Configure which routes to run middleware on
+// Configure which routes to run proxy on
 export const config = {
   matcher: [
     /*
