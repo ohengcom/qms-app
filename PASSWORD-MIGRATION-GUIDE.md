@@ -8,17 +8,34 @@
 
 ### 迁移步骤
 
-#### 1. 运行初始化脚本
+#### 方法 1：通过浏览器（推荐，适用于 Vercel 部署）
+
+1. 部署应用到 Vercel
+2. 在浏览器中访问：`https://your-app.vercel.app/api/admin/init-settings`
+3. 查看返回的 JSON 响应，确认初始化成功
+
+示例响应：
+
+```json
+{
+  "success": true,
+  "message": "System settings initialized successfully",
+  "settings": [
+    { "key": "password_hash", "description": "Bcrypt hash of the admin password" },
+    { "key": "app_name", "description": "Application display name" }
+  ]
+}
+```
+
+#### 方法 2：本地运行脚本（需要本地数据库连接）
+
+如果你有本地数据库连接：
 
 ```bash
 npm run init-system-settings
 ```
 
-这个脚本会：
-
-- 创建 `system_settings` 表
-- 如果存在 `QMS_PASSWORD_HASH` 环境变量，将其迁移到数据库
-- 如果不存在，创建默认密码 `admin123`（请立即修改！）
+**注意**：需要在 `.env.local` 中设置 `DATABASE_URL`
 
 #### 2. 验证迁移
 
@@ -63,17 +80,34 @@ The system has been upgraded to store passwords in the database instead of envir
 
 ### Migration Steps
 
-#### 1. Run Initialization Script
+#### Method 1: Via Browser (Recommended for Vercel deployment)
+
+1. Deploy the application to Vercel
+2. Visit in browser: `https://your-app.vercel.app/api/admin/init-settings`
+3. Check the JSON response to confirm successful initialization
+
+Example response:
+
+```json
+{
+  "success": true,
+  "message": "System settings initialized successfully",
+  "settings": [
+    { "key": "password_hash", "description": "Bcrypt hash of the admin password" },
+    { "key": "app_name", "description": "Application display name" }
+  ]
+}
+```
+
+#### Method 2: Run Script Locally (Requires local database connection)
+
+If you have local database connection:
 
 ```bash
 npm run init-system-settings
 ```
 
-This script will:
-
-- Create the `system_settings` table
-- Migrate `QMS_PASSWORD_HASH` environment variable to database if it exists
-- Create default password `admin123` if not (please change immediately!)
+**Note**: Requires `DATABASE_URL` to be set in `.env.local`
 
 #### 2. Verify Migration
 
@@ -146,14 +180,14 @@ This ensures the application continues to work during migration.
 
 ### Issue: Cannot log in after migration
 
-**Solution**: Run the initialization script again to ensure the password hash is properly stored in the database.
+**Solution**: Visit `/api/admin/init-settings` again to ensure the password hash is properly stored in the database.
 
 ### Issue: "Password hash not configured" error
 
 **Solution**:
 
 1. Check if the `system_settings` table exists
-2. Run the initialization script: `npm run init-system-settings`
+2. Visit `/api/admin/init-settings` to initialize
 3. Verify `QMS_PASSWORD_HASH` environment variable exists (as fallback)
 
 ### Issue: Password change doesn't work
@@ -164,6 +198,13 @@ This ensures the application continues to work during migration.
 2. Verify the `system_settings` table has write permissions
 3. Check browser console for error messages
 
+### Issue: "DATABASE_URL is not set" when running local script
+
+**Solution**:
+
+1. Add `DATABASE_URL` to your `.env.local` file
+2. Or use the browser method instead: visit `/api/admin/init-settings`
+
 ---
 
 ## Security Notes
@@ -172,3 +213,4 @@ This ensures the application continues to work during migration.
 - Password hashes are never exposed to the client
 - Current password verification is required before changing password
 - All password operations are logged for security auditing
+- The `/api/admin/init-settings` endpoint can be called multiple times safely (uses UPSERT)
