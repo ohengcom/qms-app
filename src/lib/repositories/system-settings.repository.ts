@@ -82,9 +82,12 @@ export class SystemSettingsRepository extends BaseRepositoryImpl<SystemSettingRo
       async () => {
         const now = new Date().toISOString();
 
+        // First ensure uuid extension is available
+        await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
+
         await sql`
-          INSERT INTO system_settings (key, value, description, created_at, updated_at)
-          VALUES (${key}, ${value}, ${description || null}, ${now}, ${now})
+          INSERT INTO system_settings (id, key, value, description, created_at, updated_at)
+          VALUES (uuid_generate_v4(), ${key}, ${value}, ${description || null}, ${now}, ${now})
           ON CONFLICT (key) 
           DO UPDATE SET 
             value = ${value},

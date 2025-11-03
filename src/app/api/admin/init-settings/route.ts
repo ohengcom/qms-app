@@ -74,8 +74,9 @@ export async function POST() {
     }
 
     await sql`
-      INSERT INTO system_settings (key, value, description)
+      INSERT INTO system_settings (id, key, value, description)
       VALUES (
+        uuid_generate_v4(),
         'password_hash',
         ${passwordHash},
         'Bcrypt hash of the admin password'
@@ -85,8 +86,9 @@ export async function POST() {
 
     // Initialize app name
     await sql`
-      INSERT INTO system_settings (key, value, description)
+      INSERT INTO system_settings (id, key, value, description)
       VALUES (
+        uuid_generate_v4(),
         'app_name',
         'QMS - Quilt Management System',
         'Application display name'
