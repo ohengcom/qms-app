@@ -80,38 +80,28 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
       async () => {
         const { season, status, location, brand, search, limit = 20, offset = 0 } = filters;
 
-        // Start with base query - if no filters, just get all
-        if (!season && !status && !location && !brand && !search) {
-          const rows = await sql`
-            SELECT * FROM quilts
-            ORDER BY created_at DESC
-            LIMIT ${limit} OFFSET ${offset}
-          ` as QuiltRow[];
-          return rows.map(row => this.rowToModel(row));
-        }
-
-        // Build filtered query dynamically
-        let queryParts = ['SELECT * FROM quilts WHERE 1=1'];
+        // Build conditions array
+        const conditions: string[] = [];
         
         if (season) {
-          queryParts.push(`AND season = '${season}'`);
+          conditions.push(`season = '${season}'`);
         }
         
         if (status) {
-          queryParts.push(`AND current_status = '${status}'`);
+          conditions.push(`current_status = '${status}'`);
         }
         
         if (location) {
-          queryParts.push(`AND location ILIKE '%${location.replace(/'/g, "''")}%'`);
+          conditions.push(`location ILIKE '%${location.replace(/'/g, "''")}%'`);
         }
         
         if (brand) {
-          queryParts.push(`AND brand ILIKE '%${brand.replace(/'/g, "''")}%'`);
+          conditions.push(`brand ILIKE '%${brand.replace(/'/g, "''")}%'`);
         }
         
         if (search) {
           const escapedSearch = search.replace(/'/g, "''");
-          queryParts.push(`AND (
+          conditions.push(`(
             name ILIKE '%${escapedSearch}%' OR
             color ILIKE '%${escapedSearch}%' OR
             fill_material ILIKE '%${escapedSearch}%' OR
@@ -119,10 +109,15 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
           )`);
         }
         
-        queryParts.push(`ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`);
+        // Build WHERE clause
+        const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
         
-        const queryText = queryParts.join(' ');
-        const rows = await sql([queryText] as any) as QuiltRow[];
+        // Build complete query as a single string
+        const queryText = `SELECT * FROM quilts ${whereClause} ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
+        
+        // Execute using sql template with the query string embedded
+        const rows = await sql([queryText] as unknown as TemplateStringsArray) as QuiltRow[];
+        
         return rows.map(row => this.rowToModel(row));
       },
       'findAll',
@@ -366,34 +361,28 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
       async () => {
         const { season, status, location, brand, search } = filters;
 
-        // If no filters, simple count
-        if (!season && !status && !location && !brand && !search) {
-          const result = await sql`SELECT COUNT(*) as count FROM quilts` as [{ count: string }];
-          return parseInt(result[0]?.count || '0', 10);
-        }
-
-        // Build filtered query
-        let queryParts = ['SELECT COUNT(*) as count FROM quilts WHERE 1=1'];
+        // Build conditions array
+        const conditions: string[] = [];
         
         if (season) {
-          queryParts.push(`AND season = '${season}'`);
+          conditions.push(`season = '${season}'`);
         }
         
         if (status) {
-          queryParts.push(`AND current_status = '${status}'`);
+          conditions.push(`current_status = '${status}'`);
         }
         
         if (location) {
-          queryParts.push(`AND location ILIKE '%${location.replace(/'/g, "''")}%'`);
+          conditions.push(`location ILIKE '%${location.replace(/'/g, "''")}%'`);
         }
         
         if (brand) {
-          queryParts.push(`AND brand ILIKE '%${brand.replace(/'/g, "''")}%'`);
+          conditions.push(`brand ILIKE '%${brand.replace(/'/g, "''")}%'`);
         }
         
         if (search) {
           const escapedSearch = search.replace(/'/g, "''");
-          queryParts.push(`AND (
+          conditions.push(`(
             name ILIKE '%${escapedSearch}%' OR
             color ILIKE '%${escapedSearch}%' OR
             fill_material ILIKE '%${escapedSearch}%' OR
@@ -401,8 +390,15 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
           )`);
         }
         
-        const queryText = queryParts.join(' ');
-        const result = await sql([queryText] as any) as [{ count: string }];
+        // Build WHERE clause
+        const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+        
+        // Build complete query as a single string
+        const queryText = `SELECT COUNT(*) as count FROM quilts ${whereClause}`;
+        
+        // Execute using sql template with the query string embedded
+        const result = await sql([queryText] as unknown as TemplateStringsArray) as [{ count: string }];
+        
         return parseInt(result[0]?.count || '0', 10);
       },
       'count',
