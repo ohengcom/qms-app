@@ -24,7 +24,6 @@ const updateUsageRecordSchema = z.object({
   id: z.string(),
   startDate: z.date().optional(),
   endDate: z.date().optional(),
-  usageType: z.enum(['REGULAR', 'GUEST', 'SPECIAL_OCCASION', 'SEASONAL_ROTATION']).optional(),
   notes: z.string().optional(),
 });
 
@@ -72,14 +71,16 @@ export const usageRouter = createTRPCRouter({
   }),
 
   // Get usage records for a specific quilt
-  getByQuiltId: publicProcedure.input(z.object({ quiltId: z.string() })).query(async ({ input }) => {
-    try {
-      const records = await usageRepository.findByQuiltId(input.quiltId);
-      return records;
-    } catch (error) {
-      handleTRPCError(error, 'usage.getByQuiltId', { quiltId: input.quiltId });
-    }
-  }),
+  getByQuiltId: publicProcedure
+    .input(z.object({ quiltId: z.string() }))
+    .query(async ({ input }) => {
+      try {
+        const records = await usageRepository.findByQuiltId(input.quiltId);
+        return records;
+      } catch (error) {
+        handleTRPCError(error, 'usage.getByQuiltId', { quiltId: input.quiltId });
+      }
+    }),
 
   // Get active usage record for a quilt
   getActive: publicProcedure.input(z.object({ quiltId: z.string() })).query(async ({ input }) => {
@@ -179,7 +180,7 @@ export const usageRouter = createTRPCRouter({
     try {
       const allRecords = await usageRepository.findAll();
       const activeRecords = await usageRepository.getAllActive();
-      
+
       return {
         total: allRecords.length,
         active: activeRecords.length,

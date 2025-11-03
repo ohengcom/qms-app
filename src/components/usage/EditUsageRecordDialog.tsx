@@ -13,18 +13,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { toast } from '@/lib/toast';
+import { useToastContext } from '@/hooks/useToast';
+import { useUpdateUsageRecord, useDeleteUsageRecord } from '@/hooks/useUsage';
 
 interface UsageRecord {
   id: string;
@@ -52,13 +46,6 @@ interface EditUsageRecordDialogProps {
   trigger?: React.ReactNode;
 }
 
-const USAGE_TYPE_OPTIONS = [
-  { value: 'REGULAR', labelZh: '常规使用', labelEn: 'Regular Use' },
-  { value: 'GUEST', labelZh: '客人使用', labelEn: 'Guest Use' },
-  { value: 'SPECIAL_OCCASION', labelZh: '特殊场合', labelEn: 'Special Occasion' },
-  { value: 'SEASONAL_ROTATION', labelZh: '季节轮换', labelEn: 'Seasonal Rotation' },
-];
-
 export function EditUsageRecordDialog({
   record,
   onUpdate,
@@ -66,14 +53,17 @@ export function EditUsageRecordDialog({
   trigger,
 }: EditUsageRecordDialogProps) {
   const [open, setOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const { language, t } = useLanguage();
+  const { t } = useLanguage();
+  const toast = useToastContext();
+
+  // Use tRPC mutations
+  const updateMutation = useUpdateUsageRecord();
+  const deleteMutation = useDeleteUsageRecord();
 
   // Normalize record data
   const startDate = record.start_date || record.startedAt || '';
   const endDate = record.end_date || record.endedAt || null;
-  const usageType = record.usage_type || record.usageType || 'REGULAR';
   const notes = record.notes || '';
   const quiltName = record.quilt_name || record.quiltName || '';
   const itemNumber = record.item_number || record.itemNumber || '';
@@ -82,7 +72,6 @@ export function EditUsageRecordDialog({
   const [formData, setFormData] = useState({
     startDate: startDate ? format(new Date(startDate), 'yyyy-MM-dd') : '',
     endDate: endDate ? format(new Date(endDate), 'yyyy-MM-dd') : '',
-    usageType: usageType,
     notes: notes || '',
   });
 
@@ -91,74 +80,46 @@ export function EditUsageRecordDialog({
     setFormData({
       startDate: startDate ? format(new Date(startDate), 'yyyy-MM-dd') : '',
       endDate: endDate ? format(new Date(endDate), 'yyyy-MM-dd') : '',
-      usageType: usageType,
       notes: notes || '',
     });
-  }, [record, startDate, endDate, usageType, notes]);
+  }, [record, startDate, endDate, notes]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
 
     try {
       // Validate dates
       if (formData.endDate && new Date(formData.startDate) > new Date(formData.endDate)) {
-        toast.error(t('usage.edit.dateError'));
-        setIsLoading(false);
+        toast.error('End date cannot be before start date');
         return;
       }
 
-      const response = await fetch(`/api/usage-records/${record.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          startDate: formData.startDate,
-          endDate: formData.endDate || null,
-          usageType: formData.usageType,
-          notes: formData.notes || null,
-        }),
+      await updateMutation.mutateAsync({
+        id: record.id,
+        startDate: new Date(formData.startDate),
+        endDate: formData.endDate ? new Date(formData.endDate) : undefined,
+        notes: formData.notes || undefined,
       });
 
-      const result = await response.json();
-
-      if (result.success) {
-        toast.success(t('usage.edit.updated'));
-        setOpen(false);
-        onUpdate?.();
-      } else {
-        toast.error(result.error || t('usage.edit.updateFailed'));
-      }
+      toast.success('Usage record updated successfully');
+      setOpen(false);
+      onUpdate?.();
     } catch (error) {
       console.error('Update error:', error);
-      toast.error(t('usage.edit.updateFailed'));
-    } finally {
-      setIsLoading(false);
+      toast.error(error instanceof Error ? error.message : 'Failed to update usage record');
     }
   };
 
   const handleDelete = async () => {
-    setIsLoading(true);
     try {
-      const response = await fetch(`/api/usage-records/${record.id}`, {
-        method: 'DELETE',
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
-        toast.success(t('usage.edit.deleted'));
-        setOpen(false);
-        onDelete?.();
-      } else {
-        toast.error(result.error || t('usage.edit.deleteFailed'));
-      }
+      await deleteMutation.mutateAsync({ id: record.id });
+      toast.success('Usage record deleted successfully');
+      setOpen(false);
+      onDelete?.();
     } catch (error) {
       console.error('Delete error:', error);
-      toast.error(t('usage.edit.deleteFailed'));
+      toast.error(error instanceof Error ? error.message : 'Failed to delete usage record');
     } finally {
-      setIsLoading(false);
       setShowDeleteConfirm(false);
     }
   };
@@ -198,7 +159,7 @@ export function EditUsageRecordDialog({
               id="startDate"
               type="date"
               value={formData.startDate}
-              onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+              onChange={e => setFormData({ ...formData, startDate: e.target.value })}
               max={new Date().toISOString().split('T')[0]}
               required
               className="w-full"
@@ -217,7 +178,7 @@ export function EditUsageRecordDialog({
               id="endDate"
               type="date"
               value={formData.endDate}
-              onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+              onChange={e => setFormData({ ...formData, endDate: e.target.value })}
               max={new Date().toISOString().split('T')[0]}
               className="w-full"
             />
@@ -234,26 +195,6 @@ export function EditUsageRecordDialog({
             )}
           </div>
 
-          {/* Usage Type */}
-          <div className="space-y-2">
-            <Label htmlFor="usageType">{t('usage.edit.usageType')}</Label>
-            <Select
-              value={formData.usageType}
-              onValueChange={(value) => setFormData({ ...formData, usageType: value })}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder={t('usage.edit.selectUsageType')} />
-              </SelectTrigger>
-              <SelectContent>
-                {USAGE_TYPE_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {language === 'zh' ? option.labelZh : option.labelEn}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
           {/* Notes */}
           <div className="space-y-2">
             <Label htmlFor="notes">{t('usage.edit.notes')}</Label>
@@ -261,7 +202,7 @@ export function EditUsageRecordDialog({
               id="notes"
               placeholder={t('usage.edit.addNotes')}
               value={formData.notes}
-              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+              onChange={e => setFormData({ ...formData, notes: e.target.value })}
               rows={3}
             />
           </div>
@@ -274,7 +215,7 @@ export function EditUsageRecordDialog({
                   variant="destructive"
                   size="sm"
                   onClick={() => setShowDeleteConfirm(true)}
-                  disabled={isLoading}
+                  disabled={updateMutation.isPending || deleteMutation.isPending}
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
                   {t('common.delete')}
@@ -286,7 +227,7 @@ export function EditUsageRecordDialog({
                     variant="destructive"
                     size="sm"
                     onClick={handleDelete}
-                    disabled={isLoading}
+                    disabled={deleteMutation.isPending}
                   >
                     {t('usage.edit.confirmDelete')}
                   </Button>
@@ -295,7 +236,7 @@ export function EditUsageRecordDialog({
                     variant="outline"
                     size="sm"
                     onClick={() => setShowDeleteConfirm(false)}
-                    disabled={isLoading}
+                    disabled={deleteMutation.isPending}
                   >
                     {t('common.cancel')}
                   </Button>
@@ -307,12 +248,12 @@ export function EditUsageRecordDialog({
                 type="button"
                 variant="outline"
                 onClick={() => setOpen(false)}
-                disabled={isLoading}
+                disabled={updateMutation.isPending || deleteMutation.isPending}
               >
                 {t('common.cancel')}
               </Button>
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? t('usage.edit.saving') : t('usage.edit.saveChanges')}
+              <Button type="submit" disabled={updateMutation.isPending || deleteMutation.isPending}>
+                {updateMutation.isPending ? t('usage.edit.saving') : t('usage.edit.saveChanges')}
               </Button>
             </div>
           </DialogFooter>
