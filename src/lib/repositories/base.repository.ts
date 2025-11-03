@@ -51,10 +51,10 @@ export abstract class BaseRepositoryImpl<TRow, TModel> {
   async findById(id: string): Promise<TModel | null> {
     return this.executeQuery(
       async () => {
-        const rows = await sql<TRow[]>`
+        const rows = await sql`
           SELECT * FROM ${sql(this.tableName)}
           WHERE id = ${id}
-        `;
+        ` as TRow[];
         return rows[0] ? this.rowToModel(rows[0]) : null;
       },
       'findById',
@@ -68,9 +68,9 @@ export abstract class BaseRepositoryImpl<TRow, TModel> {
   async count(filters?: Record<string, unknown>): Promise<number> {
     return this.executeQuery(
       async () => {
-        const result = await sql<[{ count: string }]>`
+        const result = await sql`
           SELECT COUNT(*) as count FROM ${sql(this.tableName)}
-        `;
+        ` as [{ count: string }];
         return parseInt(result[0]?.count || '0', 10);
       },
       'count',
@@ -102,12 +102,12 @@ export abstract class BaseRepositoryImpl<TRow, TModel> {
   async exists(id: string): Promise<boolean> {
     return this.executeQuery(
       async () => {
-        const result = await sql<[{ exists: boolean }]>`
+        const result = await sql`
           SELECT EXISTS(
             SELECT 1 FROM ${sql(this.tableName)}
             WHERE id = ${id}
           ) as exists
-        `;
+        ` as [{ exists: boolean }];
         return result[0]?.exists || false;
       },
       'exists',

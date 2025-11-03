@@ -63,26 +63,26 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
       async () => {
         const { season, status, location, brand, search, limit = 20, offset = 0 } = filters;
 
-        let query = sql<QuiltRow[]>`SELECT * FROM quilts WHERE 1=1`;
+        let query = sql`SELECT * FROM quilts WHERE 1=1`;
 
         if (season) {
-          query = sql<QuiltRow[]>`${query} AND season = ${season}`;
+          query = sql`${query} AND season = ${season}`;
         }
 
         if (status) {
-          query = sql<QuiltRow[]>`${query} AND current_status = ${status}`;
+          query = sql`${query} AND current_status = ${status}`;
         }
 
         if (location) {
-          query = sql<QuiltRow[]>`${query} AND location ILIKE ${`%${location}%`}`;
+          query = sql`${query} AND location ILIKE ${`%${location}%`}`;
         }
 
         if (brand) {
-          query = sql<QuiltRow[]>`${query} AND brand ILIKE ${`%${brand}%`}`;
+          query = sql`${query} AND brand ILIKE ${`%${brand}%`}`;
         }
 
         if (search) {
-          query = sql<QuiltRow[]>`${query} AND (
+          query = sql`${query} AND (
             name ILIKE ${`%${search}%`} OR
             color ILIKE ${`%${search}%`} OR
             fill_material ILIKE ${`%${search}%`} OR
@@ -90,9 +90,9 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
           )`;
         }
 
-        query = sql<QuiltRow[]>`${query} ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
+        query = sql`${query} ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
 
-        const rows = await query;
+        const rows = await query as QuiltRow[];
         return rows.map(row => this.rowToModel(row));
       },
       'findAll',
@@ -106,11 +106,11 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
   async findByStatus(status: QuiltStatus): Promise<Quilt[]> {
     return this.executeQuery(
       async () => {
-        const rows = await sql<QuiltRow[]>`
+        const rows = await sql`
           SELECT * FROM quilts
           WHERE current_status = ${status}
           ORDER BY created_at DESC
-        `;
+        ` as QuiltRow[];
         return rows.map(row => this.rowToModel(row));
       },
       'findByStatus',
@@ -124,11 +124,11 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
   async findBySeason(season: Season): Promise<Quilt[]> {
     return this.executeQuery(
       async () => {
-        const rows = await sql<QuiltRow[]>`
+        const rows = await sql`
           SELECT * FROM quilts
           WHERE season = ${season}
           ORDER BY created_at DESC
-        `;
+        ` as QuiltRow[];
         return rows.map(row => this.rowToModel(row));
       },
       'findBySeason',
@@ -142,10 +142,10 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
   async getNextItemNumber(): Promise<number> {
     return this.executeQuery(
       async () => {
-        const result = await sql<[{ next_number: number }]>`
+        const result = await sql`
           SELECT COALESCE(MAX(item_number), 0) + 1 as next_number
           FROM quilts
-        `;
+        ` as [{ next_number: number }];
         return result[0]?.next_number || 1;
       },
       'getNextItemNumber'
@@ -183,7 +183,7 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
 
         dbLogger.info('Creating quilt', { itemNumber, name });
 
-        const rows = await sql<QuiltRow[]>`
+        const rows = await sql`
           INSERT INTO quilts (
             id, item_number, name, season, length_cm, width_cm,
             weight_grams, fill_material, material_details, color,
@@ -212,7 +212,7 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
             ${now},
             ${now}
           ) RETURNING *
-        `;
+        ` as QuiltRow[];
 
         dbLogger.info('Quilt created successfully', { id, itemNumber });
         return this.rowToModel(rows[0]);
@@ -238,7 +238,7 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
         const now = new Date().toISOString();
         const rowData = this.modelToRow({ ...current, ...data, updatedAt: new Date(now) });
 
-        const rows = await sql<QuiltRow[]>`
+        const rows = await sql`
           UPDATE quilts SET
             name = ${rowData.name},
             season = ${rowData.season},
@@ -259,7 +259,7 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
             updated_at = ${now}
           WHERE id = ${id}
           RETURNING *
-        `;
+        ` as QuiltRow[];
 
         if (rows.length === 0) {
           return null;
@@ -281,13 +281,13 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
       async () => {
         const now = new Date().toISOString();
 
-        const rows = await sql<QuiltRow[]>`
+        const rows = await sql`
           UPDATE quilts SET
             current_status = ${status},
             updated_at = ${now}
           WHERE id = ${id}
           RETURNING *
-        `;
+        ` as QuiltRow[];
 
         if (rows.length === 0) {
           return null;
@@ -336,26 +336,26 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
       async () => {
         const { season, status, location, brand, search } = filters;
 
-        let query = sql<[{ count: string }]>`SELECT COUNT(*) as count FROM quilts WHERE 1=1`;
+        let query = sql`SELECT COUNT(*) as count FROM quilts WHERE 1=1`;
 
         if (season) {
-          query = sql<[{ count: string }]>`${query} AND season = ${season}`;
+          query = sql`${query} AND season = ${season}`;
         }
 
         if (status) {
-          query = sql<[{ count: string }]>`${query} AND current_status = ${status}`;
+          query = sql`${query} AND current_status = ${status}`;
         }
 
         if (location) {
-          query = sql<[{ count: string }]>`${query} AND location ILIKE ${`%${location}%`}`;
+          query = sql`${query} AND location ILIKE ${`%${location}%`}`;
         }
 
         if (brand) {
-          query = sql<[{ count: string }]>`${query} AND brand ILIKE ${`%${brand}%`}`;
+          query = sql`${query} AND brand ILIKE ${`%${brand}%`}`;
         }
 
         if (search) {
-          query = sql<[{ count: string }]>`${query} AND (
+          query = sql`${query} AND (
             name ILIKE ${`%${search}%`} OR
             color ILIKE ${`%${search}%`} OR
             fill_material ILIKE ${`%${search}%`} OR
@@ -363,7 +363,7 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
           )`;
         }
 
-        const result = await query;
+        const result = await query as [{ count: string }];
         return parseInt(result[0]?.count || '0', 10);
       },
       'count',
