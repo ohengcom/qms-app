@@ -1,4 +1,5 @@
 import { neon } from '@neondatabase/serverless';
+import { dbLogger } from './logger';
 
 if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL is not set');
@@ -45,7 +46,7 @@ export async function executeQuery<T = any>(queryText: string, params: any[] = [
     const result = await sql`${processedQuery}`;
     return result as T[];
   } catch (error) {
-    console.error('Database query error:', error);
+    dbLogger.error('Database query error', error as Error);
     throw error;
   }
 }
@@ -65,7 +66,7 @@ export const db = {
     } = {}
   ) {
     try {
-      console.log('Executing getQuilts query with data transformation...');
+      dbLogger.debug('Executing getQuilts query', { filters: _filters });
 
       // Get quilts from database
       const result = await sql`
@@ -74,40 +75,58 @@ export const db = {
         LIMIT 20
       `;
 
-      console.log('Query result:', result);
-      console.log('Number of records:', result?.length || 0);
+      dbLogger.debug('Query result received', { count: result?.length || 0 });
 
       // Transform database records to match frontend interface
-      const transformedQuilts = result.map((quilt: any) => ({
-        id: String(quilt.id),
-        itemNumber: Number(quilt.item_number),
-        name: String(quilt.name || ''),
-        season: quilt.season as 'WINTER' | 'SPRING_AUTUMN' | 'SUMMER',
-        lengthCm: Number(quilt.length_cm),
-        widthCm: Number(quilt.width_cm),
-        weightGrams: Number(quilt.weight_grams),
-        fillMaterial: String(quilt.fill_material || ''),
-        materialDetails: quilt.material_details || null,
-        color: String(quilt.color || ''),
-        brand: quilt.brand || null,
-        purchaseDate: quilt.purchase_date ? new Date(quilt.purchase_date) : null,
-        location: String(quilt.location || ''),
-        packagingInfo: quilt.packaging_info || null,
-        currentStatus: quilt.current_status as 'AVAILABLE' | 'IN_USE' | 'MAINTENANCE' | 'STORAGE',
-        notes: quilt.notes || null,
-        imageUrl: quilt.image_url || null,
-        thumbnailUrl: quilt.thumbnail_url || null,
-        createdAt: new Date(quilt.created_at),
-        updatedAt: new Date(quilt.updated_at),
-        // Add optional fields that QuiltCard expects
-        currentUsage: null,
-        usagePeriods: [],
-      }));
+      const transformedQuilts = result.map((quilt: any) => {
+        const transformed = {
+          id: String(quilt.id),
+          itemNumber: Number(quilt.item_number),
+          name: String(quilt.name || ''),
+          season: quilt.season as 'WINTER' | 'SPRING_AUTUMN' | 'SUMMER',
+          lengthCm: quilt.length_cm != null ? Number(quilt.length_cm) : null,
+          widthCm: quilt.width_cm != null ? Number(quilt.width_cm) : null,
+          weightGrams: quilt.weight_grams != null ? Number(quilt.weight_grams) : null,
+          fillMaterial: String(quilt.fill_material || ''),
+          materialDetails: quilt.material_details || null,
+          color: String(quilt.color || ''),
+          brand: quilt.brand || null,
+          purchaseDate: quilt.purchase_date ? new Date(quilt.purchase_date) : null,
+          location: String(quilt.location || ''),
+          packagingInfo: quilt.packaging_info || null,
+          currentStatus: quilt.current_status as 'AVAILABLE' | 'IN_USE' | 'MAINTENANCE' | 'STORAGE',
+          notes: quilt.notes || null,
+          imageUrl: quilt.image_url || null,
+          thumbnailUrl: quilt.thumbnail_url || null,
+          createdAt: new Date(quilt.created_at),
+          updatedAt: new Date(quilt.updated_at),
+          // Add optional fields that QuiltCard expects
+          currentUsage: null,
+          usagePeriods: [],
+        };
+        
+        // Debug log for first quilt
+        if (quilt.item_number === 1) {
+          dbLogger.debug('DB Transform - First quilt', {
+            raw: {
+              length_cm: quilt.length_cm,
+              width_cm: quilt.width_cm,
+              weight_grams: quilt.weight_grams,
+            },
+            transformed: {
+              lengthCm: transformed.lengthCm,
+              widthCm: transformed.widthCm,
+              weightGrams: transformed.weightGrams,
+            },
+          });
+        }
+        
+        return transformed;
+      });
 
       return transformedQuilts;
     } catch (error) {
-      console.error('Get quilts error:', error);
-      console.error('Error details:', error);
+      dbLogger.error('Get quilts error', error as Error);
       return [];
     }
   },
@@ -128,7 +147,7 @@ export const db = {
       `;
       return result.find((quilt: any) => quilt.id === id) || null;
     } catch (error) {
-      console.error('Get quilt by ID error:', error);
+      dbLogger.error('Get quilt by ID error', error as Error, { id });
       return null;
     }
   },
@@ -147,7 +166,7 @@ export const db = {
       const result = await sql`SELECT COUNT(*) as count FROM quilts`;
       return parseInt(result[0]?.count || '0');
     } catch (error) {
-      console.error('Count quilts error:', error);
+      dbLogger.error('Count quilts error', error as Error);
       return 0;
     }
   },
@@ -180,7 +199,7 @@ export const db = {
       `;
       return result[0]?.next_number || 1;
     } catch (error) {
-      console.error('Get next item number error:', error);
+      dbLogger.error('Get next item number error', error as Error);
       return 1;
     }
   },
@@ -188,7 +207,7 @@ export const db = {
   // Create quilt
   async createQuilt(data: any) {
     try {
-      console.log('Creating quilt with data:', data);
+      dbLogger.info('Creating quilt', { data });
 
       const id = crypto.randomUUID();
       const now = new Date().toISOString();
@@ -197,7 +216,7 @@ export const db = {
       const itemNumber = await this.getNextItemNumber();
       const name = this.generateQuiltName(data);
 
-      console.log('Generated itemNumber:', itemNumber, 'name:', name);
+      dbLogger.debug('Generated quilt metadata', { itemNumber, name });
 
       // Use Neon's tagged template literal syntax directly
       const result = await sql`
@@ -228,10 +247,10 @@ export const db = {
         ) RETURNING *
       `;
 
-      console.log('Quilt created successfully:', result[0]);
+      dbLogger.info('Quilt created successfully', { id: result[0].id });
       return result[0];
     } catch (error) {
-      console.error('Create quilt error:', error);
+      dbLogger.error('Create quilt error', error as Error, { data });
       throw error;
     }
   },
@@ -247,7 +266,7 @@ export const db = {
       `;
       return result;
     } catch (error) {
-      console.error('Get current usage error:', error);
+      dbLogger.error('Get current usage error', error as Error);
       return [];
     }
   },
@@ -258,7 +277,7 @@ export const db = {
       const result = await sql`SELECT 1 as test`;
       return result[0]?.test === 1;
     } catch (error) {
-      console.error('Test connection error:', error);
+      dbLogger.error('Test connection error', error as Error);
       throw error;
     }
   },
@@ -266,13 +285,13 @@ export const db = {
   // Update quilt - only updates provided fields
   async updateQuilt(id: string, data: any) {
     try {
-      console.log('Updating quilt:', id, 'with data:', data);
+      dbLogger.info('Updating quilt', { id, data });
 
       // Get current quilt data first
       const current = await sql`SELECT * FROM quilts WHERE id = ${id}`;
       
       if (current.length === 0) {
-        console.log('Quilt not found:', id);
+        dbLogger.warn('Quilt not found', { id });
         return null;
       }
 
@@ -318,10 +337,10 @@ export const db = {
         RETURNING *
       `;
 
-      console.log('Quilt updated successfully:', result[0]);
+      dbLogger.info('Quilt updated successfully', { id: result[0]?.id });
       return result[0] || null;
     } catch (error) {
-      console.error('Update quilt error:', error);
+      dbLogger.error('Update quilt error', error as Error, { id });
       throw error;
     }
   },
@@ -329,7 +348,7 @@ export const db = {
   // Delete quilt
   async deleteQuilt(id: string) {
     try {
-      console.log('Deleting quilt:', id);
+      dbLogger.info('Deleting quilt', { id });
 
       // First delete any related records (usage_records, maintenance_records)
       // Note: CASCADE should handle this, but we do it explicitly for clarity
@@ -339,10 +358,10 @@ export const db = {
       // Then delete the quilt
       const result = await sql`DELETE FROM quilts WHERE id = ${id} RETURNING id`;
 
-      console.log('Quilt deleted successfully:', result.length > 0);
+      dbLogger.info('Quilt deleted successfully', { id, success: result.length > 0 });
       return result.length > 0;
     } catch (error) {
-      console.error('Delete quilt error:', error);
+      dbLogger.error('Delete quilt error', error as Error, { id });
       throw error;
     }
   },
@@ -350,7 +369,7 @@ export const db = {
   // Update quilt status only
   async updateQuiltStatus(id: string, status: string) {
     try {
-      console.log('Updating quilt status:', id, 'to:', status);
+      dbLogger.info('Updating quilt status', { id, status });
 
       const now = new Date().toISOString();
 
@@ -362,10 +381,10 @@ export const db = {
         RETURNING *
       `;
 
-      console.log('Quilt status updated successfully:', result[0]);
+      dbLogger.info('Quilt status updated successfully', { id, status });
       return result[0] || null;
     } catch (error) {
-      console.error('Update quilt status error:', error);
+      dbLogger.error('Update quilt status error', error as Error, { id, status });
       throw error;
     }
   },
@@ -393,7 +412,7 @@ export const db = {
    */
   async createUsageRecord(quiltId: string, startDate: string, notes?: string) {
     try {
-      console.log('Creating usage record for quilt:', quiltId);
+      dbLogger.info('Creating usage record', { quiltId, startDate });
 
       const id = crypto.randomUUID();
       const now = new Date().toISOString();
@@ -413,10 +432,10 @@ export const db = {
         ) RETURNING *
       `;
 
-      console.log('Usage record created successfully:', result[0]);
+      dbLogger.info('Usage record created successfully', { id: result[0].id, quiltId });
       return result[0];
     } catch (error) {
-      console.error('Create usage record error:', error);
+      dbLogger.error('Create usage record error', error as Error, { quiltId });
       throw error;
     }
   },
@@ -426,7 +445,7 @@ export const db = {
    */
   async endUsageRecord(quiltId: string, endDate: string, notes?: string) {
     try {
-      console.log('Ending usage record for quilt:', quiltId);
+      dbLogger.info('Ending usage record', { quiltId, endDate });
 
       const now = new Date().toISOString();
 
@@ -443,14 +462,14 @@ export const db = {
       `;
 
       if (result.length === 0) {
-        console.log('No active usage record found for quilt:', quiltId);
+        dbLogger.warn('No active usage record found', { quiltId });
         return null;
       }
 
-      console.log('Usage record ended successfully:', result[0]);
+      dbLogger.info('Usage record ended successfully', { id: result[0].id, quiltId });
       return result[0];
     } catch (error) {
-      console.error('End usage record error:', error);
+      dbLogger.error('End usage record error', error as Error, { quiltId });
       throw error;
     }
   },
@@ -469,7 +488,7 @@ export const db = {
 
       return result[0] || null;
     } catch (error) {
-      console.error('Get active usage record error:', error);
+      dbLogger.error('Get active usage record error', error as Error, { quiltId });
       return null;
     }
   },
@@ -479,7 +498,7 @@ export const db = {
    */
   async updateUsageRecord(id: string, data: any) {
     try {
-      console.log('Updating usage record:', id, 'with data:', data);
+      dbLogger.info('Updating usage record', { id, data });
 
       const now = new Date().toISOString();
 
@@ -494,10 +513,10 @@ export const db = {
         RETURNING *
       `;
 
-      console.log('Usage record updated successfully:', result[0]);
+      dbLogger.info('Usage record updated successfully', { id });
       return result[0] || null;
     } catch (error) {
-      console.error('Update usage record error:', error);
+      dbLogger.error('Update usage record error', error as Error, { id });
       throw error;
     }
   },
@@ -524,7 +543,7 @@ export const db = {
 
       return result;
     } catch (error) {
-      console.error('Get usage records by quilt ID error:', error);
+      dbLogger.error('Get usage records by quilt ID error', error as Error, { quiltId });
       return [];
     }
   },

@@ -10,6 +10,13 @@ export async function GET(request: NextRequest) {
     const total = await db.countQuilts();
     
     console.log('API /api/quilts GET: Success, returning', quilts.length, 'quilts');
+    if (quilts.length > 0) {
+      console.log('API /api/quilts GET: First quilt dimensions:', {
+        lengthCm: quilts[0].lengthCm,
+        widthCm: quilts[0].widthCm,
+        weightGrams: quilts[0].weightGrams,
+      });
+    }
     
     return NextResponse.json({
       quilts,

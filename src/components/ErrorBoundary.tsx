@@ -3,6 +3,7 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
+import { logger } from '@/lib/logger';
 
 interface Props {
   children: ReactNode;
@@ -34,14 +35,15 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Error caught by boundary:', error, errorInfo);
+    logger.error('Error caught by boundary', error, {
+      componentStack: errorInfo.componentStack,
+      errorBoundary: true,
+    });
+    
     this.setState({
       error,
       errorInfo,
     });
-
-    // Log to error reporting service (e.g., Sentry)
-    // logErrorToService(error, errorInfo);
   }
 
   handleReset = () => {

@@ -4,50 +4,43 @@ import { createTRPCRouter, publicProcedure } from '@/server/api/trpc';
 import {
   createQuiltSchema,
   updateQuiltSchema,
-  quiltSearchSchema,
   createCurrentUsageSchema,
   endCurrentUsageSchema,
   createMaintenanceRecordSchema,
-  QuiltStatus,
-  Season,
-  UsageType,
 } from '@/lib/validations/quilt';
 import { db } from '@/lib/neon';
+import { apiLogger } from '@/lib/logger';
 
 export const quiltsRouter = createTRPCRouter({
   // Simple test endpoint
   test: publicProcedure.query(async () => {
-    console.log('tRPC quilts.test: Simple test endpoint called');
+    apiLogger.debug('tRPC quilts.test called');
     return { message: 'tRPC is working!', timestamp: new Date().toISOString() };
   }),
 
   // Get all quilts with filtering and pagination
-  getAll: publicProcedure.query(async ({ ctx }) => {
+  getAll: publicProcedure.query(async () => {
     try {
-      console.log('tRPC quilts.getAll: Starting...');
+      apiLogger.debug('tRPC quilts.getAll starting');
 
       // Test database connection first
-      console.log('tRPC quilts.getAll: Testing database connection...');
       const connectionTest = await db.testConnection();
-      console.log('tRPC quilts.getAll: Connection test result:', connectionTest);
+      apiLogger.debug('Database connection test', { success: connectionTest });
 
       // Get quilts from database with basic parameters
-      console.log('tRPC quilts.getAll: Calling db.getQuilts...');
       const quilts = await db.getQuilts({
         limit: 20,
         offset: 0,
       });
 
-      console.log('tRPC quilts.getAll: Quilts fetched:', quilts?.length || 0, 'records');
-      if (quilts && quilts.length > 0) {
-        console.log('tRPC quilts.getAll: First quilt:', quilts[0]);
-        console.log('tRPC quilts.getAll: First quilt keys:', Object.keys(quilts[0]));
-      }
+      apiLogger.debug('Quilts fetched', { 
+        count: quilts?.length || 0,
+        firstQuiltId: quilts[0]?.id 
+      });
 
       // Get total count
-      console.log('tRPC quilts.getAll: Getting total count...');
       const total = await db.countQuilts();
-      console.log('tRPC quilts.getAll: Total count:', total);
+      apiLogger.debug('Total count retrieved', { total });
 
       const response = {
         quilts: quilts || [],
@@ -55,20 +48,9 @@ export const quiltsRouter = createTRPCRouter({
         hasMore: false,
       };
 
-      console.log('tRPC quilts.getAll: Final response structure:', {
-        quiltsCount: response.quilts.length,
-        total: response.total,
-        hasMore: response.hasMore,
-        firstQuiltId: response.quilts[0]?.id,
-      });
-
       return response;
     } catch (error) {
-      console.error('tRPC quilts.getAll: ERROR occurred:', error);
-      console.error(
-        'tRPC quilts.getAll: Error stack:',
-        error instanceof Error ? error.stack : 'No stack trace'
-      );
+      apiLogger.error('tRPC quilts.getAll failed', error as Error);
 
       // Return empty data with error info instead of throwing error to prevent UI crashes
       return {
@@ -81,7 +63,7 @@ export const quiltsRouter = createTRPCRouter({
   }),
 
   // Get quilt by ID with full details
-  getById: publicProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
+  getById: publicProcedure.input(z.object({ id: z.string() })).query(async ({ input }) => {
     try {
       const quilt = await db.getQuiltById(input.id);
 
@@ -98,7 +80,7 @@ export const quiltsRouter = createTRPCRouter({
         throw error;
       }
 
-      console.error('Error fetching quilt by ID:', error);
+      apiLogger.error('Error fetching quilt by ID', error as Error);
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
         message: 'Failed to fetch quilt',
@@ -107,14 +89,14 @@ export const quiltsRouter = createTRPCRouter({
   }),
 
   // Create new quilt
-  create: publicProcedure.input(createQuiltSchema).mutation(async ({ ctx, input }) => {
+  create: publicProcedure.input(createQuiltSchema).mutation(async ({ input }) => {
     try {
-      console.log('tRPC quilts.create: Creating quilt with data:', input);
+      apiLogger.info('Creating quilt', { data: input });
       const quilt = await db.createQuilt(input);
-      console.log('tRPC quilts.create: Quilt created successfully:', quilt.id);
+      apiLogger.info('Quilt created successfully', { id: quilt.id });
       return quilt;
     } catch (error) {
-      console.error('tRPC quilts.create: Error creating quilt:', error);
+      apiLogger.error('Error creating quilt', error as Error);
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
         message: 'Failed to create quilt',
@@ -123,9 +105,9 @@ export const quiltsRouter = createTRPCRouter({
   }),
 
   // Update quilt
-  update: publicProcedure.input(updateQuiltSchema).mutation(async ({ ctx, input }) => {
+  update: publicProcedure.input(updateQuiltSchema).mutation(async ({ input }) => {
     try {
-      console.log('tRPC quilts.update: Updating quilt:', input.id);
+      apiLogger.info('Updating quilt', { id: input.id });
       const quilt = await db.updateQuilt(input.id, input);
       if (!quilt) {
         throw new TRPCError({
@@ -133,10 +115,10 @@ export const quiltsRouter = createTRPCRouter({
           message: 'Quilt not found',
         });
       }
-      console.log('tRPC quilts.update: Quilt updated successfully');
+      apiLogger.info('Quilt updated successfully', { id: input.id });
       return quilt;
     } catch (error) {
-      console.error('tRPC quilts.update: Error updating quilt:', error);
+      apiLogger.error('Error updating quilt', error as Error, { id: input.id });
       if (error instanceof TRPCError) {
         throw error;
       }
@@ -148,9 +130,9 @@ export const quiltsRouter = createTRPCRouter({
   }),
 
   // Delete quilt
-  delete: publicProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
+  delete: publicProcedure.input(z.object({ id: z.string() })).mutation(async ({ input }) => {
     try {
-      console.log('tRPC quilts.delete: Deleting quilt:', input.id);
+      apiLogger.info('Deleting quilt', { id: input.id });
       const success = await db.deleteQuilt(input.id);
       if (!success) {
         throw new TRPCError({
@@ -158,10 +140,10 @@ export const quiltsRouter = createTRPCRouter({
           message: 'Quilt not found',
         });
       }
-      console.log('tRPC quilts.delete: Quilt deleted successfully');
+      apiLogger.info('Quilt deleted successfully', { id: input.id });
       return { success: true };
     } catch (error) {
-      console.error('tRPC quilts.delete: Error deleting quilt:', error);
+      apiLogger.error('Error deleting quilt', error as Error, { id: input.id });
       if (error instanceof TRPCError) {
         throw error;
       }
@@ -178,9 +160,9 @@ export const quiltsRouter = createTRPCRouter({
       id: z.string(), 
       status: z.enum(['AVAILABLE', 'IN_USE', 'STORAGE', 'MAINTENANCE']) 
     }))
-    .mutation(async ({ ctx, input }) => {
+    .mutation(async ({ input }) => {
       try {
-        console.log('tRPC quilts.updateStatus: Updating status for quilt:', input.id, 'to:', input.status);
+        apiLogger.info('Updating quilt status', { id: input.id, status: input.status });
         const quilt = await db.updateQuiltStatus(input.id, input.status);
         if (!quilt) {
           throw new TRPCError({
@@ -188,10 +170,10 @@ export const quiltsRouter = createTRPCRouter({
             message: 'Quilt not found',
           });
         }
-        console.log('tRPC quilts.updateStatus: Status updated successfully');
+        apiLogger.info('Status updated successfully', { id: input.id, status: input.status });
         return quilt;
       } catch (error) {
-        console.error('tRPC quilts.updateStatus: Error updating status:', error);
+        apiLogger.error('Error updating status', error as Error, { id: input.id });
         if (error instanceof TRPCError) {
           throw error;
         }
@@ -203,7 +185,7 @@ export const quiltsRouter = createTRPCRouter({
     }),
 
   // Start using a quilt - TODO: Implement with Neon
-  startUsage: publicProcedure.input(createCurrentUsageSchema).mutation(async ({ ctx, input }) => {
+  startUsage: publicProcedure.input(createCurrentUsageSchema).mutation(async () => {
     throw new TRPCError({
       code: 'NOT_IMPLEMENTED',
       message: 'Start usage functionality not yet implemented with Neon',
@@ -211,7 +193,7 @@ export const quiltsRouter = createTRPCRouter({
   }),
 
   // End current usage - TODO: Implement with Neon
-  endUsage: publicProcedure.input(endCurrentUsageSchema).mutation(async ({ ctx, input }) => {
+  endUsage: publicProcedure.input(endCurrentUsageSchema).mutation(async () => {
     throw new TRPCError({
       code: 'NOT_IMPLEMENTED',
       message: 'End usage functionality not yet implemented with Neon',
@@ -219,12 +201,12 @@ export const quiltsRouter = createTRPCRouter({
   }),
 
   // Get current usage
-  getCurrentUsage: publicProcedure.query(async ({ ctx }) => {
+  getCurrentUsage: publicProcedure.query(async () => {
     try {
       const currentUsage = await db.getCurrentUsage();
       return currentUsage || [];
     } catch (error) {
-      console.error('Error fetching current usage:', error);
+      apiLogger.error('Error fetching current usage', error as Error);
       return [];
     }
   }),
@@ -237,7 +219,7 @@ export const quiltsRouter = createTRPCRouter({
         take: z.number().int().min(1).max(50).optional().default(10),
       })
     )
-    .query(async ({ ctx, input }) => {
+    .query(async () => {
       // Return empty array for now
       return [];
     }),
@@ -245,7 +227,7 @@ export const quiltsRouter = createTRPCRouter({
   // Add maintenance record - TODO: Implement with Neon
   addMaintenanceRecord: publicProcedure
     .input(createMaintenanceRecordSchema)
-    .mutation(async ({ ctx, input }) => {
+    .mutation(async () => {
       throw new TRPCError({
         code: 'NOT_IMPLEMENTED',
         message: 'Maintenance record functionality not yet implemented with Neon',
@@ -253,17 +235,8 @@ export const quiltsRouter = createTRPCRouter({
     }),
 
   // Get seasonal recommendations - TODO: Implement with Neon
-  getSeasonalRecommendations: publicProcedure.query(async ({ ctx }) => {
+  getSeasonalRecommendations: publicProcedure.query(async () => {
     // Return empty array for now
     return [];
   }),
 });
-
-// Helper function to determine season from date
-function getSeason(date: Date): string {
-  const month = date.getMonth() + 1; // getMonth() returns 0-11
-
-  if (month >= 12 || month <= 2) return 'winter';
-  if (month >= 6 && month <= 8) return 'summer';
-  return 'spring_autumn';
-}
