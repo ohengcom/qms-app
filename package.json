@@ -28,6 +28,7 @@
     "migrate-usage-tables": "tsx scripts/migrate-to-unified-usage-table.ts",
     "drop-old-usage-tables": "tsx scripts/drop-old-usage-tables.ts",
     "setup-usage-tracking": "tsx scripts/setup-usage-tracking.ts",
+    "seed-test-data": "tsx scripts/seed-test-data.ts",
     "build:production": "NODE_ENV=production npm run build",
     "start:production": "NODE_ENV=production npm run start",
     "docker:build": "docker build -t qms-app .",
