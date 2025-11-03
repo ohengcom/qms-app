@@ -11,6 +11,7 @@ import { authLogger } from '@/lib/logger';
 
 // Define protected routes that require authentication
 const protectedPaths = [
+  '/', // Dashboard/home page
   '/quilts',
   '/usage',
   '/import',
@@ -41,13 +42,25 @@ export default function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Allow health check and public API routes
-  if (pathname === '/api/health' || pathname === '/api/db-test') {
+  // Allow health check, public API routes, and static files
+  if (
+    pathname === '/api/health' || 
+    pathname === '/api/db-test' ||
+    pathname.startsWith('/_next/') ||
+    pathname.startsWith('/static/') ||
+    pathname === '/favicon.ico' ||
+    pathname === '/clear-cache.html'
+  ) {
     return NextResponse.next();
   }
 
   // Check if the path is protected
-  const isProtectedPath = protectedPaths.some(path => pathname.startsWith(path));
+  const isProtectedPath = protectedPaths.some(path => {
+    if (path === '/') {
+      return pathname === '/'; // Exact match for root
+    }
+    return pathname.startsWith(path);
+  });
   const isProtectedApiPath = protectedApiPaths.some(path => pathname.startsWith(path));
 
   if (!isProtectedPath && !isProtectedApiPath) {
