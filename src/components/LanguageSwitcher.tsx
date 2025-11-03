@@ -16,12 +16,10 @@ export function LanguageSwitcher() {
       variant="outline"
       size="sm"
       onClick={toggleLanguage}
-      className="flex items-center space-x-2 transition-all duration-200 hover:bg-gray-100"
+      className="flex items-center gap-2"
     >
       <Globe className="w-4 h-4" />
-      <span className="font-medium">
-        {language === 'zh' ? '中文' : 'EN'}
-      </span>
+      <span>{language === 'zh' ? '🇨🇳 中文' : '🇺🇸 English'}</span>
     </Button>
   );
 }

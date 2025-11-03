@@ -6,16 +6,71 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Settings, Database, Bell, Shield } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Settings, Database, Bell, Shield, Download, Globe } from 'lucide-react';
+import { toast } from '@/lib/toast';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { ChangePasswordDialog } from '@/components/settings/ChangePasswordDialog';
+import {
+  useAppSettings,
+  useUpdateAppSettings,
+  useDatabaseStats,
+  useSystemInfo,
+} from '@/hooks/useSettings';
 
 export default function SettingsPage() {
-  const [saved, setSaved] = useState(false);
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
-  const handleSave = () => {
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+  // Fetch data
+  const { data: appSettings, isLoading: settingsLoading } = useAppSettings();
+  const { data: dbStats, isLoading: dbLoading } = useDatabaseStats();
+  const { data: systemInfo, isLoading: systemLoading } = useSystemInfo();
+
+  // Mutations
+  const updateSettings = useUpdateAppSettings();
+
+  // Initialize app name from settings (use appSettings directly instead of state)
+  const [appName, setAppName] = useState(appSettings?.appName || '');
+
+  const handleSaveAppName = async () => {
+    try {
+      await updateSettings.mutateAsync({ appName });
+      toast.success(
+        t('language') === 'zh' ? '设置已保存' : 'Settings saved',
+        t('language') === 'zh' ? '应用程序名称已更新' : 'Application name updated'
+      );
+    } catch (error) {
+      toast.error(
+        t('language') === 'zh' ? '保存失败' : 'Save failed',
+        error instanceof Error
+          ? error.message
+          : t('language') === 'zh'
+            ? '请重试'
+            : 'Please try again'
+      );
+    }
   };
+
+  const handleExportData = () => {
+    // This will be implemented with the export functionality
+    toast.info(
+      t('language') === 'zh' ? '导出功能' : 'Export Feature',
+      t('language') === 'zh'
+        ? '请使用导出页面导出数据'
+        : 'Please use the Export page to export data'
+    );
+  };
+
+  if (settingsLoading || dbLoading || systemLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8 space-y-6">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-4 w-96" />
+        <Skeleton className="h-64 w-full" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
@@ -37,11 +92,43 @@ export default function SettingsPage() {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="app-name">{t('settings.sections.app.applicationName')}</Label>
-            <Input id="app-name" defaultValue="QMS - Quilt Management System" />
+            <div className="flex gap-2">
+              <Input
+                id="app-name"
+                value={appName}
+                onChange={e => setAppName(e.target.value)}
+                placeholder="QMS - Quilt Management System"
+              />
+              <Button
+                onClick={handleSaveAppName}
+                disabled={updateSettings.isPending || appName === appSettings?.appName}
+              >
+                {updateSettings.isPending
+                  ? t('language') === 'zh'
+                    ? '保存中...'
+                    : 'Saving...'
+                  : t('language') === 'zh'
+                    ? '保存'
+                    : 'Save'}
+              </Button>
+            </div>
+            <p className="text-xs text-gray-500">
+              {t('language') === 'zh'
+                ? '更改应用程序名称（仅在当前会话中生效）'
+                : 'Change application name (effective in current session only)'}
+            </p>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="language">{t('settings.sections.app.language')}</Label>
-            <Input id="language" defaultValue={t('language') === 'zh' ? '中文' : 'English'} disabled />
+            <Label htmlFor="language">
+              <Globe className="w-4 h-4 inline mr-2" />
+              {t('settings.sections.app.language')}
+            </Label>
+            <div className="flex items-center gap-2">
+              <LanguageSwitcher />
+              <span className="text-sm text-gray-500">
+                {language === 'zh' ? '当前语言：中文' : 'Current language: English'}
+              </span>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -58,19 +145,47 @@ export default function SettingsPage() {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label>{t('settings.sections.database.provider')}</Label>
-            <Input value="Neon Serverless PostgreSQL" disabled />
+            <Input value={dbStats?.provider || 'Neon Serverless PostgreSQL'} disabled />
           </div>
           <div className="space-y-2">
             <Label>{t('settings.sections.database.connectionStatus')}</Label>
             <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span className="text-sm text-green-600">{t('settings.sections.database.connected')}</span>
+              <div
+                className={`w-2 h-2 rounded-full ${dbStats?.connected ? 'bg-green-500' : 'bg-red-500'}`}
+              ></div>
+              <span className={`text-sm ${dbStats?.connected ? 'text-green-600' : 'text-red-600'}`}>
+                {dbStats?.connected
+                  ? t('settings.sections.database.connected')
+                  : t('language') === 'zh'
+                    ? '未连接'
+                    : 'Disconnected'}
+              </span>
             </div>
           </div>
-          <div className="space-y-2">
-            <Label>{t('settings.sections.database.totalRecords')}</Label>
-            <Input value="16 quilts" disabled />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-1">
+              <Label className="text-xs text-gray-500">
+                {t('language') === 'zh' ? '被子总数' : 'Total Quilts'}
+              </Label>
+              <p className="text-2xl font-semibold">{dbStats?.totalQuilts || 0}</p>
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs text-gray-500">
+                {t('language') === 'zh' ? '使用记录' : 'Usage Records'}
+              </Label>
+              <p className="text-2xl font-semibold">{dbStats?.totalUsageRecords || 0}</p>
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs text-gray-500">
+                {t('language') === 'zh' ? '使用中' : 'Active Usage'}
+              </Label>
+              <p className="text-2xl font-semibold">{dbStats?.activeUsage || 0}</p>
+            </div>
           </div>
+          <Button variant="outline" onClick={handleExportData} className="w-full">
+            <Download className="w-4 h-4 mr-2" />
+            {t('language') === 'zh' ? '导出所有数据' : 'Export All Data'}
+          </Button>
         </CardContent>
       </Card>
 
@@ -87,16 +202,45 @@ export default function SettingsPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium">{t('settings.sections.notifications.usageReminders')}</p>
-              <p className="text-sm text-gray-500">{t('settings.sections.notifications.usageRemindersDesc')}</p>
+              <p className="text-sm text-gray-500">
+                {t('settings.sections.notifications.usageRemindersDesc')}
+              </p>
             </div>
             <input type="checkbox" className="w-4 h-4" defaultChecked />
           </div>
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-medium">{t('settings.sections.notifications.maintenanceAlerts')}</p>
-              <p className="text-sm text-gray-500">{t('settings.sections.notifications.maintenanceAlertsDesc')}</p>
+              <p className="font-medium">
+                {t('settings.sections.notifications.maintenanceAlerts')}
+              </p>
+              <p className="text-sm text-gray-500">
+                {t('settings.sections.notifications.maintenanceAlertsDesc')}
+              </p>
             </div>
             <input type="checkbox" className="w-4 h-4" defaultChecked />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Security Settings */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Shield className="w-5 h-5" />
+            <span>{t('language') === 'zh' ? '安全设置' : 'Security Settings'}</span>
+          </CardTitle>
+          <CardDescription>
+            {t('language') === 'zh'
+              ? '管理您的账户安全和密码'
+              : 'Manage your account security and password'}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <ChangePasswordDialog />
+          <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded">
+            {t('language') === 'zh'
+              ? '💡 提示：修改密码后，您需要更新环境变量 QMS_PASSWORD_HASH 并重新部署应用。'
+              : '💡 Tip: After changing your password, you need to update the QMS_PASSWORD_HASH environment variable and redeploy the application.'}
           </div>
         </CardContent>
       </Card>
@@ -112,31 +256,26 @@ export default function SettingsPage() {
         <CardContent className="space-y-2 text-sm">
           <div className="flex justify-between">
             <span className="text-gray-600">{t('settings.sections.system.version')}:</span>
-            <span className="font-medium">2.0.0</span>
+            <span className="font-medium">{systemInfo?.version || '0.2.2'}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-600">{t('settings.sections.system.framework')}:</span>
-            <span className="font-medium">Next.js 16.0.0</span>
+            <span className="font-medium">{systemInfo?.framework || 'Next.js 15.0.3'}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-600">{t('settings.sections.system.deployment')}:</span>
-            <span className="font-medium">Vercel</span>
+            <span className="font-medium">{systemInfo?.deployment || 'Vercel'}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">
+              {t('language') === 'zh' ? '环境' : 'Environment'}:
+            </span>
+            <span className="font-medium capitalize">
+              {systemInfo?.environment || 'production'}
+            </span>
           </div>
         </CardContent>
       </Card>
-
-      {/* Save Button */}
-      <div className="flex justify-end">
-        <Button onClick={handleSave} className="w-full sm:w-auto">
-          {saved ? t('settings.actions.saved') : t('settings.actions.save')}
-        </Button>
-      </div>
-
-      {saved && (
-        <div className="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg">
-          {t('settings.actions.saveSuccess')}
-        </div>
-      )}
     </div>
   );
 }
