@@ -80,46 +80,48 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
       async () => {
         const { season, status, location, brand, search, limit = 20, offset = 0 } = filters;
 
-        // Build conditions array
-        const conditions: string[] = [];
+        // Get all quilts from database using simple query
+        const rows = await sql`
+          SELECT * FROM quilts
+          ORDER BY created_at DESC
+        ` as QuiltRow[];
         
+        // Convert to models
+        let quilts = rows.map(row => this.rowToModel(row));
+        
+        // Apply filters in application layer
         if (season) {
-          conditions.push(`season = '${season}'`);
+          quilts = quilts.filter(q => q.season === season);
         }
         
         if (status) {
-          conditions.push(`current_status = '${status}'`);
+          quilts = quilts.filter(q => q.currentStatus === status);
         }
         
         if (location) {
-          conditions.push(`location ILIKE '%${location.replace(/'/g, "''")}%'`);
+          const searchLower = location.toLowerCase();
+          quilts = quilts.filter(q => q.location.toLowerCase().includes(searchLower));
         }
         
         if (brand) {
-          conditions.push(`brand ILIKE '%${brand.replace(/'/g, "''")}%'`);
+          const searchLower = brand.toLowerCase();
+          quilts = quilts.filter(q => q.brand?.toLowerCase().includes(searchLower));
         }
         
         if (search) {
-          const escapedSearch = search.replace(/'/g, "''");
-          conditions.push(`(
-            name ILIKE '%${escapedSearch}%' OR
-            color ILIKE '%${escapedSearch}%' OR
-            fill_material ILIKE '%${escapedSearch}%' OR
-            notes ILIKE '%${escapedSearch}%'
-          )`);
+          const searchLower = search.toLowerCase();
+          quilts = quilts.filter(q => 
+            q.name.toLowerCase().includes(searchLower) ||
+            q.color.toLowerCase().includes(searchLower) ||
+            q.fillMaterial.toLowerCase().includes(searchLower) ||
+            q.notes?.toLowerCase().includes(searchLower)
+          );
         }
         
-        // Build WHERE clause
-        const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
-        
-        // Build complete query as a single string
-        const queryText = `SELECT * FROM quilts ${whereClause} ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
-        
-        // Use eval to create a tagged template call dynamically
-        // This is safe because we control the query construction
-        const rows = await eval(`sql\`${queryText}\``) as QuiltRow[];
-        
-        return rows.map(row => this.rowToModel(row));
+        // Apply pagination
+        const start = offset;
+        const end = offset + limit;
+        return quilts.slice(start, end);
       },
       'findAll',
       { filters }
@@ -362,45 +364,46 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
       async () => {
         const { season, status, location, brand, search } = filters;
 
-        // Build conditions array
-        const conditions: string[] = [];
+        // If no filters, use simple count query
+        if (!season && !status && !location && !brand && !search) {
+          const result = await sql`SELECT COUNT(*) as count FROM quilts` as [{ count: string }];
+          return parseInt(result[0]?.count || '0', 10);
+        }
+
+        // Otherwise, get all and filter in application layer
+        const rows = await sql`SELECT * FROM quilts` as QuiltRow[];
+        let quilts = rows.map(row => this.rowToModel(row));
         
+        // Apply same filters as findAll
         if (season) {
-          conditions.push(`season = '${season}'`);
+          quilts = quilts.filter(q => q.season === season);
         }
         
         if (status) {
-          conditions.push(`current_status = '${status}'`);
+          quilts = quilts.filter(q => q.currentStatus === status);
         }
         
         if (location) {
-          conditions.push(`location ILIKE '%${location.replace(/'/g, "''")}%'`);
+          const searchLower = location.toLowerCase();
+          quilts = quilts.filter(q => q.location.toLowerCase().includes(searchLower));
         }
         
         if (brand) {
-          conditions.push(`brand ILIKE '%${brand.replace(/'/g, "''")}%'`);
+          const searchLower = brand.toLowerCase();
+          quilts = quilts.filter(q => q.brand?.toLowerCase().includes(searchLower));
         }
         
         if (search) {
-          const escapedSearch = search.replace(/'/g, "''");
-          conditions.push(`(
-            name ILIKE '%${escapedSearch}%' OR
-            color ILIKE '%${escapedSearch}%' OR
-            fill_material ILIKE '%${escapedSearch}%' OR
-            notes ILIKE '%${escapedSearch}%'
-          )`);
+          const searchLower = search.toLowerCase();
+          quilts = quilts.filter(q => 
+            q.name.toLowerCase().includes(searchLower) ||
+            q.color.toLowerCase().includes(searchLower) ||
+            q.fillMaterial.toLowerCase().includes(searchLower) ||
+            q.notes?.toLowerCase().includes(searchLower)
+          );
         }
         
-        // Build WHERE clause
-        const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
-        
-        // Build complete query as a single string
-        const queryText = `SELECT COUNT(*) as count FROM quilts ${whereClause}`;
-        
-        // Use eval to create a tagged template call dynamically
-        const result = await eval(`sql\`${queryText}\``) as [{ count: string }];
-        
-        return parseInt(result[0]?.count || '0', 10);
+        return quilts.length;
       },
       'count',
       { filters }
