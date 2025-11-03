@@ -66,15 +66,23 @@ export class UsageRepository extends BaseRepositoryImpl<UsageRecordRow, UsageRec
       async () => {
         const { quiltId, limit = 50, offset = 0 } = filters;
 
-        let query = sql`SELECT * FROM usage_records WHERE 1=1`;
-
-        if (quiltId) {
-          query = sql`${query} AND quilt_id = ${quiltId}`;
+        // If no quiltId filter, get all records
+        if (!quiltId) {
+          const rows = await sql`
+            SELECT * FROM usage_records
+            ORDER BY start_date DESC
+            LIMIT ${limit} OFFSET ${offset}
+          ` as UsageRecordRow[];
+          return rows.map(row => this.rowToModel(row));
         }
 
-        query = sql`${query} ORDER BY start_date DESC LIMIT ${limit} OFFSET ${offset}`;
-
-        const rows = await query as UsageRecordRow[];
+        // With quiltId filter
+        const rows = await sql`
+          SELECT * FROM usage_records
+          WHERE quilt_id = ${quiltId}
+          ORDER BY start_date DESC
+          LIMIT ${limit} OFFSET ${offset}
+        ` as UsageRecordRow[];
         return rows.map(row => this.rowToModel(row));
       },
       'findAll',

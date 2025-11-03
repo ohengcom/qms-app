@@ -173,4 +173,20 @@ export const usageRouter = createTRPCRouter({
       handleTRPCError(error, 'usage.getStats', { quiltId: input.quiltId });
     }
   }),
+
+  // Get overall usage statistics
+  getOverallStats: publicProcedure.query(async () => {
+    try {
+      const allRecords = await usageRepository.findAll();
+      const activeRecords = await usageRepository.getAllActive();
+      
+      return {
+        total: allRecords.length,
+        active: activeRecords.length,
+        completed: allRecords.length - activeRecords.length,
+      };
+    } catch (error) {
+      handleTRPCError(error, 'usage.getOverallStats');
+    }
+  }),
 });
