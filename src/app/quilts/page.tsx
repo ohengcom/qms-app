@@ -267,7 +267,7 @@ export default function QuiltsPage() {
 
     try {
       if (isUpdate) {
-        await updateQuiltMutation.mutateAsync({ id: selectedQuilt.id, data });
+        await updateQuiltMutation.mutateAsync({ id: selectedQuilt.id, ...data });
         toast.success(getToastMessage('updateSuccess', lang));
       } else {
         await createQuiltMutation.mutateAsync(data);
@@ -309,7 +309,7 @@ export default function QuiltsPage() {
       // Invalidate queries to refresh data
       await updateQuiltMutation.mutateAsync({
         id: quiltId,
-        data: { currentStatus: newStatus },
+        currentStatus: newStatus,
       });
 
       toast.success(

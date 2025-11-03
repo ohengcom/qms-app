@@ -156,7 +156,7 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
   const onSubmit = async (data: CreateQuiltInput) => {
     try {
       if (isEditing) {
-        await updateQuilt.mutateAsync({ id: initialData.id, data });
+        await updateQuilt.mutateAsync({ id: initialData.id, ...data });
         toast.success('Quilt updated successfully', 'Your changes have been saved.');
       } else {
         await createQuilt.mutateAsync(data);
