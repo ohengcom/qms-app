@@ -139,7 +139,7 @@ export function QuiltDetail({ quilt, onBack, onEdit }: QuiltDetailProps) {
     try {
       await startUsage.mutateAsync({
         quiltId: quilt.id,
-        startedAt: new Date(),
+        startDate: new Date(),
         usageType: 'REGULAR',
       });
       toast.success('Usage started', `Started using ${quilt.name}`);
@@ -156,7 +156,7 @@ export function QuiltDetail({ quilt, onBack, onEdit }: QuiltDetailProps) {
 
     try {
       await endUsage.mutateAsync({
-        id: quilt.currentUsage.id,
+        quiltId: quilt.id,
         endDate: new Date(),
       });
       toast.success('Usage ended', `Stopped using ${quilt.name}`);

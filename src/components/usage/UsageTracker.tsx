@@ -150,7 +150,7 @@ export function UsageTracker({ quilt, onUsageChange }: UsageTrackerProps) {
 
     try {
       await endUsage.mutateAsync({
-        id: quilt.currentUsage.id,
+        quiltId: quilt.id,
         ...data,
       });
 
