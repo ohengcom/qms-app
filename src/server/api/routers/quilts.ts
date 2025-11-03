@@ -7,6 +7,7 @@ import {
   createCurrentUsageSchema,
   endCurrentUsageSchema,
   createMaintenanceRecordSchema,
+  quiltSearchSchema,
 } from '@/lib/validations/quilt';
 import { quiltRepository } from '@/lib/repositories/quilt.repository';
 import { usageRepository } from '@/lib/repositories/usage.repository';
@@ -19,28 +20,40 @@ export const quiltsRouter = createTRPCRouter({
 
   // Get all quilts with filtering and pagination
   getAll: publicProcedure
-    .input(
-      z
-        .object({
-          season: z.enum(['WINTER', 'SPRING_AUTUMN', 'SUMMER']).optional(),
-          status: z.enum(['AVAILABLE', 'IN_USE', 'MAINTENANCE', 'STORAGE']).optional(),
-          location: z.string().optional(),
-          brand: z.string().optional(),
-          search: z.string().optional(),
-          limit: z.number().min(1).max(100).default(20),
-          offset: z.number().min(0).default(0),
-        })
-        .optional()
-    )
-    .query(async ({ input = {} }) => {
+    .input(quiltSearchSchema.optional())
+    .query(async ({ input }) => {
       try {
-        const quilts = await quiltRepository.findAll(input as any);
-        const total = await quiltRepository.count(input as any);
+        // Transform the nested structure to flat structure for repository
+        const searchParams = input || {
+          filters: {},
+          sortBy: 'itemNumber' as const,
+          sortOrder: 'asc' as const,
+          skip: 0,
+          take: 20,
+        };
+        
+        const filters = searchParams.filters || {};
+        const flatParams = {
+          season: filters.season,
+          status: filters.status,
+          location: filters.location,
+          brand: filters.brand,
+          search: filters.search,
+          minWeight: filters.minWeight,
+          maxWeight: filters.maxWeight,
+          limit: searchParams.take || 20,
+          offset: searchParams.skip || 0,
+          sortBy: searchParams.sortBy || 'itemNumber',
+          sortOrder: searchParams.sortOrder || 'asc',
+        };
+
+        const quilts = await quiltRepository.findAll(flatParams as any);
+        const total = await quiltRepository.count(flatParams as any);
 
         return {
           quilts,
           total,
-          hasMore: (input.offset || 0) + quilts.length < total,
+          hasMore: flatParams.offset + quilts.length < total,
         };
       } catch (error) {
         handleTRPCError(error, 'quilts.getAll', { input });
