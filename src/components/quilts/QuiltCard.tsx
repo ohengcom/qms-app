@@ -124,7 +124,7 @@ export function QuiltCard({ quilt, variant = 'card', onEdit, onView }: QuiltCard
 
     try {
       await endUsage.mutateAsync({
-        id: quilt.currentUsage.id,
+        quiltId: quilt.id,
         endDate: new Date(),
       });
       toast.success('Usage ended', `Stopped using ${quilt.name}`);
