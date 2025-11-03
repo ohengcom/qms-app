@@ -223,7 +223,7 @@ export default function UsageTrackingPage() {
                     </td>
                   </tr>
                 ) : (
-                  usageHistory.map(record => (
+                  usageHistory.map((record: any) => (
                     <tr key={record.id} className="hover:bg-gray-50 transition-colors">
                       <td className="px-4 py-3 text-sm font-medium text-gray-900">
                         #{record.itemNumber}
@@ -340,7 +340,7 @@ export default function UsageTrackingPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {selectedQuiltUsage.map((usage, index) => (
+                  {selectedQuiltUsage.map((usage: any, index: number) => (
                     <tr key={usage.id} className="hover:bg-gray-50">
                       <td className="px-4 py-3 text-sm font-medium text-gray-900">
                         {selectedQuiltUsage.length - index}
