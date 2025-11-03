@@ -7,12 +7,14 @@
 ## 为什么要重构？
 
 ### 旧设计的问题
+
 - **两个表**: `current_usage`（活动记录）+ `usage_periods`（历史记录）
 - **数据重复**: 同一条记录需要在两个表之间移动
 - **查询复杂**: 需要 UNION 两个表才能看到完整数据
 - **容易出错**: 移动数据时可能丢失信息
 
 ### 新设计的优势
+
 - **一个表**: `usage_records` 统一管理所有记录
 - **简单查询**: `WHERE end_date IS NULL` 查询活动记录
 - **简单更新**: 只需 UPDATE end_date 字段
@@ -50,6 +52,7 @@ npm run migrate-usage-tables
 ```
 
 这个脚本会：
+
 1. 创建新的 `usage_records` 表
 2. 创建所有必要的索引和约束
 3. 从 `current_usage` 迁移活动记录
@@ -60,6 +63,7 @@ npm run migrate-usage-tables
 ### 步骤 2: 验证数据
 
 迁移完成后，检查：
+
 - 总记录数是否正确
 - 活动记录数是否正确
 - 完成记录数是否正确
@@ -68,6 +72,7 @@ npm run migrate-usage-tables
 ### 步骤 3: 测试功能
 
 在生产环境测试以下功能：
+
 - ✅ 查看使用记录列表
 - ✅ 查看单个被子的使用历史
 - ✅ 开始使用被子（状态改为"使用中"）
@@ -91,7 +96,7 @@ npm run drop-old-usage-tables
 
 1. **保留旧表**: 迁移脚本不会删除旧表，所以数据仍然安全
 2. **恢复代码**: 回滚到之前的 Git commit
-3. **删除新表**: 
+3. **删除新表**:
    ```sql
    DROP TABLE IF EXISTS usage_records CASCADE;
    ```
@@ -112,7 +117,7 @@ async createUsageRecord(quiltId, startDate, notes) {
 // 结束使用记录 - 只需 UPDATE！
 async endUsageRecord(quiltId, endDate, notes) {
   await sql`
-    UPDATE usage_records 
+    UPDATE usage_records
     SET end_date = ${endDate}, notes = COALESCE(${notes}, notes)
     WHERE quilt_id = ${quiltId} AND end_date IS NULL
   `;
@@ -139,6 +144,7 @@ async getUsageRecordsByQuiltId(quiltId) {
 ### API 端点
 
 所有 API 端点都已更新为使用新表：
+
 - `/api/usage` - 获取所有使用记录
 - `/api/usage/[quiltId]` - 获取特定被子的使用记录
 - `/api/usage/end` - 结束使用记录
@@ -147,6 +153,7 @@ async getUsageRecordsByQuiltId(quiltId) {
 ## 性能优化
 
 新设计的性能优势：
+
 - ✅ 减少了 50% 的表数量
 - ✅ 查询速度提升（不需要 UNION）
 - ✅ 更新操作更快（UPDATE vs INSERT + DELETE）
@@ -155,20 +162,25 @@ async getUsageRecordsByQuiltId(quiltId) {
 ## 常见问题
 
 ### Q: 迁移会影响现有数据吗？
+
 A: 不会。迁移脚本会复制数据到新表，旧表保持不变。
 
 ### Q: 迁移需要多长时间？
+
 A: 取决于数据量。通常几秒钟内完成。
 
 ### Q: 如果迁移失败怎么办？
+
 A: 旧表仍然存在，可以安全回滚代码。
 
 ### Q: 什么时候删除旧表？
+
 A: 在生产环境运行至少一周，确认一切正常后再删除。
 
 ## 联系支持
 
 如有问题，请查看：
+
 - GitHub Issues
 - 项目文档
 - 开发团队

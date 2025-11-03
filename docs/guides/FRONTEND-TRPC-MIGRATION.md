@@ -3,6 +3,7 @@
 ## 问题
 
 部署 Session 3 后，前端出现错误：
+
 - ❌ "Failed to fetch quilts: 404"
 - ❌ "No usage records"
 
@@ -17,6 +18,7 @@
 **文件**: `src/hooks/useQuilts.ts`
 
 #### 之前（REST API）:
+
 ```typescript
 export function useQuilts(searchParams?: QuiltSearchInput) {
   return useQuery({
@@ -34,6 +36,7 @@ export function useQuilts(searchParams?: QuiltSearchInput) {
 ```
 
 #### 之后（tRPC）:
+
 ```typescript
 import { api } from '@/lib/trpc';
 
@@ -46,25 +49,28 @@ export function useQuilts(searchParams?: QuiltSearchInput) {
 
 ### 2. 所有更新的 Hooks
 
-| Hook | 之前 | 之后 |
-|------|------|------|
-| `useQuilts()` | `fetch('/api/quilts')` | `api.quilts.getAll.useQuery()` |
-| `useQuilt(id)` | `fetch('/api/quilts/${id}')` | `api.quilts.getById.useQuery({ id })` |
-| `useCreateQuilt()` | `fetch('/api/quilts', POST)` | `api.quilts.create.useMutation()` |
-| `useUpdateQuilt()` | `fetch('/api/quilts/${id}', PUT)` | `api.quilts.update.useMutation()` |
-| `useDeleteQuilt()` | `fetch('/api/quilts/${id}', DELETE)` | `api.quilts.delete.useMutation()` |
-| `useStartUsage()` | `fetch('/api/usage/start', POST)` | `api.usage.create.useMutation()` |
-| `useEndUsage()` | `fetch('/api/usage/end', POST)` | `api.usage.end.useMutation()` |
+| Hook               | 之前                                 | 之后                                  |
+| ------------------ | ------------------------------------ | ------------------------------------- |
+| `useQuilts()`      | `fetch('/api/quilts')`               | `api.quilts.getAll.useQuery()`        |
+| `useQuilt(id)`     | `fetch('/api/quilts/${id}')`         | `api.quilts.getById.useQuery({ id })` |
+| `useCreateQuilt()` | `fetch('/api/quilts', POST)`         | `api.quilts.create.useMutation()`     |
+| `useUpdateQuilt()` | `fetch('/api/quilts/${id}', PUT)`    | `api.quilts.update.useMutation()`     |
+| `useDeleteQuilt()` | `fetch('/api/quilts/${id}', DELETE)` | `api.quilts.delete.useMutation()`     |
+| `useStartUsage()`  | `fetch('/api/usage/start', POST)`    | `api.usage.create.useMutation()`      |
+| `useEndUsage()`    | `fetch('/api/usage/end', POST)`      | `api.usage.end.useMutation()`         |
 
 ### 3. 缓存失效更新
 
 #### 之前:
+
 ```typescript
 export function useCreateQuilt() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: async (data) => { /* ... */ },
+    mutationFn: async data => {
+      /* ... */
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['quilts'] });
     },
@@ -73,11 +79,12 @@ export function useCreateQuilt() {
 ```
 
 #### 之后:
+
 ```typescript
 export function useCreateQuilt() {
   const queryClient = useQueryClient();
   const utils = api.useUtils();
-  
+
   return api.quilts.create.useMutation({
     onSuccess: () => {
       utils.quilts.getAll.invalidate();
@@ -92,10 +99,11 @@ export function useCreateQuilt() {
 **文件**: `src/proxy.ts`
 
 #### 之前:
+
 ```typescript
 const protectedApiPaths = [
-  '/api/quilts',    // 已删除
-  '/api/usage',     // 已删除
+  '/api/quilts', // 已删除
+  '/api/usage', // 已删除
   '/api/import',
   '/api/export',
   '/api/analytics',
@@ -105,9 +113,10 @@ const protectedApiPaths = [
 ```
 
 #### 之后:
+
 ```typescript
 const protectedApiPaths = [
-  '/api/trpc',      // tRPC endpoints (quilts, usage, etc.)
+  '/api/trpc', // tRPC endpoints (quilts, usage, etc.)
   '/api/import',
   '/api/export',
   '/api/analytics',
@@ -120,10 +129,11 @@ const protectedApiPaths = [
 ## 优势
 
 ### 1. 类型安全
+
 ```typescript
 // 自动类型推断
 const { data } = api.quilts.getAll.useQuery({
-  season: 'WINTER',  // ✓ 类型检查
+  season: 'WINTER', // ✓ 类型检查
   limit: 20,
 });
 
@@ -134,6 +144,7 @@ data?.quilts.forEach(quilt => {
 ```
 
 ### 2. 更好的错误处理
+
 ```typescript
 const { data, error, isLoading } = api.quilts.getAll.useQuery();
 
@@ -144,6 +155,7 @@ if (error) {
 ```
 
 ### 3. 自动重试和缓存
+
 ```typescript
 // tRPC 自动处理
 // - 请求重试
@@ -153,6 +165,7 @@ if (error) {
 ```
 
 ### 4. 更少的代码
+
 ```typescript
 // 之前: ~20 行代码
 export function useQuilts() {
@@ -193,16 +206,19 @@ export function useQuilts(searchParams) {
 ## 测试
 
 ### 本地测试
+
 ```bash
 npm run dev
 ```
 
 访问:
+
 1. `/quilts` - 应该显示被子列表
 2. `/usage` - 应该显示使用记录
 3. 创建/编辑/删除被子 - 应该正常工作
 
 ### 生产测试
+
 1. 等待 Vercel 部署完成
 2. 清除浏览器缓存或使用 Incognito 模式
 3. 测试所有 CRUD 操作
@@ -210,19 +226,25 @@ npm run dev
 ## 故障排除
 
 ### 问题: 仍然看到 404 错误
-**解决方案**: 
+
+**解决方案**:
+
 1. 清除浏览器缓存
 2. 硬刷新 (Ctrl+Shift+R)
 3. 访问 `/clear-cache.html?clear=true`
 
 ### 问题: TypeScript 错误
+
 **解决方案**:
+
 1. 确保 `@trpc/react-query` 已安装
 2. 重启 TypeScript 服务器
 3. 检查 `src/lib/trpc.ts` 配置
 
 ### 问题: 数据不更新
+
 **解决方案**:
+
 1. 检查缓存失效逻辑
 2. 使用 `utils.quilts.getAll.invalidate()`
 3. 检查 React Query DevTools
@@ -239,6 +261,7 @@ npm run dev
 ## 下一步
 
 所有前端代码现在使用 tRPC API：
+
 - ✅ 类型安全
 - ✅ 自动补全
 - ✅ 更好的错误处理

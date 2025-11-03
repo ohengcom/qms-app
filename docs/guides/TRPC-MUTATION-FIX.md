@@ -7,26 +7,31 @@
 ## 错误 1: Delete Mutation
 
 ### 错误信息
+
 ```
 Type error: Argument of type 'string' is not assignable to parameter of type '{ id: string; }'
 ```
 
 ### 原因
+
 tRPC mutations 期望对象参数，而不是直接的原始值。
 
 ### 修复
 
 **之前（错误）**:
+
 ```typescript
 await deleteQuilt.mutateAsync(quilt.id);
 ```
 
 **之后（正确）**:
+
 ```typescript
 await deleteQuilt.mutateAsync({ id: quilt.id });
 ```
 
 ### 修改的文件
+
 - `src/app/quilts/page.tsx` - 2 处
 - `src/components/quilts/QuiltCard.tsx` - 1 处
 - `src/components/quilts/QuiltDetail.tsx` - 1 处
@@ -34,14 +39,17 @@ await deleteQuilt.mutateAsync({ id: quilt.id });
 ## 错误 2: Update Mutation
 
 ### 错误信息
+
 ```
 Type error: Object literal may only specify known properties, and 'data' does not exist in type '{ id: string; name?: string; ... }'
 ```
 
 ### 原因
+
 `updateQuiltSchema` 期望扁平化的输入（id + 所有字段），而不是嵌套的 `{ id, data }` 结构。
 
 ### Schema 定义
+
 ```typescript
 // src/lib/validations/quilt.ts
 export const updateQuiltSchema = baseQuiltSchemaObject.partial().extend({
@@ -55,60 +63,66 @@ export const updateQuiltSchema = baseQuiltSchemaObject.partial().extend({
 ### 修复
 
 **之前（错误）**:
+
 ```typescript
-await updateQuilt.mutateAsync({ 
-  id: quilt.id, 
-  data: { name: 'New Name', season: 'WINTER' } 
+await updateQuilt.mutateAsync({
+  id: quilt.id,
+  data: { name: 'New Name', season: 'WINTER' },
 });
 ```
 
 **之后（正确）**:
+
 ```typescript
-await updateQuilt.mutateAsync({ 
-  id: quilt.id, 
-  name: 'New Name', 
-  season: 'WINTER' 
+await updateQuilt.mutateAsync({
+  id: quilt.id,
+  name: 'New Name',
+  season: 'WINTER',
 });
 
 // 或使用展开运算符
-await updateQuilt.mutateAsync({ 
-  id: quilt.id, 
-  ...data 
+await updateQuilt.mutateAsync({
+  id: quilt.id,
+  ...data,
 });
 ```
 
 ### 修改的文件
+
 - `src/app/quilts/page.tsx` - 2 处
 - `src/components/quilts/QuiltForm.tsx` - 1 处
 
 ## tRPC Mutation 参数模式
 
 ### 1. Delete Mutation
+
 ```typescript
 // Schema
-input: z.object({ id: z.string() })
+input: z.object({ id: z.string() });
 
 // 使用
-deleteQuilt.mutateAsync({ id: 'quilt-123' })
+deleteQuilt.mutateAsync({ id: 'quilt-123' });
 ```
 
 ### 2. Create Mutation
+
 ```typescript
 // Schema
-input: createQuiltSchema
+input: createQuiltSchema;
 
 // 使用
 createQuilt.mutateAsync({
   name: 'Winter Quilt',
   season: 'WINTER',
   // ... 其他字段
-})
+});
 ```
 
 ### 3. Update Mutation
+
 ```typescript
 // Schema
-input: updateQuiltSchema // { id: string, ...partial fields }
+input: updateQuiltSchema; // { id: string, ...partial fields }
 
 // 使用
 updateQuilt.mutateAsync({
@@ -116,12 +130,13 @@ updateQuilt.mutateAsync({
   name: 'Updated Name',
   season: 'SPRING_AUTUMN',
   // ... 其他要更新的字段
-})
+});
 ```
 
 ## 最佳实践
 
 ### 1. 使用展开运算符
+
 ```typescript
 const data = {
   name: 'New Name',
@@ -137,6 +152,7 @@ await updateQuilt.mutateAsync({ id: quilt.id, data });
 ```
 
 ### 2. 类型安全
+
 ```typescript
 // tRPC 提供完整的类型推断
 const { mutateAsync } = api.quilts.update.useMutation();
@@ -154,6 +170,7 @@ await mutateAsync({
 ```
 
 ### 3. 部分更新
+
 ```typescript
 // updateQuiltSchema 使用 .partial()
 // 所以你只需要传递要更新的字段
@@ -166,7 +183,7 @@ await updateQuilt.mutateAsync({
 await updateQuilt.mutateAsync({
   id: 'quilt-123',
   season: 'WINTER', // 只更新季节
-  color: 'Blue',    // 和颜色
+  color: 'Blue', // 和颜色
 });
 ```
 
@@ -182,6 +199,7 @@ await updateQuilt.mutateAsync({
 ## 测试
 
 ### 本地测试
+
 ```bash
 npm run build
 ```
@@ -189,14 +207,13 @@ npm run build
 应该没有 TypeScript 错误。
 
 ### 功能测试
-1. **删除被子**: 
+
+1. **删除被子**:
    - 单个删除
    - 批量删除
-   
 2. **更新被子**:
    - 编辑被子信息
    - 更新被子状态
-   
 3. **创建被子**:
    - 添加新被子
 
@@ -213,6 +230,7 @@ npm run build
 ## 总结
 
 tRPC mutations 的关键点：
+
 1. ✅ 总是传递对象参数
 2. ✅ Update 使用扁平化参数（不嵌套 data）
 3. ✅ 利用 TypeScript 类型检查

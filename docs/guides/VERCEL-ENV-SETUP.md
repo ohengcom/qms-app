@@ -77,22 +77,29 @@ WEBHOOK_ERROR_URL=your-webhook-url
 ## 常见问题
 
 ### Q: 环境变量更新后没有生效？
+
 A: 需要重新部署应用。可以：
+
 - 推送新的 commit
 - 或在 Vercel Dashboard 手动触发 Redeploy
 
-### Q: NEXT_PUBLIC_ 前缀的作用？
+### Q: NEXT*PUBLIC* 前缀的作用？
+
 A: 带 `NEXT_PUBLIC_` 前缀的变量会暴露到浏览器端，可以在客户端组件中使用。
 不带前缀的变量只在服务器端可用。
 
 ### Q: 如何生成新的 JWT_SECRET？
+
 A: 运行以下命令：
+
 ```bash
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
 ### Q: 如何生成新的密码哈希？
+
 A: 运行密码设置脚本：
+
 ```bash
 npm run setup-password
 # 或
