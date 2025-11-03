@@ -47,71 +47,33 @@ export abstract class BaseRepositoryImpl<TRow, TModel> {
 
   /**
    * Find a record by ID
+   * Note: This method should be overridden in child classes for proper table name handling
    */
   async findById(id: string): Promise<TModel | null> {
-    return this.executeQuery(
-      async () => {
-        const rows = await sql`
-          SELECT * FROM ${sql(this.tableName)}
-          WHERE id = ${id}
-        ` as TRow[];
-        return rows[0] ? this.rowToModel(rows[0]) : null;
-      },
-      'findById',
-      { id }
-    );
+    throw new Error('findById must be implemented in child class');
   }
 
   /**
    * Count records with optional filters
+   * Note: This method should be overridden in child classes for proper table name handling
    */
   async count(filters?: Record<string, unknown>): Promise<number> {
-    return this.executeQuery(
-      async () => {
-        const result = await sql`
-          SELECT COUNT(*) as count FROM ${sql(this.tableName)}
-        ` as [{ count: string }];
-        return parseInt(result[0]?.count || '0', 10);
-      },
-      'count',
-      { filters }
-    );
+    throw new Error('count must be implemented in child class');
   }
 
   /**
    * Delete a record by ID
+   * Note: This method should be overridden in child classes for proper table name handling
    */
   async delete(id: string): Promise<boolean> {
-    return this.executeQuery(
-      async () => {
-        const result = await sql`
-          DELETE FROM ${sql(this.tableName)}
-          WHERE id = ${id}
-          RETURNING id
-        `;
-        return result.length > 0;
-      },
-      'delete',
-      { id }
-    );
+    throw new Error('delete must be implemented in child class');
   }
 
   /**
    * Check if a record exists
+   * Note: This method should be overridden in child classes for proper table name handling
    */
   async exists(id: string): Promise<boolean> {
-    return this.executeQuery(
-      async () => {
-        const result = await sql`
-          SELECT EXISTS(
-            SELECT 1 FROM ${sql(this.tableName)}
-            WHERE id = ${id}
-          ) as exists
-        ` as [{ exists: boolean }];
-        return result[0]?.exists || false;
-      },
-      'exists',
-      { id }
-    );
+    throw new Error('exists must be implemented in child class');
   }
 }

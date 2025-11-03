@@ -56,6 +56,23 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
   }
 
   /**
+   * Find a quilt by ID
+   */
+  async findById(id: string): Promise<Quilt | null> {
+    return this.executeQuery(
+      async () => {
+        const rows = await sql`
+          SELECT * FROM quilts
+          WHERE id = ${id}
+        ` as QuiltRow[];
+        return rows[0] ? this.rowToModel(rows[0]) : null;
+      },
+      'findById',
+      { id }
+    );
+  }
+
+  /**
    * Find all quilts with optional filtering
    */
   async findAll(filters: QuiltFilters = {}): Promise<Quilt[]> {

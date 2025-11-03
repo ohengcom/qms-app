@@ -42,6 +42,23 @@ export class UsageRepository extends BaseRepositoryImpl<UsageRecordRow, UsageRec
   }
 
   /**
+   * Find a usage record by ID
+   */
+  async findById(id: string): Promise<UsageRecord | null> {
+    return this.executeQuery(
+      async () => {
+        const rows = await sql`
+          SELECT * FROM usage_records
+          WHERE id = ${id}
+        ` as UsageRecordRow[];
+        return rows[0] ? this.rowToModel(rows[0]) : null;
+      },
+      'findById',
+      { id }
+    );
+  }
+
+  /**
    * Find all usage records with optional filtering
    */
   async findAll(filters: { quiltId?: string; limit?: number; offset?: number } = {}): Promise<UsageRecord[]> {
