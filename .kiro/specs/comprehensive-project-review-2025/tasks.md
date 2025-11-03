@@ -65,28 +65,33 @@
 
 ### Session 2: Authentication & Security (3 hours)
 
-- [ ] 7. Create Password Utilities
+- [x] 7. Create Password Utilities
+
+
   - Create `src/lib/auth/password.ts`
   - Implement hashPassword function with bcrypt
   - Implement verifyPassword function
   - Set SALT_ROUNDS to 12
   - _Requirements: 6_
 
-- [ ] 8. Create JWT Utilities
+- [x] 8. Create JWT Utilities
+
   - Create `src/lib/auth/jwt.ts`
   - Implement signToken function
   - Implement verifyToken function
   - Add support for rememberMe (7d vs 30d expiration)
   - _Requirements: 6_
 
-- [ ] 9. Create Rate Limiting
+- [x] 9. Create Rate Limiting
+
   - Create `src/lib/auth/rate-limit.ts`
   - Implement checkRateLimit function (5 attempts per 15 min)
   - Implement resetRateLimit function
   - Use in-memory Map for storage
   - _Requirements: 6_
 
-- [ ] 10. Create Login Page
+- [x] 10. Create Login Page
+
   - Create `src/app/login/page.tsx`
   - Add password input with show/hide toggle
   - Add "Remember Me" checkbox
@@ -95,7 +100,8 @@
   - Add loading state
   - _Requirements: 6, 7_
 
-- [ ] 11. Create Login API
+- [x] 11. Create Login API
+
   - Create `src/app/api/auth/login/route.ts`
   - Implement POST handler
   - Add rate limiting check
@@ -105,13 +111,17 @@
   - Add logging for login attempts
   - _Requirements: 6_
 
-- [ ] 12. Create Logout API
+- [x] 12. Create Logout API
+
+
   - Create `src/app/api/auth/logout/route.ts`
   - Clear auth-token cookie
   - Add logging
   - _Requirements: 6_
 
-- [ ] 13. Update Middleware for Authentication
+- [x] 13. Update Middleware for Authentication
+
+
   - Update `src/middleware.ts`
   - Add authentication check
   - Define public paths (login, health check)
@@ -119,14 +129,17 @@
   - Return 401 for API routes
   - _Requirements: 6_
 
-- [ ] 14. Add Logout Button to Header
+- [x] 14. Add Logout Button to Header
+
+
   - Update `src/components/layout/AppLayout.tsx`
   - Add logout button to header
   - Call logout API on click
   - Redirect to /login after logout
   - _Requirements: 6_
 
-- [ ] 15. Setup Password Script
+- [x] 15. Setup Password Script
+
   - Update `scripts/setup-password.ts` if needed
   - Ensure it generates proper bcrypt hash
   - Test password setup flow

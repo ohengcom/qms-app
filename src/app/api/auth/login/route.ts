@@ -8,6 +8,7 @@ import {
   clearFailedAttempts,
   getClientIP,
 } from '@/lib/auth';
+import { authLogger } from '@/lib/logger';
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,6 +24,7 @@ export async function POST(request: NextRequest) {
 
     // Check rate limiting
     if (isRateLimited(ip)) {
+      authLogger.warn('Rate limit exceeded', { ip });
       return NextResponse.json(
         { message: 'Too many login attempts. Please try again in 15 minutes.' },
         { status: 429 }
@@ -32,7 +34,7 @@ export async function POST(request: NextRequest) {
     // Get password hash from environment
     const passwordHash = process.env.QMS_PASSWORD_HASH;
     if (!passwordHash) {
-      console.error('QMS_PASSWORD_HASH is not configured');
+      authLogger.error('QMS_PASSWORD_HASH is not configured');
       return NextResponse.json({ message: 'Authentication is not configured' }, { status: 500 });
     }
 
@@ -42,12 +44,14 @@ export async function POST(request: NextRequest) {
     if (!isValid) {
       // Record failed attempt
       recordFailedAttempt(ip);
+      authLogger.warn('Invalid login attempt', { ip });
 
       return NextResponse.json({ message: 'Invalid password' }, { status: 401 });
     }
 
     // Clear failed attempts on successful login
     clearFailedAttempts(ip);
+    authLogger.info('Successful login', { ip, remember });
 
     // Generate JWT token
     const duration = remember ? SESSION_DURATION.remember : SESSION_DURATION.default;
@@ -70,7 +74,7 @@ export async function POST(request: NextRequest) {
 
     return response;
   } catch (error) {
-    console.error('Login error:', error);
+    authLogger.error('Login error', error as Error);
     return NextResponse.json({ message: 'An error occurred during login' }, { status: 500 });
   }
 }

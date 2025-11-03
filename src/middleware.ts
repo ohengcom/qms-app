@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-// import { verifyJWT } from '@/lib/auth'; // Temporarily disabled
+import { verifyJWT } from '@/lib/auth';
+import { authLogger } from '@/lib/logger';
 
 // Define protected routes that require authentication
-// Temporarily disabled - will be used when auth is re-enabled
-
-const _protectedPaths = [
+const protectedPaths = [
   '/quilts',
   '/usage',
   '/import',
@@ -17,29 +16,26 @@ const _protectedPaths = [
 ];
 
 // Define API routes that require authentication
-// Temporarily disabled - will be used when auth is re-enabled
-
-const _protectedApiPaths = [
+const protectedApiPaths = [
   '/api/quilts',
   '/api/usage',
   '/api/import',
   '/api/export',
   '/api/analytics',
   '/api/reports',
+  '/api/trpc',
 ];
 
-export function middleware(_request: NextRequest) {
-  // TEMPORARY: Authentication disabled for development
-  // TODO: Re-enable after configuring Vercel environment variables
-
-  // Allow all requests to pass through
-  return NextResponse.next();
-
-  /* AUTHENTICATION CODE - TEMPORARILY DISABLED
+export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Allow login page and auth API routes
   if (pathname === '/login' || pathname.startsWith('/api/auth/')) {
+    return NextResponse.next();
+  }
+
+  // Allow health check and public API routes
+  if (pathname === '/api/health' || pathname === '/api/db-test') {
     return NextResponse.next();
   }
 
@@ -57,6 +53,8 @@ export function middleware(_request: NextRequest) {
 
   if (!sessionCookie) {
     // No session, redirect to login
+    authLogger.warn('Unauthorized access attempt', { pathname });
+    
     if (isProtectedApiPath) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
@@ -73,7 +71,7 @@ export function middleware(_request: NextRequest) {
     return NextResponse.next();
   } catch (error) {
     // Invalid or expired token
-    console.error('Invalid session token:', error);
+    authLogger.warn('Invalid or expired session token', { pathname, error: (error as Error).message });
 
     // Clear invalid cookie
     const response = isProtectedApiPath
@@ -83,7 +81,6 @@ export function middleware(_request: NextRequest) {
     response.cookies.delete('qms-session');
     return response;
   }
-  */
 }
 
 // Configure which routes to run middleware on

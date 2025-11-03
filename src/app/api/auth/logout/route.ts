@@ -1,14 +1,28 @@
 import { NextResponse } from 'next/server';
+import { authLogger } from '@/lib/logger';
 
 export async function POST() {
-  // Create response
-  const response = NextResponse.json(
-    { success: true, message: 'Logged out successfully' },
-    { status: 200 }
-  );
+  try {
+    authLogger.info('User logging out');
 
-  // Clear session cookie
-  response.cookies.delete('qms-session');
+    // Create response
+    const response = NextResponse.json(
+      { success: true, message: 'Logged out successfully' },
+      { status: 200 }
+    );
 
-  return response;
+    // Clear the session cookie
+    response.cookies.set('qms-session', '', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 0,
+      path: '/',
+    });
+
+    return response;
+  } catch (error) {
+    authLogger.error('Logout error', error as Error);
+    return NextResponse.json({ message: 'An error occurred during logout' }, { status: 500 });
+  }
 }
