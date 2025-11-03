@@ -23,6 +23,8 @@ export const quiltsRouter = createTRPCRouter({
     .input(quiltSearchSchema.optional())
     .query(async ({ input }) => {
       try {
+        console.log('[quilts.getAll] Starting query with input:', JSON.stringify(input));
+        
         // Transform the nested structure to flat structure for repository
         const searchParams = input || {
           filters: {},
@@ -31,6 +33,8 @@ export const quiltsRouter = createTRPCRouter({
           skip: 0,
           take: 20,
         };
+        
+        console.log('[quilts.getAll] Search params:', JSON.stringify(searchParams));
         
         const filters = searchParams.filters || {};
         const flatParams = {
@@ -47,15 +51,23 @@ export const quiltsRouter = createTRPCRouter({
           sortOrder: searchParams.sortOrder || 'asc',
         };
 
+        console.log('[quilts.getAll] Calling repository with:', JSON.stringify(flatParams));
         const quilts = await quiltRepository.findAll(flatParams as any);
+        console.log('[quilts.getAll] Found quilts:', quilts.length);
+        
         const total = await quiltRepository.count(flatParams as any);
+        console.log('[quilts.getAll] Total count:', total);
 
-        return {
+        const result = {
           quilts,
           total,
           hasMore: flatParams.offset + quilts.length < total,
         };
+        
+        console.log('[quilts.getAll] Returning result with', result.quilts.length, 'quilts');
+        return result;
       } catch (error) {
+        console.error('[quilts.getAll] Error:', error);
         handleTRPCError(error, 'quilts.getAll', { input });
       }
     }),
