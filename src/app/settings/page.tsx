@@ -237,10 +237,10 @@ export default function SettingsPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <ChangePasswordDialog />
-          <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded">
+          <div className="text-xs text-gray-500 bg-blue-50 border border-blue-200 p-3 rounded">
             {t('language') === 'zh'
-              ? '💡 提示：修改密码后，您需要更新环境变量 QMS_PASSWORD_HASH 并重新部署应用。'
-              : '💡 Tip: After changing your password, you need to update the QMS_PASSWORD_HASH environment variable and redeploy the application.'}
+              ? '💡 提示：密码存储在数据库中，修改后立即生效，无需重新部署应用。'
+              : '💡 Tip: Password is stored in the database and takes effect immediately after change, no redeployment needed.'}
           </div>
         </CardContent>
       </Card>

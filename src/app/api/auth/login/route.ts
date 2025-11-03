@@ -9,6 +9,7 @@ import {
   getClientIP,
 } from '@/lib/auth';
 import { authLogger } from '@/lib/logger';
+import { systemSettingsRepository } from '@/lib/repositories/system-settings.repository';
 
 export async function POST(request: NextRequest) {
   try {
@@ -31,10 +32,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get password hash from environment
-    const passwordHash = process.env.QMS_PASSWORD_HASH;
+    // Get password hash from database (fallback to environment variable)
+    let passwordHash = await systemSettingsRepository.getPasswordHash();
+
+    // Fallback to environment variable if not in database
     if (!passwordHash) {
-      authLogger.error('QMS_PASSWORD_HASH is not configured');
+      passwordHash = process.env.QMS_PASSWORD_HASH || null;
+    }
+
+    if (!passwordHash) {
+      authLogger.error('Password hash is not configured in database or environment');
       return NextResponse.json({ message: 'Authentication is not configured' }, { status: 500 });
     }
 

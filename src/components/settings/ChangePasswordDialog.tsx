@@ -16,15 +16,13 @@ import {
 } from '@/components/ui/dialog';
 import { toast } from '@/lib/toast';
 import { useChangePassword } from '@/hooks/useSettings';
-import { Eye, EyeOff, Key, Copy, Check } from 'lucide-react';
+import { Eye, EyeOff, Key } from 'lucide-react';
 
 export function ChangePasswordDialog() {
   const [open, setOpen] = useState(false);
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [newHash, setNewHash] = useState<string | null>(null);
   const { t } = useLanguage();
 
   const [formData, setFormData] = useState({
@@ -65,13 +63,13 @@ export function ChangePasswordDialog() {
       });
 
       if (result.success) {
-        setNewHash(result.newHash);
         toast.success(
           t('language') === 'zh' ? '密码已更改' : 'Password changed',
           t('language') === 'zh'
-            ? '请复制新的密码哈希值并更新环境变量'
-            : 'Please copy the new password hash and update your environment variable'
+            ? '密码已成功更新，下次登录时生效'
+            : 'Password updated successfully, will take effect on next login'
         );
+        handleClose();
       }
     } catch (error) {
       toast.error(
@@ -85,23 +83,9 @@ export function ChangePasswordDialog() {
     }
   };
 
-  const handleCopyHash = () => {
-    if (newHash) {
-      navigator.clipboard.writeText(newHash);
-      setCopied(true);
-      toast.success(
-        t('language') === 'zh' ? '已复制' : 'Copied',
-        t('language') === 'zh' ? '密码哈希已复制到剪贴板' : 'Password hash copied to clipboard'
-      );
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
-
   const handleClose = () => {
     setOpen(false);
     setFormData({ currentPassword: '', newPassword: '', confirmPassword: '' });
-    setNewHash(null);
-    setCopied(false);
   };
 
   return (
@@ -124,125 +108,96 @@ export function ChangePasswordDialog() {
           </DialogDescription>
         </DialogHeader>
 
-        {!newHash ? (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Current Password */}
-            <div className="space-y-2">
-              <Label htmlFor="currentPassword">
-                {t('language') === 'zh' ? '当前密码' : 'Current Password'} *
-              </Label>
-              <div className="relative">
-                <Input
-                  id="currentPassword"
-                  type={showCurrent ? 'text' : 'password'}
-                  value={formData.currentPassword}
-                  onChange={e => setFormData({ ...formData, currentPassword: e.target.value })}
-                  required
-                  className="pr-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowCurrent(!showCurrent)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                >
-                  {showCurrent ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Current Password */}
+          <div className="space-y-2">
+            <Label htmlFor="currentPassword">
+              {t('language') === 'zh' ? '当前密码' : 'Current Password'} *
+            </Label>
+            <div className="relative">
+              <Input
+                id="currentPassword"
+                type={showCurrent ? 'text' : 'password'}
+                value={formData.currentPassword}
+                onChange={e => setFormData({ ...formData, currentPassword: e.target.value })}
+                required
+                className="pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowCurrent(!showCurrent)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              >
+                {showCurrent ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
             </div>
-
-            {/* New Password */}
-            <div className="space-y-2">
-              <Label htmlFor="newPassword">
-                {t('language') === 'zh' ? '新密码' : 'New Password'} *
-              </Label>
-              <div className="relative">
-                <Input
-                  id="newPassword"
-                  type={showNew ? 'text' : 'password'}
-                  value={formData.newPassword}
-                  onChange={e => setFormData({ ...formData, newPassword: e.target.value })}
-                  required
-                  minLength={8}
-                  className="pr-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowNew(!showNew)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                >
-                  {showNew ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
-
-            {/* Confirm Password */}
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">
-                {t('language') === 'zh' ? '确认新密码' : 'Confirm New Password'} *
-              </Label>
-              <div className="relative">
-                <Input
-                  id="confirmPassword"
-                  type={showConfirm ? 'text' : 'password'}
-                  value={formData.confirmPassword}
-                  onChange={e => setFormData({ ...formData, confirmPassword: e.target.value })}
-                  required
-                  minLength={8}
-                  className="pr-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirm(!showConfirm)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                >
-                  {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
-
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={handleClose}>
-                {t('language') === 'zh' ? '取消' : 'Cancel'}
-              </Button>
-              <Button type="submit" disabled={changePasswordMutation.isPending}>
-                {changePasswordMutation.isPending
-                  ? t('language') === 'zh'
-                    ? '修改中...'
-                    : 'Changing...'
-                  : t('language') === 'zh'
-                    ? '修改密码'
-                    : 'Change Password'}
-              </Button>
-            </DialogFooter>
-          </form>
-        ) : (
-          <div className="space-y-4">
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-              <p className="text-sm text-yellow-800 mb-2">
-                {t('language') === 'zh'
-                  ? '⚠️ 重要：请复制以下密码哈希值并更新您的环境变量 QMS_PASSWORD_HASH'
-                  : '⚠️ Important: Please copy the password hash below and update your QMS_PASSWORD_HASH environment variable'}
-              </p>
-              <div className="bg-white rounded p-3 font-mono text-xs break-all">{newHash}</div>
-              <Button onClick={handleCopyHash} variant="outline" size="sm" className="mt-3 w-full">
-                {copied ? (
-                  <>
-                    <Check className="w-4 h-4 mr-2" />
-                    {t('language') === 'zh' ? '已复制' : 'Copied'}
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-4 h-4 mr-2" />
-                    {t('language') === 'zh' ? '复制哈希值' : 'Copy Hash'}
-                  </>
-                )}
-              </Button>
-            </div>
-            <DialogFooter>
-              <Button onClick={handleClose}>{t('language') === 'zh' ? '完成' : 'Done'}</Button>
-            </DialogFooter>
           </div>
-        )}
+
+          {/* New Password */}
+          <div className="space-y-2">
+            <Label htmlFor="newPassword">
+              {t('language') === 'zh' ? '新密码' : 'New Password'} *
+            </Label>
+            <div className="relative">
+              <Input
+                id="newPassword"
+                type={showNew ? 'text' : 'password'}
+                value={formData.newPassword}
+                onChange={e => setFormData({ ...formData, newPassword: e.target.value })}
+                required
+                minLength={8}
+                className="pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowNew(!showNew)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              >
+                {showNew ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+          </div>
+
+          {/* Confirm Password */}
+          <div className="space-y-2">
+            <Label htmlFor="confirmPassword">
+              {t('language') === 'zh' ? '确认新密码' : 'Confirm New Password'} *
+            </Label>
+            <div className="relative">
+              <Input
+                id="confirmPassword"
+                type={showConfirm ? 'text' : 'password'}
+                value={formData.confirmPassword}
+                onChange={e => setFormData({ ...formData, confirmPassword: e.target.value })}
+                required
+                minLength={8}
+                className="pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirm(!showConfirm)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              >
+                {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={handleClose}>
+              {t('language') === 'zh' ? '取消' : 'Cancel'}
+            </Button>
+            <Button type="submit" disabled={changePasswordMutation.isPending}>
+              {changePasswordMutation.isPending
+                ? t('language') === 'zh'
+                  ? '修改中...'
+                  : 'Changing...'
+                : t('language') === 'zh'
+                  ? '修改密码'
+                  : 'Change Password'}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );

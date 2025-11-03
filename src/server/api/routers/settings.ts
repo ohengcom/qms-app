@@ -9,7 +9,8 @@ import { TRPCError } from '@trpc/server';
 import { createTRPCRouter, publicProcedure, handleTRPCError } from '@/server/api/trpc';
 import { quiltRepository } from '@/lib/repositories/quilt.repository';
 import { usageRepository } from '@/lib/repositories/usage.repository';
-import { hashPassword } from '@/lib/auth/password';
+import { systemSettingsRepository } from '@/lib/repositories/system-settings.repository';
+import { hashPassword, verifyPassword } from '@/lib/auth/password';
 
 // Input schemas
 const updateAppSettingsSchema = z.object({
@@ -28,10 +29,10 @@ export const settingsRouter = createTRPCRouter({
   // Get application settings
   getAppSettings: publicProcedure.query(async () => {
     try {
-      // For now, return default settings
-      // In the future, these could be stored in database
+      const appName = await systemSettingsRepository.getAppName();
+
       return {
-        appName: process.env.NEXT_PUBLIC_APP_NAME || 'QMS - Quilt Management System',
+        appName,
         language: 'zh' as const,
         itemsPerPage: 25,
         defaultView: 'list' as const,
@@ -44,8 +45,11 @@ export const settingsRouter = createTRPCRouter({
   // Update application settings
   updateAppSettings: publicProcedure.input(updateAppSettingsSchema).mutation(async ({ input }) => {
     try {
-      // For now, just return the input as confirmation
-      // In the future, store these in database or environment
+      // Update app name in database if provided
+      if (input.appName) {
+        await systemSettingsRepository.updateAppName(input.appName);
+      }
+
       return {
         success: true,
         settings: input,
@@ -77,8 +81,12 @@ export const settingsRouter = createTRPCRouter({
   // Change password
   changePassword: publicProcedure.input(changePasswordSchema).mutation(async ({ input }) => {
     try {
-      // Verify current password matches environment variable
-      const currentHash = process.env.QMS_PASSWORD_HASH;
+      // Get current password hash from database (fallback to environment)
+      let currentHash = await systemSettingsRepository.getPasswordHash();
+      if (!currentHash) {
+        currentHash = process.env.QMS_PASSWORD_HASH || null;
+      }
+
       if (!currentHash) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
@@ -86,14 +94,24 @@ export const settingsRouter = createTRPCRouter({
         });
       }
 
-      // Note: In production, you would verify the current password here
-      // For now, we'll just generate a new hash
+      // Verify current password
+      const isValid = await verifyPassword(input.currentPassword, currentHash);
+      if (!isValid) {
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'Current password is incorrect',
+        });
+      }
+
+      // Generate new hash
       const newHash = await hashPassword(input.newPassword);
+
+      // Save new hash to database
+      await systemSettingsRepository.updatePasswordHash(newHash);
 
       return {
         success: true,
         message: 'Password changed successfully',
-        newHash, // Return this so user can update their environment variable
       };
     } catch (error) {
       handleTRPCError(error, 'settings.changePassword');
