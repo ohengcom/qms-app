@@ -16,9 +16,13 @@ export async function POST() {
 
     // Create table
     dbLogger.info('Creating system_settings table...');
+
+    // First, ensure uuid extension is available
+    await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
+
     await sql`
       CREATE TABLE IF NOT EXISTS system_settings (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         key VARCHAR(100) UNIQUE NOT NULL,
         value TEXT NOT NULL,
         description TEXT,
