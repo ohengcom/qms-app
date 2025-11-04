@@ -159,7 +159,7 @@
 
 ### Session 1: Bilingual & UI/UX (3-4 hours)
 
-- [ ] 21. Create Translation Files
+- [x] 21. Create Translation Files
   - Create `src/lib/i18n/translations/zh.ts`
   - Create `src/lib/i18n/translations/en.ts`
   - Add all common translations (save, cancel, delete, etc.)
@@ -181,7 +181,7 @@
   - Add type safety for translation keys
   - _Requirements: 7_
 
-- [ ] 24. Create Language Switcher
+- [x] 24. Create Language Switcher
   - Create `src/components/LanguageSwitcher.tsx`
   - Add to app header
   - Show current language (🇨🇳 中文 / 🇺🇸 English)
