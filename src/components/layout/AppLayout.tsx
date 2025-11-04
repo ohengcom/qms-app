@@ -91,7 +91,11 @@ export function AppLayout({ children }: AppLayoutProps) {
               <div className="flex h-16 items-center border-b px-6">
                 <Link href="/" className="flex items-center space-x-2">
                   <Package className="h-6 w-6 text-blue-600" />
-                  <span className="text-sm font-semibold">QMS家庭被子管理系统</span>
+                  <span className="text-sm font-semibold leading-tight">
+                    QMS
+                    <br />
+                    家庭被子管理系统
+                  </span>
                 </Link>
               </div>
               <nav className="flex-1 space-y-1 px-3 py-4">
@@ -142,7 +146,11 @@ export function AppLayout({ children }: AppLayoutProps) {
               <Link href="/" className="flex items-center space-x-2">
                 <Package className="h-8 w-8 text-blue-600" />
                 <div>
-                  <h1 className="text-base font-bold text-gray-900">QMS家庭被子管理系统</h1>
+                  <h1 className="text-base font-bold text-gray-900 leading-tight">
+                    QMS
+                    <br />
+                    家庭被子管理系统
+                  </h1>
                 </div>
               </Link>
             </div>
