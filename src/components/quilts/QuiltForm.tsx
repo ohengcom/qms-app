@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Season, QuiltStatus , createQuiltSchema } from '@/lib/validations/quilt';
+import { Season, QuiltStatus, createQuiltSchema } from '@/lib/validations/quilt';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -84,13 +84,6 @@ const SEASON_OPTIONS = [
   { value: Season.SUMMER, label: 'Summer', description: 'Light quilts for warm weather' },
 ];
 
-const STATUS_OPTIONS = [
-  { value: QuiltStatus.AVAILABLE, label: 'Available', description: 'Ready for use' },
-  { value: QuiltStatus.IN_USE, label: 'In Use', description: 'Currently being used' },
-  { value: QuiltStatus.STORAGE, label: 'Storage', description: 'Stored away' },
-  { value: QuiltStatus.MAINTENANCE, label: 'Maintenance', description: 'Needs care or repair' },
-];
-
 const COMMON_MATERIALS = [
   'Down',
   'Goose Down',
@@ -148,8 +141,9 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
       weightGrams: 1000,
       fillMaterial: '',
       color: '',
-      location: '',
-      currentStatus: QuiltStatus.AVAILABLE,
+      brand: '无品牌',
+      location: '未存储',
+      currentStatus: QuiltStatus.STORAGE,
     },
   });
 
@@ -365,6 +359,8 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                         <FormControl>
                           <Input
                             type="number"
+                            step="1"
+                            min="0"
                             placeholder="e.g., 200"
                             {...field}
                             onChange={e => field.onChange(parseInt(e.target.value) || 0)}
@@ -385,6 +381,8 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                         <FormControl>
                           <Input
                             type="number"
+                            step="1"
+                            min="0"
                             placeholder="e.g., 180"
                             {...field}
                             onChange={e => field.onChange(parseInt(e.target.value) || 0)}
@@ -405,6 +403,8 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                         <FormControl>
                           <Input
                             type="number"
+                            step="1"
+                            min="0"
                             placeholder="e.g., 1500"
                             {...field}
                             onChange={e => field.onChange(parseInt(e.target.value) || 0)}
