@@ -169,13 +169,13 @@
   - Add error messages
   - _Requirements: 7_
 
-- [ ] 22. Audit Missing Translations
+- [x] 22. Audit Missing Translations
   - Run `npm run audit-translations`
   - Identify all untranslated strings
   - Add missing translations to translation files
   - _Requirements: 7_
 
-- [ ] 23. Update useTranslation Hook
+- [x] 23. Update useTranslation Hook
   - Update `src/lib/i18n/hooks.ts`
   - Ensure it uses new translation structure
   - Add type safety for translation keys
@@ -188,14 +188,14 @@
   - Persist selection to localStorage
   - _Requirements: 7_
 
-- [ ] 25. Update Date/Number Formatters
+- [x] 25. Update Date/Number Formatters
   - Update `src/lib/formatters.ts`
   - Ensure proper Chinese date formatting (2024年10月29日)
   - Ensure proper English date formatting (October 29, 2024)
   - Add number formatting with proper separators
   - _Requirements: 7_
 
-- [ ] 26. Create Design Tokens
+- [x] 26. Create Design Tokens
   - Create `src/lib/design-system/tokens.ts`
   - Define color palette (primary, gray, success, warning, error)
   - Define spacing scale (xs, sm, md, lg, xl, 2xl)
@@ -203,7 +203,7 @@
   - Define typography settings
   - _Requirements: 8_
 
-- [ ] 27. Create Loading Skeletons
+- [x] 27. Create Loading Skeletons
   - Create `src/components/ui/skeleton.tsx`
   - Create QuiltListSkeleton component
   - Create QuiltDetailSkeleton component
@@ -211,7 +211,7 @@
   - Add to all data-fetching pages
   - _Requirements: 8_
 
-- [ ] 28. Improve Empty States
+- [x] 28. Improve Empty States
   - Update `src/components/ui/empty-state.tsx`
   - Add icons to empty states
   - Add helpful messages
