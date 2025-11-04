@@ -84,7 +84,7 @@ export function AppLayout({ children }: AppLayoutProps) {
           <SheetTrigger asChild>
             <Button variant="ghost" size="sm" className="lg:hidden">
               <Menu className="h-5 w-5" />
-              <span className="sr-only">Open sidebar</span>
+              <span className="sr-only">{t('common.openSidebar')}</span>
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-64 p-0">
@@ -101,7 +101,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                   return (
                     <Link
                       key={item.name}
-                      href={item.href as any}
+                      href={item.href}
                       onClick={() => setSidebarOpen(false)}
                       className={cn(
                         'group flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors',
@@ -144,7 +144,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                 <Package className="h-8 w-8 text-blue-600" />
                 <div>
                   <h1 className="text-xl font-bold text-gray-900">QMS</h1>
-                  <p className="text-xs text-gray-500">Quilt Management</p>
+                  <p className="text-xs text-gray-500">{t('common.quiltManagement')}</p>
                 </div>
               </Link>
             </div>
@@ -154,7 +154,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                 return (
                   <Link
                     key={item.name}
-                    href={item.href as any}
+                    href={item.href}
                     className={cn(
                       'group flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors',
                       isActive
@@ -182,7 +182,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             <div className="flex-shrink-0 border-t border-gray-200 p-4">
               <div className="text-center">
                 <p className="text-xs text-gray-400">
-                  Version {process.env.NEXT_PUBLIC_APP_VERSION || '0.2.2'}
+                  {t('common.version')} {process.env.NEXT_PUBLIC_APP_VERSION || '0.2.2'}
                 </p>
                 <p className="text-xs text-gray-300 mt-1">
                   {new Date().toISOString().split('T')[0]}
@@ -203,7 +203,7 @@ export function AppLayout({ children }: AppLayoutProps) {
               onClick={() => setSidebarOpen(true)}
             >
               <Menu className="h-5 w-5" />
-              <span className="sr-only">Open sidebar</span>
+              <span className="sr-only">{t('common.openSidebar')}</span>
             </Button>
 
             {/* Separator */}
@@ -243,10 +243,10 @@ export function AppLayout({ children }: AppLayoutProps) {
                   size="sm"
                   className="relative"
                   onClick={() => setNotificationPanelOpen(true)}
-                  title={t('language') === 'zh' ? '查看通知历史' : 'View notification history'}
+                  title={t('common.viewNotifications')}
                 >
                   <Bell className="h-5 w-5" />
-                  <span className="sr-only">View notifications</span>
+                  <span className="sr-only">{t('common.viewNotifications')}</span>
                   {/* Notification badge - only show if there are unread notifications */}
                   {unreadCount > 0 && (
                     <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-xs text-white flex items-center justify-center">
@@ -264,13 +264,15 @@ export function AppLayout({ children }: AppLayoutProps) {
                   size="sm"
                   className="flex items-center gap-x-2 text-red-600 hover:text-red-700 hover:bg-red-50"
                   onClick={async () => {
+                    // eslint-disable-next-line no-alert
                     if (confirm(t('auth.logoutConfirm'))) {
                       try {
                         await fetch('/api/auth/logout', { method: 'POST' });
                         window.location.href = '/login';
                       } catch (error) {
                         console.error('Logout error:', error);
-                        alert('Failed to logout. Please try again.');
+                        // eslint-disable-next-line no-alert
+                        alert(t('common.failedToLogout'));
                       }
                     }
                   }}

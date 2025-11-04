@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import { Season, QuiltStatus } from '@/lib/validations/quilt';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useStartUsage, useEndUsage, useDeleteQuilt } from '@/hooks/useQuilts';
 import { useToastContext } from '@/hooks/useToast';
+import { useLanguage } from '@/lib/language-provider';
 import { cn } from '@/lib/utils';
 import { QuiltThumbnail, QuiltImage } from '@/components/ui/next-image';
 import {
@@ -61,8 +61,8 @@ interface QuiltCardProps {
     }[];
   };
   variant?: 'card' | 'compact' | 'detailed';
-  onEdit?: (quilt: any) => void;
-  onView?: (quilt: any) => void;
+  onEdit?: (quilt: QuiltCardProps['quilt']) => void;
+  onView?: (quilt: QuiltCardProps['quilt']) => void;
 }
 
 const SEASON_ICONS = {
@@ -84,16 +84,12 @@ const STATUS_COLORS = {
   [QuiltStatus.MAINTENANCE]: 'text-red-700 bg-red-100',
 };
 
-const STATUS_LABELS = {
-  [QuiltStatus.AVAILABLE]: 'Available',
-  [QuiltStatus.IN_USE]: 'In Use',
-  [QuiltStatus.STORAGE]: 'Storage',
-  [QuiltStatus.MAINTENANCE]: 'Maintenance',
-};
+// Status labels will be translated using t() function
 
 export function QuiltCard({ quilt, variant = 'card', onEdit, onView }: QuiltCardProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const toast = useToastContext();
+  const { t } = useLanguage();
 
   const startUsage = useStartUsage();
   const endUsage = useEndUsage();
@@ -110,11 +106,14 @@ export function QuiltCard({ quilt, variant = 'card', onEdit, onView }: QuiltCard
         startDate: new Date(),
         usageType: 'REGULAR',
       });
-      toast.success('Usage started', `Started using ${quilt.name}`);
+      toast.success(
+        t('toasts.usageStarted'),
+        t('toasts.startedUsing').replace('{name}', quilt.name)
+      );
     } catch (error) {
       toast.error(
-        'Failed to start usage',
-        error instanceof Error ? error.message : 'Please try again'
+        t('toasts.failedToStartUsage'),
+        error instanceof Error ? error.message : t('common.pleaseTryAgain')
       );
     }
   };
@@ -127,29 +126,30 @@ export function QuiltCard({ quilt, variant = 'card', onEdit, onView }: QuiltCard
         quiltId: quilt.id,
         endDate: new Date(),
       });
-      toast.success('Usage ended', `Stopped using ${quilt.name}`);
+      toast.success(t('toasts.usageEnded'), t('toasts.stoppedUsing').replace('{name}', quilt.name));
     } catch (error) {
       toast.error(
-        'Failed to end usage',
-        error instanceof Error ? error.message : 'Please try again'
+        t('toasts.failedToEndUsage'),
+        error instanceof Error ? error.message : t('common.pleaseTryAgain')
       );
     }
   };
 
   const handleDelete = async () => {
-    if (
-      !confirm(`Are you sure you want to delete "${quilt.name}"? This action cannot be undone.`)
-    ) {
+    if (!confirm(t('confirmations.deleteQuilt').replace('{name}', quilt.name))) {
       return;
     }
 
     try {
       await deleteQuilt.mutateAsync({ id: quilt.id });
-      toast.success('Quilt deleted', `${quilt.name} has been removed from your collection`);
+      toast.success(
+        t('toasts.quiltDeleted'),
+        t('toasts.removedFromCollection').replace('{name}', quilt.name)
+      );
     } catch (error) {
       toast.error(
-        'Failed to delete quilt',
-        error instanceof Error ? error.message : 'Please try again'
+        t('toasts.failedToDeleteQuilt'),
+        error instanceof Error ? error.message : t('common.pleaseTryAgain')
       );
     }
   };
@@ -196,7 +196,7 @@ export function QuiltCard({ quilt, variant = 'card', onEdit, onView }: QuiltCard
                 #{quilt.itemNumber} {quilt.name}
               </h3>
               <Badge className={cn('text-xs', STATUS_COLORS[quilt.currentStatus])}>
-                {STATUS_LABELS[quilt.currentStatus]}
+                {t(`status.${quilt.currentStatus}`)}
               </Badge>
             </div>
             <div className="flex items-center space-x-4 mt-1 text-xs text-gray-500">
@@ -237,16 +237,16 @@ export function QuiltCard({ quilt, variant = 'card', onEdit, onView }: QuiltCard
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => onView?.(quilt)}>
                 <Eye className="w-4 h-4 mr-2" />
-                View Details
+                {t('common.viewDetails')}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onEdit?.(quilt)}>
                 <Edit className="w-4 h-4 mr-2" />
-                Edit
+                {t('common.edit')}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleDelete} className="text-red-600">
                 <Trash2 className="w-4 h-4 mr-2" />
-                Delete
+                {t('common.delete')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -280,7 +280,7 @@ export function QuiltCard({ quilt, variant = 'card', onEdit, onView }: QuiltCard
 
           <div className="flex items-center space-x-2">
             <Badge className={cn('text-xs', STATUS_COLORS[quilt.currentStatus])}>
-              {STATUS_LABELS[quilt.currentStatus]}
+              {t(`status.${quilt.currentStatus}`)}
             </Badge>
 
             <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
@@ -296,29 +296,29 @@ export function QuiltCard({ quilt, variant = 'card', onEdit, onView }: QuiltCard
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => onView?.(quilt)}>
                   <Eye className="w-4 h-4 mr-2" />
-                  View Details
+                  {t('common.viewDetails')}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => onEdit?.(quilt)}>
                   <Edit className="w-4 h-4 mr-2" />
-                  Edit
+                  {t('common.edit')}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 {isAvailable && (
                   <DropdownMenuItem onClick={handleStartUsage}>
                     <Play className="w-4 h-4 mr-2" />
-                    Start Using
+                    {t('common.startUsing')}
                   </DropdownMenuItem>
                 )}
                 {isInUse && (
                   <DropdownMenuItem onClick={handleEndUsage}>
                     <Square className="w-4 h-4 mr-2" />
-                    Stop Using
+                    {t('common.stopUsing')}
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleDelete} className="text-red-600">
                   <Trash2 className="w-4 h-4 mr-2" />
-                  Delete
+                  {t('common.delete')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -358,7 +358,7 @@ export function QuiltCard({ quilt, variant = 'card', onEdit, onView }: QuiltCard
             <div className="flex items-center space-x-2 text-blue-700">
               <Calendar className="w-4 h-4" />
               <span className="text-sm font-medium">
-                In use since {formatDate(quilt.currentUsage.startedAt)}
+                {t('common.inUseSince').replace('{date}', formatDate(quilt.currentUsage.startedAt))}
               </span>
             </div>
           </div>
@@ -372,14 +372,19 @@ export function QuiltCard({ quilt, variant = 'card', onEdit, onView }: QuiltCard
               return (
                 <div className="mb-4 flex items-center space-x-2 text-gray-500 text-sm">
                   <Clock className="w-4 h-4" />
-                  <span>Last used {daysSince === 0 ? 'today' : `${daysSince} days ago`}</span>
+                  <span>
+                    {t('common.lastUsed')}{' '}
+                    {daysSince === 0
+                      ? t('common.today')
+                      : t('common.daysAgo').replace('{days}', daysSince.toString())}
+                  </span>
                 </div>
               );
             }
             return (
               <div className="mb-4 flex items-center space-x-2 text-gray-500 text-sm">
                 <Clock className="w-4 h-4" />
-                <span>Never used</span>
+                <span>{t('common.neverUsed')}</span>
               </div>
             );
           })()}
@@ -400,13 +405,13 @@ export function QuiltCard({ quilt, variant = 'card', onEdit, onView }: QuiltCard
             {isAvailable && (
               <Button size="sm" variant="outline" onClick={handleStartUsage}>
                 <Play className="w-4 h-4 mr-1" />
-                Use
+                {t('common.use')}
               </Button>
             )}
             {isInUse && (
               <Button size="sm" variant="outline" onClick={handleEndUsage}>
                 <Square className="w-4 h-4 mr-1" />
-                Stop
+                {t('common.stop')}
               </Button>
             )}
           </div>

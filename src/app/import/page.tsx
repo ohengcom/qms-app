@@ -23,15 +23,34 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useRouter } from 'next/navigation';
+import { useLanguage } from '@/lib/language-provider';
 import { ArrowLeft, Upload, FileSpreadsheet, CheckCircle } from 'lucide-react';
 
 type ImportStep = 'upload' | 'preview' | 'results';
 
+interface ImportResults {
+  success: boolean;
+  imported: number;
+  skipped: number;
+  errors: Array<{
+    row: number;
+    message: string;
+    field?: string;
+    data?: unknown;
+  }>;
+  summary: {
+    totalRows: number;
+    successfulImports: number;
+    duplicates: number;
+    validationErrors: number;
+  };
+}
+
 interface ImportData {
   fileName: string;
   fileData: string; // Base64 encoded
-  preview?: any;
-  results?: any;
+  preview?: unknown;
+  results?: ImportResults;
 }
 
 export default function ImportPage() {
@@ -44,13 +63,13 @@ export default function ImportPage() {
     setCurrentStep('preview');
   };
 
-  const handlePreviewComplete = (preview: any) => {
+  const handlePreviewComplete = (preview: unknown) => {
     if (importData) {
       setImportData({ ...importData, preview });
     }
   };
 
-  const handleImportComplete = (results: any) => {
+  const handleImportComplete = (results: ImportResults) => {
     if (importData) {
       setImportData({ ...importData, results });
     }
@@ -88,20 +107,22 @@ export default function ImportPage() {
     return 'upcoming';
   };
 
+  const { t } = useLanguage();
+
   return (
     <div className="space-y-8">
-      <PageHeader title="Import Quilts" description="Import quilt data from Excel files">
+      <PageHeader title={t('importProcess.title')} description={t('importProcess.description')}>
         <Button variant="outline" onClick={() => router.back()}>
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Back
+          {t('common.back')}
         </Button>
       </PageHeader>
 
       {/* Progress Steps */}
       <Card>
         <CardHeader>
-          <CardTitle>Import Process</CardTitle>
-          <CardDescription>Follow these steps to import your quilt data</CardDescription>
+          <CardTitle>{t('importProcess.processTitle')}</CardTitle>
+          <CardDescription>{t('importProcess.processDescription')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-between">
@@ -122,7 +143,9 @@ export default function ImportPage() {
                       {getStepIcon(step)}
                     </div>
                     <div>
-                      <p className="text-sm font-medium capitalize">{step}</p>
+                      <p className="text-sm font-medium capitalize">
+                        {t(`importProcess.steps.${step}`)}
+                      </p>
                       <Badge
                         variant={
                           status === 'completed'
@@ -133,7 +156,7 @@ export default function ImportPage() {
                         }
                         className="text-xs"
                       >
-                        {status}
+                        {t(`importProcess.status.${status}`)}
                       </Badge>
                     </div>
                   </div>

@@ -485,6 +485,82 @@ export const translations = {
       failedToDownloadFile: '下载导出文件失败',
     },
 
+    // 导入流程
+    importProcess: {
+      title: '导入被子',
+      description: '从 Excel 文件导入被子数据',
+      processTitle: '导入流程',
+      processDescription: '按照以下步骤导入您的被子数据',
+      steps: {
+        upload: '上传',
+        preview: '预览',
+        results: '结果',
+      },
+      status: {
+        completed: '已完成',
+        current: '当前',
+        upcoming: '待处理',
+      },
+      loading: {
+        preview: '加载预览中...',
+        results: '加载结果中...',
+      },
+    },
+
+    // 季节智能
+    seasonalIntelligence: {
+      title: '季节智能',
+      description: '智能推荐和见解，帮助您选择最佳被子',
+      currentSeason: '当前季节',
+      overview: '当前季节被子收藏概览',
+      seasonQuilts: '季节被子',
+      availableNow: '当前可用',
+      totalUses: '总使用次数',
+      collectionOverview: '收藏概览',
+      current: '当前',
+      inactive: '非活跃',
+      allTime: '全部时间',
+      tabs: {
+        recommendations: '推荐',
+        weather: '天气',
+        patterns: '模式',
+        insights: '见解',
+      },
+      emptyState: {
+        title: '您的收藏中没有被子',
+        description: '添加一些被子到您的收藏中，以获得个性化的季节推荐和见解。',
+      },
+      patternAnalysis: {
+        title: '使用模式分析',
+        comingSoon: '即将推出 - 高级使用模式分析',
+        placeholder: '模式分析即将推出',
+      },
+      smartInsights: {
+        title: '智能见解',
+        description: '基于您的使用模式的 AI 驱动见解和推荐',
+      },
+      customizePreferences: '自定义偏好',
+    },
+
+    // 确认消息
+    confirmations: {
+      deleteQuilt: '确定要删除"{name}"吗？此操作无法撤销。',
+      deleteMultipleQuilts: '确定要删除选中的 {count} 床被子吗？此操作无法撤销。',
+    },
+
+    // Toast 消息
+    toasts: {
+      usageStarted: '使用已开始',
+      startedUsing: '开始使用 {name}',
+      failedToStartUsage: '开始使用失败',
+      usageEnded: '使用已结束',
+      stoppedUsing: '停止使用 {name}',
+      failedToEndUsage: '结束使用失败',
+      quiltDeleted: '被子已删除',
+      removedFromCollection: '{name} 已从您的收藏中移除',
+      failedToDeleteQuilt: '删除被子失败',
+    },
+
     // 通用操作
     actions: {
       creating: '正在创建',
@@ -592,6 +668,21 @@ export const translations = {
       clear: '清除',
       viewDetails: '查看详情',
       backToHome: '返回首页',
+      use: '使用',
+      stop: '停止',
+      startUsing: '开始使用',
+      stopUsing: '停止使用',
+      pleaseTryAgain: '请重试',
+      today: '今天',
+      neverUsed: '从未使用',
+      inUseSince: '自 {date} 起使用',
+      lastUsed: '上次使用',
+      daysAgo: '{days} 天前',
+      openSidebar: '打开侧边栏',
+      viewNotifications: '查看通知',
+      quiltManagement: '被子管理',
+      version: '版本',
+      failedToLogout: '退出登录失败。请重试。',
     },
   },
   en: {
@@ -1064,6 +1155,84 @@ export const translations = {
       failedToDownloadFile: 'Failed to download the exported file',
     },
 
+    // Import Process
+    importProcess: {
+      title: 'Import Quilts',
+      description: 'Import quilt data from Excel files',
+      processTitle: 'Import Process',
+      processDescription: 'Follow these steps to import your quilt data',
+      steps: {
+        upload: 'upload',
+        preview: 'preview',
+        results: 'results',
+      },
+      status: {
+        completed: 'completed',
+        current: 'current',
+        upcoming: 'upcoming',
+      },
+      loading: {
+        preview: 'Loading preview...',
+        results: 'Loading results...',
+      },
+    },
+
+    // Seasonal Intelligence
+    seasonalIntelligence: {
+      title: 'Seasonal Intelligence',
+      description: 'Smart recommendations and insights for optimal quilt selection',
+      currentSeason: 'Current Season',
+      overview: 'Overview of your quilt collection for the current season',
+      seasonQuilts: 'Season Quilts',
+      availableNow: 'Available Now',
+      totalUses: 'Total Uses',
+      collectionOverview: 'Collection Overview',
+      current: 'Current',
+      inactive: 'Inactive',
+      allTime: 'All Time',
+      tabs: {
+        recommendations: 'Recommendations',
+        weather: 'Weather',
+        patterns: 'Patterns',
+        insights: 'Insights',
+      },
+      emptyState: {
+        title: 'No quilts in your collection',
+        description:
+          'Add some quilts to your collection to get personalized seasonal recommendations and insights.',
+      },
+      patternAnalysis: {
+        title: 'Usage Pattern Analysis',
+        comingSoon: 'Coming soon - Advanced usage pattern analysis',
+        placeholder: 'Pattern analysis will be available soon',
+      },
+      smartInsights: {
+        title: 'Smart Insights',
+        description: 'AI-powered insights and recommendations based on your usage patterns',
+      },
+      customizePreferences: 'Customize Preferences',
+    },
+
+    // Confirmations
+    confirmations: {
+      deleteQuilt: 'Are you sure you want to delete "{name}"? This action cannot be undone.',
+      deleteMultipleQuilts:
+        'Are you sure you want to delete {count} selected quilts? This action cannot be undone.',
+    },
+
+    // Toast Messages
+    toasts: {
+      usageStarted: 'Usage started',
+      startedUsing: 'Started using {name}',
+      failedToStartUsage: 'Failed to start usage',
+      usageEnded: 'Usage ended',
+      stoppedUsing: 'Stopped using {name}',
+      failedToEndUsage: 'Failed to end usage',
+      quiltDeleted: 'Quilt deleted',
+      removedFromCollection: '{name} has been removed from your collection',
+      failedToDeleteQuilt: 'Failed to delete quilt',
+    },
+
     // Actions
     actions: {
       creating: 'Creating',
@@ -1171,18 +1340,36 @@ export const translations = {
       clear: 'Clear',
       viewDetails: 'View Details',
       backToHome: 'Back to Home',
+      use: 'Use',
+      stop: 'Stop',
+      startUsing: 'Start Using',
+      stopUsing: 'Stop Using',
+      pleaseTryAgain: 'Please try again',
+      today: 'today',
+      neverUsed: 'Never used',
+      inUseSince: 'In use since {date}',
+      lastUsed: 'Last used',
+      daysAgo: '{days} days ago',
+      openSidebar: 'Open sidebar',
+      viewNotifications: 'View notifications',
+      quiltManagement: 'Quilt Management',
+      version: 'Version',
+      failedToLogout: 'Failed to logout. Please try again.',
     },
   },
 };
 
 // 嵌套翻译键解析函数
-export function getNestedTranslation(obj: any, key: string): string | undefined {
+export function getNestedTranslation(
+  obj: Record<string, unknown>,
+  key: string
+): string | undefined {
   const keys = key.split('.');
-  let current = obj;
+  let current: unknown = obj;
 
   for (const k of keys) {
     if (current && typeof current === 'object' && k in current) {
-      current = current[k];
+      current = (current as Record<string, unknown>)[k];
     } else {
       return undefined;
     }
