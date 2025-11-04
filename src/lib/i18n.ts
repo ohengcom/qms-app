@@ -40,10 +40,10 @@ export const translations = {
       dashboard: '仪表面板',
       quilts: '被子管理',
       usage: '使用跟踪',
-      analytics: '分析',
+      analytics: '数据分析',
       maintenance: '维护',
       reports: '导入导出',
-      settings: '设置',
+      settings: '系统设置',
     },
 
     // 仪表板
@@ -710,10 +710,10 @@ export const translations = {
       dashboard: 'Dashboard',
       quilts: 'Quilts',
       usage: 'Usage Tracking',
-      analytics: 'Analytics',
+      analytics: 'Data Analytics',
       maintenance: 'Maintenance',
       reports: 'Import/Export',
-      settings: 'Settings',
+      settings: 'System Settings',
     },
 
     // 仪表板
