@@ -28,6 +28,7 @@ import { StatusChangeDialog } from '@/components/quilts/StatusChangeDialog';
 import { toast, getToastMessage } from '@/lib/toast';
 import { useQuilts, useCreateQuilt, useUpdateQuilt, useDeleteQuilt } from '@/hooks/useQuilts';
 import { useCreateUsageRecord } from '@/hooks/useUsage';
+import { useAppSettings } from '@/hooks/useSettings';
 
 export default function QuiltsPage() {
   const searchParams = useSearchParams();
@@ -54,6 +55,7 @@ export default function QuiltsPage() {
 
   // React Query hooks
   const { data: quiltsData, isLoading, error } = useQuilts();
+  const { data: appSettings } = useAppSettings();
   const createQuiltMutation = useCreateQuilt();
   const updateQuiltMutation = useUpdateQuilt();
   const deleteQuiltMutation = useDeleteQuilt();
@@ -167,6 +169,23 @@ export default function QuiltsPage() {
   const handleEditQuilt = (quilt: any) => {
     setSelectedQuilt(quilt);
     setQuiltDialogOpen(true);
+  };
+
+  const handleRowDoubleClick = (quilt: any) => {
+    const doubleClickAction = appSettings?.doubleClickAction || 'status';
+
+    switch (doubleClickAction) {
+      case 'status':
+        handleChangeStatus(quilt);
+        break;
+      case 'edit':
+        handleEditQuilt(quilt);
+        break;
+      case 'none':
+      default:
+        // 不执行任何操作
+        break;
+    }
   };
 
   const handleChangeStatus = (quilt: any) => {
@@ -615,9 +634,11 @@ export default function QuiltsPage() {
                   filteredQuilts.map((quilt: any, index: number) => (
                     <tr
                       key={quilt.id}
+                      onDoubleClick={() => handleRowDoubleClick(quilt)}
                       className={`
                       transition-all duration-150 ease-in-out
                       hover:bg-blue-50 hover:shadow-sm
+                      cursor-pointer
                       ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}
                       border-b border-gray-100 last:border-b-0
                     `}
