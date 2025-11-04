@@ -5,6 +5,57 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2025-11-04
+
+### Added
+
+- **System Settings**
+  - Double-click behavior configuration for quilt list (none/status/edit)
+  - Configurable interaction behavior in system settings
+  - Database migration for double-click action setting
+
+- **Import/Export**
+  - Unified import/export page with tab navigation
+  - Excel file import support (.xls, .xlsx)
+  - CSV and JSON export functionality
+  - Integrated existing import/export components
+
+### Changed
+
+- **Overall Framework**
+  - Updated app title to "QMS家庭被子管理系统"
+  - Removed language switcher from header
+  - Updated app metadata to Chinese
+
+- **Dashboard (仪表面板)**
+  - Renamed from "仪表板" to "仪表面板"
+  - Removed subtitle text
+  - Date and weather now displayed on same line with larger font
+  - Compact single-line display for "Currently in Use" quilts list
+  - Compact single-line display for "Historical Usage" list
+
+- **Quilt Management**
+  - Default brand value set to "无品牌"
+  - Default location value set to "未存储"
+  - Number inputs (length/width/weight) now use integer steps
+  - Double-click on table rows triggers configured action
+  - Status change to "IN_USE" automatically sets location to "在用"
+  - Status change to "IN_USE" automatically creates usage record
+
+- **Analytics (数据分析)**
+  - Renamed from "分析" to "数据分析"
+  - Removed "Available" status from status distribution chart
+  - More compact layout for "Most Used Quilts" list
+
+- **Navigation**
+  - "Reports" menu item renamed to "导入导出"
+  - Updated navigation descriptions
+
+### Fixed
+
+- Usage record creation when changing quilt status to IN_USE
+- Automatic location update when status changes
+
 ## [0.3.0] - 2025-11-03
 
 ### Added
