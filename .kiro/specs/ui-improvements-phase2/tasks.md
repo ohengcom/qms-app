@@ -64,9 +64,9 @@
 
 ---
 
-## 3. 被子管理页面增强
+## 3. 被子管理页面增强 ✅
 
-- [ ] 3.1 实现双击行为功能
+- [x] 3.1 实现双击行为功能
   - 修改 `src/app/quilts/page.tsx`
   - 添加 doubleClickAction 状态管理
   - 从系统设置中加载双击行为配置
@@ -140,9 +140,9 @@
 
 ---
 
-## 5. 导入导出页面重构
+## 5. 导入导出页面重构 ✅
 
-- [ ] 5.1 重命名和重构报告页面
+- [x] 5.1 重命名和重构报告页面
   - 将 `src/app/reports/page.tsx` 重命名为 `src/app/import-export/page.tsx`
   - 更新页面标题为"导入导出"
   - 移除所有报告生成相关的代码
@@ -205,15 +205,15 @@
 
 ---
 
-## 6. 系统设置页面更新
+## 6. 系统设置页面更新 ✅
 
-- [ ] 6.1 更新页面标题
+- [x] 6.1 更新页面标题
   - 修改 `src/app/settings/page.tsx`
   - 将页面标题从"设置"改为"系统设置"
   - 更新翻译文件中的相关键值
   - _Requirements: 6.1_
 
-- [ ] 6.2 添加双击行为配置选项
+- [x] 6.2 添加双击行为配置选项
   - 修改 `src/app/settings/page.tsx`
   - 创建新的Card组件用于被子管理设置
   - 添加Select组件选择双击行为
@@ -221,7 +221,7 @@
   - 为每个选项添加说明文本
   - _Requirements: 6.2, 6.3_
 
-- [ ] 6.3 实现双击行为配置的保存逻辑
+- [x] 6.3 实现双击行为配置的保存逻辑
   - 修改 `src/app/settings/page.tsx`
   - 实现 handleDoubleClickActionChange 函数
   - 调用API更新系统设置
@@ -229,21 +229,21 @@
   - 确保配置立即生效
   - _Requirements: 6.3, 6.4_
 
-- [ ] 6.4 扩展SystemSettings数据模型
-  - 修改 `src/lib/database/types.ts`
+- [x] 6.4 扩展SystemSettings数据模型
+  - 修改 `src/server/api/routers/settings.ts`
   - 添加 doubleClickAction 字段到 SystemSettings 接口
   - 类型定义为 'none' | 'status' | 'edit'
   - 设置默认值为 'status'
   - _Requirements: 6.2_
 
-- [ ] 6.5 更新系统设置API
+- [x] 6.5 更新系统设置API
   - 修改 `src/server/api/routers/settings.ts`
   - 更新 updateAppSettings mutation 支持 doubleClickAction 字段
   - 添加字段验证
   - 更新数据库查询
   - _Requirements: 6.3, 6.4_
 
-- [ ] 6.6 创建数据库迁移脚本
+- [x] 6.6 创建数据库迁移脚本
   - 创建 `migrations/005_add_double_click_action.sql`
   - 添加 double_click_action 列到 system_settings 表
   - 设置默认值为 'status'
@@ -254,7 +254,7 @@
 
 ## 7. 版本号更新和最终验证
 
-- [ ] 7.1 更新版本号
+- [x] 7.1 更新版本号
   - 修改 `package.json`
   - 将 version 从当前版本更新为 "0.5.0"
   - _Requirements: 7.1, 7.2_
