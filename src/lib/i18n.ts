@@ -189,7 +189,7 @@ export const translations = {
 
     // 设置
     settings: {
-      title: '设置',
+      title: '系统设置',
       subtitle: '管理您的应用程序偏好设置',
       sections: {
         app: {
@@ -859,7 +859,7 @@ export const translations = {
 
     // 设置
     settings: {
-      title: 'Settings',
+      title: 'System Settings',
       subtitle: 'Manage your application preferences',
       sections: {
         app: {

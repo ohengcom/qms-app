@@ -171,6 +171,20 @@ export class SystemSettingsRepository extends BaseRepositoryImpl<SystemSettingRo
   async updateAppName(name: string): Promise<void> {
     return this.setSetting('app_name', name, 'Application display name');
   }
+
+  /**
+   * Get double click action
+   */
+  async getDoubleClickAction(): Promise<string | null> {
+    return this.getSetting('double_click_action');
+  }
+
+  /**
+   * Update double click action
+   */
+  async updateDoubleClickAction(action: 'none' | 'status' | 'edit'): Promise<void> {
+    return this.setSetting('double_click_action', action, 'Double click behavior in quilt list');
+  }
 }
 
 // Export singleton instance

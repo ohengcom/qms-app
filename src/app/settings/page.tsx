@@ -7,7 +7,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Settings, Database, Bell, Shield, Download, Globe } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Settings, Database, Bell, Shield, Download, Globe, MousePointerClick } from 'lucide-react';
 import { toast } from '@/lib/toast';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { ChangePasswordDialog } from '@/components/settings/ChangePasswordDialog';
@@ -31,6 +38,9 @@ export default function SettingsPage() {
 
   // Initialize app name from settings (use appSettings directly instead of state)
   const [appName, setAppName] = useState(appSettings?.appName || '');
+  const [doubleClickAction, setDoubleClickAction] = useState<'none' | 'status' | 'edit'>(
+    (appSettings?.doubleClickAction as 'none' | 'status' | 'edit') || 'status'
+  );
 
   const handleSaveAppName = async () => {
     try {
@@ -38,6 +48,26 @@ export default function SettingsPage() {
       toast.success(
         t('language') === 'zh' ? '设置已保存' : 'Settings saved',
         t('language') === 'zh' ? '应用程序名称已更新' : 'Application name updated'
+      );
+    } catch (error) {
+      toast.error(
+        t('language') === 'zh' ? '保存失败' : 'Save failed',
+        error instanceof Error
+          ? error.message
+          : t('language') === 'zh'
+            ? '请重试'
+            : 'Please try again'
+      );
+    }
+  };
+
+  const handleDoubleClickActionChange = async (value: 'none' | 'status' | 'edit') => {
+    try {
+      setDoubleClickAction(value);
+      await updateSettings.mutateAsync({ doubleClickAction: value });
+      toast.success(
+        t('language') === 'zh' ? '设置已保存' : 'Settings saved',
+        t('language') === 'zh' ? '双击行为已更新' : 'Double-click behavior updated'
       );
     } catch (error) {
       toast.error(
@@ -129,6 +159,77 @@ export default function SettingsPage() {
                 {language === 'zh' ? '当前语言：中文' : 'Current language: English'}
               </span>
             </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Quilt Management Settings */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <MousePointerClick className="w-5 h-5" />
+            <span>{t('language') === 'zh' ? '被子管理设置' : 'Quilt Management Settings'}</span>
+          </CardTitle>
+          <CardDescription>
+            {t('language') === 'zh'
+              ? '配置被子列表的交互行为'
+              : 'Configure quilt list interaction behavior'}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="double-click-action">
+              {t('language') === 'zh' ? '双击行为' : 'Double-click Behavior'}
+            </Label>
+            <Select
+              value={doubleClickAction}
+              onValueChange={value =>
+                handleDoubleClickActionChange(value as 'none' | 'status' | 'edit')
+              }
+            >
+              <SelectTrigger id="double-click-action">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">
+                  <div className="flex flex-col items-start">
+                    <span className="font-medium">
+                      {t('language') === 'zh' ? '无动作' : 'No Action'}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {t('language') === 'zh' ? '双击不执行任何操作' : 'Double-click does nothing'}
+                    </span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="status">
+                  <div className="flex flex-col items-start">
+                    <span className="font-medium">
+                      {t('language') === 'zh' ? '修改状态' : 'Change Status'}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {t('language') === 'zh'
+                        ? '双击打开状态修改对话框'
+                        : 'Double-click opens status dialog'}
+                    </span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="edit">
+                  <div className="flex flex-col items-start">
+                    <span className="font-medium">
+                      {t('language') === 'zh' ? '编辑被子' : 'Edit Quilt'}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {t('language') === 'zh' ? '双击打开编辑表单' : 'Double-click opens edit form'}
+                    </span>
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-gray-500">
+              {t('language') === 'zh'
+                ? '设置在被子列表中双击行时的默认行为'
+                : 'Set the default behavior when double-clicking a row in the quilt list'}
+            </p>
           </div>
         </CardContent>
       </Card>

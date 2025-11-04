@@ -18,6 +18,7 @@ const updateAppSettingsSchema = z.object({
   language: z.enum(['zh', 'en']).optional(),
   itemsPerPage: z.number().min(10).max(100).optional(),
   defaultView: z.enum(['list', 'grid']).optional(),
+  doubleClickAction: z.enum(['none', 'status', 'edit']).optional(),
 });
 
 const changePasswordSchema = z.object({
@@ -30,12 +31,14 @@ export const settingsRouter = createTRPCRouter({
   getAppSettings: publicProcedure.query(async () => {
     try {
       const appName = await systemSettingsRepository.getAppName();
+      const doubleClickAction = await systemSettingsRepository.getDoubleClickAction();
 
       return {
         appName,
         language: 'zh' as const,
         itemsPerPage: 25,
         defaultView: 'list' as const,
+        doubleClickAction: doubleClickAction || 'status',
       };
     } catch (error) {
       handleTRPCError(error, 'settings.getAppSettings');
@@ -48,6 +51,11 @@ export const settingsRouter = createTRPCRouter({
       // Update app name in database if provided
       if (input.appName) {
         await systemSettingsRepository.updateAppName(input.appName);
+      }
+
+      // Update double click action if provided
+      if (input.doubleClickAction) {
+        await systemSettingsRepository.updateDoubleClickAction(input.doubleClickAction);
       }
 
       return {
