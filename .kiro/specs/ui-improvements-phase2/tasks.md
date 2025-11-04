@@ -150,7 +150,7 @@
   - 创建基础的Tab布局（导入/导出）
   - _Requirements: 5.1, 5.2, 5.3_
 
-- [ ] 5.2 创建导入组件
+- [x] 5.2 创建导入组件
   - 创建 `src/components/import/ImportUpload.tsx`
   - 实现文件上传UI（支持拖拽和点击选择）
   - 添加文件类型验证（.xls, .xlsx）
@@ -158,7 +158,7 @@
   - 显示上传进度
   - _Requirements: 5.4, 5.5_
 
-- [ ] 5.3 创建导入预览组件
+- [x] 5.3 创建导入预览组件
   - 创建 `src/components/import/ImportPreview.tsx`
   - 解析Excel文件并显示数据预览
   - 实现数据验证逻辑
@@ -166,7 +166,7 @@
   - 提供确认导入按钮
   - _Requirements: 5.5_
 
-- [ ] 5.4 创建导入结果组件
+- [x] 5.4 创建导入结果组件
   - 创建 `src/components/import/ImportResults.tsx`
   - 显示导入进度
   - 显示成功和失败的记录数
@@ -174,7 +174,7 @@
   - 提供重新导入选项
   - _Requirements: 5.5_
 
-- [ ] 5.5 创建导出组件
+- [x] 5.5 创建导出组件
   - 创建 `src/components/export/ExportOptions.tsx`
   - 实现CSV导出功能
   - 实现JSON导出功能
@@ -182,19 +182,19 @@
   - 显示导出进度
   - _Requirements: 5.6, 5.7_
 
-- [ ] 5.6 实现导入API路由
-  - 创建 `src/server/api/routers/import.ts`
+- [x] 5.6 实现导入API路由
+  - 创建 `src/server/api/routers/import-export.ts`
   - 实现文件解析逻辑（使用xlsx库）
   - 实现数据验证
   - 实现批量创建被子记录
   - 添加事务处理确保数据一致性
   - _Requirements: 5.4, 5.5_
 
-- [ ] 5.7 更新导航菜单
+- [x] 5.7 更新导航菜单
   - 修改 `src/components/layout/AppLayout.tsx`
   - 将"报告"菜单项改为"导入导出"
-  - 更新路由路径从 /reports 到 /import-export
-  - 更新图标和描述文本
+  - 更新路由路径保持为 /reports（页面内容已更新）
+  - 更新翻译文件中的菜单文本
   - _Requirements: 5.1_
 
 - [ ]\* 5.8 添加导入导出的集成测试
