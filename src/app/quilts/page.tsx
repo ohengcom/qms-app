@@ -27,6 +27,7 @@ import { QuiltDialog } from '@/components/quilts/QuiltDialog';
 import { StatusChangeDialog } from '@/components/quilts/StatusChangeDialog';
 import { toast, getToastMessage } from '@/lib/toast';
 import { useQuilts, useCreateQuilt, useUpdateQuilt, useDeleteQuilt } from '@/hooks/useQuilts';
+import { useCreateUsageRecord } from '@/hooks/useUsage';
 
 export default function QuiltsPage() {
   const searchParams = useSearchParams();
@@ -56,6 +57,7 @@ export default function QuiltsPage() {
   const createQuiltMutation = useCreateQuilt();
   const updateQuiltMutation = useUpdateQuilt();
   const deleteQuiltMutation = useDeleteQuilt();
+  const createUsageRecordMutation = useCreateUsageRecord();
 
   // tRPC with superjson wraps data in json property
   const quilts = (quiltsData as any)?.json?.quilts || quiltsData?.quilts || [];
@@ -145,7 +147,9 @@ export default function QuiltsPage() {
   // Render sort icon
   const renderSortIcon = (field: string) => {
     if (sortField !== field) {
-      return <ArrowUpDown className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-50 transition-opacity" />;
+      return (
+        <ArrowUpDown className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-50 transition-opacity" />
+      );
     }
     return sortDirection === 'asc' ? (
       <ArrowUp className="w-3 h-3 ml-1 text-blue-600" />
@@ -297,11 +301,29 @@ export default function QuiltsPage() {
         throw new Error('Invalid status value');
       }
 
-      // Update quilt status using tRPC
-      await updateQuiltMutation.mutateAsync({
+      // Prepare update data
+      const updateData: any = {
         id: quiltId,
         currentStatus: newStatus as ValidStatus,
-      });
+      };
+
+      // If changing to IN_USE, automatically set location to "在用"
+      if (newStatus === 'IN_USE') {
+        updateData.location = '在用';
+      }
+
+      // Update quilt status using tRPC
+      await updateQuiltMutation.mutateAsync(updateData);
+
+      // If changing to IN_USE, create a new usage record
+      if (newStatus === 'IN_USE') {
+        await createUsageRecordMutation.mutateAsync({
+          quiltId,
+          startDate: options?.startDate ? new Date(options.startDate) : new Date(),
+          usageType: 'REGULAR',
+          notes: options?.notes || undefined,
+        });
+      }
 
       toast.success(lang === 'zh' ? '状态更新成功' : 'Status updated successfully');
     } catch (error) {
