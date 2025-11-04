@@ -6,15 +6,7 @@ import { useWeather } from '@/hooks/useWeather';
 import { useLanguage } from '@/lib/language-provider';
 import { DashboardStatsSkeleton, CardSkeleton } from '@/components/ui/skeleton-layouts';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  Package,
-  Activity,
-  Archive,
-  Calendar,
-  Cloud,
-  History,
-  PackageOpen,
-} from 'lucide-react';
+import { Package, Activity, Archive, Calendar, Cloud, History, PackageOpen } from 'lucide-react';
 import { PageTransition } from '@/components/motion/PageTransition';
 import { AnimatedList, AnimatedListItem } from '@/components/motion/AnimatedList';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -88,28 +80,27 @@ export default function DashboardPage() {
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-2xl font-semibold text-gray-900">{t('dashboard.title')}</h1>
-            <p className="text-sm text-gray-500 mt-1">{t('dashboard.subtitle')}</p>
           </div>
-          <div className="flex flex-col items-end gap-2">
+          <div className="flex items-center gap-6 text-base">
             {/* Date */}
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <Calendar className="w-4 h-4" />
+            <div className="flex items-center gap-2 text-gray-700">
+              <Calendar className="w-5 h-5" />
               <span>{lang === 'zh' ? dateStr : dateStrEn}</span>
             </div>
             {/* Weather */}
             {!weatherLoading && weather && (
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-lg">
-                <Cloud className="w-4 h-4 text-blue-600" />
-                <span className="text-sm font-medium text-blue-900">
+              <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg">
+                <Cloud className="w-5 h-5 text-blue-600" />
+                <span className="font-medium text-blue-900">
                   {lang === 'zh' ? weather.location.city : weather.location.cityEn}
                 </span>
-                <span className="text-lg">{weather.current.weather.icon}</span>
+                <span className="text-xl">{weather.current.weather.icon}</span>
                 {weather.current.temperature !== null && (
-                  <span className="text-sm font-semibold text-blue-900">
+                  <span className="font-semibold text-blue-900">
                     {weather.current.temperature}°C
                   </span>
                 )}
-                <span className="text-xs text-blue-700">
+                <span className="text-sm text-blue-700">
                   {lang === 'zh' ? weather.current.weather.zh : weather.current.weather.en}
                 </span>
               </div>
@@ -205,40 +196,26 @@ export default function DashboardPage() {
               />
             ) : (
               inUseQuilts.map((quilt: any) => (
-                <div key={quilt.id} className="px-6 py-4 table-row-hover">
+                <div key={quilt.id} className="px-6 py-3 table-row-hover">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4 flex-1">
-                      <div className="flex items-center justify-center w-10 h-10 bg-success/10 rounded-lg">
-                        <Package className="w-5 h-5 text-success" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium text-foreground">{quilt.name}</span>
-                          <span className="text-xs text-muted-foreground">#{quilt.itemNumber}</span>
-                          <span
-                            className={`px-2 py-0.5 text-xs font-medium rounded ${
-                              quilt.season === 'WINTER'
-                                ? 'bg-info/10 text-info'
-                                : quilt.season === 'SUMMER'
-                                  ? 'bg-warning/10 text-warning'
-                                  : 'bg-success/10 text-success'
-                            }`}
-                          >
-                            {t(`season.${quilt.season}`)}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">
-                          <span>
-                            {t('pages.fillMaterial')}: {quilt.fillMaterial}
-                          </span>
-                          <span>
-                            {t('pages.weight')}: {quilt.weightGrams}g
-                          </span>
-                          <span>
-                            {t('pages.location')}: {quilt.location}
-                          </span>
-                        </div>
-                      </div>
+                    <div className="flex items-center gap-3 flex-1">
+                      <Package className="w-5 h-5 text-success flex-shrink-0" />
+                      <span className="font-medium text-foreground">{quilt.name}</span>
+                      <span className="text-sm text-muted-foreground">#{quilt.itemNumber}</span>
+                      <span
+                        className={`px-2 py-0.5 text-xs font-medium rounded ${
+                          quilt.season === 'WINTER'
+                            ? 'bg-info/10 text-info'
+                            : quilt.season === 'SUMMER'
+                              ? 'bg-warning/10 text-warning'
+                              : 'bg-success/10 text-success'
+                        }`}
+                      >
+                        {t(`season.${quilt.season}`)}
+                      </span>
+                      <span className="text-sm text-muted-foreground">
+                        {quilt.fillMaterial} · {quilt.weightGrams}g · {quilt.location}
+                      </span>
                     </div>
                     <Link
                       href={`/quilts?search=${quilt.name}`}
@@ -279,49 +256,39 @@ export default function DashboardPage() {
               />
             ) : (
               historicalUsage.map((record: any) => (
-                <div key={record.id} className="px-6 py-4 table-row-hover">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4 flex-1">
-                      <div className="flex items-center justify-center w-10 h-10 bg-accent rounded-lg">
-                        <span className="text-sm font-semibold text-accent-foreground">
-                          {record.year}
-                        </span>
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium text-foreground">{record.quiltName}</span>
-                          <span className="text-xs text-muted-foreground">
-                            #{record.itemNumber}
-                          </span>
-                          <span
-                            className={`px-2 py-0.5 text-xs font-medium rounded ${
-                              record.season === 'WINTER'
-                                ? 'bg-info/10 text-info'
-                                : record.season === 'SUMMER'
-                                  ? 'bg-warning/10 text-warning'
-                                  : 'bg-success/10 text-success'
-                            }`}
-                          >
-                            {t(`season.${record.season}`)}
-                          </span>
-                        </div>
-                        <div className="text-xs text-muted-foreground mt-1">
-                          {new Date(record.startDate).toLocaleDateString(
+                <div key={record.id} className="px-6 py-3 table-row-hover">
+                  <div className="flex items-center gap-3">
+                    <span className="font-semibold text-accent-foreground w-12 text-center">
+                      {record.year}
+                    </span>
+                    <span className="font-medium text-foreground">{record.quiltName}</span>
+                    <span className="text-sm text-muted-foreground">#{record.itemNumber}</span>
+                    <span
+                      className={`px-2 py-0.5 text-xs font-medium rounded ${
+                        record.season === 'WINTER'
+                          ? 'bg-info/10 text-info'
+                          : record.season === 'SUMMER'
+                            ? 'bg-warning/10 text-warning'
+                            : 'bg-success/10 text-success'
+                      }`}
+                    >
+                      {t(`season.${record.season}`)}
+                    </span>
+                    <span className="text-sm text-muted-foreground">
+                      {new Date(record.startDate).toLocaleDateString(
+                        lang === 'zh' ? 'zh-CN' : 'en-US',
+                        { month: 'short', day: 'numeric' }
+                      )}
+                      {record.endDate && (
+                        <>
+                          {' → '}
+                          {new Date(record.endDate).toLocaleDateString(
                             lang === 'zh' ? 'zh-CN' : 'en-US',
-                            { year: 'numeric', month: 'long', day: 'numeric' }
+                            { month: 'short', day: 'numeric' }
                           )}
-                          {record.endDate && (
-                            <>
-                              {' → '}
-                              {new Date(record.endDate).toLocaleDateString(
-                                lang === 'zh' ? 'zh-CN' : 'en-US',
-                                { year: 'numeric', month: 'long', day: 'numeric' }
-                              )}
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    </div>
+                        </>
+                      )}
+                    </span>
                   </div>
                 </div>
               ))

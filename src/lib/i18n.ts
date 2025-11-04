@@ -37,7 +37,7 @@ export const translations = {
 
     // 导航和通用
     navigation: {
-      dashboard: '仪表板',
+      dashboard: '仪表面板',
       quilts: '被子管理',
       usage: '使用跟踪',
       analytics: '分析',
@@ -48,8 +48,8 @@ export const translations = {
 
     // 仪表板
     dashboard: {
-      title: '被子管理系统',
-      subtitle: '管理您的被子收藏和使用情况',
+      title: '仪表面板',
+      subtitle: '',
       stats: {
         totalQuilts: '被子总数',
         inUse: '使用中',
@@ -718,8 +718,8 @@ export const translations = {
 
     // 仪表板
     dashboard: {
-      title: 'Quilt Management System',
-      subtitle: 'Manage your quilt collection and track usage',
+      title: 'Dashboard',
+      subtitle: '',
       stats: {
         totalQuilts: 'Total Quilts',
         inUse: 'In Use',

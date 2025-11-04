@@ -13,8 +13,8 @@ import { GlobalErrorHandler } from '@/components/GlobalErrorHandler';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'QMS - Quilt Management System',
-  description: 'Comprehensive quilt inventory and usage tracking system',
+  title: 'QMS - 家庭被子管理系统',
+  description: '家庭被子库存和使用追踪系统',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,

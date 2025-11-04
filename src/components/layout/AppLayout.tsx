@@ -6,7 +6,6 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { useLanguage } from '@/lib/language-provider';
 import { useNotificationStore } from '@/lib/notification-store';
 import { NotificationPanel } from '@/components/NotificationPanel';
@@ -92,7 +91,7 @@ export function AppLayout({ children }: AppLayoutProps) {
               <div className="flex h-16 items-center border-b px-6">
                 <Link href="/" className="flex items-center space-x-2">
                   <Package className="h-6 w-6 text-blue-600" />
-                  <span className="text-lg font-semibold">QMS</span>
+                  <span className="text-sm font-semibold">QMS家庭被子管理系统</span>
                 </Link>
               </div>
               <nav className="flex-1 space-y-1 px-3 py-4">
@@ -143,8 +142,7 @@ export function AppLayout({ children }: AppLayoutProps) {
               <Link href="/" className="flex items-center space-x-2">
                 <Package className="h-8 w-8 text-blue-600" />
                 <div>
-                  <h1 className="text-xl font-bold text-gray-900">QMS</h1>
-                  <p className="text-xs text-gray-500">{t('common.quiltManagement')}</p>
+                  <h1 className="text-base font-bold text-gray-900">QMS家庭被子管理系统</h1>
                 </div>
               </Link>
             </div>
@@ -234,9 +232,6 @@ export function AppLayout({ children }: AppLayoutProps) {
 
               {/* Right side */}
               <div className="flex items-center gap-x-4 lg:gap-x-6">
-                {/* Language Switcher */}
-                <LanguageSwitcher />
-
                 {/* Notifications */}
                 <Button
                   variant="ghost"
