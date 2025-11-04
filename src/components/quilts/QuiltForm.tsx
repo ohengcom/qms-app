@@ -355,18 +355,18 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                     name="lengthCm"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Length (cm) *</FormLabel>
+                        <FormLabel>长度 (cm) *</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
                             step="1"
                             min="0"
-                            placeholder="e.g., 200"
-                            {...field}
+                            placeholder="例如: 200"
+                            value={field.value || ''}
                             onChange={e => field.onChange(parseInt(e.target.value) || 0)}
                           />
                         </FormControl>
-                        <FormDescription>Length in centimeters</FormDescription>
+                        <FormDescription>长度（厘米）</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -377,18 +377,18 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                     name="widthCm"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Width (cm) *</FormLabel>
+                        <FormLabel>宽度 (cm) *</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
                             step="1"
                             min="0"
-                            placeholder="e.g., 180"
-                            {...field}
+                            placeholder="例如: 180"
+                            value={field.value || ''}
                             onChange={e => field.onChange(parseInt(e.target.value) || 0)}
                           />
                         </FormControl>
-                        <FormDescription>Width in centimeters</FormDescription>
+                        <FormDescription>宽度（厘米）</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -399,18 +399,18 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                     name="weightGrams"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Weight (g) *</FormLabel>
+                        <FormLabel>重量 (g) *</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
                             step="1"
                             min="0"
-                            placeholder="e.g., 1500"
-                            {...field}
+                            placeholder="例如: 1500"
+                            value={field.value || ''}
                             onChange={e => field.onChange(parseInt(e.target.value) || 0)}
                           />
                         </FormControl>
-                        <FormDescription>Weight in grams</FormDescription>
+                        <FormDescription>重量（克）</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -495,10 +495,14 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                     name="brand"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Brand</FormLabel>
+                        <FormLabel>品牌</FormLabel>
                         <FormControl>
                           <div className="space-y-2">
-                            <Input placeholder="e.g., IKEA, Muji" {...field} />
+                            <Input
+                              placeholder="例如: IKEA, Muji"
+                              value={field.value || ''}
+                              onChange={field.onChange}
+                            />
                             <div className="flex flex-wrap gap-2">
                               {COMMON_BRANDS.map(brand => (
                                 <Badge
@@ -513,7 +517,7 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                             </div>
                           </div>
                         </FormControl>
-                        <FormDescription>Manufacturer or brand name</FormDescription>
+                        <FormDescription>制造商或品牌名称</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -548,10 +552,14 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                     name="location"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Storage Location *</FormLabel>
+                        <FormLabel>位置 *</FormLabel>
                         <FormControl>
                           <div className="space-y-2">
-                            <Input placeholder="e.g., Master Bedroom Closet" {...field} />
+                            <Input
+                              placeholder="例如: 卧室衣柜"
+                              value={field.value || ''}
+                              onChange={field.onChange}
+                            />
                             <div className="flex flex-wrap gap-2">
                               {COMMON_LOCATIONS.map(location => (
                                 <Badge
@@ -566,7 +574,7 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                             </div>
                           </div>
                         </FormControl>
-                        <FormDescription>Where this quilt is stored</FormDescription>
+                        <FormDescription>被子存放位置</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
