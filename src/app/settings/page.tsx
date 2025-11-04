@@ -357,7 +357,7 @@ export default function SettingsPage() {
         <CardContent className="space-y-2 text-sm">
           <div className="flex justify-between">
             <span className="text-gray-600">{t('settings.sections.system.version')}:</span>
-            <span className="font-medium">{systemInfo?.version || '0.2.2'}</span>
+            <span className="font-medium">{systemInfo?.version || '0.5.0'}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-600">{t('settings.sections.system.framework')}:</span>

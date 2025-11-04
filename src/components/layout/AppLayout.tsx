@@ -124,7 +124,7 @@ export function AppLayout({ children }: AppLayoutProps) {
               <div className="flex-shrink-0 border-t border-gray-200 p-4">
                 <div className="text-center">
                   <p className="text-xs text-gray-400">
-                    Version {process.env.NEXT_PUBLIC_APP_VERSION || '0.2.2'}
+                    Version {process.env.NEXT_PUBLIC_APP_VERSION || '0.5.0'}
                   </p>
                   <p className="text-xs text-gray-300 mt-1">
                     {new Date().toISOString().split('T')[0]}
@@ -180,7 +180,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             <div className="flex-shrink-0 border-t border-gray-200 p-4">
               <div className="text-center">
                 <p className="text-xs text-gray-400">
-                  {t('common.version')} {process.env.NEXT_PUBLIC_APP_VERSION || '0.2.2'}
+                  {t('common.version')} {process.env.NEXT_PUBLIC_APP_VERSION || '0.5.0'}
                 </p>
                 <p className="text-xs text-gray-300 mt-1">
                   {new Date().toISOString().split('T')[0]}
