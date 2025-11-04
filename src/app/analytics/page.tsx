@@ -3,7 +3,16 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/lib/language-provider';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { BarChart3, TrendingUp, PieChart, Activity, Package, Clock, Calendar, Award } from 'lucide-react';
+import {
+  BarChart3,
+  TrendingUp,
+  PieChart,
+  Activity,
+  Package,
+  Clock,
+  Calendar,
+  Award,
+} from 'lucide-react';
 
 interface AnalyticsData {
   overview: {
@@ -54,7 +63,7 @@ export default function AnalyticsPage() {
       setLoading(true);
       const response = await fetch('/api/analytics');
       const data = await response.json();
-      
+
       if (data.success) {
         setAnalytics(data.analytics);
       } else {
@@ -161,29 +170,34 @@ export default function AnalyticsPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {Object.entries(analytics.statusDistribution).map(([status, count]) => {
-                const total = analytics.overview.totalQuilts;
-                const percentage = total > 0 ? Math.round((count / total) * 100) : 0;
-                return (
-                  <div key={status} className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>{t(`status.${status}`)}</span>
-                      <span className="font-semibold">{count} ({percentage}%)</span>
+              {Object.entries(analytics.statusDistribution)
+                .filter(([status]) => status !== 'AVAILABLE')
+                .map(([status, count]) => {
+                  const total = analytics.overview.totalQuilts;
+                  const percentage = total > 0 ? Math.round((count / total) * 100) : 0;
+                  return (
+                    <div key={status} className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>{t(`status.${status}`)}</span>
+                        <span className="font-semibold">
+                          {count} ({percentage}%)
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className={`h-2 rounded-full ${
+                            status === 'IN_USE'
+                              ? 'bg-blue-500'
+                              : status === 'STORAGE'
+                                ? 'bg-gray-500'
+                                : 'bg-yellow-500'
+                          }`}
+                          style={{ width: `${percentage}%` }}
+                        />
+                      </div>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div
-                        className={`h-2 rounded-full ${
-                          status === 'AVAILABLE' ? 'bg-green-500' :
-                          status === 'IN_USE' ? 'bg-blue-500' :
-                          status === 'STORAGE' ? 'bg-gray-500' :
-                          'bg-yellow-500'
-                        }`}
-                        style={{ width: `${percentage}%` }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
             </div>
           </CardContent>
         </Card>
@@ -205,14 +219,18 @@ export default function AnalyticsPage() {
                   <div key={season} className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span>{t(`season.${season}`)}</span>
-                      <span className="font-semibold">{count} ({percentage}%)</span>
+                      <span className="font-semibold">
+                        {count} ({percentage}%)
+                      </span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div
                         className={`h-2 rounded-full ${
-                          season === 'WINTER' ? 'bg-blue-500' :
-                          season === 'SUMMER' ? 'bg-orange-500' :
-                          'bg-green-500'
+                          season === 'WINTER'
+                            ? 'bg-blue-500'
+                            : season === 'SUMMER'
+                              ? 'bg-orange-500'
+                              : 'bg-green-500'
                         }`}
                         style={{ width: `${percentage}%` }}
                       />
@@ -237,25 +255,29 @@ export default function AnalyticsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
+          <div className="space-y-3">
             {analytics.mostUsedQuilts.map((quilt, index) => (
-              <div key={quilt.quiltId} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center justify-center w-8 h-8 bg-blue-600 text-white rounded-full font-bold">
+              <div
+                key={quilt.quiltId}
+                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center w-6 h-6 bg-blue-600 text-white rounded-full font-bold text-sm">
                     {index + 1}
                   </div>
                   <div>
-                    <p className="font-semibold">{quilt.name}</p>
-                    <p className="text-sm text-gray-600">
-                      {t('language') === 'zh' ? '平均' : 'Avg'}: {quilt.averageDays} {t('language') === 'zh' ? '天' : 'days'}
-                    </p>
+                    <span className="font-semibold">{quilt.name}</span>
+                    <span className="text-sm text-gray-600 ml-2">
+                      {t('language') === 'zh' ? '平均' : 'Avg'}: {quilt.averageDays}{' '}
+                      {t('language') === 'zh' ? '天' : 'days'}
+                    </span>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-blue-600">{quilt.usageCount}</p>
-                  <p className="text-sm text-gray-600">
-                    {t('language') === 'zh' ? '次使用' : 'uses'}
-                  </p>
+                  <span className="text-xl font-bold text-blue-600">{quilt.usageCount}</span>
+                  <span className="text-sm text-gray-600 ml-1">
+                    {t('language') === 'zh' ? '次' : 'uses'}
+                  </span>
                 </div>
               </div>
             ))}
@@ -273,14 +295,16 @@ export default function AnalyticsPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {analytics.usageByYear.map((item) => {
+            {analytics.usageByYear.map(item => {
               const maxCount = Math.max(...analytics.usageByYear.map(y => y.count));
               const percentage = maxCount > 0 ? (item.count / maxCount) * 100 : 0;
               return (
                 <div key={item.year} className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="font-semibold">{item.year}</span>
-                    <span className="text-gray-600">{item.count} {t('language') === 'zh' ? '次' : 'uses'}</span>
+                    <span className="text-gray-600">
+                      {item.count} {t('language') === 'zh' ? '次' : 'uses'}
+                    </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-3">
                     <div

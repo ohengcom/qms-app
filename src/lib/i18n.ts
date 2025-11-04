@@ -245,7 +245,7 @@ export const translations = {
 
     // 分析
     analytics: {
-      title: '分析',
+      title: '数据分析',
       subtitle: '被子使用情况分析和趋势',
       comingSoon: '即将推出',
       description: '这个页面将显示详细的使用分析和趋势图表。',
@@ -915,7 +915,7 @@ export const translations = {
 
     // 分析
     analytics: {
-      title: 'Analytics',
+      title: 'Data Analytics',
       subtitle: 'Quilt usage analytics and trends',
       comingSoon: 'Coming Soon',
       description: 'This page will display detailed usage analytics and trend charts.',
