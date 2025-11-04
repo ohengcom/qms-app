@@ -6,22 +6,22 @@
 
 ---
 
-## 1. 整体框架优化
+## 1. 整体框架优化 ✅
 
-- [ ] 1.1 更新AppLayout组件标题和移除语言选择器
+- [x] 1.1 更新AppLayout组件标题和移除语言选择器
   - 修改 `src/components/layout/AppLayout.tsx`
   - 将左上角标题改为"QMS家庭被子管理系统"
   - 移除右上角的 `<LanguageSwitcher />` 组件
   - 保留其他功能（通知、退出登录等）
   - _Requirements: 1.1, 1.2_
 
-- [ ] 1.2 更新应用元数据
+- [x] 1.2 更新应用元数据
   - 修改 `src/app/layout.tsx`
   - 更新 metadata.title 为 "QMS - 家庭被子管理系统"
   - 更新 metadata.description
   - _Requirements: 1.1_
 
-- [ ] 1.3 优化登录页面布局
+- [x] 1.3 优化登录页面布局
   - 修改 `src/app/login/page.tsx`
   - 调整登录框为垂直居中布局
   - 使用 flex items-center justify-center 实现居中
@@ -30,16 +30,16 @@
 
 ---
 
-## 2. 仪表面板页面改进
+## 2. 仪表面板页面改进 ✅
 
-- [ ] 2.1 更新页面标题和移除副标题
+- [x] 2.1 更新页面标题和移除副标题
   - 修改 `src/app/page.tsx`
   - 将页面标题从"仪表板"改为"仪表面板"
   - 移除副标题文本
   - 更新翻译文件 `src/lib/i18n.ts` 中的相关键值
   - _Requirements: 2.1, 2.2_
 
-- [ ] 2.2 优化日期和天气显示布局
+- [x] 2.2 优化日期和天气显示布局
   - 修改 `src/app/page.tsx` 中的日期和天气组件
   - 将日期和天气放在同一行显示
   - 增大字体大小（从 text-sm 改为 text-base）
@@ -47,7 +47,7 @@
   - 优化间距和对齐
   - _Requirements: 2.3_
 
-- [ ] 2.3 重构当前在用被子列表为单行显示
+- [x] 2.3 重构当前在用被子列表为单行显示
   - 修改 `src/app/page.tsx` 中的 inUseQuilts 渲染逻辑
   - 将被子信息合并为单行：名称、编号、季节、材料、重量、位置
   - 使用 flex 布局和适当的间距
@@ -55,7 +55,7 @@
   - 保持"查看详情"链接在右侧
   - _Requirements: 2.4_
 
-- [ ] 2.4 重构往年今日使用被子列表为单行显示
+- [x] 2.4 重构往年今日使用被子列表为单行显示
   - 修改 `src/app/page.tsx` 中的 historicalUsage 渲染逻辑
   - 将记录信息合并为单行：年份、名称、编号、季节、日期范围
   - 使用紧凑的布局和统一的字体大小
@@ -75,7 +75,7 @@
   - 添加 cursor-pointer 样式提示可点击
   - _Requirements: 3.1, 3.2, 3.3_
 
-- [ ] 3.2 更新QuiltForm默认值和标签
+- [x] 3.2 更新QuiltForm默认值和标签
   - 修改 `src/components/quilts/QuiltForm.tsx`
   - 设置品牌字段默认值为"无品牌"
   - 设置位置字段默认值为"未存储"
@@ -83,7 +83,7 @@
   - 更新表单验证规则以支持新默认值
   - _Requirements: 3.4, 3.5, 3.6_
 
-- [ ] 3.3 优化数字输入框步进行为
+- [x] 3.3 优化数字输入框步进行为
   - 修改 `src/components/quilts/QuiltForm.tsx`
   - 为长度、宽度、重量输入框添加 step="1" 属性
   - 确保小箭头点击时只调整整数位
@@ -91,18 +91,18 @@
   - 测试数字输入的用户体验
   - _Requirements: 3.7_
 
-- [ ] 3.4 实现状态变更时的自动位置更新
-  - 修改 `src/components/quilts/StatusChangeDialog.tsx`
+- [x] 3.4 实现状态变更时的自动位置更新
+  - 修改 `src/app/quilts/page.tsx`
   - 在状态改为"使用中"时，自动将位置更新为"在用"
   - 更新 handleStatusChange 函数逻辑
   - 添加位置字段到更新请求中
   - _Requirements: 3.8_
 
-- [ ] 3.5 实现状态变更时自动创建使用记录
-  - 修改 `src/components/quilts/StatusChangeDialog.tsx`
+- [x] 3.5 实现状态变更时自动创建使用记录
+  - 修改 `src/app/quilts/page.tsx`
   - 在状态改为"使用中"时，调用创建使用记录API
   - 设置 startDate 为当前时间
-  - 设置 usageType 为 'REGULAR_USE'
+  - 设置 usageType 为 'REGULAR'
   - 添加错误处理和回滚机制
   - _Requirements: 3.9_
 
@@ -114,15 +114,15 @@
 
 ---
 
-## 4. 数据分析页面优化
+## 4. 数据分析页面优化 ✅
 
-- [ ] 4.1 更新页面标题
+- [x] 4.1 更新页面标题
   - 修改 `src/app/analytics/page.tsx`
   - 将页面标题从"分析"改为"数据分析"
   - 更新翻译文件中的相关键值
   - _Requirements: 4.1_
 
-- [ ] 4.2 移除状态分布中的"可用"状态
+- [x] 4.2 移除状态分布中的"可用"状态
   - 修改 `src/app/analytics/page.tsx`
   - 从 statusDistribution 对象中移除 AVAILABLE 状态
   - 只保留 IN_USE、STORAGE、MAINTENANCE 三个状态
@@ -130,7 +130,7 @@
   - 调整百分比计算以适应新的状态数量
   - _Requirements: 4.2_
 
-- [ ] 4.3 优化Most used quilts列表布局
+- [x] 4.3 优化Most used quilts列表布局
   - 修改 `src/app/analytics/page.tsx`
   - 减少列表项的内边距（从 p-4 改为 p-3）
   - 调整排名徽章大小（从 w-8 h-8 改为 w-6 h-6）
