@@ -42,7 +42,7 @@ export const translations = {
       usage: '使用跟踪',
       analytics: '分析',
       maintenance: '维护',
-      reports: '报告',
+      reports: '导入导出',
       settings: '设置',
     },
 
@@ -261,8 +261,8 @@ export const translations = {
 
     // 报告
     reports: {
-      title: '报告',
-      subtitle: '导出和报告功能',
+      title: '导入导出',
+      subtitle: '批量导入和导出被子数据',
       comingSoon: '即将推出',
       description: '这个页面将提供各种报告和数据导出功能。',
       exportOptions: '导出选项',
@@ -421,7 +421,7 @@ export const translations = {
       manageCollection: '管理您的收藏',
       trackUsagePeriods: '跟踪使用期间',
       usageInsightsAndTrends: '使用见解和趋势',
-      exportAndReporting: '导出和报告',
+      exportAndReporting: '导入和导出数据',
       appConfiguration: '应用配置',
       registerNewQuilt: '在您的收藏中注册新被子',
       beginTrackingUsage: '开始跟踪被子使用',
@@ -712,7 +712,7 @@ export const translations = {
       usage: 'Usage Tracking',
       analytics: 'Analytics',
       maintenance: 'Maintenance',
-      reports: 'Reports',
+      reports: 'Import/Export',
       settings: 'Settings',
     },
 
@@ -931,8 +931,8 @@ export const translations = {
 
     // Reports
     reports: {
-      title: 'Reports',
-      subtitle: 'Export and reporting features',
+      title: 'Import/Export',
+      subtitle: 'Batch import and export quilt data',
       comingSoon: 'Coming Soon',
       description: 'This page will provide various reporting and data export features.',
       exportOptions: 'Export Options',
@@ -1091,7 +1091,7 @@ export const translations = {
       manageCollection: 'Manage Your Quilt Collection',
       trackUsagePeriods: 'Track Quilt Usage Periods',
       usageInsightsAndTrends: 'Usage Insights and Trends',
-      exportAndReporting: 'Export and Reporting',
+      exportAndReporting: 'Import and Export Data',
       appConfiguration: 'App Configuration',
       registerNewQuilt: 'Register a New Quilt in Your Collection',
       beginTrackingUsage: 'Begin Tracking Quilt Usage',
