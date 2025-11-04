@@ -25,9 +25,11 @@ A modern Next.js application with Neon PostgreSQL that transforms simple Excel-b
 - **Smooth Animations**: Framer Motion powered transitions and micro-interactions
 - **Dual View Modes**: Grid and list views with seamless switching
 - **Bilingual Support**: Full Chinese/English interface with language switcher
-- **Empty States**: Friendly guidance when no data is available
+- **Empty States**: Friendly guidance when no data is available with contextual actions
 - **Loading States**: Skeleton screens for better perceived performance
 - **Real-time Stats**: Live database statistics with auto-refresh
+- **Design System**: Consistent spacing, colors, and typography throughout
+- **Optimistic Updates**: Instant UI feedback for better user experience
 
 ### 🔐 Security & Authentication
 
@@ -41,8 +43,10 @@ A modern Next.js application with Neon PostgreSQL that transforms simple Excel-b
 ### 🚀 Performance
 
 - **Fast Loading**: < 2s first load, < 500ms page transitions
-- **Optimized Queries**: Indexed database operations
-- **Efficient Rendering**: React Query for data caching
+- **Optimized Queries**: Indexed database operations with repository pattern
+- **Efficient Rendering**: React Query with optimistic updates for instant feedback
+- **Smart Caching**: 5-minute stale time, 10-minute cache retention
+- **Code Splitting**: Automatic route-based code splitting with Next.js
 - **Serverless**: Neon PostgreSQL for scalable database
 
 ## 🏗️ Tech Stack

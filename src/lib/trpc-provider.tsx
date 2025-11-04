@@ -10,15 +10,15 @@ export function TRPCProvider({ children }: { children: React.ReactNode }) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            // Cache data for 5 minutes
+            // Cache data for 5 minutes (data is considered fresh)
             staleTime: 5 * 60 * 1000,
-            // Keep unused data in cache for 10 minutes
+            // Keep unused data in cache for 10 minutes before garbage collection
             gcTime: 10 * 60 * 1000,
             // Retry failed requests 1 time
             retry: 1,
-            // Refetch on window focus for fresh data
-            refetchOnWindowFocus: true,
-            // Refetch on reconnect
+            // Disable refetch on window focus for better performance
+            refetchOnWindowFocus: false,
+            // Refetch on reconnect for data consistency
             refetchOnReconnect: true,
             // Don't refetch on mount if data is fresh
             refetchOnMount: false,
