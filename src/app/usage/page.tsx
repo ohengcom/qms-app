@@ -71,18 +71,25 @@ export default function UsageTrackingPage() {
     setSelectedQuilt(null);
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(t('language') === 'zh' ? 'zh-CN' : 'en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
+  const formatDate = (dateString: string | null | undefined) => {
+    if (!dateString) return '-';
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return 'Invalid Date';
+      return date.toLocaleDateString(language === 'zh' ? 'zh-CN' : 'en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      });
+    } catch {
+      return 'Invalid Date';
+    }
   };
 
-  const formatDuration = (days: number | null) => {
-    if (days === null) return '-';
-    if (days === 0) return t('language') === 'zh' ? '不到1天' : '<1 day';
-    return t('language') === 'zh' ? `${days}天` : `${days}d`;
+  const formatDuration = (days: number | null | undefined) => {
+    if (days === null || days === undefined) return '-';
+    if (days === 0) return language === 'zh' ? '不到1天' : '<1 day';
+    return language === 'zh' ? `${days}天` : `${days} days`;
   };
 
   // Sorting function
@@ -412,10 +419,7 @@ export default function UsageTrackingPage() {
                       {t('usage.labels.ended')}
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      {t('language') === 'zh' ? '持续时间' : 'Duration'}
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      {t('language') === 'zh' ? '类型' : 'Type'}
+                      {language === 'zh' ? '持续时间' : 'Duration'}
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       {t('usage.labels.notes')}
@@ -448,7 +452,6 @@ export default function UsageTrackingPage() {
                       <td className="px-4 py-3 text-sm text-gray-700">
                         {formatDuration(usage.duration)}
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-700">{usage.usageType}</td>
                       <td className="px-4 py-3 text-sm text-gray-700">{usage.notes || '-'}</td>
                       <td className="px-4 py-3">
                         <span
@@ -460,7 +463,7 @@ export default function UsageTrackingPage() {
                         >
                           {usage.isActive
                             ? t('usage.labels.active')
-                            : t('language') === 'zh'
+                            : language === 'zh'
                               ? '已完成'
                               : 'Completed'}
                         </span>
