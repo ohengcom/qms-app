@@ -4,6 +4,7 @@ import React, { useCallback, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/useToast';
+import { useLanguage } from '@/lib/language-provider';
 import { Upload, FileSpreadsheet, AlertCircle, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -15,6 +16,7 @@ export function ImportUpload({ onFileUpload }: ImportUploadProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const { success, error } = useToast();
+  const { t } = useLanguage();
 
   const handleFileRead = useCallback(
     (file: File) => {
@@ -30,7 +32,7 @@ export function ImportUpload({ onFileUpload }: ImportUploadProps) {
 
           onFileUpload(file.name, base64);
           success('File uploaded', `${file.name} has been uploaded successfully`);
-        } catch (err) {
+        } catch {
           error('Upload failed', 'Failed to process the uploaded file');
         } finally {
           setIsUploading(false);
@@ -103,11 +105,9 @@ export function ImportUpload({ onFileUpload }: ImportUploadProps) {
         <CardHeader>
           <CardTitle className="flex items-center">
             <Upload className="mr-2 h-5 w-5" />
-            Upload Excel File
+            {t('reports.import.uploadTitle')}
           </CardTitle>
-          <CardDescription>
-            Select or drag and drop your Excel file containing quilt data
-          </CardDescription>
+          <CardDescription>{t('reports.import.uploadDescription')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div
@@ -127,9 +127,9 @@ export function ImportUpload({ onFileUpload }: ImportUploadProps) {
 
               <div>
                 <p className="text-lg font-medium text-gray-900">
-                  {isUploading ? 'Processing file...' : 'Drop your Excel file here'}
+                  {isUploading ? t('reports.import.processingFile') : t('reports.import.dropFile')}
                 </p>
-                <p className="text-sm text-gray-500 mt-1">or click to browse and select a file</p>
+                <p className="text-sm text-gray-500 mt-1">{t('reports.import.orClickToBrowse')}</p>
               </div>
 
               <div className="flex justify-center">
@@ -139,7 +139,7 @@ export function ImportUpload({ onFileUpload }: ImportUploadProps) {
                   onClick={() => document.getElementById('file-input')?.click()}
                 >
                   <Upload className="mr-2 h-4 w-4" />
-                  {isUploading ? 'Uploading...' : 'Select File'}
+                  {isUploading ? t('reports.import.uploading') : t('reports.import.selectFile')}
                 </Button>
               </div>
 
@@ -160,7 +160,7 @@ export function ImportUpload({ onFileUpload }: ImportUploadProps) {
         <CardHeader>
           <CardTitle className="flex items-center">
             <Info className="mr-2 h-5 w-5" />
-            File Requirements
+            {t('reports.import.fileRequirements')}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -168,27 +168,24 @@ export function ImportUpload({ onFileUpload }: ImportUploadProps) {
             <div className="flex items-start space-x-3">
               <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
               <div>
-                <p className="font-medium">Supported formats</p>
-                <p className="text-sm text-gray-600">Excel files (.xlsx, .xls)</p>
+                <p className="font-medium">{t('reports.import.supportedFormats')}</p>
+                <p className="text-sm text-gray-600">{t('reports.import.excelFiles')}</p>
               </div>
             </div>
 
             <div className="flex items-start space-x-3">
               <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
               <div>
-                <p className="font-medium">Maximum file size</p>
-                <p className="text-sm text-gray-600">10MB per file</p>
+                <p className="font-medium">{t('reports.import.maximumFileSize')}</p>
+                <p className="text-sm text-gray-600">{t('reports.import.perFile')}</p>
               </div>
             </div>
 
             <div className="flex items-start space-x-3">
               <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
               <div>
-                <p className="font-medium">Expected columns</p>
-                <p className="text-sm text-gray-600">
-                  The system will automatically detect and map columns from your Excel file. Common
-                  columns include: Item Number, Name, Season, Color, Brand, Location, etc.
-                </p>
+                <p className="font-medium">{t('reports.import.expectedColumns')}</p>
+                <p className="text-sm text-gray-600">{t('reports.import.columnDescription')}</p>
               </div>
             </div>
           </div>
@@ -200,20 +197,13 @@ export function ImportUpload({ onFileUpload }: ImportUploadProps) {
         <CardHeader>
           <CardTitle className="flex items-center">
             <AlertCircle className="mr-2 h-5 w-5 text-amber-600" />
-            Import Tips
+            {t('reports.import.importTips')}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-2 text-sm text-gray-600">
-            <p>• Make sure your Excel file has a header row with column names</p>
-            <p>• Item numbers should be unique for each quilt</p>
-            <p>
-              • Season values should be one of: Winter, Summer, Spring/Autumn (or Chinese
-              equivalents)
-            </p>
-            <p>• Dates should be in a standard format (YYYY/MM/DD or MM/DD/YYYY)</p>
-            <p>• The system will show you a preview before importing any data</p>
-            <p>• You can review and fix any errors before confirming the import</p>
+            <p>• {t('reports.import.tip1')}</p>
+            <p>• {t('reports.import.tip2')}</p>
           </div>
         </CardContent>
       </Card>

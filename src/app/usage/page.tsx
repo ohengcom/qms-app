@@ -136,9 +136,7 @@ export default function UsageTrackingPage() {
             </div>
             <div>
               <p className="text-2xl font-semibold text-gray-900">{stats.total}</p>
-              <p className="text-xs text-gray-500">
-                {t('language') === 'zh' ? '总记录' : 'Total Records'}
-              </p>
+              <p className="text-xs text-gray-500">{t('usage.stats.totalRecords')}</p>
             </div>
           </div>
         </div>
