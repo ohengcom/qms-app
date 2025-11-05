@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/lib/language-provider';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -21,6 +22,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { EditUsageRecordDialog } from '@/components/usage/EditUsageRecordDialog';
 import { TemperatureDisplay } from '@/components/usage/TemperatureDisplay';
 import { useUsageRecords, useOverallUsageStats, useQuiltUsageRecords } from '@/hooks/useUsage';
+import { useQuilts } from '@/hooks/useQuilts';
 
 interface QuiltUsageDetail {
   id: string;
@@ -32,6 +34,9 @@ interface QuiltUsageDetail {
 }
 
 export default function UsageTrackingPage() {
+  const searchParams = useSearchParams();
+  const quiltIdParam = searchParams.get('quiltId');
+
   const [selectedQuilt, setSelectedQuilt] = useState<QuiltUsageDetail | null>(null);
   const [view, setView] = useState<'list' | 'detail'>('list');
   const [sortField, setSortField] = useState<string | null>(null);
@@ -41,6 +46,7 @@ export default function UsageTrackingPage() {
   // Use tRPC hooks
   const { data: usageData, isLoading: loading } = useUsageRecords();
   const { data: statsData } = useOverallUsageStats();
+  const { data: quiltsData } = useQuilts();
   const { data: quiltUsageData, isLoading: detailLoading } = useQuiltUsageRecords(
     selectedQuilt?.id || ''
   );
@@ -48,7 +54,29 @@ export default function UsageTrackingPage() {
   // Extract data with superjson wrapper handling
   const usageHistory = (usageData as any)?.json || usageData || [];
   const stats = (statsData as any)?.json || statsData || { total: 0, active: 0, completed: 0 };
+  const quilts = (quiltsData as any)?.json?.quilts || quiltsData?.quilts || [];
   const selectedQuiltUsage = (quiltUsageData as any)?.json || quiltUsageData || [];
+
+  // Handle quiltId from URL parameter
+  useEffect(() => {
+    if (quiltIdParam && quilts.length > 0 && !selectedQuilt) {
+      const quilt = quilts.find((q: any) => q.id === quiltIdParam);
+      if (quilt) {
+        // Use setTimeout to avoid setState in effect warning
+        setTimeout(() => {
+          setSelectedQuilt({
+            id: quilt.id,
+            name: quilt.name,
+            itemNumber: quilt.itemNumber,
+            color: quilt.color,
+            season: quilt.season,
+            currentStatus: quilt.currentStatus,
+          });
+          setView('detail');
+        }, 0);
+      }
+    }
+  }, [quiltIdParam, quilts, selectedQuilt]);
 
   const loadUsageHistory = () => {
     // Refetch is handled by tRPC automatically

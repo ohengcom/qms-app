@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useLanguage } from '@/lib/language-provider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,6 +19,7 @@ import {
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
+  History,
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { TableSkeleton } from '@/components/ui/skeleton-layouts';
@@ -32,6 +33,7 @@ import { useAppSettings } from '@/hooks/useSettings';
 
 export default function QuiltsPage() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const urlSearchTerm = searchParams.get('search') || '';
   const [searchTerm, setSearchTerm] = useState(urlSearchTerm);
 
@@ -193,6 +195,11 @@ export default function QuiltsPage() {
   const handleChangeStatus = (quilt: any) => {
     setSelectedQuilt(quilt);
     setStatusDialogOpen(true);
+  };
+
+  const handleViewUsageHistory = (quilt: any) => {
+    // Navigate to usage tracking page with quilt ID as query parameter
+    router.push(`/usage?quiltId=${quilt.id}`);
   };
 
   const handleDeleteQuilt = async (quilt: any) => {
@@ -702,6 +709,15 @@ export default function QuiltsPage() {
                       </td>
                       <td className="px-4 py-3 text-right">
                         <div className="flex items-center justify-end gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleViewUsageHistory(quilt)}
+                            className="h-8 w-8 p-0"
+                            title={t('language') === 'zh' ? '查看使用历史' : 'View Usage History'}
+                          >
+                            <History className="h-3.5 w-3.5" />
+                          </Button>
                           <Button
                             variant="ghost"
                             size="sm"
