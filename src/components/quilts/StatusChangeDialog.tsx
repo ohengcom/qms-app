@@ -205,23 +205,6 @@ export function StatusChangeDialog({
                 <span>{t('usage.labels.endingUsageTracking')}</span>
               </div>
 
-              {/* Display start date from active usage record */}
-              {activeUsage && activeUsage.startDate && (
-                <div className="space-y-2 mb-3">
-                  <Label className="text-xs text-gray-600">{t('usage.labels.started')}</Label>
-                  <div className="text-sm font-medium text-gray-900 bg-white px-3 py-2 rounded border border-gray-200">
-                    {new Date(activeUsage.startDate).toLocaleDateString(
-                      language === 'zh' ? 'zh-CN' : 'en-US',
-                      {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                      }
-                    )}
-                  </div>
-                </div>
-              )}
-
               <div className="space-y-2">
                 <Label htmlFor="endDate">
                   <Calendar className="w-4 h-4 inline mr-1" />
