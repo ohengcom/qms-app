@@ -81,17 +81,17 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Globe className="w-5 h-5" />
-            <span>{t('language') === 'zh' ? '语言设置' : 'Language Settings'}</span>
+            <span>{language === 'zh' ? '语言设置' : 'Language Settings'}</span>
           </CardTitle>
           <CardDescription>
-            {t('language') === 'zh'
-              ? '选择应用程序显示语言'
-              : 'Choose application display language'}
+            {language === 'zh' ? '选择应用程序显示语言' : 'Choose application display language'}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="language">{t('settings.sections.app.language')}</Label>
+            <Label htmlFor="language">
+              {language === 'zh' ? '语言' : t('settings.sections.app.language')}
+            </Label>
             <div className="flex items-center gap-3">
               <LanguageSwitcher />
               <span className="text-sm text-gray-500">
@@ -99,7 +99,7 @@ export default function SettingsPage() {
               </span>
             </div>
             <p className="text-xs text-gray-500">
-              {t('language') === 'zh'
+              {language === 'zh'
                 ? '更改语言后立即生效，无需刷新页面'
                 : 'Language changes take effect immediately without page refresh'}
             </p>
@@ -112,10 +112,10 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <MousePointerClick className="w-5 h-5" />
-            <span>{t('language') === 'zh' ? '被子管理设置' : 'Quilt Management Settings'}</span>
+            <span>{language === 'zh' ? '被子管理设置' : 'Quilt Management Settings'}</span>
           </CardTitle>
           <CardDescription>
-            {t('language') === 'zh'
+            {language === 'zh'
               ? '配置被子列表的交互行为'
               : 'Configure quilt list interaction behavior'}
           </CardDescription>
@@ -123,7 +123,7 @@ export default function SettingsPage() {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="double-click-action">
-              {t('language') === 'zh' ? '双击行为' : 'Double-click Behavior'}
+              {language === 'zh' ? '双击行为' : 'Double-click Behavior'}
             </Label>
             <Select
               value={doubleClickAction}
@@ -138,20 +138,20 @@ export default function SettingsPage() {
                 <SelectItem value="none">
                   <div className="flex flex-col items-start">
                     <span className="font-medium">
-                      {t('language') === 'zh' ? '无动作' : 'No Action'}
+                      {language === 'zh' ? '无动作' : 'No Action'}
                     </span>
                     <span className="text-xs text-gray-500">
-                      {t('language') === 'zh' ? '双击不执行任何操作' : 'Double-click does nothing'}
+                      {language === 'zh' ? '双击不执行任何操作' : 'Double-click does nothing'}
                     </span>
                   </div>
                 </SelectItem>
                 <SelectItem value="status">
                   <div className="flex flex-col items-start">
                     <span className="font-medium">
-                      {t('language') === 'zh' ? '修改状态' : 'Change Status'}
+                      {language === 'zh' ? '修改状态' : 'Change Status'}
                     </span>
                     <span className="text-xs text-gray-500">
-                      {t('language') === 'zh'
+                      {language === 'zh'
                         ? '双击打开状态修改对话框'
                         : 'Double-click opens status dialog'}
                     </span>
@@ -160,17 +160,17 @@ export default function SettingsPage() {
                 <SelectItem value="edit">
                   <div className="flex flex-col items-start">
                     <span className="font-medium">
-                      {t('language') === 'zh' ? '编辑被子' : 'Edit Quilt'}
+                      {language === 'zh' ? '编辑被子' : 'Edit Quilt'}
                     </span>
                     <span className="text-xs text-gray-500">
-                      {t('language') === 'zh' ? '双击打开编辑表单' : 'Double-click opens edit form'}
+                      {language === 'zh' ? '双击打开编辑表单' : 'Double-click opens edit form'}
                     </span>
                   </div>
                 </SelectItem>
               </SelectContent>
             </Select>
             <p className="text-xs text-gray-500">
-              {t('language') === 'zh'
+              {language === 'zh'
                 ? '设置在被子列表中双击行时的默认行为'
                 : 'Set the default behavior when double-clicking a row in the quilt list'}
             </p>
@@ -201,7 +201,7 @@ export default function SettingsPage() {
               <span className={`text-sm ${dbStats?.connected ? 'text-green-600' : 'text-red-600'}`}>
                 {dbStats?.connected
                   ? t('settings.sections.database.connected')
-                  : t('language') === 'zh'
+                  : language === 'zh'
                     ? '未连接'
                     : 'Disconnected'}
               </span>
@@ -210,19 +210,19 @@ export default function SettingsPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-1">
               <Label className="text-xs text-gray-500">
-                {t('language') === 'zh' ? '被子总数' : 'Total Quilts'}
+                {language === 'zh' ? '被子总数' : 'Total Quilts'}
               </Label>
               <p className="text-2xl font-semibold">{dbStats?.totalQuilts || 0}</p>
             </div>
             <div className="space-y-1">
               <Label className="text-xs text-gray-500">
-                {t('language') === 'zh' ? '使用记录' : 'Usage Records'}
+                {language === 'zh' ? '使用记录' : 'Usage Records'}
               </Label>
               <p className="text-2xl font-semibold">{dbStats?.totalUsageRecords || 0}</p>
             </div>
             <div className="space-y-1">
               <Label className="text-xs text-gray-500">
-                {t('language') === 'zh' ? '使用中' : 'Active Usage'}
+                {language === 'zh' ? '使用中' : 'Active Usage'}
               </Label>
               <p className="text-2xl font-semibold">{dbStats?.activeUsage || 0}</p>
             </div>
@@ -235,21 +235,16 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Shield className="w-5 h-5" />
-            <span>{t('language') === 'zh' ? '安全设置' : 'Security Settings'}</span>
+            <span>{language === 'zh' ? '安全设置' : 'Security Settings'}</span>
           </CardTitle>
           <CardDescription>
-            {t('language') === 'zh'
+            {language === 'zh'
               ? '管理您的账户安全和密码'
               : 'Manage your account security and password'}
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent>
           <ChangePasswordDialog />
-          <div className="text-xs text-gray-500 bg-blue-50 border border-blue-200 p-3 rounded">
-            {t('language') === 'zh'
-              ? '💡 提示：密码存储在数据库中，修改后立即生效，无需重新部署应用。'
-              : '💡 Tip: Password is stored in the database and takes effect immediately after change, no redeployment needed.'}
-          </div>
         </CardContent>
       </Card>
 
