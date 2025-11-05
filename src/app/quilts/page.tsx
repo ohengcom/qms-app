@@ -96,13 +96,6 @@ export default function QuiltsPage() {
     // Apply sorting
     if (sortField) {
       result = [...result].sort((a: any, b: any) => {
-        let aValue = a[sortField];
-        let bValue = b[sortField];
-
-        // Handle null/undefined values
-        if (aValue == null) return 1;
-        if (bValue == null) return -1;
-
         // Special handling for size field - sort by lengthCm first, then widthCm
         if (sortField === 'size') {
           const aLength = parseFloat(a.lengthCm) || 0;
@@ -125,6 +118,14 @@ export default function QuiltsPage() {
 
           return sortDirection === 'asc' ? aWeight - bWeight : bWeight - aWeight;
         }
+
+        // Default sorting for other fields
+        let aValue = a[sortField];
+        let bValue = b[sortField];
+
+        // Handle null/undefined values
+        if (aValue == null) return 1;
+        if (bValue == null) return -1;
 
         // Convert to string for comparison if needed
         if (typeof aValue === 'string') {
