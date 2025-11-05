@@ -444,24 +444,32 @@ export default function UsageTrackingPage() {
                         {selectedQuiltUsage.length - index}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-700">
-                        {formatDate(usage.startedAt)}
+                        {formatDate(usage.startDate?.toString())}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-700">
-                        {usage.endedAt ? formatDate(usage.endedAt) : '-'}
+                        {usage.endDate ? formatDate(usage.endDate.toString()) : '-'}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-700">
-                        {formatDuration(usage.duration)}
+                        {usage.endDate
+                          ? formatDuration(
+                              Math.floor(
+                                (new Date(usage.endDate).getTime() -
+                                  new Date(usage.startDate).getTime()) /
+                                  (1000 * 60 * 60 * 24)
+                              )
+                            )
+                          : '-'}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-700">{usage.notes || '-'}</td>
                       <td className="px-4 py-3">
                         <span
                           className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
-                            usage.isActive
+                            !usage.endDate
                               ? 'bg-blue-50 text-blue-700 border border-blue-200'
                               : 'bg-gray-50 text-gray-700 border border-gray-200'
                           }`}
                         >
-                          {usage.isActive
+                          {!usage.endDate
                             ? t('usage.labels.active')
                             : language === 'zh'
                               ? '已完成'
