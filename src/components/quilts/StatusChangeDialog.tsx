@@ -22,6 +22,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2, Calendar, Info } from 'lucide-react';
+import { useActiveUsageRecord } from '@/hooks/useUsage';
 
 interface StatusChangeDialogProps {
   open: boolean;
@@ -46,6 +47,10 @@ export function StatusChangeDialog({
   const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
   const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
   const [notes, setNotes] = useState('');
+
+  // Get active usage record if quilt is currently in use
+  const { data: activeUsageData } = useActiveUsageRecord(quilt?.id || '');
+  const activeUsage = (activeUsageData as any)?.json || activeUsageData;
 
   // Reset form when dialog opens or quilt changes
   useEffect(() => {
@@ -150,11 +155,7 @@ export function StatusChangeDialog({
             <div className="space-y-2 p-3 bg-green-50 border border-green-200 rounded-lg">
               <div className="flex items-center gap-2 text-sm text-green-800 mb-2">
                 <Info className="w-4 h-4" />
-                <span>
-                  {t('language') === 'zh'
-                    ? '开始使用跟踪'
-                    : 'Starting usage tracking'}
-                </span>
+                <span>{t('language') === 'zh' ? '开始使用跟踪' : 'Starting usage tracking'}</span>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="startDate">
@@ -165,7 +166,7 @@ export function StatusChangeDialog({
                   id="startDate"
                   type="date"
                   value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
+                  onChange={e => setStartDate(e.target.value)}
                   max={new Date().toISOString().split('T')[0]}
                 />
               </div>
@@ -177,12 +178,28 @@ export function StatusChangeDialog({
             <div className="space-y-2 p-3 bg-orange-50 border border-orange-200 rounded-lg">
               <div className="flex items-center gap-2 text-sm text-orange-800 mb-2">
                 <Info className="w-4 h-4" />
-                <span>
-                  {t('language') === 'zh'
-                    ? '结束使用跟踪'
-                    : 'Ending usage tracking'}
-                </span>
+                <span>{t('language') === 'zh' ? '结束使用跟踪' : 'Ending usage tracking'}</span>
               </div>
+
+              {/* Display start date from active usage record */}
+              {activeUsage && (
+                <div className="space-y-2 mb-3">
+                  <Label className="text-xs text-gray-600">
+                    {t('language') === 'zh' ? '开始日期' : 'Start Date'}
+                  </Label>
+                  <div className="text-sm font-medium text-gray-900 bg-white px-3 py-2 rounded border border-gray-200">
+                    {new Date(activeUsage.startedAt).toLocaleDateString(
+                      t('language') === 'zh' ? 'zh-CN' : 'en-US',
+                      {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      }
+                    )}
+                  </div>
+                </div>
+              )}
+
               <div className="space-y-2">
                 <Label htmlFor="endDate">
                   <Calendar className="w-4 h-4 inline mr-1" />
@@ -192,7 +209,7 @@ export function StatusChangeDialog({
                   id="endDate"
                   type="date"
                   value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
+                  onChange={e => setEndDate(e.target.value)}
                   max={new Date().toISOString().split('T')[0]}
                 />
               </div>
@@ -208,12 +225,8 @@ export function StatusChangeDialog({
               <Textarea
                 id="notes"
                 value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder={
-                  t('language') === 'zh'
-                    ? '添加备注信息...'
-                    : 'Add notes...'
-                }
+                onChange={e => setNotes(e.target.value)}
+                placeholder={t('language') === 'zh' ? '添加备注信息...' : 'Add notes...'}
                 rows={3}
               />
             </div>
