@@ -173,7 +173,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Basic Information */}
-            <div className="space-y-2">
+            <div className="space-y-2 md:col-span-2">
               <Label htmlFor="season">{t('quilts.table.season')}</Label>
               <Select
                 value={formData.season}
@@ -188,29 +188,6 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
                   <SelectItem value="SUMMER">{t('season.SUMMER')}</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="currentStatus">{t('quilts.table.status')}</Label>
-              <Input
-                id="currentStatus"
-                value={
-                  formData.currentStatus === 'IN_USE'
-                    ? t('status.IN_USE')
-                    : formData.currentStatus === 'STORAGE'
-                      ? t('status.STORAGE')
-                      : formData.currentStatus === 'MAINTENANCE'
-                        ? t('status.MAINTENANCE')
-                        : formData.currentStatus
-                }
-                disabled
-                className="bg-gray-50"
-              />
-              <p className="text-xs text-gray-500">
-                {t('language') === 'zh'
-                  ? '状态不能在此处更改，请使用被子列表中的更改状态按钮'
-                  : 'Status cannot be changed here. Use the Change Status button in the quilt list.'}
-              </p>
             </div>
 
             {/* Dimensions */}
@@ -262,7 +239,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
 
             {/* Material Information */}
             <div className="space-y-2">
-              <Label htmlFor="fillMaterial">{t('quilts.table.material')}</Label>
+              <Label htmlFor="fillMaterial">填充材料</Label>
               <Input
                 id="fillMaterial"
                 value={formData.fillMaterial}
@@ -282,7 +259,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="location">{t('quilts.table.location')}</Label>
+              <Label htmlFor="location">存放位置</Label>
               <Input
                 id="location"
                 value={formData.location}
