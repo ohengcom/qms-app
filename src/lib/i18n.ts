@@ -156,10 +156,19 @@ export const translations = {
       },
       labels: {
         usagePeriod: '使用期间',
-        started: '开始时间',
-        ended: '结束时间',
+        started: '开始日期',
+        ended: '结束日期',
+        duration: '持续时间',
         active: '使用中',
         notes: '备注',
+      },
+      status: {
+        active: '使用中',
+        completed: '已完成',
+      },
+      empty: {
+        title: '暂无使用记录',
+        description: '开始使用被子后，记录将显示在这里',
       },
       edit: {
         title: '编辑使用记录',
@@ -249,6 +258,18 @@ export const translations = {
       subtitle: '被子使用情况分析和趋势',
       comingSoon: '即将推出',
       description: '这个页面将显示详细的使用分析和趋势图表。',
+      totalQuilts: '被子总数',
+      usageRecords: '使用记录',
+      totalUsageDays: '总使用天数',
+      avgUsageDays: '平均使用天数',
+      statusDistribution: '状态分布',
+      seasonDistribution: '季节分布',
+      mostUsedQuilts: '最常使用的被子',
+      topByUsageCount: '按使用次数排序的前5名',
+      usageTrendByYear: '年度使用趋势',
+      avg: '平均',
+      days: '天',
+      uses: '次',
     },
 
     // 维护
@@ -278,6 +299,19 @@ export const translations = {
       usageAnalysis: '使用情况和趋势分析',
       usageHistory: '使用历史报告',
       analyticsReport: '分析报告',
+      tabs: {
+        export: '导出',
+        import: '导入',
+      },
+      export: {
+        title: '导出选项',
+        description: '选择导出格式',
+        downloadFailed: '下载失败',
+      },
+      import: {
+        title: '导入数据',
+        description: '从Excel文件导入被子数据',
+      },
       quickActions: '快速操作',
       oneClickDownload: '一键下载常用报告',
       inventory: '库存',
@@ -826,10 +860,19 @@ export const translations = {
       },
       labels: {
         usagePeriod: 'Usage Period',
-        started: 'Started',
-        ended: 'Ended',
+        started: 'Start Date',
+        ended: 'End Date',
+        duration: 'Duration',
         active: 'Active',
         notes: 'Notes',
+      },
+      status: {
+        active: 'Active',
+        completed: 'Completed',
+      },
+      empty: {
+        title: 'No usage records',
+        description: 'Usage records will appear here once you start tracking',
       },
       edit: {
         title: 'Edit Usage Record',
@@ -919,6 +962,18 @@ export const translations = {
       subtitle: 'Quilt usage analytics and trends',
       comingSoon: 'Coming Soon',
       description: 'This page will display detailed usage analytics and trend charts.',
+      totalQuilts: 'Total Quilts',
+      usageRecords: 'Usage Records',
+      totalUsageDays: 'Total Usage Days',
+      avgUsageDays: 'Avg Usage Days',
+      statusDistribution: 'Status Distribution',
+      seasonDistribution: 'Season Distribution',
+      mostUsedQuilts: 'Most Used Quilts',
+      topByUsageCount: 'Top 5 by usage count',
+      usageTrendByYear: 'Usage Trend by Year',
+      avg: 'Avg',
+      days: 'days',
+      uses: 'uses',
     },
 
     // 维护
@@ -948,6 +1003,19 @@ export const translations = {
       usageAnalysis: 'Usage and trend analysis',
       usageHistory: 'Usage History Report',
       analyticsReport: 'Analytics Report',
+      tabs: {
+        export: 'Export',
+        import: 'Import',
+      },
+      export: {
+        title: 'Export Options',
+        description: 'Choose export format',
+        downloadFailed: 'Download failed',
+      },
+      import: {
+        title: 'Import Data',
+        description: 'Import quilt data from Excel file',
+      },
       quickActions: 'Quick Actions',
       oneClickDownload: 'One-click download common reports',
       inventory: 'Inventory',
