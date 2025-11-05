@@ -37,8 +37,17 @@ export function useUpdateQuilt() {
 
   return api.quilts.update.useMutation({
     onSuccess: () => {
+      // Invalidate quilt queries
       utils.quilts.getAll.invalidate();
       utils.quilts.getById.invalidate();
+
+      // Invalidate usage queries (status changes affect usage records)
+      utils.usage.getAll.invalidate();
+      utils.usage.getAllActive.invalidate();
+      utils.usage.getActive.invalidate();
+      utils.usage.getByQuiltId.invalidate();
+
+      // Invalidate dashboard
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
   });

@@ -50,6 +50,8 @@ export function useCreateUsageRecord() {
     onSuccess: () => {
       utils.usage.getAll.invalidate();
       utils.usage.getAllActive.invalidate();
+      utils.usage.getActive.invalidate();
+      utils.usage.getByQuiltId.invalidate();
       utils.quilts.getAll.invalidate();
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
@@ -79,6 +81,8 @@ export function useEndUsageRecord() {
     onSuccess: () => {
       utils.usage.getAll.invalidate();
       utils.usage.getAllActive.invalidate();
+      utils.usage.getActive.invalidate();
+      utils.usage.getByQuiltId.invalidate();
       utils.quilts.getAll.invalidate();
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
