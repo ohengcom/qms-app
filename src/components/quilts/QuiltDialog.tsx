@@ -35,15 +35,15 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     season: 'WINTER',
-    lengthCm: '210',
-    widthCm: '150',
-    weightGrams: '2000',
+    lengthCm: '200',
+    widthCm: '180',
+    weightGrams: '1000',
     fillMaterial: '棉',
     materialDetails: '',
     color: '白',
-    brand: '无',
-    location: '',
-    currentStatus: 'MAINTENANCE',
+    brand: '无品牌',
+    location: '未存储',
+    currentStatus: 'STORAGE',
     notes: '',
   });
 
@@ -82,18 +82,18 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
           notes: quilt.notes || '',
         });
       } else {
-        // Add mode - reset to defaults with MAINTENANCE status
+        // Add mode - reset to defaults with STORAGE status
         setFormData({
           season: 'WINTER',
-          lengthCm: '210',
-          widthCm: '150',
-          weightGrams: '2000',
+          lengthCm: '200',
+          widthCm: '180',
+          weightGrams: '1000',
           fillMaterial: '棉',
           materialDetails: '',
           color: '白',
-          brand: '无',
-          location: '',
-          currentStatus: 'MAINTENANCE',
+          brand: '无品牌',
+          location: '未存储',
+          currentStatus: 'STORAGE',
           notes: '',
         });
       }
@@ -209,11 +209,11 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
 
             {/* Dimensions */}
             <div className="space-y-2">
-              <Label htmlFor="lengthCm">{t('quilts.form.length')}</Label>
+              <Label htmlFor="lengthCm">长度 (cm)</Label>
               <Input
                 id="lengthCm"
                 type="number"
-                step="0.1"
+                step="1"
                 value={formData.lengthCm}
                 onChange={e => handleInputChange('lengthCm', e.target.value)}
                 placeholder="200"
@@ -221,11 +221,11 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="widthCm">{t('quilts.form.width')}</Label>
+              <Label htmlFor="widthCm">宽度 (cm)</Label>
               <Input
                 id="widthCm"
                 type="number"
-                step="0.1"
+                step="1"
                 value={formData.widthCm}
                 onChange={e => handleInputChange('widthCm', e.target.value)}
                 placeholder="150"
@@ -233,7 +233,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="weightGrams">{t('quilts.table.weight')}</Label>
+              <Label htmlFor="weightGrams">重量 (g)</Label>
               <Input
                 id="weightGrams"
                 type="number"
