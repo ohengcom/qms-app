@@ -132,7 +132,7 @@ export function StatusChangeDialog({
           </div>
 
           {/* Show current usage start date if quilt is in use */}
-          {isCurrentlyInUse && activeUsage && activeUsage.startedAt && (
+          {isCurrentlyInUse && activeUsage && activeUsage.startDate && (
             <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
               <div className="flex items-center gap-2 text-sm text-blue-800 mb-2">
                 <Info className="w-4 h-4" />
@@ -141,7 +141,7 @@ export function StatusChangeDialog({
               <div className="space-y-1">
                 <Label className="text-xs text-gray-600">{t('usage.labels.started')}</Label>
                 <div className="text-sm font-medium text-gray-900 bg-white px-3 py-2 rounded border border-gray-200">
-                  {new Date(activeUsage.startedAt).toLocaleDateString(
+                  {new Date(activeUsage.startDate).toLocaleDateString(
                     language === 'zh' ? 'zh-CN' : 'en-US',
                     {
                       year: 'numeric',
@@ -206,11 +206,11 @@ export function StatusChangeDialog({
               </div>
 
               {/* Display start date from active usage record */}
-              {activeUsage && activeUsage.startedAt && (
+              {activeUsage && activeUsage.startDate && (
                 <div className="space-y-2 mb-3">
                   <Label className="text-xs text-gray-600">{t('usage.labels.started')}</Label>
                   <div className="text-sm font-medium text-gray-900 bg-white px-3 py-2 rounded border border-gray-200">
-                    {new Date(activeUsage.startedAt).toLocaleDateString(
+                    {new Date(activeUsage.startDate).toLocaleDateString(
                       language === 'zh' ? 'zh-CN' : 'en-US',
                       {
                         year: 'numeric',
