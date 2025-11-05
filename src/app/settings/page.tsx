@@ -12,8 +12,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Database, Shield, MousePointerClick, Info } from 'lucide-react';
+import { Database, Shield, MousePointerClick, Info, Globe } from 'lucide-react';
 import { toast } from '@/lib/toast';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { ChangePasswordDialog } from '@/components/settings/ChangePasswordDialog';
 import {
   useAppSettings,
@@ -74,6 +75,37 @@ export default function SettingsPage() {
         <h1 className="text-2xl font-bold text-gray-900">{t('settings.title')}</h1>
         <p className="text-gray-500">{t('settings.subtitle')}</p>
       </div>
+
+      {/* Language Settings */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Globe className="w-5 h-5" />
+            <span>{t('language') === 'zh' ? '语言设置' : 'Language Settings'}</span>
+          </CardTitle>
+          <CardDescription>
+            {t('language') === 'zh'
+              ? '选择应用程序显示语言'
+              : 'Choose application display language'}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="language">{t('settings.sections.app.language')}</Label>
+            <div className="flex items-center gap-3">
+              <LanguageSwitcher />
+              <span className="text-sm text-gray-500">
+                {language === 'zh' ? '当前语言：中文' : 'Current language: English'}
+              </span>
+            </div>
+            <p className="text-xs text-gray-500">
+              {t('language') === 'zh'
+                ? '更改语言后立即生效，无需刷新页面'
+                : 'Language changes take effect immediately without page refresh'}
+            </p>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Quilt Management Settings */}
       <Card>
