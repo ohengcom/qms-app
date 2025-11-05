@@ -1,11 +1,9 @@
 'use client';
 
-import { useState } from 'react';
 import { useLanguage } from '@/lib/language-provider';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Select,
@@ -14,9 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Settings, Database, Bell, Shield, Download, Globe, MousePointerClick } from 'lucide-react';
+import { Database, Shield, MousePointerClick, Info } from 'lucide-react';
 import { toast } from '@/lib/toast';
-import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { ChangePasswordDialog } from '@/components/settings/ChangePasswordDialog';
 import {
   useAppSettings,
@@ -36,34 +33,12 @@ export default function SettingsPage() {
   // Mutations
   const updateSettings = useUpdateAppSettings();
 
-  // Initialize app name from settings (use appSettings directly instead of state)
-  const [appName, setAppName] = useState(appSettings?.appName || '');
-  const [doubleClickAction, setDoubleClickAction] = useState<'none' | 'status' | 'edit'>(
-    (appSettings?.doubleClickAction as 'none' | 'status' | 'edit') || 'status'
-  );
-
-  const handleSaveAppName = async () => {
-    try {
-      await updateSettings.mutateAsync({ appName });
-      toast.success(
-        t('language') === 'zh' ? '设置已保存' : 'Settings saved',
-        t('language') === 'zh' ? '应用程序名称已更新' : 'Application name updated'
-      );
-    } catch (error) {
-      toast.error(
-        t('language') === 'zh' ? '保存失败' : 'Save failed',
-        error instanceof Error
-          ? error.message
-          : t('language') === 'zh'
-            ? '请重试'
-            : 'Please try again'
-      );
-    }
-  };
+  // Use double click action directly from settings
+  const doubleClickAction =
+    (appSettings?.doubleClickAction as 'none' | 'status' | 'edit') || 'status';
 
   const handleDoubleClickActionChange = async (value: 'none' | 'status' | 'edit') => {
     try {
-      setDoubleClickAction(value);
       await updateSettings.mutateAsync({ doubleClickAction: value });
       toast.success(
         t('language') === 'zh' ? '设置已保存' : 'Settings saved',
@@ -79,16 +54,6 @@ export default function SettingsPage() {
             : 'Please try again'
       );
     }
-  };
-
-  const handleExportData = () => {
-    // This will be implemented with the export functionality
-    toast.info(
-      t('language') === 'zh' ? '导出功能' : 'Export Feature',
-      t('language') === 'zh'
-        ? '请使用导出页面导出数据'
-        : 'Please use the Export page to export data'
-    );
   };
 
   if (settingsLoading || dbLoading || systemLoading) {
@@ -109,59 +74,6 @@ export default function SettingsPage() {
         <h1 className="text-2xl font-bold text-gray-900">{t('settings.title')}</h1>
         <p className="text-gray-500">{t('settings.subtitle')}</p>
       </div>
-
-      {/* Application Settings */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Settings className="w-5 h-5" />
-            <span>{t('settings.sections.app.title')}</span>
-          </CardTitle>
-          <CardDescription>{t('settings.sections.app.description')}</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="app-name">{t('settings.sections.app.applicationName')}</Label>
-            <div className="flex gap-2">
-              <Input
-                id="app-name"
-                value={appName}
-                onChange={e => setAppName(e.target.value)}
-                placeholder="QMS - Quilt Management System"
-              />
-              <Button
-                onClick={handleSaveAppName}
-                disabled={updateSettings.isPending || appName === appSettings?.appName}
-              >
-                {updateSettings.isPending
-                  ? t('language') === 'zh'
-                    ? '保存中...'
-                    : 'Saving...'
-                  : t('language') === 'zh'
-                    ? '保存'
-                    : 'Save'}
-              </Button>
-            </div>
-            <p className="text-xs text-gray-500">
-              {t('language') === 'zh'
-                ? '更改应用程序名称（仅在当前会话中生效）'
-                : 'Change application name (effective in current session only)'}
-            </p>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="language">
-              <Globe className="w-4 h-4 inline mr-2" />
-              {t('settings.sections.app.language')}
-            </Label>
-            <div className="flex items-center gap-2">
-              <LanguageSwitcher />
-              <span className="text-sm text-gray-500">
-                {language === 'zh' ? '当前语言：中文' : 'Current language: English'}
-              </span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Quilt Management Settings */}
       <Card>
@@ -283,43 +195,6 @@ export default function SettingsPage() {
               <p className="text-2xl font-semibold">{dbStats?.activeUsage || 0}</p>
             </div>
           </div>
-          <Button variant="outline" onClick={handleExportData} className="w-full">
-            <Download className="w-4 h-4 mr-2" />
-            {t('language') === 'zh' ? '导出所有数据' : 'Export All Data'}
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* Notifications */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Bell className="w-5 h-5" />
-            <span>{t('settings.sections.notifications.title')}</span>
-          </CardTitle>
-          <CardDescription>{t('settings.sections.notifications.description')}</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-medium">{t('settings.sections.notifications.usageReminders')}</p>
-              <p className="text-sm text-gray-500">
-                {t('settings.sections.notifications.usageRemindersDesc')}
-              </p>
-            </div>
-            <input type="checkbox" className="w-4 h-4" defaultChecked />
-          </div>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-medium">
-                {t('settings.sections.notifications.maintenanceAlerts')}
-              </p>
-              <p className="text-sm text-gray-500">
-                {t('settings.sections.notifications.maintenanceAlertsDesc')}
-              </p>
-            </div>
-            <input type="checkbox" className="w-4 h-4" defaultChecked />
-          </div>
         </CardContent>
       </Card>
 
@@ -350,9 +225,12 @@ export default function SettingsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <Shield className="w-5 h-5" />
+            <Info className="w-5 h-5" />
             <span>{t('settings.sections.system.title')}</span>
           </CardTitle>
+          <CardDescription>
+            {language === 'zh' ? '系统版本和部署信息' : 'System version and deployment information'}
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-2 text-sm">
           <div className="flex justify-between">
@@ -368,9 +246,7 @@ export default function SettingsPage() {
             <span className="font-medium">{systemInfo?.deployment || 'Vercel'}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-600">
-              {t('language') === 'zh' ? '环境' : 'Environment'}:
-            </span>
+            <span className="text-gray-600">{language === 'zh' ? '环境' : 'Environment'}:</span>
             <span className="font-medium capitalize">
               {systemInfo?.environment || 'production'}
             </span>
