@@ -91,7 +91,7 @@ export default function ImportExportPage() {
       }
     } catch (error) {
       console.error('Download report error:', error);
-      window.alert(t('language') === 'zh' ? '下载失败' : 'Download failed');
+      window.alert(t('reports.export.downloadFailed'));
     } finally {
       setLoading(null);
     }
@@ -134,11 +134,11 @@ export default function ImportExportPage() {
         <TabsList className="grid w-full max-w-md grid-cols-2">
           <TabsTrigger value="import" className="flex items-center gap-2">
             <Upload className="w-4 h-4" />
-            {t('language') === 'zh' ? '导入数据' : 'Import Data'}
+            {t('reports.tabs.import')}
           </TabsTrigger>
           <TabsTrigger value="export" className="flex items-center gap-2">
             <Download className="w-4 h-4" />
-            {t('language') === 'zh' ? '导出数据' : 'Export Data'}
+            {t('reports.tabs.export')}
           </TabsTrigger>
         </TabsList>
 
@@ -172,11 +172,9 @@ export default function ImportExportPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Download className="w-5 h-5" />
-                {t('language') === 'zh' ? '导出选项' : 'Export Options'}
+                {t('reports.export.title')}
               </CardTitle>
-              <CardDescription>
-                {t('language') === 'zh' ? '选择导出格式' : 'Choose export format'}
-              </CardDescription>
+              <CardDescription>{t('reports.export.description')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <Button

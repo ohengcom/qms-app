@@ -150,9 +150,7 @@ export default function UsageTrackingPage() {
             </div>
             <div>
               <p className="text-2xl font-semibold text-gray-900">{stats.active}</p>
-              <p className="text-xs text-gray-500">
-                {t('language') === 'zh' ? '使用中' : 'Active'}
-              </p>
+              <p className="text-xs text-gray-500">{t('usage.status.active')}</p>
             </div>
           </div>
         </div>
@@ -164,9 +162,7 @@ export default function UsageTrackingPage() {
             </div>
             <div>
               <p className="text-2xl font-semibold text-gray-900">{stats.completed}</p>
-              <p className="text-xs text-gray-500">
-                {t('language') === 'zh' ? '已完成' : 'Completed'}
-              </p>
+              <p className="text-xs text-gray-500">{t('usage.status.completed')}</p>
             </div>
           </div>
         </div>
@@ -192,7 +188,7 @@ export default function UsageTrackingPage() {
                     {t('usage.labels.ended')}
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('language') === 'zh' ? '持续时间' : 'Duration'}
+                    {t('usage.labels.duration')}
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t('quilts.table.status')}
@@ -208,12 +204,8 @@ export default function UsageTrackingPage() {
                     <td colSpan={7} className="px-4">
                       <EmptyState
                         icon={PackageOpen}
-                        title={t('language') === 'zh' ? '暂无使用记录' : 'No usage records'}
-                        description={
-                          t('language') === 'zh'
-                            ? '开始使用被子后，记录将显示在这里'
-                            : 'Usage records will appear here once you start tracking'
-                        }
+                        title={t('usage.empty.title')}
+                        description={t('usage.empty.description')}
                       />
                     </td>
                   </tr>
@@ -243,13 +235,7 @@ export default function UsageTrackingPage() {
                               : 'bg-gray-50 text-gray-700 border border-gray-200'
                           }`}
                         >
-                          {record.isActive
-                            ? t('language') === 'zh'
-                              ? '使用中'
-                              : 'Active'
-                            : t('language') === 'zh'
-                              ? '已完成'
-                              : 'Completed'}
+                          {record.isActive ? t('usage.status.active') : t('usage.status.completed')}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-right">
@@ -261,7 +247,7 @@ export default function UsageTrackingPage() {
                             className="h-8 px-3"
                           >
                             <Eye className="h-3.5 w-3.5 mr-1" />
-                            {t('language') === 'zh' ? '查看' : 'View'}
+                            {t('usage.actions.view')}
                           </Button>
                           <EditUsageRecordDialog
                             record={{

@@ -107,9 +107,7 @@ export default function AnalyticsPage() {
               <Package className="w-10 h-10 text-blue-600" />
               <div>
                 <p className="text-3xl font-bold">{analytics.overview.totalQuilts}</p>
-                <p className="text-sm text-gray-600">
-                  {t('language') === 'zh' ? '被子总数' : 'Total Quilts'}
-                </p>
+                <p className="text-sm text-gray-600">{t('analytics.totalQuilts')}</p>
               </div>
             </div>
           </CardContent>
@@ -121,9 +119,7 @@ export default function AnalyticsPage() {
               <Activity className="w-10 h-10 text-green-600" />
               <div>
                 <p className="text-3xl font-bold">{analytics.overview.totalUsagePeriods}</p>
-                <p className="text-sm text-gray-600">
-                  {t('language') === 'zh' ? '使用记录' : 'Usage Records'}
-                </p>
+                <p className="text-sm text-gray-600">{t('analytics.usageRecords')}</p>
               </div>
             </div>
           </CardContent>
@@ -135,9 +131,7 @@ export default function AnalyticsPage() {
               <Clock className="w-10 h-10 text-purple-600" />
               <div>
                 <p className="text-3xl font-bold">{analytics.overview.totalUsageDays}</p>
-                <p className="text-sm text-gray-600">
-                  {t('language') === 'zh' ? '总使用天数' : 'Total Usage Days'}
-                </p>
+                <p className="text-sm text-gray-600">{t('analytics.totalUsageDays')}</p>
               </div>
             </div>
           </CardContent>
@@ -149,9 +143,7 @@ export default function AnalyticsPage() {
               <Calendar className="w-10 h-10 text-orange-600" />
               <div>
                 <p className="text-3xl font-bold">{analytics.overview.averageUsageDays}</p>
-                <p className="text-sm text-gray-600">
-                  {t('language') === 'zh' ? '平均使用天数' : 'Avg Usage Days'}
-                </p>
+                <p className="text-sm text-gray-600">{t('analytics.avgUsageDays')}</p>
               </div>
             </div>
           </CardContent>
@@ -165,7 +157,7 @@ export default function AnalyticsPage() {
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <PieChart className="w-5 h-5" />
-              <span>{t('language') === 'zh' ? '状态分布' : 'Status Distribution'}</span>
+              <span>{t('analytics.statusDistribution')}</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -207,7 +199,7 @@ export default function AnalyticsPage() {
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <BarChart3 className="w-5 h-5" />
-              <span>{t('language') === 'zh' ? '季节分布' : 'Season Distribution'}</span>
+              <span>{t('analytics.seasonDistribution')}</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -248,11 +240,9 @@ export default function AnalyticsPage() {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Award className="w-5 h-5" />
-            <span>{t('language') === 'zh' ? '最常使用的被子' : 'Most Used Quilts'}</span>
+            <span>{t('analytics.mostUsedQuilts')}</span>
           </CardTitle>
-          <CardDescription>
-            {t('language') === 'zh' ? '按使用次数排序的前5名' : 'Top 5 by usage count'}
-          </CardDescription>
+          <CardDescription>{t('analytics.topByUsageCount')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
@@ -268,16 +258,13 @@ export default function AnalyticsPage() {
                   <div>
                     <span className="font-semibold">{quilt.name}</span>
                     <span className="text-sm text-gray-600 ml-2">
-                      {t('language') === 'zh' ? '平均' : 'Avg'}: {quilt.averageDays}{' '}
-                      {t('language') === 'zh' ? '天' : 'days'}
+                      {t('analytics.avg')}: {quilt.averageDays} {t('analytics.days')}
                     </span>
                   </div>
                 </div>
                 <div className="text-right">
                   <span className="text-xl font-bold text-blue-600">{quilt.usageCount}</span>
-                  <span className="text-sm text-gray-600 ml-1">
-                    {t('language') === 'zh' ? '次' : 'uses'}
-                  </span>
+                  <span className="text-sm text-gray-600 ml-1">{t('analytics.uses')}</span>
                 </div>
               </div>
             ))}
@@ -290,7 +277,7 @@ export default function AnalyticsPage() {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <TrendingUp className="w-5 h-5" />
-            <span>{t('language') === 'zh' ? '年度使用趋势' : 'Usage Trend by Year'}</span>
+            <span>{t('analytics.usageTrendByYear')}</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
