@@ -331,16 +331,33 @@ export function QuiltForm({ initialData, onSuccess, onCancel }: QuiltFormProps) 
                     )}
                   />
 
-                  {/* Status field is hidden - use "Change Status" button instead */}
-                  {/* This ensures usage tracking automation works correctly */}
+                  {/* Status field - read-only, use "Change Status" button to modify */}
                   <FormField
                     control={form.control}
                     name="currentStatus"
                     render={({ field }) => (
-                      <FormItem className="hidden">
+                      <FormItem>
+                        <FormLabel>Status</FormLabel>
                         <FormControl>
-                          <input type="hidden" {...field} />
+                          <Input
+                            value={
+                              field.value === QuiltStatus.IN_USE
+                                ? 'In Use'
+                                : field.value === QuiltStatus.STORAGE
+                                  ? 'Storage'
+                                  : field.value === QuiltStatus.MAINTENANCE
+                                    ? 'Maintenance'
+                                    : field.value
+                            }
+                            disabled
+                            className="bg-gray-50"
+                          />
                         </FormControl>
+                        <FormDescription>
+                          Status cannot be changed here. Use the &ldquo;Change Status&rdquo; button
+                          in the quilt list.
+                        </FormDescription>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
