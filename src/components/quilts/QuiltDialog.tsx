@@ -192,19 +192,25 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
 
             <div className="space-y-2">
               <Label htmlFor="currentStatus">{t('quilts.table.status')}</Label>
-              <Select
-                value={formData.currentStatus}
-                onValueChange={value => handleInputChange('currentStatus', value)}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="IN_USE">{t('status.IN_USE')}</SelectItem>
-                  <SelectItem value="STORAGE">{t('status.STORAGE')}</SelectItem>
-                  <SelectItem value="MAINTENANCE">{t('status.MAINTENANCE')}</SelectItem>
-                </SelectContent>
-              </Select>
+              <Input
+                id="currentStatus"
+                value={
+                  formData.currentStatus === 'IN_USE'
+                    ? t('status.IN_USE')
+                    : formData.currentStatus === 'STORAGE'
+                      ? t('status.STORAGE')
+                      : formData.currentStatus === 'MAINTENANCE'
+                        ? t('status.MAINTENANCE')
+                        : formData.currentStatus
+                }
+                disabled
+                className="bg-gray-50"
+              />
+              <p className="text-xs text-gray-500">
+                {t('language') === 'zh'
+                  ? '状态不能在此处更改，请使用被子列表中的更改状态按钮'
+                  : 'Status cannot be changed here. Use the Change Status button in the quilt list.'}
+              </p>
             </div>
 
             {/* Dimensions */}
