@@ -105,10 +105,10 @@ export default function QuiltsPage() {
 
         // Special handling for size field - sort by lengthCm first, then widthCm
         if (sortField === 'size') {
-          const aLength = a.lengthCm || 0;
-          const bLength = b.lengthCm || 0;
-          const aWidth = a.widthCm || 0;
-          const bWidth = b.widthCm || 0;
+          const aLength = parseFloat(a.lengthCm) || 0;
+          const bLength = parseFloat(b.lengthCm) || 0;
+          const aWidth = parseFloat(a.widthCm) || 0;
+          const bWidth = parseFloat(b.widthCm) || 0;
 
           // First compare by length
           if (aLength !== bLength) {
@@ -120,8 +120,8 @@ export default function QuiltsPage() {
 
         // Special handling for weight field - sort by weightGrams
         if (sortField === 'weight') {
-          const aWeight = a.weightGrams || 0;
-          const bWeight = b.weightGrams || 0;
+          const aWeight = parseFloat(a.weightGrams) || 0;
+          const bWeight = parseFloat(b.weightGrams) || 0;
 
           return sortDirection === 'asc' ? aWeight - bWeight : bWeight - aWeight;
         }
