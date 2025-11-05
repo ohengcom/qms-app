@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { EmptyState } from '@/components/ui/empty-state';
 import { EditUsageRecordDialog } from '@/components/usage/EditUsageRecordDialog';
+import { TemperatureDisplay } from '@/components/usage/TemperatureDisplay';
 import { useUsageRecords, useOverallUsageStats, useQuiltUsageRecords } from '@/hooks/useUsage';
 
 interface QuiltUsageDetail {
@@ -416,7 +417,13 @@ export default function UsageTrackingPage() {
                       {t('usage.labels.started')}
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {language === 'zh' ? '开始温度' : 'Start Temp'}
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       {t('usage.labels.ended')}
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {language === 'zh' ? '结束温度' : 'End Temp'}
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       {language === 'zh' ? '持续时间' : 'Duration'}
@@ -446,8 +453,14 @@ export default function UsageTrackingPage() {
                       <td className="px-4 py-3 text-sm text-gray-700">
                         {formatDate(usage.startDate?.toString())}
                       </td>
+                      <td className="px-4 py-3">
+                        <TemperatureDisplay date={usage.startDate} compact />
+                      </td>
                       <td className="px-4 py-3 text-sm text-gray-700">
                         {usage.endDate ? formatDate(usage.endDate.toString()) : '-'}
+                      </td>
+                      <td className="px-4 py-3">
+                        {usage.endDate ? <TemperatureDisplay date={usage.endDate} compact /> : '-'}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-700">
                         {usage.endDate
