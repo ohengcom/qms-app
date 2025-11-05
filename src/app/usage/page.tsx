@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/lib/language-provider';
 import { Button } from '@/components/ui/button';
@@ -33,7 +33,7 @@ interface QuiltUsageDetail {
   currentStatus: string;
 }
 
-export default function UsageTrackingPage() {
+function UsageTrackingContent() {
   const searchParams = useSearchParams();
   const quiltIdParam = searchParams.get('quiltId');
 
@@ -526,5 +526,19 @@ export default function UsageTrackingPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function UsageTrackingPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="p-6">
+          <TableSkeleton rows={8} columns={6} />
+        </div>
+      }
+    >
+      <UsageTrackingContent />
+    </Suspense>
   );
 }
