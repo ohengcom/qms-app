@@ -5,7 +5,18 @@ import { useLanguage } from '@/lib/language-provider';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { TableSkeleton } from '@/components/ui/skeleton-layouts';
-import { Clock, Package, BarChart3, ArrowLeft, Eye, PackageOpen, Edit } from 'lucide-react';
+import {
+  Clock,
+  Package,
+  BarChart3,
+  ArrowLeft,
+  Eye,
+  PackageOpen,
+  Edit,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+} from 'lucide-react';
 import { EmptyState } from '@/components/ui/empty-state';
 import { EditUsageRecordDialog } from '@/components/usage/EditUsageRecordDialog';
 import { useUsageRecords, useOverallUsageStats, useQuiltUsageRecords } from '@/hooks/useUsage';
@@ -22,7 +33,9 @@ interface QuiltUsageDetail {
 export default function UsageTrackingPage() {
   const [selectedQuilt, setSelectedQuilt] = useState<QuiltUsageDetail | null>(null);
   const [view, setView] = useState<'list' | 'detail'>('list');
-  const { t } = useLanguage();
+  const [sortField, setSortField] = useState<string | null>(null);
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+  const { t, language } = useLanguage();
 
   // Use tRPC hooks
   const { data: usageData, isLoading: loading } = useUsageRecords();
@@ -71,6 +84,59 @@ export default function UsageTrackingPage() {
     if (days === 0) return t('language') === 'zh' ? '不到1天' : '<1 day';
     return t('language') === 'zh' ? `${days}天` : `${days}d`;
   };
+
+  // Sorting function
+  const handleSort = (field: string) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('desc');
+    }
+  };
+
+  // Render sort icon
+  const renderSortIcon = (field: string) => {
+    if (sortField !== field) {
+      return (
+        <ArrowUpDown className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-50 transition-opacity" />
+      );
+    }
+    return sortDirection === 'asc' ? (
+      <ArrowUp className="w-3 h-3 ml-1 text-blue-600" />
+    ) : (
+      <ArrowDown className="w-3 h-3 ml-1 text-blue-600" />
+    );
+  };
+
+  // Sort usage history
+  const sortedUsageHistory = [...usageHistory].sort((a: any, b: any) => {
+    if (!sortField) return 0;
+
+    let aValue = a[sortField];
+    let bValue = b[sortField];
+
+    // Handle null/undefined
+    if (aValue == null) return 1;
+    if (bValue == null) return -1;
+
+    // Special handling for dates
+    if (sortField === 'startedAt' || sortField === 'endedAt') {
+      aValue = new Date(aValue).getTime();
+      bValue = new Date(bValue).getTime();
+    }
+
+    // Special handling for duration
+    if (sortField === 'duration') {
+      aValue = parseFloat(aValue) || 0;
+      bValue = parseFloat(bValue) || 0;
+    }
+
+    // Compare
+    if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+    if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+    return 0;
+  });
 
   if (loading) {
     return (
@@ -173,23 +239,59 @@ export default function UsageTrackingPage() {
             <table className="w-full">
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-200">
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('quilts.table.itemNumber')}
+                  <th
+                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
+                    onClick={() => handleSort('itemNumber')}
+                  >
+                    <div className="flex items-center">
+                      {t('quilts.table.itemNumber')}
+                      {renderSortIcon('itemNumber')}
+                    </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('quilts.views.name')}
+                  <th
+                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
+                    onClick={() => handleSort('quiltName')}
+                  >
+                    <div className="flex items-center">
+                      {t('quilts.views.name')}
+                      {renderSortIcon('quiltName')}
+                    </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('usage.labels.started')}
+                  <th
+                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
+                    onClick={() => handleSort('startedAt')}
+                  >
+                    <div className="flex items-center">
+                      {t('usage.labels.started')}
+                      {renderSortIcon('startedAt')}
+                    </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('usage.labels.ended')}
+                  <th
+                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
+                    onClick={() => handleSort('endedAt')}
+                  >
+                    <div className="flex items-center">
+                      {t('usage.labels.ended')}
+                      {renderSortIcon('endedAt')}
+                    </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('usage.labels.duration')}
+                  <th
+                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
+                    onClick={() => handleSort('duration')}
+                  >
+                    <div className="flex items-center">
+                      {t('usage.labels.duration')}
+                      {renderSortIcon('duration')}
+                    </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('quilts.table.status')}
+                  <th
+                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
+                    onClick={() => handleSort('isActive')}
+                  >
+                    <div className="flex items-center">
+                      {t('quilts.table.status')}
+                      {renderSortIcon('isActive')}
+                    </div>
                   </th>
                   <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t('quilts.views.actions')}
@@ -197,7 +299,7 @@ export default function UsageTrackingPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {usageHistory.length === 0 ? (
+                {sortedUsageHistory.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="px-4">
                       <EmptyState
@@ -208,7 +310,7 @@ export default function UsageTrackingPage() {
                     </td>
                   </tr>
                 ) : (
-                  usageHistory.map((record: any) => (
+                  sortedUsageHistory.map((record: any) => (
                     <tr key={record.id} className="hover:bg-gray-50 transition-colors">
                       <td className="px-4 py-3 text-sm font-medium text-gray-900">
                         #{record.itemNumber}
@@ -245,7 +347,7 @@ export default function UsageTrackingPage() {
                             className="h-8 px-3"
                           >
                             <Eye className="h-3.5 w-3.5 mr-1" />
-                            {t('usage.actions.view')}
+                            {language === 'zh' ? '查看' : 'View'}
                           </Button>
                           <EditUsageRecordDialog
                             record={{
