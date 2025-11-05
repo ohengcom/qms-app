@@ -41,7 +41,7 @@ export function StatusChangeDialog({
   quilt,
   onStatusChange,
 }: StatusChangeDialogProps) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [newStatus, setNewStatus] = useState(quilt?.currentStatus || 'STORAGE');
   const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
@@ -117,7 +117,7 @@ export function StatusChangeDialog({
         <DialogHeader>
           <DialogTitle>{t('quilts.dialogs.changeStatus')}</DialogTitle>
           <DialogDescription>
-            {t('language') === 'zh'
+            {language === 'zh'
               ? `更改被子 "${quilt?.name}" 的状态`
               : `Change status for quilt "${quilt?.name}"`}
           </DialogDescription>
@@ -132,19 +132,17 @@ export function StatusChangeDialog({
           </div>
 
           {/* Show current usage start date if quilt is in use */}
-          {isCurrentlyInUse && activeUsage && (
+          {isCurrentlyInUse && activeUsage && activeUsage.startedAt && (
             <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
               <div className="flex items-center gap-2 text-sm text-blue-800 mb-2">
                 <Info className="w-4 h-4" />
-                <span>{t('language') === 'zh' ? '当前使用信息' : 'Current Usage Info'}</span>
+                <span>{t('usage.labels.currentUsageInfo')}</span>
               </div>
               <div className="space-y-1">
-                <Label className="text-xs text-gray-600">
-                  {t('language') === 'zh' ? '开始日期' : 'Start Date'}
-                </Label>
+                <Label className="text-xs text-gray-600">{t('usage.labels.started')}</Label>
                 <div className="text-sm font-medium text-gray-900 bg-white px-3 py-2 rounded border border-gray-200">
                   {new Date(activeUsage.startedAt).toLocaleDateString(
-                    t('language') === 'zh' ? 'zh-CN' : 'en-US',
+                    language === 'zh' ? 'zh-CN' : 'en-US',
                     {
                       year: 'numeric',
                       month: 'long',
@@ -181,12 +179,12 @@ export function StatusChangeDialog({
             <div className="space-y-2 p-3 bg-green-50 border border-green-200 rounded-lg">
               <div className="flex items-center gap-2 text-sm text-green-800 mb-2">
                 <Info className="w-4 h-4" />
-                <span>{t('language') === 'zh' ? '开始使用跟踪' : 'Starting usage tracking'}</span>
+                <span>{t('usage.labels.startingUsageTracking')}</span>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="startDate">
                   <Calendar className="w-4 h-4 inline mr-1" />
-                  {t('language') === 'zh' ? '开始日期' : 'Start Date'}
+                  {t('usage.labels.started')}
                 </Label>
                 <Input
                   id="startDate"
@@ -204,18 +202,16 @@ export function StatusChangeDialog({
             <div className="space-y-2 p-3 bg-orange-50 border border-orange-200 rounded-lg">
               <div className="flex items-center gap-2 text-sm text-orange-800 mb-2">
                 <Info className="w-4 h-4" />
-                <span>{t('language') === 'zh' ? '结束使用跟踪' : 'Ending usage tracking'}</span>
+                <span>{t('usage.labels.endingUsageTracking')}</span>
               </div>
 
               {/* Display start date from active usage record */}
-              {activeUsage && (
+              {activeUsage && activeUsage.startedAt && (
                 <div className="space-y-2 mb-3">
-                  <Label className="text-xs text-gray-600">
-                    {t('language') === 'zh' ? '开始日期' : 'Start Date'}
-                  </Label>
+                  <Label className="text-xs text-gray-600">{t('usage.labels.started')}</Label>
                   <div className="text-sm font-medium text-gray-900 bg-white px-3 py-2 rounded border border-gray-200">
                     {new Date(activeUsage.startedAt).toLocaleDateString(
-                      t('language') === 'zh' ? 'zh-CN' : 'en-US',
+                      language === 'zh' ? 'zh-CN' : 'en-US',
                       {
                         year: 'numeric',
                         month: 'long',
@@ -229,7 +225,7 @@ export function StatusChangeDialog({
               <div className="space-y-2">
                 <Label htmlFor="endDate">
                   <Calendar className="w-4 h-4 inline mr-1" />
-                  {t('language') === 'zh' ? '结束日期' : 'End Date'}
+                  {t('usage.labels.ended')}
                 </Label>
                 <Input
                   id="endDate"
@@ -245,14 +241,12 @@ export function StatusChangeDialog({
           {/* Notes field - show when changing to/from IN_USE */}
           {showDateFields && (
             <div className="space-y-2">
-              <Label htmlFor="notes">
-                {t('language') === 'zh' ? '备注（可选）' : 'Notes (Optional)'}
-              </Label>
+              <Label htmlFor="notes">{t('usage.labels.notesOptional')}</Label>
               <Textarea
                 id="notes"
                 value={notes}
                 onChange={e => setNotes(e.target.value)}
-                placeholder={t('language') === 'zh' ? '添加备注信息...' : 'Add notes...'}
+                placeholder={t('usage.labels.notesPlaceholder')}
                 rows={3}
               />
             </div>

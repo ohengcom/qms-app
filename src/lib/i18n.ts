@@ -161,6 +161,11 @@ export const translations = {
         duration: '持续时间',
         active: '使用中',
         notes: '备注',
+        currentUsageInfo: '当前使用信息',
+        startingUsageTracking: '开始使用跟踪',
+        endingUsageTracking: '结束使用跟踪',
+        notesOptional: '备注（可选）',
+        notesPlaceholder: '添加备注信息...',
       },
       status: {
         active: '使用中',
@@ -886,6 +891,11 @@ export const translations = {
         duration: 'Duration',
         active: 'Active',
         notes: 'Notes',
+        currentUsageInfo: 'Current Usage Info',
+        startingUsageTracking: 'Starting usage tracking',
+        endingUsageTracking: 'Ending usage tracking',
+        notesOptional: 'Notes (Optional)',
+        notesPlaceholder: 'Add notes...',
       },
       status: {
         active: 'Active',
