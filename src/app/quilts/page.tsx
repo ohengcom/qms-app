@@ -27,7 +27,7 @@ import { QuiltDialog } from '@/components/quilts/QuiltDialog';
 import { StatusChangeDialog } from '@/components/quilts/StatusChangeDialog';
 import { toast, getToastMessage } from '@/lib/toast';
 import { useQuilts, useCreateQuilt, useUpdateQuilt, useDeleteQuilt } from '@/hooks/useQuilts';
-import { useCreateUsageRecord } from '@/hooks/useUsage';
+import { useCreateUsageRecord, useEndUsageRecord } from '@/hooks/useUsage';
 import { useAppSettings } from '@/hooks/useSettings';
 
 export default function QuiltsPage() {
@@ -60,6 +60,7 @@ export default function QuiltsPage() {
   const updateQuiltMutation = useUpdateQuilt();
   const deleteQuiltMutation = useDeleteQuilt();
   const createUsageRecordMutation = useCreateUsageRecord();
+  const endUsageRecordMutation = useEndUsageRecord();
 
   // tRPC with superjson wraps data in json property
   const quilts = (quiltsData as any)?.json?.quilts || quiltsData?.quilts || [];
@@ -321,6 +322,10 @@ export default function QuiltsPage() {
         throw new Error('Invalid status value');
       }
 
+      // Get current quilt to check if it's currently in use
+      const currentQuilt = quilts.find((q: any) => q.id === quiltId);
+      const wasInUse = currentQuilt?.currentStatus === 'IN_USE';
+
       // Prepare update data
       const updateData: any = {
         id: quiltId,
@@ -330,6 +335,20 @@ export default function QuiltsPage() {
       // If changing to IN_USE, automatically set location to "在用"
       if (newStatus === 'IN_USE') {
         updateData.location = '在用';
+      }
+
+      // If changing FROM IN_USE to another status, end the active usage record
+      if (wasInUse && newStatus !== 'IN_USE') {
+        try {
+          await endUsageRecordMutation.mutateAsync({
+            quiltId,
+            endDate: options?.endDate ? new Date(options.endDate) : new Date(),
+            notes: options?.notes,
+          });
+        } catch (endError) {
+          console.error('Error ending usage record:', endError);
+          // Continue with status update even if ending usage fails
+        }
       }
 
       // Update quilt status using tRPC
