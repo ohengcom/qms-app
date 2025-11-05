@@ -25,7 +25,10 @@ export function useCreateQuilt() {
 
   return api.quilts.create.useMutation({
     onSuccess: () => {
+      // Invalidate quilt queries
       utils.quilts.getAll.invalidate();
+
+      // Invalidate dashboard
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
   });
@@ -59,7 +62,17 @@ export function useDeleteQuilt() {
 
   return api.quilts.delete.useMutation({
     onSuccess: () => {
+      // Invalidate quilt queries
       utils.quilts.getAll.invalidate();
+      utils.quilts.getById.invalidate();
+
+      // Invalidate usage queries (deleting quilt affects related usage records)
+      utils.usage.getAll.invalidate();
+      utils.usage.getAllActive.invalidate();
+      utils.usage.getActive.invalidate();
+      utils.usage.getByQuiltId.invalidate();
+
+      // Invalidate dashboard
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
   });
