@@ -555,7 +555,7 @@ export default function QuiltsPage() {
                     title={t('language') === 'zh' ? '点击排序' : 'Click to sort'}
                   >
                     <div className="flex items-center">
-                      {t('quilts.table.material')}
+                      填充材料
                       {renderSortIcon('fillMaterial')}
                     </div>
                   </th>
@@ -575,7 +575,7 @@ export default function QuiltsPage() {
                     title={t('language') === 'zh' ? '点击排序' : 'Click to sort'}
                   >
                     <div className="flex items-center">
-                      {t('quilts.table.location')}
+                      存放位置
                       {renderSortIcon('location')}
                     </div>
                   </th>
@@ -663,7 +663,7 @@ export default function QuiltsPage() {
                       <td className="px-4 py-3 text-sm text-gray-700">
                         {quilt.lengthCm}×{quilt.widthCm}
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-700">{quilt.weightGrams}g</td>
+                      <td className="px-4 py-3 text-sm text-gray-700">{quilt.weightGrams}</td>
                       <td className="px-4 py-3 text-sm text-gray-900">{quilt.fillMaterial}</td>
                       <td className="px-4 py-3 text-sm text-gray-700">{quilt.color || '-'}</td>
                       <td className="px-4 py-3 text-sm text-gray-700">{quilt.location}</td>
@@ -805,7 +805,7 @@ export default function QuiltsPage() {
                   </div>
                   <div className="flex items-center text-sm">
                     <span className="text-gray-500 w-20">{t('quilts.table.weight')}:</span>
-                    <span className="font-medium">{quilt.weightGrams}g</span>
+                    <span className="font-medium">{quilt.weightGrams}</span>
                   </div>
                   <div className="flex items-center text-sm">
                     <span className="text-gray-500 w-20">{t('quilts.table.location')}:</span>
