@@ -238,7 +238,7 @@ export default function UsageTrackingPage() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-gray-50 border-b border-gray-200">
+                <tr className="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-300">
                   <th
                     className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
                     onClick={() => handleSort('itemNumber')}
@@ -310,8 +310,16 @@ export default function UsageTrackingPage() {
                     </td>
                   </tr>
                 ) : (
-                  sortedUsageHistory.map((record: any) => (
-                    <tr key={record.id} className="hover:bg-gray-50 transition-colors">
+                  sortedUsageHistory.map((record: any, index: number) => (
+                    <tr
+                      key={record.id}
+                      className={`
+                      transition-all duration-150 ease-in-out
+                      hover:bg-blue-50 hover:shadow-sm
+                      ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}
+                      border-b border-gray-100 last:border-b-0
+                    `}
+                    >
                       <td className="px-4 py-3 text-sm font-medium text-gray-900">
                         #{record.itemNumber}
                       </td>
@@ -393,7 +401,7 @@ export default function UsageTrackingPage() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="bg-gray-50 border-b border-gray-200">
+                  <tr className="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-300">
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       #
                     </th>
@@ -419,7 +427,15 @@ export default function UsageTrackingPage() {
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {selectedQuiltUsage.map((usage: any, index: number) => (
-                    <tr key={usage.id} className="hover:bg-gray-50">
+                    <tr
+                      key={usage.id}
+                      className={`
+                      transition-all duration-150 ease-in-out
+                      hover:bg-blue-50 hover:shadow-sm
+                      ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}
+                      border-b border-gray-100 last:border-b-0
+                    `}
+                    >
                       <td className="px-4 py-3 text-sm font-medium text-gray-900">
                         {selectedQuiltUsage.length - index}
                       </td>
