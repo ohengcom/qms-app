@@ -95,6 +95,7 @@ export function StatusChangeDialog({
   // Check if we're changing to or from IN_USE
   const isChangingToInUse = newStatus === 'IN_USE' && quilt?.currentStatus !== 'IN_USE';
   const isChangingFromInUse = quilt?.currentStatus === 'IN_USE' && newStatus !== 'IN_USE';
+  const isCurrentlyInUse = quilt?.currentStatus === 'IN_USE';
   const showDateFields = isChangingToInUse || isChangingFromInUse;
 
   const getStatusColor = (status: string) => {
@@ -129,6 +130,31 @@ export function StatusChangeDialog({
               {t(`status.${quilt?.currentStatus}`)}
             </div>
           </div>
+
+          {/* Show current usage start date if quilt is in use */}
+          {isCurrentlyInUse && activeUsage && (
+            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-center gap-2 text-sm text-blue-800 mb-2">
+                <Info className="w-4 h-4" />
+                <span>{t('language') === 'zh' ? '当前使用信息' : 'Current Usage Info'}</span>
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs text-gray-600">
+                  {t('language') === 'zh' ? '开始日期' : 'Start Date'}
+                </Label>
+                <div className="text-sm font-medium text-gray-900 bg-white px-3 py-2 rounded border border-gray-200">
+                  {new Date(activeUsage.startedAt).toLocaleDateString(
+                    t('language') === 'zh' ? 'zh-CN' : 'en-US',
+                    {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    }
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="space-y-2">
             <Label htmlFor="newStatus">{t('quilts.dialogs.newStatus')}</Label>
