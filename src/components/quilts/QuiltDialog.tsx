@@ -171,9 +171,9 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3">
           {/* Show auto-generated name preview */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
             <div className="grid grid-cols-2 gap-4">
               {quilt && (
                 <div>
@@ -192,9 +192,9 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {/* Basic Information */}
-            <div className="space-y-2 md:col-span-2">
+            <div className="space-y-1.5 md:col-span-2">
               <Label htmlFor="season">{t('quilts.table.season')}</Label>
               <Select
                 value={formData.season}
@@ -212,7 +212,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
             </div>
 
             {/* Dimensions */}
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <Label htmlFor="lengthCm">长度 (cm)</Label>
               <Input
                 id="lengthCm"
@@ -224,7 +224,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
               />
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <Label htmlFor="widthCm">宽度 (cm)</Label>
               <Input
                 id="widthCm"
@@ -236,7 +236,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
               />
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <Label htmlFor="weightGrams">重量 (g)</Label>
               <Input
                 id="weightGrams"
@@ -248,7 +248,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
               />
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <Label htmlFor="color">{t('quilts.form.color')}</Label>
               <Input
                 id="color"
@@ -259,7 +259,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
             </div>
 
             {/* Material Information */}
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <Label htmlFor="fillMaterial">填充材料</Label>
               <Input
                 id="fillMaterial"
@@ -269,7 +269,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
               />
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <Label htmlFor="brand">{t('quilts.form.brand')}</Label>
               <Input
                 id="brand"
@@ -279,7 +279,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
               />
             </div>
 
-            <div className="space-y-2 md:col-span-2">
+            <div className="space-y-1.5 md:col-span-2">
               <Label htmlFor="location">存放位置</Label>
               <Input
                 id="location"
@@ -291,33 +291,35 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
           </div>
 
           {/* Additional Details */}
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <Label htmlFor="materialDetails">{t('quilts.form.materialDetails')}</Label>
             <Textarea
               id="materialDetails"
               value={formData.materialDetails}
               onChange={e => handleInputChange('materialDetails', e.target.value)}
               placeholder={t('quilts.form.materialDetailsPlaceholder')}
-              rows={2}
+              rows={1}
+              className="min-h-[60px]"
             />
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <Label htmlFor="notes">{t('common.notes')}</Label>
             <Textarea
               id="notes"
               value={formData.notes}
               onChange={e => handleInputChange('notes', e.target.value)}
               placeholder={t('quilts.form.notesPlaceholder')}
-              rows={3}
+              rows={2}
+              className="min-h-[80px]"
             />
           </div>
 
           {/* Image Upload */}
-          <div className="space-y-2 border-t pt-4 mt-4">
-            <div className="mb-2">
+          <div className="border-t pt-3 mt-3">
+            <div className="mb-3">
               <Label className="text-base font-semibold">被子图片</Label>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 mt-0.5">
                 上传被子的照片，第一张将作为主图显示
               </p>
             </div>
