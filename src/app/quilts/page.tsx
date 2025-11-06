@@ -20,6 +20,7 @@ import {
   ArrowUp,
   ArrowDown,
   History,
+  Package,
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { TableSkeleton } from '@/components/ui/skeleton-layouts';
@@ -475,11 +476,7 @@ export default function QuiltsPage() {
                   <Grid3x3 className="w-4 h-4" />
                 </button>
               </div>
-              {filteredQuilts.length > 0 && (
-                <Button onClick={toggleSelectMode} variant="outline" size="sm">
-                  {t('language') === 'zh' ? '批量操作' : 'Batch Operations'}
-                </Button>
-              )}
+              {/* Batch Operations button removed - functionality preserved for future use */}
               <Button onClick={handleAddQuilt} size="sm">
                 <Plus className="w-4 h-4 mr-2" />
                 {t('quilts.actions.add')}
@@ -527,96 +524,96 @@ export default function QuiltsPage() {
                     </th>
                   )}
                   <th
-                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
+                    className="px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
                     onClick={() => handleSort('itemNumber')}
                     title={t('language') === 'zh' ? '点击排序' : 'Click to sort'}
                   >
-                    <div className="flex items-center">
+                    <div className="flex items-center justify-center">
                       {t('quilts.table.itemNumber')}
                       {renderSortIcon('itemNumber')}
                     </div>
                   </th>
                   <th
-                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
+                    className="px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
                     onClick={() => handleSort('name')}
                     title={t('language') === 'zh' ? '点击排序' : 'Click to sort'}
                   >
-                    <div className="flex items-center">
+                    <div className="flex items-center justify-center">
                       {t('quilts.views.name')}
                       {renderSortIcon('name')}
                     </div>
                   </th>
                   <th
-                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
+                    className="px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
                     onClick={() => handleSort('season')}
                     title={t('language') === 'zh' ? '点击排序' : 'Click to sort'}
                   >
-                    <div className="flex items-center">
+                    <div className="flex items-center justify-center">
                       {t('quilts.table.season')}
                       {renderSortIcon('season')}
                     </div>
                   </th>
                   <th
-                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
+                    className="px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
                     onClick={() => handleSort('size')}
                     title={t('language') === 'zh' ? '点击排序' : 'Click to sort'}
                   >
-                    <div className="flex items-center">
+                    <div className="flex items-center justify-center">
                       {t('quilts.table.size')}
                       {renderSortIcon('size')}
                     </div>
                   </th>
                   <th
-                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
+                    className="px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
                     onClick={() => handleSort('weight')}
                     title={t('language') === 'zh' ? '点击排序' : 'Click to sort'}
                   >
-                    <div className="flex items-center">
+                    <div className="flex items-center justify-center">
                       {t('quilts.table.weight')}
                       {renderSortIcon('weight')}
                     </div>
                   </th>
                   <th
-                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
+                    className="px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
                     onClick={() => handleSort('fillMaterial')}
                     title={t('language') === 'zh' ? '点击排序' : 'Click to sort'}
                   >
-                    <div className="flex items-center">
+                    <div className="flex items-center justify-center">
                       填充材料
                       {renderSortIcon('fillMaterial')}
                     </div>
                   </th>
                   <th
-                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
+                    className="px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
                     onClick={() => handleSort('color')}
                     title={t('language') === 'zh' ? '点击排序' : 'Click to sort'}
                   >
-                    <div className="flex items-center">
+                    <div className="flex items-center justify-center">
                       {t('quilts.table.color')}
                       {renderSortIcon('color')}
                     </div>
                   </th>
                   <th
-                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
+                    className="px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
                     onClick={() => handleSort('location')}
                     title={t('language') === 'zh' ? '点击排序' : 'Click to sort'}
                   >
-                    <div className="flex items-center">
+                    <div className="flex items-center justify-center">
                       存放位置
                       {renderSortIcon('location')}
                     </div>
                   </th>
                   <th
-                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
+                    className="px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
                     onClick={() => handleSort('currentStatus')}
                     title={t('language') === 'zh' ? '点击排序' : 'Click to sort'}
                   >
-                    <div className="flex items-center">
+                    <div className="flex items-center justify-center">
                       {t('quilts.table.status')}
                       {renderSortIcon('currentStatus')}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
                     {t('quilts.views.actions')}
                   </th>
                 </tr>
@@ -796,87 +793,102 @@ export default function QuiltsPage() {
             filteredQuilts.map((quilt: any) => (
               <div
                 key={quilt.id}
-                className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all duration-200 hover:-translate-y-1"
+                className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-all duration-200 hover:-translate-y-1"
               >
-                {/* Season Color Indicator */}
-                <div
-                  className={`h-2 w-full rounded-t-lg mb-3 ${
-                    quilt.season === 'WINTER'
-                      ? 'bg-blue-500'
-                      : quilt.season === 'SUMMER'
-                        ? 'bg-yellow-500'
-                        : 'bg-green-500'
-                  }`}
-                />
+                {/* Image Display */}
+                <div className="aspect-square w-full bg-gray-100 flex items-center justify-center overflow-hidden">
+                  {quilt.imageUrl || quilt.mainImage ? (
+                    <img
+                      src={quilt.imageUrl || quilt.mainImage}
+                      alt={quilt.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <Package className="w-16 h-16 text-gray-400" />
+                  )}
+                </div>
 
-                {/* Card Header */}
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-lg text-gray-900 mb-1">{quilt.name}</h3>
-                    <p className="text-sm text-gray-500">#{quilt.itemNumber}</p>
-                  </div>
-                  {/* Status Badge */}
-                  <span
-                    className={`px-2 py-1 text-xs font-medium rounded ${
-                      quilt.currentStatus === 'IN_USE'
-                        ? 'bg-green-100 text-green-800'
-                        : quilt.currentStatus === 'STORAGE'
-                          ? 'bg-blue-100 text-blue-800'
-                          : 'bg-yellow-100 text-yellow-800'
+                <div className="p-4">
+                  {/* Season Color Indicator */}
+                  <div
+                    className={`h-2 w-full rounded mb-3 ${
+                      quilt.season === 'WINTER'
+                        ? 'bg-blue-500'
+                        : quilt.season === 'SUMMER'
+                          ? 'bg-yellow-500'
+                          : 'bg-green-500'
                     }`}
-                  >
-                    {t(`status.${quilt.currentStatus}`)}
-                  </span>
-                </div>
+                  />
 
-                {/* Card Details */}
-                <div className="space-y-2 mb-4">
-                  <div className="flex items-center text-sm">
-                    <span className="text-gray-500 w-20">{t('quilts.table.season')}:</span>
-                    <span className="font-medium">{t(`season.${quilt.season}`)}</span>
+                  {/* Card Header */}
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-lg text-gray-900 mb-1">{quilt.name}</h3>
+                      <p className="text-sm text-gray-500">#{quilt.itemNumber}</p>
+                    </div>
+                    {/* Status Badge */}
+                    <span
+                      className={`px-2 py-1 text-xs font-medium rounded ${
+                        quilt.currentStatus === 'IN_USE'
+                          ? 'bg-green-100 text-green-800'
+                          : quilt.currentStatus === 'STORAGE'
+                            ? 'bg-blue-100 text-blue-800'
+                            : 'bg-yellow-100 text-yellow-800'
+                      }`}
+                    >
+                      {t(`status.${quilt.currentStatus}`)}
+                    </span>
                   </div>
-                  <div className="flex items-center text-sm">
-                    <span className="text-gray-500 w-20">{t('quilts.table.fillMaterial')}:</span>
-                    <span className="font-medium">{quilt.fillMaterial}</span>
-                  </div>
-                  <div className="flex items-center text-sm">
-                    <span className="text-gray-500 w-20">{t('quilts.table.weight')}:</span>
-                    <span className="font-medium">{quilt.weightGrams}</span>
-                  </div>
-                  <div className="flex items-center text-sm">
-                    <span className="text-gray-500 w-20">{t('quilts.table.location')}:</span>
-                    <span className="font-medium">{quilt.location}</span>
-                  </div>
-                </div>
 
-                {/* Card Actions */}
-                <div className="flex items-center gap-2 pt-3 border-t border-gray-100">
-                  <Button
-                    onClick={() => handleEditQuilt(quilt)}
-                    variant="outline"
-                    size="sm"
-                    className="flex-1"
-                  >
-                    <Edit className="w-3 h-3 mr-1" />
-                    {t('quilts.actions.edit')}
-                  </Button>
-                  <Button
-                    onClick={() => handleChangeStatus(quilt)}
-                    variant="outline"
-                    size="sm"
-                    className="flex-1"
-                  >
-                    <RotateCcw className="w-3 h-3 mr-1" />
-                    {t('language') === 'zh' ? '状态' : 'Status'}
-                  </Button>
-                  <Button
-                    onClick={() => handleDeleteQuilt(quilt)}
-                    variant="outline"
-                    size="sm"
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                  >
-                    <Trash2 className="w-3 h-3" />
-                  </Button>
+                  {/* Card Details */}
+                  <div className="space-y-2 mb-4">
+                    <div className="flex items-center text-sm">
+                      <span className="text-gray-500 w-20">{t('quilts.table.season')}:</span>
+                      <span className="font-medium">{t(`season.${quilt.season}`)}</span>
+                    </div>
+                    <div className="flex items-center text-sm">
+                      <span className="text-gray-500 w-20">{t('quilts.table.fillMaterial')}:</span>
+                      <span className="font-medium">{quilt.fillMaterial}</span>
+                    </div>
+                    <div className="flex items-center text-sm">
+                      <span className="text-gray-500 w-20">{t('quilts.table.weight')}:</span>
+                      <span className="font-medium">{quilt.weightGrams}</span>
+                    </div>
+                    <div className="flex items-center text-sm">
+                      <span className="text-gray-500 w-20">{t('quilts.table.location')}:</span>
+                      <span className="font-medium">{quilt.location}</span>
+                    </div>
+                  </div>
+
+                  {/* Card Actions */}
+                  <div className="flex items-center gap-2 pt-3 border-t border-gray-100">
+                    <Button
+                      onClick={() => handleEditQuilt(quilt)}
+                      variant="outline"
+                      size="sm"
+                      className="flex-1"
+                    >
+                      <Edit className="w-3 h-3 mr-1" />
+                      {t('quilts.actions.edit')}
+                    </Button>
+                    <Button
+                      onClick={() => handleChangeStatus(quilt)}
+                      variant="outline"
+                      size="sm"
+                      className="flex-1"
+                    >
+                      <RotateCcw className="w-3 h-3 mr-1" />
+                      {t('language') === 'zh' ? '状态' : 'Status'}
+                    </Button>
+                    <Button
+                      onClick={() => handleDeleteQuilt(quilt)}
+                      variant="outline"
+                      size="sm"
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             ))
