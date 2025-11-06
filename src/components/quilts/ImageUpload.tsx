@@ -61,7 +61,7 @@ export function ImageUpload({
 
       if (newImages.length > 0) {
         onImagesChange([...images, ...newImages]);
-        toast.success(`成功上传 ${newImages.length} 张图片`);
+        toast.success(`已添加 ${newImages.length} 张图片，点击保存按钮完成上传`);
       }
     } catch (error) {
       console.error('图片上传失败:', error);
@@ -148,6 +148,16 @@ export function ImageUpload({
               src={image}
               alt={`图片 ${imageIndex + 1}`}
               className="w-full h-full object-cover"
+              onError={(e) => {
+                console.error('Image load error:', {
+                  index: imageIndex,
+                  dataLength: image.length,
+                  dataPrefix: image.substring(0, 50),
+                });
+              }}
+              onLoad={() => {
+                console.log('Image loaded successfully:', imageIndex);
+              }}
             />
 
             {/* Delete Button */}
