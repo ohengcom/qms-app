@@ -133,6 +133,12 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
         attachmentImages: images.length > 1 ? images.slice(1) : [],
       };
 
+      console.log('Submitting quilt data:', {
+        hasMainImage: !!data.mainImage,
+        attachmentImagesCount: data.attachmentImages.length,
+        mainImageLength: data.mainImage?.length,
+      });
+
       if (quilt) {
         // Edit mode - include ID (name and itemNumber are read-only in edit mode)
         await onSave({
@@ -193,8 +199,8 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {/* Basic Information */}
-            <div className="space-y-1.5 md:col-span-2">
+            {/* Season and Location in one row */}
+            <div className="space-y-1.5">
               <Label htmlFor="season">{t('quilts.table.season')}</Label>
               <Select
                 value={formData.season}
@@ -209,6 +215,16 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
                   <SelectItem value="SUMMER">{t('season.SUMMER')}</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="location">存放位置</Label>
+              <Input
+                id="location"
+                value={formData.location}
+                onChange={e => handleInputChange('location', e.target.value)}
+                placeholder={t('quilts.form.locationPlaceholder')}
+              />
             </div>
 
             {/* Dimensions */}
@@ -278,41 +294,33 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
                 placeholder={t('quilts.form.brandPlaceholder')}
               />
             </div>
+          </div>
 
-            <div className="space-y-1.5 md:col-span-2">
-              <Label htmlFor="location">存放位置</Label>
-              <Input
-                id="location"
-                value={formData.location}
-                onChange={e => handleInputChange('location', e.target.value)}
-                placeholder={t('quilts.form.locationPlaceholder')}
+          {/* Additional Details - Material Details and Notes in one row */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="materialDetails">{t('quilts.form.materialDetails')}</Label>
+              <Textarea
+                id="materialDetails"
+                value={formData.materialDetails}
+                onChange={e => handleInputChange('materialDetails', e.target.value)}
+                placeholder={t('quilts.form.materialDetailsPlaceholder')}
+                rows={1}
+                className="min-h-[60px]"
               />
             </div>
-          </div>
 
-          {/* Additional Details */}
-          <div className="space-y-1.5">
-            <Label htmlFor="materialDetails">{t('quilts.form.materialDetails')}</Label>
-            <Textarea
-              id="materialDetails"
-              value={formData.materialDetails}
-              onChange={e => handleInputChange('materialDetails', e.target.value)}
-              placeholder={t('quilts.form.materialDetailsPlaceholder')}
-              rows={1}
-              className="min-h-[60px]"
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="notes">{t('common.notes')}</Label>
-            <Textarea
-              id="notes"
-              value={formData.notes}
-              onChange={e => handleInputChange('notes', e.target.value)}
-              placeholder={t('quilts.form.notesPlaceholder')}
-              rows={2}
-              className="min-h-[80px]"
-            />
+            <div className="space-y-1.5">
+              <Label htmlFor="notes">{t('common.notes')}</Label>
+              <Textarea
+                id="notes"
+                value={formData.notes}
+                onChange={e => handleInputChange('notes', e.target.value)}
+                placeholder={t('quilts.form.notesPlaceholder')}
+                rows={1}
+                className="min-h-[60px]"
+              />
+            </div>
           </div>
 
           {/* Image Upload */}
