@@ -211,4 +211,94 @@ export const quiltsRouter = createTRPCRouter({
     // Return empty array for now
     return [];
   }),
+
+  // Update quilt images
+  updateImages: publicProcedure
+    .input(
+      z.object({
+        quiltId: z.string(),
+        mainImage: z.string().nullable().optional(),
+        attachmentImages: z.array(z.string()).nullable().optional(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        const { quiltId, mainImage, attachmentImages } = input;
+
+        // Get current quilt
+        const quilt = await quiltRepository.findById(quiltId);
+        if (!quilt) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Quilt not found',
+          });
+        }
+
+        // Update with new images
+        const updatedQuilt = await quiltRepository.update(quiltId, {
+          mainImage: mainImage !== undefined ? mainImage : quilt.mainImage,
+          attachmentImages:
+            attachmentImages !== undefined ? attachmentImages : quilt.attachmentImages,
+        });
+
+        return updatedQuilt;
+      } catch (error) {
+        handleTRPCError(error, 'quilts.updateImages', { quiltId: input.quiltId });
+      }
+    }),
+
+  // Delete a specific attachment image
+  deleteAttachmentImage: publicProcedure
+    .input(
+      z.object({
+        quiltId: z.string(),
+        imageIndex: z.number().int().min(0),
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        const { quiltId, imageIndex } = input;
+
+        // Get current quilt
+        const quilt = await quiltRepository.findById(quiltId);
+        if (!quilt) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Quilt not found',
+          });
+        }
+
+        // Check if attachment images exist
+        if (!quilt.attachmentImages || quilt.attachmentImages.length === 0) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'No attachment images found',
+          });
+        }
+
+        // Check if index is valid
+        if (imageIndex >= quilt.attachmentImages.length) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'Invalid image index',
+          });
+        }
+
+        // Remove the image at the specified index
+        const newImages = [...quilt.attachmentImages];
+        newImages.splice(imageIndex, 1);
+
+        // Update quilt
+        const updatedQuilt = await quiltRepository.update(quiltId, {
+          attachmentImages: newImages,
+        });
+
+        return updatedQuilt;
+      } catch (error) {
+        handleTRPCError(error, 'quilts.deleteAttachmentImage', {
+          quiltId: input.quiltId,
+          imageIndex: input.imageIndex,
+        });
+      }
+    }),
 });

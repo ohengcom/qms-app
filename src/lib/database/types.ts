@@ -31,6 +31,8 @@ export interface QuiltRow {
   notes: string | null;
   image_url: string | null;
   thumbnail_url: string | null;
+  main_image: string | null;
+  attachment_images: string[] | null;
   created_at: string;
   updated_at: string;
 }
@@ -82,6 +84,8 @@ export interface Quilt {
   notes: string | null;
   imageUrl: string | null;
   thumbnailUrl: string | null;
+  mainImage: string | null;
+  attachmentImages: string[] | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -137,6 +141,8 @@ export function rowToQuilt(row: QuiltRow): Quilt {
     notes: row.notes,
     imageUrl: row.image_url,
     thumbnailUrl: row.thumbnail_url,
+    mainImage: row.main_image,
+    attachmentImages: row.attachment_images,
     createdAt: new Date(row.created_at),
     updatedAt: new Date(row.updated_at),
   };
@@ -169,6 +175,8 @@ export function quiltToRow(quilt: Partial<Quilt>): Partial<QuiltRow> {
   if (quilt.notes !== undefined) row.notes = quilt.notes;
   if (quilt.imageUrl !== undefined) row.image_url = quilt.imageUrl;
   if (quilt.thumbnailUrl !== undefined) row.thumbnail_url = quilt.thumbnailUrl;
+  if (quilt.mainImage !== undefined) row.main_image = quilt.mainImage;
+  if (quilt.attachmentImages !== undefined) row.attachment_images = quilt.attachmentImages;
   if (quilt.createdAt !== undefined) row.created_at = quilt.createdAt.toISOString();
   if (quilt.updatedAt !== undefined) row.updated_at = quilt.updatedAt.toISOString();
 

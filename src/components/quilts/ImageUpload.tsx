@@ -1,0 +1,223 @@
+'use client';
+
+/**
+ * Image Upload Component
+ * 
+ * Supports multiple image upload with preview, drag-and-drop reordering, and deletion
+ */
+
+import { useState, useRef, DragEvent } from 'react';
+import { X, Upload } from 'lucide-react';
+import { toast } from 'sonner';
+import { compressAndEncodeImage, validateImageFile } from '@/lib/image-utils';
+
+export interface ImageUploadProps {
+  images: string[]; // Base64 strings
+  onImagesChange: (images: string[]) => void;
+  maxImages?: number;
+  label?: string;
+  showMainImage?: boolean;
+}
+
+export function ImageUpload({
+  images,
+  onImagesChange,
+  maxImages = 5,
+  label = '上传图片',
+  showMainImage = true,
+}: ImageUploadProps) {
+  const [isUploading, setIsUploading] = useState(false);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileSelect = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+
+    const remainingSlots = maxImages - images.length;
+    if (remainingSlots <= 0) {
+      toast.error(`最多只能上传 ${maxImages} 张图片`);
+      return;
+    }
+
+    const filesToProcess = Array.from(files).slice(0, remainingSlots);
+
+    setIsUploading(true);
+
+    try {
+      const newImages: string[] = [];
+
+      for (const file of filesToProcess) {
+        // Validate file
+        const validation = validateImageFile(file);
+        if (!validation.valid) {
+          toast.error(validation.error || '文件验证失败');
+          continue;
+        }
+
+        // Compress and encode
+        const base64 = await compressAndEncodeImage(file);
+        newImages.push(base64);
+      }
+
+      if (newImages.length > 0) {
+        onImagesChange([...images, ...newImages]);
+        toast.success(`成功上传 ${newImages.length} 张图片`);
+      }
+    } catch (error) {
+      console.error('图片上传失败:', error);
+      toast.error(error instanceof Error ? error.message : '图片上传失败');
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleDelete = (index: number) => {
+    const newImages = images.filter((_, i) => i !== index);
+    onImagesChange(newImages);
+    toast.success('图片已删除');
+  };
+
+  const handleDragStart = (index: number) => {
+    setDraggedIndex(index);
+  };
+
+  const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e: DragEvent<HTMLDivElement>, dropIndex: number) => {
+    e.preventDefault();
+
+    if (draggedIndex === null || draggedIndex === dropIndex) {
+      setDraggedIndex(null);
+      return;
+    }
+
+    const newImages = [...images];
+    const [draggedImage] = newImages.splice(draggedIndex, 1);
+    newImages.splice(dropIndex, 0, draggedImage);
+
+    onImagesChange(newImages);
+    setDraggedIndex(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <label className="text-sm font-medium">{label}</label>
+        <span className="text-xs text-gray-500">
+          {images.length} / {maxImages}
+        </span>
+      </div>
+
+      {/* Image Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        {images.map((image, imageIndex) => (
+          <div
+            key={`${image.substring(0, 30)}-${imageIndex}`}
+            draggable
+            onDragStart={() => handleDragStart(imageIndex)}
+            onDragOver={handleDragOver}
+            onDrop={(e) => handleDrop(e, imageIndex)}
+            onDragEnd={handleDragEnd}
+            className={`
+              relative aspect-square rounded-lg overflow-hidden border-2 
+              ${draggedIndex === imageIndex ? 'opacity-50 border-blue-500' : 'border-gray-200'}
+              hover:border-blue-400 transition-all cursor-move group
+            `}
+          >
+            {/* Main Image Badge */}
+            {showMainImage && imageIndex === 0 && (
+              <div className="absolute top-2 left-2 z-10">
+                <span className="bg-blue-500 text-white text-xs px-2 py-1 rounded">
+                  主图
+                </span>
+              </div>
+            )}
+
+            {/* Image */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={image}
+              alt={`图片 ${imageIndex + 1}`}
+              className="w-full h-full object-cover"
+            />
+
+            {/* Delete Button */}
+            <button
+              onClick={() => handleDelete(imageIndex)}
+              className="
+                absolute top-2 right-2 z-10
+                bg-red-500 text-white rounded-full p-1
+                opacity-0 group-hover:opacity-100 transition-opacity
+                hover:bg-red-600
+              "
+              aria-label="删除图片"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            {/* Drag Indicator */}
+            <div className="
+              absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10
+              transition-all flex items-center justify-center
+            ">
+              <span className="text-white opacity-0 group-hover:opacity-100 text-xs">
+                拖动排序
+              </span>
+            </div>
+          </div>
+        ))}
+
+        {/* Upload Button */}
+        {images.length < maxImages && (
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isUploading}
+            className="
+              aspect-square rounded-lg border-2 border-dashed border-gray-300
+              hover:border-blue-400 hover:bg-blue-50
+              transition-all flex flex-col items-center justify-center
+              text-gray-500 hover:text-blue-500
+              disabled:opacity-50 disabled:cursor-not-allowed
+            "
+          >
+            {isUploading ? (
+              <>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
+                <span className="text-xs mt-2">上传中...</span>
+              </>
+            ) : (
+              <>
+                <Upload className="w-8 h-8 mb-2" />
+                <span className="text-xs">点击上传</span>
+              </>
+            )}
+          </button>
+        )}
+      </div>
+
+      {/* Hidden File Input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/jpeg,image/jpg,image/png,image/webp"
+        multiple
+        onChange={(e) => handleFileSelect(e.target.files)}
+        className="hidden"
+      />
+
+      {/* Help Text */}
+      <p className="text-xs text-gray-500">
+        支持 JPEG、PNG、WebP 格式，单个文件最大 5MB。第一张图片将作为主图显示。
+      </p>
+    </div>
+  );
+}

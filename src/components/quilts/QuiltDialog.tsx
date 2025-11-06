@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { useLanguage } from '@/lib/language-provider';
 import {
   Dialog,
@@ -22,6 +23,12 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2 } from 'lucide-react';
+
+// Dynamically import ImageUpload to avoid SSR issues
+const ImageUpload = dynamic(() => import('./ImageUpload').then(mod => ({ default: mod.ImageUpload })), {
+  ssr: false,
+  loading: () => <div className="text-sm text-gray-500">加载图片上传组件...</div>,
+});
 
 interface QuiltDialogProps {
   open: boolean;
@@ -46,6 +53,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
     currentStatus: 'STORAGE',
     notes: '',
   });
+  const [images, setImages] = useState<string[]>([]);
 
   // Generate preview name based on form data
   const generatePreviewName = () => {
@@ -81,6 +89,15 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
           currentStatus: quilt.currentStatus || 'MAINTENANCE',
           notes: quilt.notes || '',
         });
+        // Load existing images
+        const existingImages: string[] = [];
+        if (quilt.mainImage) {
+          existingImages.push(quilt.mainImage);
+        }
+        if (quilt.attachmentImages && Array.isArray(quilt.attachmentImages)) {
+          existingImages.push(...quilt.attachmentImages);
+        }
+        setImages(existingImages);
       } else {
         // Add mode - reset to defaults with STORAGE status
         setFormData({
@@ -96,6 +113,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
           currentStatus: 'STORAGE',
           notes: '',
         });
+        setImages([]);
       }
     }
   }, [open, quilt]);
@@ -110,6 +128,9 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
         lengthCm: parseFloat(formData.lengthCm) || 0,
         widthCm: parseFloat(formData.widthCm) || 0,
         weightGrams: parseFloat(formData.weightGrams) || 0,
+        // Add image data
+        mainImage: images.length > 0 ? images[0] : null,
+        attachmentImages: images.length > 1 ? images.slice(1) : [],
       };
 
       if (quilt) {
@@ -290,6 +311,17 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
               placeholder={t('quilts.form.notesPlaceholder')}
               rows={3}
             />
+          </div>
+
+          {/* Image Upload */}
+          <div className="space-y-2 border-t pt-4 mt-4">
+            <div className="mb-2">
+              <Label className="text-base font-semibold">被子图片</Label>
+              <p className="text-sm text-gray-500 mt-1">
+                上传被子的照片，第一张将作为主图显示
+              </p>
+            </div>
+            <ImageUpload images={images} onImagesChange={setImages} maxImages={5} />
           </div>
 
           <DialogFooter>

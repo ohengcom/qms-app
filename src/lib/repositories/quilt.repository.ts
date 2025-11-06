@@ -42,6 +42,8 @@ export interface CreateQuiltData {
   notes?: string | null;
   imageUrl?: string | null;
   thumbnailUrl?: string | null;
+  mainImage?: string | null;
+  attachmentImages?: string[] | null;
 }
 
 export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
@@ -217,6 +219,7 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
             weight_grams, fill_material, material_details, color,
             brand, purchase_date, location, packaging_info,
             current_status, notes, image_url, thumbnail_url,
+            main_image, attachment_images,
             created_at, updated_at
           ) VALUES (
             ${id},
@@ -237,6 +240,8 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
             ${data.notes || null},
             ${data.imageUrl || null},
             ${data.thumbnailUrl || null},
+            ${data.mainImage || null},
+            ${data.attachmentImages || []},
             ${now},
             ${now}
           ) RETURNING *
@@ -284,6 +289,8 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
             notes = ${rowData.notes},
             image_url = ${rowData.image_url},
             thumbnail_url = ${rowData.thumbnail_url},
+            main_image = ${rowData.main_image},
+            attachment_images = ${rowData.attachment_images},
             updated_at = ${now}
           WHERE id = ${id}
           RETURNING *
