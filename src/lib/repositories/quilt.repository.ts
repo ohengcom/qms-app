@@ -271,6 +271,16 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
         const now = new Date().toISOString();
         const rowData = this.modelToRow({ ...current, ...data, updatedAt: new Date(now) });
 
+        // Log image data for debugging
+        if (rowData.main_image || rowData.attachment_images) {
+          dbLogger.info('Updating quilt with images', {
+            id,
+            hasMainImage: !!rowData.main_image,
+            mainImageLength: rowData.main_image?.length,
+            attachmentImagesCount: rowData.attachment_images?.length || 0,
+          });
+        }
+
         const rows = await sql`
           UPDATE quilts SET
             name = ${rowData.name},

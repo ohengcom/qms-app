@@ -17,9 +17,9 @@ export interface ImageValidationResult {
 }
 
 const DEFAULT_OPTIONS: Required<ImageCompressionOptions> = {
-  maxWidth: 800,
-  maxHeight: 600,
-  quality: 0.8,
+  maxWidth: 600,
+  maxHeight: 450,
+  quality: 0.6,
   outputFormat: 'image/jpeg',
 };
 
