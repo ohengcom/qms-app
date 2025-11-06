@@ -106,8 +106,13 @@ function UsageTrackingContent() {
         handleRecordClick(record);
         break;
       case 'edit':
-        // Edit functionality would require opening the edit dialog programmatically
-        // For now, user can click the edit button
+        // Find and click the edit button for this record
+        const editButton = document.querySelector(
+          `[data-record-id="${record.id}"] button[data-action="edit"]`
+        ) as HTMLButtonElement;
+        if (editButton) {
+          editButton.click();
+        }
         break;
       case 'none':
       default:
@@ -370,6 +375,7 @@ function UsageTrackingContent() {
                   sortedUsageHistory.map((record: any, index: number) => (
                     <tr
                       key={record.id}
+                      data-record-id={record.id}
                       onDoubleClick={() => handleRecordDoubleClick(record)}
                       className={`
                       transition-all duration-150 ease-in-out
@@ -433,7 +439,12 @@ function UsageTrackingContent() {
                             onUpdate={loadUsageHistory}
                             onDelete={loadUsageHistory}
                             trigger={
-                              <Button variant="ghost" size="sm" className="h-8 px-2">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 px-2"
+                                data-action="edit"
+                              >
                                 <Edit className="h-3.5 w-3.5" />
                               </Button>
                             }

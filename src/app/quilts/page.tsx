@@ -180,6 +180,10 @@ export default function QuiltsPage() {
     const doubleClickAction = appSettings?.doubleClickAction || 'status';
 
     switch (doubleClickAction) {
+      case 'view':
+        // Navigate to quilts page with search filter to show this quilt
+        router.push(`/quilts?search=${quilt.name}`);
+        break;
       case 'status':
         handleChangeStatus(quilt);
         break;
