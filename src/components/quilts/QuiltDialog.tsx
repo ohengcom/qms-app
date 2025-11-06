@@ -97,6 +97,12 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
         if (quilt.attachmentImages && Array.isArray(quilt.attachmentImages)) {
           existingImages.push(...quilt.attachmentImages);
         }
+        console.log('Loading quilt images:', {
+          hasMainImage: !!quilt.mainImage,
+          mainImageLength: quilt.mainImage?.length,
+          attachmentImagesCount: quilt.attachmentImages?.length || 0,
+          totalImages: existingImages.length,
+        });
         setImages(existingImages);
       } else {
         // Add mode - reset to defaults with STORAGE status
@@ -123,20 +129,24 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
     setLoading(true);
 
     try {
-      const data = {
+      const data: any = {
         ...formData,
         lengthCm: parseFloat(formData.lengthCm) || 0,
         widthCm: parseFloat(formData.widthCm) || 0,
         weightGrams: parseFloat(formData.weightGrams) || 0,
-        // Add image data
-        mainImage: images.length > 0 ? images[0] : null,
-        attachmentImages: images.length > 1 ? images.slice(1) : [],
       };
+
+      // Only include image fields if there are images
+      if (images.length > 0) {
+        data.mainImage = images[0];
+        data.attachmentImages = images.length > 1 ? images.slice(1) : [];
+      }
 
       console.log('Submitting quilt data:', {
         hasMainImage: !!data.mainImage,
-        attachmentImagesCount: data.attachmentImages.length,
+        attachmentImagesCount: data.attachmentImages?.length || 0,
         mainImageLength: data.mainImage?.length,
+        totalImagesInState: images.length,
       });
 
       if (quilt) {
