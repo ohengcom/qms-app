@@ -18,8 +18,8 @@ const updateAppSettingsSchema = z.object({
   language: z.enum(['zh', 'en']).optional(),
   itemsPerPage: z.number().min(10).max(100).optional(),
   defaultView: z.enum(['list', 'grid']).optional(),
-  doubleClickAction: z.enum(['none', 'status', 'edit']).optional(),
-  usageDoubleClickAction: z.enum(['none', 'view', 'edit', 'end']).optional(),
+  doubleClickAction: z.enum(['none', 'view', 'status', 'edit']).optional(),
+  usageDoubleClickAction: z.enum(['none', 'view', 'edit']).optional(),
 });
 
 const changePasswordSchema = z.object({

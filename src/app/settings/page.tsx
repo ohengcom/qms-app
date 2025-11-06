@@ -36,9 +36,9 @@ export default function SettingsPage() {
 
   // Use double click action directly from settings
   const doubleClickAction =
-    (appSettings?.doubleClickAction as 'none' | 'status' | 'edit') || 'status';
+    (appSettings?.doubleClickAction as 'none' | 'status' | 'edit' | 'view') || 'status';
 
-  const handleDoubleClickActionChange = async (value: 'none' | 'status' | 'edit') => {
+  const handleDoubleClickActionChange = async (value: 'none' | 'status' | 'edit' | 'view') => {
     try {
       await updateSettings.mutateAsync({ doubleClickAction: value });
       toast.success(
@@ -132,7 +132,7 @@ export default function SettingsPage() {
                 <Select
                   value={doubleClickAction}
                   onValueChange={value =>
-                    handleDoubleClickActionChange(value as 'none' | 'status' | 'edit')
+                    handleDoubleClickActionChange(value as 'none' | 'status' | 'edit' | 'view')
                   }
                 >
                   <SelectTrigger id="double-click-action">
@@ -146,6 +146,18 @@ export default function SettingsPage() {
                         </span>
                         <span className="text-xs text-gray-500">
                           {language === 'zh' ? '双击不执行任何操作' : 'Double-click does nothing'}
+                        </span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="view">
+                      <div className="flex flex-col items-start">
+                        <span className="font-medium">
+                          {language === 'zh' ? '查看详情' : 'View Details'}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {language === 'zh'
+                            ? '双击查看被子详情'
+                            : 'Double-click to view quilt details'}
                         </span>
                       </div>
                     </SelectItem>
@@ -189,7 +201,7 @@ export default function SettingsPage() {
                   onValueChange={async value => {
                     try {
                       await updateSettings.mutateAsync({
-                        usageDoubleClickAction: value as 'none' | 'view' | 'edit' | 'end',
+                        usageDoubleClickAction: value as 'none' | 'view' | 'edit',
                       });
                       toast.success(
                         language === 'zh' ? '设置已保存' : 'Settings saved',
@@ -244,18 +256,6 @@ export default function SettingsPage() {
                           {language === 'zh'
                             ? '双击编辑使用记录'
                             : 'Double-click to edit usage record'}
-                        </span>
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="end">
-                      <div className="flex flex-col items-start">
-                        <span className="font-medium">
-                          {language === 'zh' ? '结束使用' : 'End Usage'}
-                        </span>
-                        <span className="text-xs text-gray-500">
-                          {language === 'zh'
-                            ? '双击结束使用（仅活动记录）'
-                            : 'Double-click to end usage (active only)'}
                         </span>
                       </div>
                     </SelectItem>
@@ -351,17 +351,6 @@ export default function SettingsPage() {
                   </span>
                 </div>
                 <span className="text-sm font-medium">{systemInfo?.version || '0.5.0'}</span>
-              </div>
-              <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                <div className="flex items-center space-x-2">
-                  <Info className="w-4 h-4 text-gray-400" />
-                  <span className="text-sm text-gray-600">
-                    {t('settings.sections.system.framework')}
-                  </span>
-                </div>
-                <span className="text-sm font-medium">
-                  {systemInfo?.framework || 'Next.js 15.0.3'}
-                </span>
               </div>
               <div className="flex items-center justify-between py-2 border-b border-gray-100">
                 <div className="flex items-center space-x-2">
