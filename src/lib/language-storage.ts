@@ -60,41 +60,17 @@ export function clearStoredLanguage(): void {
 }
 
 /**
- * Get the default language based on browser settings
- * Falls back to 'zh' if detection fails
+ * Get the default language
+ * Always defaults to Chinese ('zh')
  */
 export function getDefaultLanguage(): Language {
-  if (typeof window === 'undefined') {
-    return 'zh';
-  }
-
-  try {
-    // Check browser language
-    const browserLang = navigator.language.toLowerCase();
-
-    // If browser language starts with 'zh', use Chinese
-    if (browserLang.startsWith('zh')) {
-      return 'zh';
-    }
-
-    // If browser language starts with 'en', use English
-    if (browserLang.startsWith('en')) {
-      return 'en';
-    }
-
-    // Default to Chinese for other languages
-    return 'zh';
-  } catch (error) {
-    console.error('Error detecting browser language:', error);
-    return 'zh';
-  }
+  return 'zh';
 }
 
 /**
  * Get the language to use, with the following priority:
  * 1. Stored language preference
- * 2. Browser language
- * 3. Default fallback (zh)
+ * 2. Default fallback (zh)
  */
 export function getInitialLanguage(): Language {
   // First, try to get stored preference
@@ -103,6 +79,6 @@ export function getInitialLanguage(): Language {
     return stored;
   }
 
-  // Fall back to browser language detection
+  // Default to Chinese
   return getDefaultLanguage();
 }
