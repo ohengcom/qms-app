@@ -11,7 +11,6 @@ import {
   Edit,
   Trash2,
   RotateCcw,
-  Filter,
   PackageOpen,
   SearchX,
   Grid3x3,
@@ -27,6 +26,7 @@ import { TableSkeleton } from '@/components/ui/skeleton-layouts';
 import { EmptyState } from '@/components/ui/empty-state';
 import { QuiltDialog } from '@/components/quilts/QuiltDialog';
 import { StatusChangeDialog } from '@/components/quilts/StatusChangeDialog';
+import { AdvancedFilters, type FilterCriteria } from '@/components/quilts/AdvancedFilters';
 import { toast, getToastMessage } from '@/lib/toast';
 import { useQuilts, useCreateQuilt, useUpdateQuilt, useDeleteQuilt } from '@/hooks/useQuilts';
 import { useCreateUsageRecord, useEndUsageRecord } from '@/hooks/useUsage';
@@ -37,6 +37,12 @@ export default function QuiltsPage() {
   const router = useRouter();
   const urlSearchTerm = searchParams.get('search') || '';
   const [searchTerm, setSearchTerm] = useState(urlSearchTerm);
+  const [filters, setFilters] = useState<FilterCriteria>({
+    seasons: [],
+    statuses: [],
+    colors: [],
+    materials: [],
+  });
 
   // Dialog states
   const [quiltDialogOpen, setQuiltDialogOpen] = useState(false);
@@ -80,6 +86,23 @@ export default function QuiltsPage() {
     }
   };
 
+  // Get unique colors and materials for filter options
+  const availableColors = useMemo(() => {
+    const colors = new Set<string>();
+    quilts.forEach((quilt: any) => {
+      if (quilt.color) colors.add(quilt.color);
+    });
+    return Array.from(colors).sort();
+  }, [quilts]);
+
+  const availableMaterials = useMemo(() => {
+    const materials = new Set<string>();
+    quilts.forEach((quilt: any) => {
+      if (quilt.fillMaterial) materials.add(quilt.fillMaterial);
+    });
+    return Array.from(materials).sort();
+  }, [quilts]);
+
   // Memoized filtered and sorted quilts
   const filteredQuilts = useMemo(() => {
     let result = quilts;
@@ -95,6 +118,51 @@ export default function QuiltsPage() {
           quilt.season?.toLowerCase().includes(searchTerm.toLowerCase()) ||
           quilt.currentStatus?.toLowerCase().includes(searchTerm.toLowerCase())
       );
+    }
+
+    // Apply advanced filters
+    // Season filter
+    if (filters.seasons.length > 0) {
+      result = result.filter((quilt: any) => filters.seasons.includes(quilt.season));
+    }
+
+    // Status filter
+    if (filters.statuses.length > 0) {
+      result = result.filter((quilt: any) => filters.statuses.includes(quilt.currentStatus));
+    }
+
+    // Weight filter
+    if (filters.minWeight !== undefined) {
+      result = result.filter((quilt: any) => parseFloat(quilt.weightGrams) >= filters.minWeight!);
+    }
+    if (filters.maxWeight !== undefined) {
+      result = result.filter((quilt: any) => parseFloat(quilt.weightGrams) <= filters.maxWeight!);
+    }
+
+    // Length filter
+    if (filters.minLength !== undefined) {
+      result = result.filter((quilt: any) => parseFloat(quilt.lengthCm) >= filters.minLength!);
+    }
+    if (filters.maxLength !== undefined) {
+      result = result.filter((quilt: any) => parseFloat(quilt.lengthCm) <= filters.maxLength!);
+    }
+
+    // Width filter
+    if (filters.minWidth !== undefined) {
+      result = result.filter((quilt: any) => parseFloat(quilt.widthCm) >= filters.minWidth!);
+    }
+    if (filters.maxWidth !== undefined) {
+      result = result.filter((quilt: any) => parseFloat(quilt.widthCm) <= filters.maxWidth!);
+    }
+
+    // Color filter
+    if (filters.colors.length > 0) {
+      result = result.filter((quilt: any) => filters.colors.includes(quilt.color));
+    }
+
+    // Material filter
+    if (filters.materials.length > 0) {
+      result = result.filter((quilt: any) => filters.materials.includes(quilt.fillMaterial));
     }
 
     // Apply sorting
@@ -145,7 +213,7 @@ export default function QuiltsPage() {
     }
 
     return result;
-  }, [quilts, searchTerm, sortField, sortDirection]);
+  }, [quilts, searchTerm, sortField, sortDirection, filters]);
 
   const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -502,10 +570,16 @@ export default function QuiltsPage() {
             className="pl-9 h-9"
           />
         </div>
-        <Button variant="outline" size="sm">
-          <Filter className="w-4 h-4 mr-2" />
-          {t('language') === 'zh' ? '筛选' : 'Filter'}
-        </Button>
+        <AdvancedFilters
+          onFilterChange={setFilters}
+          availableColors={availableColors}
+          availableMaterials={availableMaterials}
+        />
+        {filteredQuilts.length !== quilts.length && (
+          <span className="text-sm text-gray-600">
+            {t('language') === 'zh' ? '显示' : 'Showing'} {filteredQuilts.length} / {quilts.length}
+          </span>
+        )}
       </div>
 
       {/* List View - Enhanced Professional Data Table */}
