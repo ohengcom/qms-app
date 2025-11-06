@@ -181,8 +181,8 @@ export default function QuiltsPage() {
 
     switch (doubleClickAction) {
       case 'view':
-        // Navigate to quilts page with search filter to show this quilt
-        router.push(`/quilts?search=${quilt.name}`);
+        // View usage history - same as clicking the view button
+        handleViewUsageHistory(quilt);
         break;
       case 'status':
         handleChangeStatus(quilt);
