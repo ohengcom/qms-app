@@ -20,7 +20,9 @@ import {
   User,
   Calendar,
   FileText,
+  Github,
 } from 'lucide-react';
+import packageJson from '../../../package.json';
 
 const getNavigation = (t: (key: string) => string) => [
   {
@@ -126,13 +128,32 @@ export function AppLayout({ children }: AppLayoutProps) {
               </nav>
               {/* Version display */}
               <div className="flex-shrink-0 border-t border-gray-200 p-4">
-                <div className="text-center">
+                <div className="text-center space-y-2">
                   <p className="text-xs text-gray-400">
-                    Version {process.env.NEXT_PUBLIC_APP_VERSION || '0.5.0'}
+                    {t('common.version')} {packageJson.version}
                   </p>
-                  <p className="text-xs text-gray-300 mt-1">
-                    {new Date().toISOString().split('T')[0]}
-                  </p>
+                  <div className="flex items-center justify-center gap-3">
+                    <a
+                      href="https://github.com/ohengcom/qms-app"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-gray-400 hover:text-gray-600 transition-colors"
+                      title="GitHub"
+                    >
+                      <Github className="h-4 w-4" />
+                    </a>
+                    <a
+                      href="https://vercel.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-gray-400 hover:text-gray-600 transition-colors flex items-center gap-1"
+                      title="Deployed on Vercel"
+                    >
+                      <svg className="h-4 w-4" viewBox="0 0 76 65" fill="currentColor">
+                        <path d="M37.5274 0L75.0548 65H0L37.5274 0Z" />
+                      </svg>
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
@@ -186,13 +207,32 @@ export function AppLayout({ children }: AppLayoutProps) {
             </nav>
             {/* Version display */}
             <div className="flex-shrink-0 border-t border-gray-200 p-4">
-              <div className="text-center">
+              <div className="text-center space-y-2">
                 <p className="text-xs text-gray-400">
-                  {t('common.version')} {process.env.NEXT_PUBLIC_APP_VERSION || '0.5.0'}
+                  {t('common.version')} {packageJson.version}
                 </p>
-                <p className="text-xs text-gray-300 mt-1">
-                  {new Date().toISOString().split('T')[0]}
-                </p>
+                <div className="flex items-center justify-center gap-3">
+                  <a
+                    href="https://github.com/ohengcom/qms-app"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                    title="GitHub"
+                  >
+                    <Github className="h-4 w-4" />
+                  </a>
+                  <a
+                    href="https://vercel.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-gray-600 transition-colors flex items-center gap-1"
+                    title="Deployed on Vercel"
+                  >
+                    <svg className="h-4 w-4" viewBox="0 0 76 65" fill="currentColor">
+                      <path d="M37.5274 0L75.0548 65H0L37.5274 0Z" />
+                    </svg>
+                  </a>
+                </div>
               </div>
             </div>
           </div>
