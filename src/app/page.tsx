@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useDashboardStats } from '@/hooks/useDashboard';
 import { useWeather } from '@/hooks/useWeather';
 import { useLanguage } from '@/lib/language-provider';
@@ -12,6 +13,7 @@ import { AnimatedList, AnimatedListItem } from '@/components/motion/AnimatedList
 import { EmptyState } from '@/components/ui/empty-state';
 
 export default function DashboardPage() {
+  const router = useRouter();
   const { data: stats, isLoading, error } = useDashboardStats();
   const { data: weather, isLoading: weatherLoading } = useWeather();
   const { t } = useLanguage();
@@ -196,7 +198,12 @@ export default function DashboardPage() {
               />
             ) : (
               inUseQuilts.map((quilt: any) => (
-                <div key={quilt.id} className="px-6 py-3 table-row-hover">
+                <div
+                  key={quilt.id}
+                  className="px-6 py-3 table-row-hover cursor-pointer"
+                  onDoubleClick={() => router.push(`/quilts?search=${quilt.name}`)}
+                  title={lang === 'zh' ? '双击查看详情' : 'Double-click to view details'}
+                >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3 flex-1">
                       <Package className="w-5 h-5 text-success flex-shrink-0" />
@@ -220,6 +227,7 @@ export default function DashboardPage() {
                     <Link
                       href={`/quilts?search=${quilt.name}`}
                       className="text-sm text-primary hover:text-primary/80 font-medium transition-colors"
+                      onClick={e => e.stopPropagation()}
                     >
                       {t('pages.viewDetails')}
                     </Link>
@@ -256,7 +264,12 @@ export default function DashboardPage() {
               />
             ) : (
               historicalUsage.map((record: any) => (
-                <div key={record.id} className="px-6 py-3 table-row-hover">
+                <div
+                  key={record.id}
+                  className="px-6 py-3 table-row-hover cursor-pointer"
+                  onDoubleClick={() => router.push(`/quilts?search=${record.quiltName}`)}
+                  title={lang === 'zh' ? '双击查看详情' : 'Double-click to view details'}
+                >
                   <div className="flex items-center gap-3">
                     <span className="font-semibold text-accent-foreground w-12 text-center">
                       {record.year}

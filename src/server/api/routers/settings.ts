@@ -19,6 +19,7 @@ const updateAppSettingsSchema = z.object({
   itemsPerPage: z.number().min(10).max(100).optional(),
   defaultView: z.enum(['list', 'grid']).optional(),
   doubleClickAction: z.enum(['none', 'status', 'edit']).optional(),
+  usageDoubleClickAction: z.enum(['none', 'view', 'edit', 'end']).optional(),
 });
 
 const changePasswordSchema = z.object({
@@ -32,6 +33,7 @@ export const settingsRouter = createTRPCRouter({
     try {
       const appName = await systemSettingsRepository.getAppName();
       const doubleClickAction = await systemSettingsRepository.getDoubleClickAction();
+      const usageDoubleClickAction = await systemSettingsRepository.getUsageDoubleClickAction();
 
       return {
         appName,
@@ -39,6 +41,7 @@ export const settingsRouter = createTRPCRouter({
         itemsPerPage: 25,
         defaultView: 'list' as const,
         doubleClickAction: doubleClickAction || 'status',
+        usageDoubleClickAction: usageDoubleClickAction || 'view',
       };
     } catch (error) {
       handleTRPCError(error, 'settings.getAppSettings');
@@ -56,6 +59,11 @@ export const settingsRouter = createTRPCRouter({
       // Update double click action if provided
       if (input.doubleClickAction) {
         await systemSettingsRepository.updateDoubleClickAction(input.doubleClickAction);
+      }
+
+      // Update usage double click action if provided
+      if (input.usageDoubleClickAction) {
+        await systemSettingsRepository.updateUsageDoubleClickAction(input.usageDoubleClickAction);
       }
 
       return {

@@ -185,6 +185,24 @@ export class SystemSettingsRepository extends BaseRepositoryImpl<SystemSettingRo
   async updateDoubleClickAction(action: 'none' | 'status' | 'edit'): Promise<void> {
     return this.setSetting('double_click_action', action, 'Double click behavior in quilt list');
   }
+
+  /**
+   * Get usage double click action
+   */
+  async getUsageDoubleClickAction(): Promise<string | null> {
+    return this.getSetting('usage_double_click_action');
+  }
+
+  /**
+   * Update usage double click action
+   */
+  async updateUsageDoubleClickAction(action: 'none' | 'view' | 'edit' | 'end'): Promise<void> {
+    return this.setSetting(
+      'usage_double_click_action',
+      action,
+      'Double click behavior in usage record list'
+    );
+  }
 }
 
 // Export singleton instance

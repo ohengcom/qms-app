@@ -127,7 +127,7 @@ export default function SettingsPage() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="double-click-action">
-                  {language === 'zh' ? '双击行为' : 'Double-click Behavior'}
+                  {language === 'zh' ? '被子列表双击行为' : 'Quilt List Double-click Behavior'}
                 </Label>
                 <Select
                   value={doubleClickAction}
@@ -177,6 +177,94 @@ export default function SettingsPage() {
                   {language === 'zh'
                     ? '设置在被子列表中双击行时的默认行为'
                     : 'Set the default behavior when double-clicking a row in the quilt list'}
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="usage-double-click-action">
+                  {language === 'zh' ? '使用记录双击行为' : 'Usage Record Double-click Behavior'}
+                </Label>
+                <Select
+                  value={(appSettings?.usageDoubleClickAction as string) || 'view'}
+                  onValueChange={async value => {
+                    try {
+                      await updateSettings.mutateAsync({
+                        usageDoubleClickAction: value as 'none' | 'view' | 'edit' | 'end',
+                      });
+                      toast.success(
+                        language === 'zh' ? '设置已保存' : 'Settings saved',
+                        language === 'zh'
+                          ? '使用记录双击行为已更新'
+                          : 'Usage record double-click behavior updated'
+                      );
+                    } catch (error) {
+                      toast.error(
+                        language === 'zh' ? '保存失败' : 'Save failed',
+                        error instanceof Error
+                          ? error.message
+                          : language === 'zh'
+                            ? '请重试'
+                            : 'Please try again'
+                      );
+                    }
+                  }}
+                >
+                  <SelectTrigger id="usage-double-click-action">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">
+                      <div className="flex flex-col items-start">
+                        <span className="font-medium">
+                          {language === 'zh' ? '无动作' : 'No Action'}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {language === 'zh' ? '双击不执行任何操作' : 'Double-click does nothing'}
+                        </span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="view">
+                      <div className="flex flex-col items-start">
+                        <span className="font-medium">
+                          {language === 'zh' ? '查看详情' : 'View Details'}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {language === 'zh'
+                            ? '双击查看被子详情'
+                            : 'Double-click to view quilt details'}
+                        </span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="edit">
+                      <div className="flex flex-col items-start">
+                        <span className="font-medium">
+                          {language === 'zh' ? '编辑记录' : 'Edit Record'}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {language === 'zh'
+                            ? '双击编辑使用记录'
+                            : 'Double-click to edit usage record'}
+                        </span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="end">
+                      <div className="flex flex-col items-start">
+                        <span className="font-medium">
+                          {language === 'zh' ? '结束使用' : 'End Usage'}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {language === 'zh'
+                            ? '双击结束使用（仅活动记录）'
+                            : 'Double-click to end usage (active only)'}
+                        </span>
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-gray-500">
+                  {language === 'zh'
+                    ? '设置在使用记录列表中双击行时的默认行为'
+                    : 'Set the default behavior when double-clicking a row in the usage record list'}
                 </p>
               </div>
             </CardContent>
