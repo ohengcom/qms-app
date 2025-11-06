@@ -152,7 +152,12 @@ export function ImageUpload({
 
             {/* Delete Button */}
             <button
-              onClick={() => handleDelete(imageIndex)}
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleDelete(imageIndex);
+              }}
               className="
                 absolute top-2 right-2 z-10
                 bg-red-500 text-white rounded-full p-1
@@ -179,7 +184,12 @@ export function ImageUpload({
         {/* Upload Button */}
         {images.length < maxImages && (
           <button
-            onClick={() => fileInputRef.current?.click()}
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              fileInputRef.current?.click();
+            }}
             disabled={isUploading}
             className="
               aspect-square rounded-lg border-2 border-dashed border-gray-300
