@@ -23,6 +23,7 @@ import { EditUsageRecordDialog } from '@/components/usage/EditUsageRecordDialog'
 import { TemperatureDisplay } from '@/components/usage/TemperatureDisplay';
 import { useUsageRecords, useOverallUsageStats, useQuiltUsageRecords } from '@/hooks/useUsage';
 import { useQuilts } from '@/hooks/useQuilts';
+import { useAppSettings } from '@/hooks/useSettings';
 
 interface QuiltUsageDetail {
   id: string;
@@ -47,6 +48,7 @@ function UsageTrackingContent() {
   const { data: usageData, isLoading: loading } = useUsageRecords();
   const { data: statsData } = useOverallUsageStats();
   const { data: quiltsData } = useQuilts();
+  const { data: appSettings } = useAppSettings();
   const { data: quiltUsageData, isLoading: detailLoading } = useQuiltUsageRecords(
     selectedQuilt?.id || ''
   );
@@ -93,6 +95,25 @@ function UsageTrackingContent() {
       currentStatus: record.currentStatus || '',
     });
     setView('detail');
+  };
+
+  const handleRecordDoubleClick = (record: any) => {
+    const usageDoubleClickAction = (appSettings?.usageDoubleClickAction as string) || 'view';
+
+    switch (usageDoubleClickAction) {
+      case 'view':
+        // View quilt details
+        handleRecordClick(record);
+        break;
+      case 'edit':
+        // Edit functionality would require opening the edit dialog programmatically
+        // For now, user can click the edit button
+        break;
+      case 'none':
+      default:
+        // Do nothing
+        break;
+    }
   };
 
   const handleBackToList = () => {
@@ -349,12 +370,15 @@ function UsageTrackingContent() {
                   sortedUsageHistory.map((record: any, index: number) => (
                     <tr
                       key={record.id}
+                      onDoubleClick={() => handleRecordDoubleClick(record)}
                       className={`
                       transition-all duration-150 ease-in-out
                       hover:bg-blue-50 hover:shadow-sm
+                      cursor-pointer
                       ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}
                       border-b border-gray-100 last:border-b-0
                     `}
+                      title={language === 'zh' ? '双击执行操作' : 'Double-click to perform action'}
                     >
                       <td className="px-4 py-3 text-sm font-medium text-gray-900">
                         #{record.itemNumber}
