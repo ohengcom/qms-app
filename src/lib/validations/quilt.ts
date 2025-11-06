@@ -97,6 +97,8 @@ const baseQuiltSchemaObject = z.object({
   notes: z.string().max(1000, 'Notes too long (max 1000 characters)').optional(),
   imageUrl: z.string().url('Invalid image URL').optional().or(z.literal('')),
   thumbnailUrl: z.string().url('Invalid thumbnail URL').optional().or(z.literal('')),
+  mainImage: z.string().optional().nullable(),
+  attachmentImages: z.array(z.string()).optional().nullable(),
 });
 
 // Create Quilt Schema with refinements
