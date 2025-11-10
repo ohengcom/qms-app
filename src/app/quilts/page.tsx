@@ -24,6 +24,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { TableSkeleton } from '@/components/ui/skeleton-layouts';
 import { EmptyState } from '@/components/ui/empty-state';
+import { HighlightText } from '@/components/ui/highlight-text';
 import { QuiltDialog } from '@/components/quilts/QuiltDialog';
 import { StatusChangeDialog } from '@/components/quilts/StatusChangeDialog';
 import { AdvancedFilters, type FilterCriteria } from '@/components/quilts/AdvancedFilters';
@@ -756,19 +757,27 @@ export default function QuiltsPage() {
                         </td>
                       )}
                       <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                        #{quilt.itemNumber}
+                        <HighlightText text={`#${quilt.itemNumber}`} searchTerm={searchTerm} />
                       </td>
-                      <td className="px-4 py-3 text-sm font-medium text-gray-900">{quilt.name}</td>
+                      <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                        <HighlightText text={quilt.name} searchTerm={searchTerm} />
+                      </td>
                       <td className="px-4 py-3 text-sm text-gray-700">
-                        {t(`season.${quilt.season}`)}
+                        <HighlightText text={t(`season.${quilt.season}`)} searchTerm={searchTerm} />
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-700">
                         {quilt.lengthCm}×{quilt.widthCm}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-700">{quilt.weightGrams}</td>
-                      <td className="px-4 py-3 text-sm text-gray-900">{quilt.fillMaterial}</td>
-                      <td className="px-4 py-3 text-sm text-gray-700">{quilt.color || '-'}</td>
-                      <td className="px-4 py-3 text-sm text-gray-700">{quilt.location}</td>
+                      <td className="px-4 py-3 text-sm text-gray-900">
+                        <HighlightText text={quilt.fillMaterial} searchTerm={searchTerm} />
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-700">
+                        <HighlightText text={quilt.color || '-'} searchTerm={searchTerm} />
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-700">
+                        <HighlightText text={quilt.location} searchTerm={searchTerm} />
+                      </td>
                       <td className="px-4 py-3">
                         <span
                           className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
@@ -901,8 +910,12 @@ export default function QuiltsPage() {
                   {/* Card Header */}
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
-                      <h3 className="font-semibold text-lg text-gray-900 mb-1">{quilt.name}</h3>
-                      <p className="text-sm text-gray-500">#{quilt.itemNumber}</p>
+                      <h3 className="font-semibold text-lg text-gray-900 mb-1">
+                        <HighlightText text={quilt.name} searchTerm={searchTerm} />
+                      </h3>
+                      <p className="text-sm text-gray-500">
+                        <HighlightText text={`#${quilt.itemNumber}`} searchTerm={searchTerm} />
+                      </p>
                     </div>
                     {/* Status Badge */}
                     <span
@@ -922,11 +935,15 @@ export default function QuiltsPage() {
                   <div className="space-y-2 mb-4">
                     <div className="flex items-center text-sm">
                       <span className="text-gray-500 w-20">{t('quilts.table.season')}:</span>
-                      <span className="font-medium">{t(`season.${quilt.season}`)}</span>
+                      <span className="font-medium">
+                        <HighlightText text={t(`season.${quilt.season}`)} searchTerm={searchTerm} />
+                      </span>
                     </div>
                     <div className="flex items-center text-sm">
                       <span className="text-gray-500 w-20">{t('quilts.table.fillMaterial')}:</span>
-                      <span className="font-medium">{quilt.fillMaterial}</span>
+                      <span className="font-medium">
+                        <HighlightText text={quilt.fillMaterial} searchTerm={searchTerm} />
+                      </span>
                     </div>
                     <div className="flex items-center text-sm">
                       <span className="text-gray-500 w-20">{t('quilts.table.weight')}:</span>
@@ -934,7 +951,9 @@ export default function QuiltsPage() {
                     </div>
                     <div className="flex items-center text-sm">
                       <span className="text-gray-500 w-20">{t('quilts.table.location')}:</span>
-                      <span className="font-medium">{quilt.location}</span>
+                      <span className="font-medium">
+                        <HighlightText text={quilt.location} searchTerm={searchTerm} />
+                      </span>
                     </div>
                   </div>
 
