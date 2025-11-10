@@ -147,7 +147,7 @@ export function ImageUpload({
             <img
               src={image}
               alt={`图片 ${imageIndex + 1}`}
-              className="w-full h-full object-cover bg-gray-100"
+              className="w-full h-full object-cover bg-gray-100 relative z-0"
               onLoad={(e) => {
                 console.log(`Image ${imageIndex} loaded successfully, dimensions:`, e.currentTarget.naturalWidth, 'x', e.currentTarget.naturalHeight);
               }}
@@ -179,9 +179,9 @@ export function ImageUpload({
             {/* Drag Indicator */}
             <div className="
               absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10
-              transition-all flex items-center justify-center
+              transition-all flex items-center justify-center pointer-events-none z-20
             ">
-              <span className="text-white opacity-0 group-hover:opacity-100 text-xs">
+              <span className="text-white opacity-0 group-hover:opacity-100 text-xs pointer-events-none">
                 拖动排序
               </span>
             </div>
