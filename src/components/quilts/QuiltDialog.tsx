@@ -330,10 +330,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
             </div>
             <ImageUpload 
               images={images} 
-              onImagesChange={(newImages) => {
-                console.log('图片数量变化:', images.length, '->', newImages.length);
-                setImages(newImages);
-              }} 
+              onImagesChange={setImages} 
               maxImages={5} 
             />
           </div>
