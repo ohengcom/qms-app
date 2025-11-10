@@ -2,35 +2,22 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { useDashboardStats } from '@/hooks/useDashboard';
 import { useLanguage } from '@/lib/language-provider';
 import { DashboardStatsSkeleton, CardSkeleton } from '@/components/ui/skeleton-layouts';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Package, Activity, Archive, Calendar, History, PackageOpen } from 'lucide-react';
+import { Package, Activity, Archive, History, PackageOpen, Sparkles } from 'lucide-react';
 import { PageTransition } from '@/components/motion/PageTransition';
 import { AnimatedList, AnimatedListItem } from '@/components/motion/AnimatedList';
 import { EmptyState } from '@/components/ui/empty-state';
-import { QuiltRecommendation } from '@/components/dashboard/QuiltRecommendation';
+import { WeatherWidget } from '@/components/weather/WeatherWidget';
 
 export default function DashboardPage() {
   const router = useRouter();
   const { data: stats, isLoading, error } = useDashboardStats();
   const { t } = useLanguage();
-
-  // Format date
-  const today = new Date();
-  const dateStr = today.toLocaleDateString('zh-CN', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    weekday: 'long',
-  });
-  const dateStrEn = today.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    weekday: 'long',
-  });
+  const [activeTab, setActiveTab] = useState<'current' | 'history' | 'recommended'>('current');
 
   if (isLoading) {
     return (
@@ -77,16 +64,8 @@ export default function DashboardPage() {
   return (
     <PageTransition>
       <div className="space-y-6">
-        {/* Header with Date */}
-        <div className="flex items-start justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold text-gray-900">{t('dashboard.title')}</h1>
-          </div>
-          <div className="flex items-center gap-2 text-gray-700">
-            <Calendar className="w-5 h-5" />
-            <span className="text-sm">{lang === 'zh' ? dateStr : dateStrEn}</span>
-          </div>
-        </div>
+        {/* Weather Widget at Top */}
+        <WeatherWidget />
 
         {/* Enhanced Stats Grid - 3 Cards */}
         <AnimatedList className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -152,140 +131,200 @@ export default function DashboardPage() {
           </AnimatedListItem>
         </AnimatedList>
 
-        {/* Weather and Quilt Recommendation */}
-        <QuiltRecommendation />
-
-        {/* Currently In Use Quilts - List View */}
+        {/* Tabbed Content Section */}
         <div className="card-elevated bg-white rounded-lg overflow-hidden">
-          <div className="px-6 py-4 border-b border-border bg-muted/30">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-success/10 flex items-center justify-center">
-                <Activity className="w-4 h-4 text-success" />
-              </div>
-              <h2 className="text-lg font-semibold text-foreground">{t('pages.currentlyInUse')}</h2>
-              <span className="px-2 py-0.5 bg-success/10 text-success text-xs font-medium rounded-full">
-                {inUseQuilts.length}
-              </span>
-            </div>
-          </div>
-          <div className="divide-y divide-border">
-            {inUseQuilts.length === 0 ? (
-              <EmptyState
-                icon={PackageOpen}
-                title={t('pages.noQuiltsInUse')}
-                description={
-                  lang === 'zh' ? '当前没有正在使用的被子' : 'No quilts are currently in use'
-                }
-              />
-            ) : (
-              inUseQuilts.map((quilt: any) => (
-                <div
-                  key={quilt.id}
-                  className="px-6 py-3 table-row-hover cursor-pointer"
-                  onDoubleClick={() => router.push(`/quilts?search=${quilt.name}`)}
-                  title={lang === 'zh' ? '双击查看详情' : 'Double-click to view details'}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3 flex-1">
-                      <Package className="w-5 h-5 text-success flex-shrink-0" />
-                      <span className="font-medium text-foreground">{quilt.name}</span>
-                      <span className="text-sm text-muted-foreground">#{quilt.itemNumber}</span>
-                      <span
-                        className={`px-2 py-0.5 text-xs font-medium rounded ${
-                          quilt.season === 'WINTER'
-                            ? 'bg-info/10 text-info'
-                            : quilt.season === 'SUMMER'
-                              ? 'bg-warning/10 text-warning'
-                              : 'bg-success/10 text-success'
-                        }`}
-                      >
-                        {t(`season.${quilt.season}`)}
-                      </span>
-                      <span className="text-sm text-muted-foreground">
-                        {quilt.fillMaterial} · {quilt.weightGrams}g · {quilt.location}
-                      </span>
-                    </div>
-                    <Link
-                      href={`/quilts?search=${quilt.name}`}
-                      className="text-sm text-primary hover:text-primary/80 font-medium transition-colors"
-                      onClick={e => e.stopPropagation()}
-                    >
-                      {t('pages.viewDetails')}
-                    </Link>
-                  </div>
+          {/* Tab Navigation */}
+          <div className="border-b border-border">
+            <div className="flex">
+              <button
+                onClick={() => setActiveTab('current')}
+                className={`flex-1 px-6 py-4 text-sm font-medium transition-colors relative ${
+                  activeTab === 'current'
+                    ? 'text-primary bg-primary/5'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/30'
+                }`}
+              >
+                <div className="flex items-center justify-center gap-2">
+                  <Activity className="w-4 h-4" />
+                  <span>{lang === 'zh' ? '当前使用' : 'Current Use'}</span>
+                  {activeTab === 'current' && inUseQuilts.length > 0 && (
+                    <span className="px-2 py-0.5 bg-primary/10 text-primary text-xs font-medium rounded-full">
+                      {inUseQuilts.length}
+                    </span>
+                  )}
                 </div>
-              ))
-            )}
-          </div>
-        </div>
-
-        {/* Historical Usage - Same Day in Previous Years - List View */}
-        <div className="card-elevated bg-white rounded-lg overflow-hidden">
-          <div className="px-6 py-4 border-b border-border bg-muted/30">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center">
-                <History className="w-4 h-4 text-accent-foreground" />
-              </div>
-              <h2 className="text-lg font-semibold text-foreground">
-                {t('pages.historicalUsage')}
-              </h2>
-              <span className="text-sm text-muted-foreground">
-                ({today.getMonth() + 1}/{today.getDate()})
-              </span>
+                {activeTab === 'current' && (
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
+                )}
+              </button>
+              <button
+                onClick={() => setActiveTab('history')}
+                className={`flex-1 px-6 py-4 text-sm font-medium transition-colors relative ${
+                  activeTab === 'history'
+                    ? 'text-primary bg-primary/5'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/30'
+                }`}
+              >
+                <div className="flex items-center justify-center gap-2">
+                  <History className="w-4 h-4" />
+                  <span>{lang === 'zh' ? '历史使用' : 'Historical Use'}</span>
+                  {activeTab === 'history' && historicalUsage.length > 0 && (
+                    <span className="px-2 py-0.5 bg-primary/10 text-primary text-xs font-medium rounded-full">
+                      {historicalUsage.length}
+                    </span>
+                  )}
+                </div>
+                {activeTab === 'history' && (
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
+                )}
+              </button>
+              <button
+                onClick={() => setActiveTab('recommended')}
+                className={`flex-1 px-6 py-4 text-sm font-medium transition-colors relative ${
+                  activeTab === 'recommended'
+                    ? 'text-primary bg-primary/5'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/30'
+                }`}
+              >
+                <div className="flex items-center justify-center gap-2">
+                  <Sparkles className="w-4 h-4" />
+                  <span>{lang === 'zh' ? '推荐使用' : 'Recommended'}</span>
+                </div>
+                {activeTab === 'recommended' && (
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
+                )}
+              </button>
             </div>
           </div>
+
+          {/* Tab Content */}
           <div className="divide-y divide-border">
-            {historicalUsage.length === 0 ? (
-              <EmptyState
-                icon={History}
-                title={t('pages.noHistoricalRecords')}
-                description={
-                  lang === 'zh' ? '这一天在往年没有使用记录' : 'No historical records for this date'
-                }
-              />
-            ) : (
-              historicalUsage.map((record: any) => (
-                <div
-                  key={record.id}
-                  className="px-6 py-3 table-row-hover cursor-pointer"
-                  onDoubleClick={() => router.push(`/quilts?search=${record.quiltName}`)}
-                  title={lang === 'zh' ? '双击查看详情' : 'Double-click to view details'}
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="font-semibold text-accent-foreground w-12 text-center">
-                      {record.year}
-                    </span>
-                    <span className="font-medium text-foreground">{record.quiltName}</span>
-                    <span className="text-sm text-muted-foreground">#{record.itemNumber}</span>
-                    <span
-                      className={`px-2 py-0.5 text-xs font-medium rounded ${
-                        record.season === 'WINTER'
-                          ? 'bg-info/10 text-info'
-                          : record.season === 'SUMMER'
-                            ? 'bg-warning/10 text-warning'
-                            : 'bg-success/10 text-success'
-                      }`}
+            {/* Current Use Tab */}
+            {activeTab === 'current' && (
+              <>
+                {inUseQuilts.length === 0 ? (
+                  <EmptyState
+                    icon={PackageOpen}
+                    title={t('pages.noQuiltsInUse')}
+                    description={
+                      lang === 'zh' ? '当前没有正在使用的被子' : 'No quilts are currently in use'
+                    }
+                  />
+                ) : (
+                  inUseQuilts.map((quilt: any) => (
+                    <div
+                      key={quilt.id}
+                      className="px-6 py-3 table-row-hover cursor-pointer"
+                      onDoubleClick={() => router.push(`/quilts?search=${quilt.name}`)}
+                      title={lang === 'zh' ? '双击查看详情' : 'Double-click to view details'}
                     >
-                      {t(`season.${record.season}`)}
-                    </span>
-                    <span className="text-sm text-muted-foreground">
-                      {new Date(record.startDate).toLocaleDateString(
-                        lang === 'zh' ? 'zh-CN' : 'en-US',
-                        { month: 'short', day: 'numeric' }
-                      )}
-                      {record.endDate && (
-                        <>
-                          {' → '}
-                          {new Date(record.endDate).toLocaleDateString(
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3 flex-1">
+                          <Package className="w-5 h-5 text-success flex-shrink-0" />
+                          <span className="font-medium text-foreground">{quilt.name}</span>
+                          <span className="text-sm text-muted-foreground">#{quilt.itemNumber}</span>
+                          <span
+                            className={`px-2 py-0.5 text-xs font-medium rounded ${
+                              quilt.season === 'WINTER'
+                                ? 'bg-info/10 text-info'
+                                : quilt.season === 'SUMMER'
+                                  ? 'bg-warning/10 text-warning'
+                                  : 'bg-success/10 text-success'
+                            }`}
+                          >
+                            {t(`season.${quilt.season}`)}
+                          </span>
+                          <span className="text-sm text-muted-foreground">
+                            {quilt.fillMaterial} · {quilt.weightGrams}g · {quilt.location}
+                          </span>
+                        </div>
+                        <Link
+                          href={`/quilts?search=${quilt.name}`}
+                          className="text-sm text-primary hover:text-primary/80 font-medium transition-colors"
+                          onClick={e => e.stopPropagation()}
+                        >
+                          {t('pages.viewDetails')}
+                        </Link>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </>
+            )}
+
+            {/* Historical Use Tab */}
+            {activeTab === 'history' && (
+              <>
+                {historicalUsage.length === 0 ? (
+                  <EmptyState
+                    icon={History}
+                    title={t('pages.noHistoricalRecords')}
+                    description={
+                      lang === 'zh'
+                        ? '这一天在往年没有使用记录'
+                        : 'No historical records for this date'
+                    }
+                  />
+                ) : (
+                  historicalUsage.map((record: any) => (
+                    <div
+                      key={record.id}
+                      className="px-6 py-3 table-row-hover cursor-pointer"
+                      onDoubleClick={() => router.push(`/quilts?search=${record.quiltName}`)}
+                      title={lang === 'zh' ? '双击查看详情' : 'Double-click to view details'}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="font-semibold text-accent-foreground w-12 text-center">
+                          {record.year}
+                        </span>
+                        <span className="font-medium text-foreground">{record.quiltName}</span>
+                        <span className="text-sm text-muted-foreground">#{record.itemNumber}</span>
+                        <span
+                          className={`px-2 py-0.5 text-xs font-medium rounded ${
+                            record.season === 'WINTER'
+                              ? 'bg-info/10 text-info'
+                              : record.season === 'SUMMER'
+                                ? 'bg-warning/10 text-warning'
+                                : 'bg-success/10 text-success'
+                          }`}
+                        >
+                          {t(`season.${record.season}`)}
+                        </span>
+                        <span className="text-sm text-muted-foreground">
+                          {new Date(record.startDate).toLocaleDateString(
                             lang === 'zh' ? 'zh-CN' : 'en-US',
                             { month: 'short', day: 'numeric' }
                           )}
-                        </>
-                      )}
-                    </span>
-                  </div>
-                </div>
-              ))
+                          {record.endDate && (
+                            <>
+                              {' → '}
+                              {new Date(record.endDate).toLocaleDateString(
+                                lang === 'zh' ? 'zh-CN' : 'en-US',
+                                { month: 'short', day: 'numeric' }
+                              )}
+                            </>
+                          )}
+                        </span>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </>
+            )}
+
+            {/* Recommended Tab */}
+            {activeTab === 'recommended' && (
+              <div className="px-6 py-8">
+                <EmptyState
+                  icon={Sparkles}
+                  title={lang === 'zh' ? '智能推荐' : 'Smart Recommendations'}
+                  description={
+                    lang === 'zh'
+                      ? '基于天气和历史使用数据的被子推荐功能即将推出'
+                      : 'Quilt recommendations based on weather and historical data coming soon'
+                  }
+                />
+              </div>
             )}
           </div>
         </div>
