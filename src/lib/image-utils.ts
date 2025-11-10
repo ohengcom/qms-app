@@ -101,20 +101,11 @@ export async function compressAndEncodeImage(
           canvas.width = width;
           canvas.height = height;
 
-          console.log('Canvas setup:', { width, height, originalWidth: img.width, originalHeight: img.height });
-
           // Draw image on canvas
           ctx.drawImage(img, 0, 0, width, height);
 
           // Convert to Base64
           const base64 = canvas.toDataURL(opts.outputFormat, opts.quality);
-          
-          console.log('Base64 generated:', {
-            length: base64.length,
-            prefix: base64.substring(0, 50),
-            format: opts.outputFormat,
-            quality: opts.quality,
-          });
 
           // Check compressed size (Base64 is ~33% larger than binary)
           const compressedSize = (base64.length * 3) / 4;

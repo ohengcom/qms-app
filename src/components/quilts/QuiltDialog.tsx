@@ -97,12 +97,6 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
         if (quilt.attachmentImages && Array.isArray(quilt.attachmentImages)) {
           existingImages.push(...quilt.attachmentImages);
         }
-        console.log('Loading quilt images:', {
-          hasMainImage: !!quilt.mainImage,
-          mainImageLength: quilt.mainImage?.length,
-          attachmentImagesCount: quilt.attachmentImages?.length || 0,
-          totalImages: existingImages.length,
-        });
         setImages(existingImages);
       } else {
         // Add mode - reset to defaults with STORAGE status
@@ -141,13 +135,6 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
         data.mainImage = images[0];
         data.attachmentImages = images.length > 1 ? images.slice(1) : [];
       }
-
-      console.log('Submitting quilt data:', {
-        hasMainImage: !!data.mainImage,
-        attachmentImagesCount: data.attachmentImages?.length || 0,
-        mainImageLength: data.mainImage?.length,
-        totalImagesInState: images.length,
-      });
 
       if (quilt) {
         // Edit mode - include ID (name and itemNumber are read-only in edit mode)

@@ -148,16 +148,7 @@ export function ImageUpload({
               src={image}
               alt={`图片 ${imageIndex + 1}`}
               className="w-full h-full object-cover"
-              onError={(e) => {
-                console.error('Image load error:', {
-                  index: imageIndex,
-                  dataLength: image.length,
-                  dataPrefix: image.substring(0, 50),
-                });
-              }}
-              onLoad={() => {
-                console.log('Image loaded successfully:', imageIndex);
-              }}
+
             />
 
             {/* Delete Button */}
