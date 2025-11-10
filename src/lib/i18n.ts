@@ -84,6 +84,7 @@ export const translations = {
         add: '添加被子',
         addFirst: '添加您的第一床被子',
         search: '搜索被子...',
+        edit: '编辑',
       },
       views: {
         card: '卡片',
@@ -97,6 +98,7 @@ export const translations = {
         size: '尺寸',
         weight: '重量',
         material: '材料',
+        fillMaterial: '填充材料',
         color: '颜色',
         location: '位置',
         status: '状态',
@@ -814,6 +816,7 @@ export const translations = {
         add: 'Add Quilt',
         addFirst: 'Add Your First Quilt',
         search: 'Search quilts...',
+        edit: 'Edit',
       },
       views: {
         card: 'Cards',
@@ -827,6 +830,7 @@ export const translations = {
         size: 'Size',
         weight: 'Weight',
         material: 'Material',
+        fillMaterial: 'Fill Material',
         color: 'Color',
         location: 'Location',
         status: 'Status',
