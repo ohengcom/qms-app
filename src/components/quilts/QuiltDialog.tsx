@@ -100,7 +100,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
         }
         if (quilt.attachmentImages && Array.isArray(quilt.attachmentImages)) {
           // Ensure all attachment images have data: prefix
-          const attachments = quilt.attachmentImages.map(img => 
+          const attachments = quilt.attachmentImages.map((img: string) => 
             img.startsWith('data:') ? img : `data:image/jpeg;base64,${img}`
           );
           existingImages.push(...attachments);
