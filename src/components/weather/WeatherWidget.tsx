@@ -135,7 +135,7 @@ export function WeatherWidget({ className, showRecommendations = true }: Weather
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <MapPin className="w-5 h-5" />
-            <span>北京天气</span>
+            <span>上海天气</span>
           </div>
           <Button onClick={fetchWeatherData} variant="ghost" size="sm" className="h-8 w-8 p-0">
             <RefreshCw className="w-4 h-4" />

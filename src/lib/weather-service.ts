@@ -9,11 +9,11 @@ import { dbLogger } from './logger';
 // Weather API configuration - Open-Meteo (free)
 const WEATHER_API_BASE_URL = 'https://api.open-meteo.com/v1';
 
-// Default location (Beijing, China)
+// Default location (Shanghai, China)
 const DEFAULT_LOCATION = {
-  lat: 39.9042,
-  lon: 116.4074,
-  name: '北京',
+  lat: 31.2304,
+  lon: 121.4737,
+  name: '上海',
 };
 
 /**

@@ -9,10 +9,10 @@ import { getCurrentWeather, getWeatherForecast } from '@/lib/weather-service';
 import { recommendQuilts } from '@/lib/quilt-recommendation';
 import { quiltRepository } from '@/lib/repositories/quilt.repository';
 
-// Default location: Beijing, China
-const DEFAULT_LATITUDE = 39.9042;
-const DEFAULT_LONGITUDE = 116.4074;
-const DEFAULT_LOCATION_NAME = '北京';
+// Default location: Shanghai, China
+const DEFAULT_LATITUDE = 31.2304;
+const DEFAULT_LONGITUDE = 121.4737;
+const DEFAULT_LOCATION_NAME = '上海';
 
 export async function GET(request: Request) {
   try {

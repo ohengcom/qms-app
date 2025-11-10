@@ -151,7 +151,7 @@ export function QuiltRecommendation({ className }: QuiltRecommendationProps) {
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <Cloud className="w-5 h-5" />
-            智能换被建议
+            智能换被建议 · 上海
           </CardTitle>
           <Button onClick={fetchData} variant="ghost" size="sm" className="h-8 w-8 p-0">
             <RefreshCw className="w-4 h-4" />
