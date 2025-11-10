@@ -92,10 +92,18 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
         // Load existing images
         const existingImages: string[] = [];
         if (quilt.mainImage) {
-          existingImages.push(quilt.mainImage);
+          // Check if mainImage starts with data: prefix
+          const imageData = quilt.mainImage.startsWith('data:') 
+            ? quilt.mainImage 
+            : `data:image/jpeg;base64,${quilt.mainImage}`;
+          existingImages.push(imageData);
         }
         if (quilt.attachmentImages && Array.isArray(quilt.attachmentImages)) {
-          existingImages.push(...quilt.attachmentImages);
+          // Ensure all attachment images have data: prefix
+          const attachments = quilt.attachmentImages.map(img => 
+            img.startsWith('data:') ? img : `data:image/jpeg;base64,${img}`
+          );
+          existingImages.push(...attachments);
         }
         setImages(existingImages);
       } else {
