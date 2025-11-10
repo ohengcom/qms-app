@@ -11,6 +11,7 @@ import { Package, Activity, Archive, Calendar, Cloud, History, PackageOpen } fro
 import { PageTransition } from '@/components/motion/PageTransition';
 import { AnimatedList, AnimatedListItem } from '@/components/motion/AnimatedList';
 import { EmptyState } from '@/components/ui/empty-state';
+import { QuiltRecommendation } from '@/components/dashboard/QuiltRecommendation';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -109,6 +110,9 @@ export default function DashboardPage() {
             )}
           </div>
         </div>
+
+        {/* Quilt Recommendation Card */}
+        <QuiltRecommendation />
 
         {/* Enhanced Stats Grid - 3 Cards */}
         <AnimatedList className="grid grid-cols-1 md:grid-cols-3 gap-4">
