@@ -90,7 +90,6 @@ export default function ImportExportPage() {
         document.body.removeChild(a);
       }
     } catch (error) {
-      console.error('Download report error:', error);
       window.alert(t('reports.export.downloadFailed'));
     } finally {
       setLoading(null);

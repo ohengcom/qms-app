@@ -21,7 +21,6 @@ class ServiceWorkerManager {
   // Register service worker
   async register(): Promise<boolean> {
     if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
-      console.log('Service Worker not supported');
       return false;
     }
 
@@ -29,8 +28,6 @@ class ServiceWorkerManager {
       this.registration = await navigator.serviceWorker.register('/sw.js', {
         scope: '/',
       });
-
-      console.log('Service Worker registered successfully');
 
       // Listen for service worker messages
       navigator.serviceWorker.addEventListener('message', this.handleMessage.bind(this));
@@ -51,7 +48,7 @@ class ServiceWorkerManager {
 
       return true;
     } catch (error) {
-      console.error('Service Worker registration failed:', error);
+      // Service Worker registration failed - fail silently in production
       return false;
     }
   }
@@ -65,10 +62,9 @@ class ServiceWorkerManager {
     try {
       const result = await this.registration.unregister();
       this.registration = null;
-      console.log('Service Worker unregistered');
       return result;
     } catch (error) {
-      console.error('Service Worker unregistration failed:', error);
+      // Service Worker unregistration failed - fail silently
       return false;
     }
   }
@@ -81,9 +77,8 @@ class ServiceWorkerManager {
 
     try {
       await this.registration.update();
-      console.log('Service Worker update check completed');
     } catch (error) {
-      console.error('Service Worker update failed:', error);
+      // Service Worker update failed - fail silently
     }
   }
 
@@ -166,7 +161,8 @@ class ServiceWorkerManager {
         break;
 
       default:
-        console.log('Unknown service worker message:', type);
+        // Unknown message type - ignore
+        break;
     }
   }
 

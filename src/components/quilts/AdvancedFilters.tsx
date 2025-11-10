@@ -65,7 +65,7 @@ export function AdvancedFilters({
         }, 0);
       }
     } catch (error) {
-      console.error('Error loading saved filters:', error);
+      // Error loading saved filters - use defaults
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -77,7 +77,7 @@ export function AdvancedFilters({
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(newFilters));
     } catch (error) {
-      console.error('Error saving filters:', error);
+      // Error saving filters - continue without saving
     }
   };
 

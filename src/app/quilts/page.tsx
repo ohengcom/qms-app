@@ -293,7 +293,6 @@ export default function QuiltsPage() {
       toast.dismiss(toastId);
       toast.success(getToastMessage('deleteSuccess', lang));
     } catch (error) {
-      console.error('Error deleting quilt:', error);
       toast.dismiss(toastId);
       toast.error(getToastMessage('deleteError', lang));
     }
@@ -362,7 +361,6 @@ export default function QuiltsPage() {
           : `Successfully deleted ${selectedIds.size} quilts`
       );
     } catch (error) {
-      console.error('Error batch deleting quilts:', error);
       toast.dismiss(toastId);
       toast.error(getToastMessage('deleteError', lang));
     }
@@ -381,7 +379,6 @@ export default function QuiltsPage() {
         toast.success(getToastMessage('createSuccess', lang));
       }
     } catch (error) {
-      console.error('Error saving quilt:', error);
       toast.error(getToastMessage(isUpdate ? 'updateError' : 'createError', lang));
       throw error;
     }
@@ -427,7 +424,6 @@ export default function QuiltsPage() {
             notes: options?.notes,
           });
         } catch (endError) {
-          console.error('Error ending usage record:', endError);
           // Continue with status update even if ending usage fails
         }
       }
@@ -447,7 +443,6 @@ export default function QuiltsPage() {
 
       toast.success(lang === 'zh' ? '状态更新成功' : 'Status updated successfully');
     } catch (error) {
-      console.error('Error updating status:', error);
       toast.error(getToastMessage('updateError', lang));
       throw error;
     }

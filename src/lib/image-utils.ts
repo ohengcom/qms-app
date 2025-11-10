@@ -112,9 +112,7 @@ export async function compressAndEncodeImage(
           const targetSize = 200 * 1024; // 200KB
 
           if (compressedSize > targetSize) {
-            console.warn(
-              `压缩后的图片大小 (${Math.round(compressedSize / 1024)}KB) 超过建议大小 (${targetSize / 1024}KB)`
-            );
+            // Image size exceeds target after compression
           }
 
           resolve(base64);

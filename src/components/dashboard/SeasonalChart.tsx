@@ -187,7 +187,9 @@ export function SeasonalChart({ data, totalQuilts, isLoading = false }: Seasonal
               variant="outline"
               size="sm"
               className="flex-1"
-              onClick={() => console.log('View seasonal details')}
+              onClick={() => {
+                // View seasonal details
+              }}
             >
               <PieChart className="h-4 w-4 mr-2" />
               View Details
@@ -196,7 +198,9 @@ export function SeasonalChart({ data, totalQuilts, isLoading = false }: Seasonal
               variant="outline"
               size="sm"
               className="flex-1"
-              onClick={() => console.log('View usage trends')}
+              onClick={() => {
+                // View usage trends
+              }}
             >
               <Activity className="h-4 w-4 mr-2" />
               Usage Trends

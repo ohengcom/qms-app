@@ -85,7 +85,6 @@ export function StatusChangeDialog({
       await onStatusChange(quilt.id, newStatus, options);
       onOpenChange(false);
     } catch (error) {
-      console.error('Error updating status:', error);
       // TODO: Show error toast
     } finally {
       setLoading(false);

@@ -264,7 +264,6 @@ export function getValidationMessage(key: string, language: Language): string {
       if (current && typeof current === 'object' && k in current) {
         current = current[k];
       } else {
-        console.warn(`Validation message key not found: ${key}`);
         return key;
       }
     }
@@ -273,10 +272,8 @@ export function getValidationMessage(key: string, language: Language): string {
       return current[language];
     }
 
-    console.warn(`Language not found for validation message: ${key}`);
     return key;
   } catch (error) {
-    console.error('Error getting validation message:', error);
     return key;
   }
 }

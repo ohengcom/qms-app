@@ -147,7 +147,6 @@ export async function POST() {
       },
     });
   } catch (error) {
-    console.error('Database setup error:', error);
     return NextResponse.json(
       {
         error: 'Failed to initialize database',

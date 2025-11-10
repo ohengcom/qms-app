@@ -45,9 +45,9 @@ export function NotificationPanel({ onClose }: NotificationPanelProps) {
     }
   );
 
-  // Log errors if any
+  // Silently handle errors
   if (error) {
-    console.warn('Failed to fetch notifications:', error.message);
+    // Failed to fetch notifications
   }
 
   // Mutations

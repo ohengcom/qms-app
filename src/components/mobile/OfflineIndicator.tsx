@@ -54,7 +54,7 @@ export function OfflineIndicator() {
         setShowOfflineMessage(false);
       }
     } catch (error) {
-      console.log('Still offline');
+      // Still offline
     } finally {
       setIsRetrying(false);
     }

@@ -84,9 +84,9 @@ export function AppLayout({ children }: AppLayoutProps) {
     }
   );
 
-  // Log errors if any
+  // Silently handle errors
   if (unreadError) {
-    console.warn('Failed to fetch unread notification count:', unreadError.message);
+    // Failed to fetch unread notification count
   }
 
   const unreadCount = unreadData?.count || 0;
@@ -332,7 +332,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                         await fetch('/api/auth/logout', { method: 'POST' });
                         window.location.href = '/login';
                       } catch (error) {
-                        console.error('Logout error:', error);
+                        // Logout failed
                         // eslint-disable-next-line no-alert
                         alert(t('common.failedToLogout'));
                       }

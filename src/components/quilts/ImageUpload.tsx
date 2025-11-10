@@ -64,7 +64,6 @@ export function ImageUpload({
         toast.success(`已添加 ${newImages.length} 张图片，点击保存按钮完成上传`);
       }
     } catch (error) {
-      console.error('图片上传失败:', error);
       toast.error(error instanceof Error ? error.message : '图片上传失败');
     } finally {
       setIsUploading(false);

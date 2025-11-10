@@ -39,7 +39,6 @@ export function formatDate(
 
     return dateFnsFormat(dateObj, formatString || defaultFormat, { locale });
   } catch (error) {
-    console.error('Error formatting date:', error);
     return '';
   }
 }
@@ -66,7 +65,6 @@ export function formatDateTime(
 
     return dateFnsFormat(dateObj, formatString || defaultFormat, { locale });
   } catch (error) {
-    console.error('Error formatting datetime:', error);
     return '';
   }
 }
@@ -89,7 +87,6 @@ export function formatRelativeTime(date: Date | number | string, language: Langu
       locale,
     });
   } catch (error) {
-    console.error('Error formatting relative time:', error);
     return '';
   }
 }
@@ -109,7 +106,6 @@ export function formatNumber(
     const locale = language === 'zh' ? 'zh-CN' : 'en-US';
     return new Intl.NumberFormat(locale, options).format(value);
   } catch (error) {
-    console.error('Error formatting number:', error);
     return value.toString();
   }
 }
@@ -130,7 +126,6 @@ export function formatCurrency(value: number, language: Language, currency?: str
       currency: currencyCode,
     }).format(value);
   } catch (error) {
-    console.error('Error formatting currency:', error);
     return value.toString();
   }
 }
@@ -148,7 +143,6 @@ export function formatPercentage(value: number, language: Language, decimals: nu
       maximumFractionDigits: decimals,
     }).format(value);
   } catch (error) {
-    console.error('Error formatting percentage:', error);
     return `${(value * 100).toFixed(decimals)}%`;
   }
 }

@@ -32,7 +32,6 @@ export function QuiltRecommendationContent() {
       setRecommendations(data.recommendations || []);
     } catch (err) {
       setError('获取推荐数据失败');
-      console.error('Recommendations fetch error:', err);
     } finally {
       setIsLoading(false);
     }

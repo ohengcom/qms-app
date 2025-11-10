@@ -6,11 +6,11 @@ export function GlobalErrorHandler() {
   useEffect(() => {
     // Setup global error handlers
     const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
-      console.error('Unhandled promise rejection:', event.reason);
+      // Unhandled promise rejection - handled by error boundary
     };
 
     const handleError = (event: ErrorEvent) => {
-      console.error('Global error:', event.error);
+      // Global error - handled by error boundary
     };
 
     window.addEventListener('unhandledrejection', handleUnhandledRejection);

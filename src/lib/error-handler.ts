@@ -137,14 +137,12 @@ export async function fetchWithErrorHandling<T = any>(
 export function setupGlobalErrorHandler() {
   // Handle unhandled promise rejections
   window.addEventListener('unhandledrejection', event => {
-    console.error('Unhandled promise rejection:', event.reason);
     const error = parseError(event.reason);
     toast.error('Unexpected error occurred', error.message);
   });
 
   // Handle global errors
   window.addEventListener('error', event => {
-    console.error('Global error:', event.error);
     const error = parseError(event.error);
     toast.error('Unexpected error occurred', error.message);
   });
@@ -155,12 +153,6 @@ export function setupGlobalErrorHandler() {
  */
 export function logError(error: unknown, context?: Record<string, any>) {
   const parsedError = parseError(error);
-
-  console.error('Error logged:', {
-    ...parsedError,
-    context,
-    timestamp: new Date().toISOString(),
-  });
 
   // TODO: Send to error tracking service (e.g., Sentry)
   // Sentry.captureException(error, { extra: context });

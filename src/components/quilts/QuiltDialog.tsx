@@ -163,7 +163,6 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
 
       onOpenChange(false);
     } catch (error) {
-      console.error('Error saving quilt:', error);
       // TODO: Show error toast
     } finally {
       setLoading(false);

@@ -20,12 +20,8 @@ function generateQuiltName(quilt: any): string {
 
 export async function POST() {
   try {
-    console.log('🔄 Starting quilt name update...');
-
     // Get all quilts using the db helper
     const quilts = await db.getQuilts({ limit: 100 });
-
-    console.log(`📊 Found ${quilts.length} quilts to update`);
 
     const updates = [];
     let updatedCount = 0;
@@ -37,7 +33,6 @@ export async function POST() {
       const oldName = quilt.name;
 
       if (oldName === newName) {
-        console.log(`⏭️  #${quilt.itemNumber}: Already correct - "${newName}"`);
         skippedCount++;
         updates.push({
           itemNumber: quilt.itemNumber,
@@ -55,7 +50,6 @@ export async function POST() {
         name: newName,
       });
 
-      console.log(`✅ #${quilt.itemNumber}: "${oldName}" → "${newName}"`);
       updatedCount++;
       updates.push({
         itemNumber: quilt.itemNumber,
@@ -73,14 +67,8 @@ export async function POST() {
       updates,
     };
 
-    console.log('✨ Update complete!');
-    console.log(`   Updated: ${updatedCount} quilts`);
-    console.log(`   Skipped: ${skippedCount} quilts`);
-    console.log(`   Total:   ${quilts.length} quilts`);
-
     return NextResponse.json(summary);
   } catch (error) {
-    console.error('❌ Error updating quilt names:', error);
     return NextResponse.json(
       {
         success: false,

@@ -104,7 +104,6 @@ export function EditUsageRecordDialog({
       setOpen(false);
       onUpdate?.();
     } catch (error) {
-      console.error('Update error:', error);
       toast.error(error instanceof Error ? error.message : 'Failed to update usage record');
     }
   };
@@ -116,7 +115,6 @@ export function EditUsageRecordDialog({
       setOpen(false);
       onDelete?.();
     } catch (error) {
-      console.error('Delete error:', error);
       toast.error(error instanceof Error ? error.message : 'Failed to delete usage record');
     } finally {
       setShowDeleteConfirm(false);

@@ -8,8 +8,6 @@ export async function GET(request: NextRequest) {
     const reportType = searchParams.get('type') || 'inventory';
     const format = searchParams.get('format') || 'json';
 
-    console.log(`Generating ${reportType} report in ${format} format...`);
-
     let reportData: any = {};
 
     switch (reportType) {
@@ -46,7 +44,6 @@ export async function GET(request: NextRequest) {
       data: reportData,
     });
   } catch (error) {
-    console.error('Generate report error:', error);
     return NextResponse.json(
       {
         success: false,

@@ -67,7 +67,6 @@ export function MobileQuiltList() {
 
   const handleRefresh = async () => {
     // Refresh quilt data
-    console.log('Refreshing quilt data...');
   };
 
   const handleAddQuilt = () => {
@@ -83,11 +82,11 @@ export function MobileQuiltList() {
   };
 
   const handleStartUsage = (quilt: any) => {
-    console.log('Start usage for quilt:', quilt.id);
+    // Start usage for quilt
   };
 
   const handleEndUsage = (quilt: any) => {
-    console.log('End usage for quilt:', quilt.id);
+    // End usage for quilt
   };
 
   const getSeasonIcon = (season: string) => {

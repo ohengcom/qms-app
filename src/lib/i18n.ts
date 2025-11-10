@@ -1504,6 +1504,8 @@ export function getNestedTranslation(
 
 // 向后兼容的翻译函数（已弃用）
 export function useTranslation(lang: Language = 'zh') {
-  console.warn('useTranslation is deprecated. Use useLanguage hook instead.');
+  if (process.env.NODE_ENV === 'development') {
+    console.warn('useTranslation is deprecated. Use useLanguage hook instead.');
+  }
   return translations[lang];
 }

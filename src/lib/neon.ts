@@ -400,7 +400,6 @@ export const db = {
       `;
       return result as { table_name: string }[];
     } catch (error) {
-      console.error('Get tables error:', error);
       return [];
     }
   },

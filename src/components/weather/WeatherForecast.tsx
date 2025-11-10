@@ -46,7 +46,6 @@ export function WeatherForecastWidget({ className }: WeatherForecastProps) {
       setForecast(data.forecast || []);
     } catch (err) {
       setError('获取天气数据失败');
-      console.error('Weather fetch error:', err);
     } finally {
       setIsLoading(false);
     }

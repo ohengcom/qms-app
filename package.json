@@ -41,7 +41,9 @@
     "health:check": "curl -f http://localhost:3000/api/health || exit 1",
     "backup:create": "docker-compose -f docker-compose.prod.yml run --rm postgres-backup",
     "monitoring:up": "docker-compose -f docker-compose.prod.yml -f docker-compose.monitoring.yml up -d",
-    "monitoring:down": "docker-compose -f docker-compose.prod.yml -f docker-compose.monitoring.yml down"
+    "monitoring:down": "docker-compose -f docker-compose.prod.yml -f docker-compose.monitoring.yml down",
+    "cleanup:check": "tsx scripts/cleanup-project.ts check",
+    "cleanup:auto": "tsx scripts/cleanup-project.ts auto"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

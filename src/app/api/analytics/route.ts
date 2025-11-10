@@ -4,8 +4,6 @@ import { sql } from '@/lib/neon';
 // GET /api/analytics - Get comprehensive analytics data
 export async function GET(request: NextRequest) {
   try {
-    console.log('Getting analytics data...');
-
     // Get all quilts with their current status
     const quilts = await sql`
       SELECT id, name, item_number, season, current_status, created_at
@@ -116,8 +114,6 @@ export async function GET(request: NextRequest) {
       }
     });
 
-    console.log('Analytics data calculated successfully');
-
     return NextResponse.json({
       success: true,
       analytics: {
@@ -141,7 +137,6 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Get analytics error:', error);
     return NextResponse.json(
       { 
         success: false, 

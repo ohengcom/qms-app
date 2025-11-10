@@ -48,7 +48,6 @@ export async function GET(request: Request) {
         }));
         recommendations = await recommendQuilts(currentWeather, quiltData);
       } catch (error) {
-        console.error('Failed to get quilt recommendations:', error);
         // Continue without recommendations
       }
     }
@@ -66,7 +65,6 @@ export async function GET(request: Request) {
       updatedAt: new Date().toISOString(),
     });
   } catch (error: any) {
-    console.error('Weather API error:', error);
     return NextResponse.json(
       {
         success: false,

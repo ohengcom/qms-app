@@ -12,8 +12,6 @@ export interface ErrorInfo {
 
 export function useErrorHandler() {
   const handleError = useCallback((error: unknown): ErrorInfo => {
-    console.error('Application error:', error);
-
     // Handle tRPC errors
     if (error instanceof TRPCClientError) {
       return {

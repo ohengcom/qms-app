@@ -23,7 +23,6 @@ export function getStoredLanguage(): Language | null {
     }
     return null;
   } catch (error) {
-    console.error('Error reading language from localStorage:', error);
     return null;
   }
 }
@@ -40,7 +39,7 @@ export function setStoredLanguage(language: Language): void {
   try {
     localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
   } catch (error) {
-    console.error('Error saving language to localStorage:', error);
+    // Error saving language - continue without saving
   }
 }
 
@@ -55,7 +54,7 @@ export function clearStoredLanguage(): void {
   try {
     localStorage.removeItem(LANGUAGE_STORAGE_KEY);
   } catch (error) {
-    console.error('Error clearing language from localStorage:', error);
+    // Error clearing language - continue
   }
 }
 

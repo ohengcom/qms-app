@@ -20,28 +20,25 @@ export function NotificationChecker() {
   // tRPC mutation to trigger notification checks
   const checkNotifications = api.notifications.checkAll.useMutation({
     onSuccess: (data: any) => {
-      console.log('Notification check completed:', data);
+      // Notification check completed successfully
       if (data.total > 0) {
-        console.log(`Created ${data.total} new notifications`);
+        // New notifications created
       }
     },
     onError: (error: any) => {
-      // Silently log the error without disrupting the user experience
-      console.warn('Notification check failed (non-critical):', error.message);
+      // Silently handle the error without disrupting the user experience
     },
   });
 
   useEffect(() => {
     // Run initial check on mount (only once)
     if (!hasRunInitialCheck.current) {
-      console.log('Running initial notification check...');
       checkNotifications.mutate();
       hasRunInitialCheck.current = true;
     }
 
     // Set up periodic checks
     intervalRef.current = setInterval(() => {
-      console.log('Running periodic notification check...');
       checkNotifications.mutate();
     }, CHECK_INTERVAL);
 

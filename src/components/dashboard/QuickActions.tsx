@@ -144,7 +144,6 @@ export function QuickActions({
       borderColor: 'border-pink-200',
       onClick: () => {
         // TODO: Implement report generation
-        console.log('Generate report');
       },
     },
   ];

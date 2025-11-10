@@ -146,7 +146,7 @@ export class CacheService {
         const { key, data, ttl } = await fn();
         this.set(key, data, ttl);
       } catch (error) {
-        console.error('Cache warm-up failed for function:', error);
+        // Cache warm-up failed - continue without cache
       }
     });
 

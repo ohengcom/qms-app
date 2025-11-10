@@ -46,7 +46,6 @@ function LoginForm() {
         setError(data.message || t('auth.invalidPassword'));
       }
     } catch (err) {
-      console.error('Login error:', err);
       setError('An error occurred. Please try again.');
     } finally {
       setIsLoading(false);

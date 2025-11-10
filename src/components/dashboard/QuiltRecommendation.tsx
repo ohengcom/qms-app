@@ -66,7 +66,6 @@ export function QuiltRecommendation({ className }: QuiltRecommendationProps) {
       setRecommendations(data.recommendations || []);
     } catch (err) {
       setError('获取天气数据失败');
-      console.error('Weather fetch error:', err);
     } finally {
       setIsLoading(false);
     }

@@ -12,31 +12,17 @@ export const dashboardRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
-        console.log('Dashboard getStats: Starting query...');
-
         // Get total quilts count
-        console.log('Dashboard getStats: Getting total quilts count...');
         const totalQuilts = await db.countQuilts();
-        console.log('Dashboard getStats: Total quilts:', totalQuilts);
 
         // Get all quilts to calculate status counts
-        console.log('Dashboard getStats: Getting all quilts...');
         const allQuilts = await db.getQuilts({ limit: 1000 }); // Get all quilts
-        console.log('Dashboard getStats: Retrieved quilts:', allQuilts?.length || 0);
-        console.log('Dashboard getStats: First quilt status:', allQuilts?.[0]?.currentStatus);
 
         // Calculate status counts
         const inUseCount = allQuilts.filter(q => q.currentStatus === 'IN_USE').length;
         const availableCount = allQuilts.filter(q => q.currentStatus === 'AVAILABLE').length;
         const storageCount = allQuilts.filter(q => q.currentStatus === 'STORAGE').length;
         const maintenanceCount = allQuilts.filter(q => q.currentStatus === 'MAINTENANCE').length;
-
-        console.log('Dashboard getStats: Status counts:', {
-          inUseCount,
-          availableCount,
-          storageCount,
-          maintenanceCount,
-        });
 
         // Calculate seasonal distribution
         const seasonalStats = {
@@ -75,10 +61,8 @@ export const dashboardRouter = createTRPCRouter({
           lastUpdated: new Date(),
         };
 
-        console.log('Dashboard getStats: Final result:', JSON.stringify(result, null, 2));
         return result;
       } catch (error) {
-        console.error('Dashboard getStats error:', error);
 
         // Return fallback data instead of throwing
         return {

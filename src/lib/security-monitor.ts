@@ -166,7 +166,7 @@ class SecurityMonitor {
         });
       }
     } catch (error) {
-      console.error('Failed to send security event to monitoring service:', error);
+      // Failed to send security event - fail silently
     }
   }
 
@@ -201,7 +201,7 @@ class SecurityMonitor {
         });
       }
     } catch (error) {
-      console.error('Failed to send security alert:', error);
+      // Failed to send security alert - fail silently
     }
   }
 }

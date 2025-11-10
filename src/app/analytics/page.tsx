@@ -132,10 +132,10 @@ export default function AnalyticsPage() {
       if (data.success) {
         setAnalytics(data.analytics);
       } else {
-        console.error('Failed to load analytics:', data.error);
+        // Failed to load analytics
       }
-    } catch (error) {
-      console.error('Error loading analytics:', error);
+    } catch {
+      // Error loading analytics
     } finally {
       setAnalyticsLoading(false);
     }
