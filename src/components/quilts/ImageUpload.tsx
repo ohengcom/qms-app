@@ -166,7 +166,7 @@ export function ImageUpload({
                 handleDelete(imageIndex);
               }}
               className="
-                absolute top-2 right-2 z-10
+                absolute top-2 right-2 z-30
                 bg-red-500 text-white rounded-full p-1
                 opacity-0 group-hover:opacity-100 transition-opacity
                 hover:bg-red-600
@@ -179,9 +179,9 @@ export function ImageUpload({
             {/* Drag Indicator */}
             <div className="
               absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10
-              transition-all flex items-center justify-center pointer-events-none z-20
+              transition-all flex items-center justify-center pointer-events-none z-5
             ">
-              <span className="text-white opacity-0 group-hover:opacity-100 text-xs pointer-events-none">
+              <span className="text-white opacity-0 group-hover:opacity-100 text-xs">
                 拖动排序
               </span>
             </div>
