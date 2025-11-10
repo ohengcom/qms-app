@@ -42,11 +42,13 @@ export function NotificationPanel({ onClose }: NotificationPanelProps) {
     {
       retry: 1,
       retryDelay: 1000,
-      onError: (err) => {
-        console.warn('Failed to fetch notifications:', err.message);
-      },
     }
   );
+
+  // Log errors if any
+  if (error) {
+    console.warn('Failed to fetch notifications:', error.message);
+  }
 
   // Mutations
   const markAsReadMutation = api.notifications.markAsRead.useMutation({

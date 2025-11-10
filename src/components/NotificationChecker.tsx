@@ -29,7 +29,6 @@ export function NotificationChecker() {
       // Silently log the error without disrupting the user experience
       console.warn('Notification check failed (non-critical):', error.message);
     },
-    retry: false, // Don't retry failed checks
   });
 
   useEffect(() => {

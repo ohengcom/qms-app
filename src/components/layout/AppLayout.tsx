@@ -68,15 +68,20 @@ export function AppLayout({ children }: AppLayoutProps) {
   const { t } = useLanguage();
   
   // Get unread count from database with error handling
-  const { data: unreadData } = api.notifications.getUnreadCount.useQuery(undefined, {
-    refetchInterval: 60000, // Refetch every minute
-    retry: 1, // Only retry once
-    retryDelay: 1000,
-    // Silently fail if there's an error
-    onError: (error) => {
-      console.warn('Failed to fetch unread notification count:', error.message);
-    },
-  });
+  const { data: unreadData, error: unreadError } = api.notifications.getUnreadCount.useQuery(
+    undefined,
+    {
+      refetchInterval: 60000, // Refetch every minute
+      retry: 1, // Only retry once
+      retryDelay: 1000,
+    }
+  );
+
+  // Log errors if any
+  if (unreadError) {
+    console.warn('Failed to fetch unread notification count:', unreadError.message);
+  }
+
   const unreadCount = unreadData?.count || 0;
 
   const navigation = getNavigation(t);
