@@ -13,7 +13,8 @@
 
 ✅ **RoutePreloader.tsx** - 更新预加载路由列表为实际存在的路由
 ✅ **AppLayout.tsx** - 移除 /reports 导航项
-✅ **layout.tsx** - 更新图标引用为 SVG 格式，移除 console.log
+✅ **layout.tsx** - 修复 React hydration 错误，移除 dangerouslySetInnerHTML
+✅ **ServiceWorkerRegistration.tsx** - 创建客户端组件来注册 Service Worker
 ✅ **proxy.ts** - 移除不存在路由的保护配置
 ✅ **Service Worker** - 更新缓存路由列表，移除 console.log
 
@@ -69,8 +70,9 @@
 **预期结果：**
 - ✅ 没有 404 错误（/import, /export, /seasonal）
 - ✅ 没有图标加载错误
+- ✅ 没有 React hydration 错误 (#418)
 - ✅ Service Worker 正常注册
-- ✅ 控制台干净，没有多余的日志
+- ✅ 控制台完全干净，没有任何错误或警告
 
 ## 如果仍有缓存问题
 
@@ -94,11 +96,28 @@
 
 1. `src/components/performance/RoutePreloader.tsx` - 更新预加载路由
 2. `src/components/layout/AppLayout.tsx` - 移除 /reports 导航
-3. `src/app/layout.tsx` - 更新图标引用，移除 console.log
-4. `src/proxy.ts` - 移除不存在路由的保护
-5. `public/sw.js` - 更新缓存路由，移除 console.log
-6. `public/manifest.json` - 更新为 SVG 图标
-7. `public/icons/` - 添加 SVG 占位图标
+3. `src/app/layout.tsx` - 修复 React hydration 错误，使用正确的 metadata API
+4. `src/components/ServiceWorkerRegistration.tsx` - 新建客户端组件注册 Service Worker
+5. `src/proxy.ts` - 移除不存在路由的保护
+6. `public/sw.js` - 更新缓存路由，移除 console.log
+7. `public/manifest.json` - 更新为 SVG 图标
+8. `public/icons/` - 添加 SVG 占位图标
+
+## 技术细节
+
+### React Hydration 错误修复
+
+**问题：** React 错误 #418 - "Text content does not match server-rendered HTML"
+
+**原因：**
+- 在 layout.tsx 中直接使用了 `<head>` 标签
+- 使用了 `dangerouslySetInnerHTML` 注入 Service Worker 注册脚本
+- Next.js 的服务端渲染与客户端渲染不匹配
+
+**解决方案：**
+1. 移除 `<head>` 标签，使用 Next.js 的 `metadata` API
+2. 将 Service Worker 注册移到独立的客户端组件
+3. 添加 `suppressHydrationWarning` 到 html 和 body 标签（仅在必要时）
 
 ## 注意事项
 
