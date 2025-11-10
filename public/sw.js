@@ -1,16 +1,15 @@
-const CACHE_NAME = 'qms-app-v3';
-const STATIC_CACHE_NAME = 'qms-static-v3';
-const API_CACHE_NAME = 'qms-api-v3';
-const IMAGE_CACHE_NAME = 'qms-images-v3';
+const CACHE_NAME = 'qms-app-v4';
+const STATIC_CACHE_NAME = 'qms-static-v4';
+const API_CACHE_NAME = 'qms-api-v4';
+const IMAGE_CACHE_NAME = 'qms-images-v4';
 
 // Files to cache for offline functionality
 const STATIC_FILES = [
   '/',
   '/quilts',
   '/usage',
-  '/seasonal',
-  '/import',
-  '/export',
+  '/analytics',
+  '/settings',
 ];
 
 // API endpoints to cache
@@ -18,12 +17,13 @@ const API_ENDPOINTS = ['/api/trpc/dashboard.getStats', '/api/trpc/quilts.list'];
 
 // Install event - cache static files
 self.addEventListener('install', event => {
-  console.log('Service Worker installing...');
-
   event.waitUntil(
     Promise.all([
       caches.open(STATIC_CACHE_NAME).then(cache => {
-        return cache.addAll(STATIC_FILES);
+        // Try to cache files, but don't fail if some are missing
+        return Promise.allSettled(
+          STATIC_FILES.map(file => cache.add(file).catch(() => {}))
+        );
       }),
       caches.open(API_CACHE_NAME),
       caches.open(IMAGE_CACHE_NAME),
@@ -36,8 +36,6 @@ self.addEventListener('install', event => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', event => {
-  console.log('Service Worker activating...');
-
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
@@ -48,7 +46,6 @@ self.addEventListener('activate', event => {
             cacheName !== IMAGE_CACHE_NAME &&
             cacheName !== CACHE_NAME
           ) {
-            console.log('Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
@@ -118,8 +115,6 @@ async function handleApiRequest(request) {
 
     return networkResponse;
   } catch (error) {
-    console.log('Network failed, trying cache for:', request.url);
-
     // Fallback to cache
     const cachedResponse = await cache.match(request);
 
@@ -174,8 +169,6 @@ async function handleImageRequest(request) {
 
     return networkResponse;
   } catch (error) {
-    console.log('Failed to fetch image:', request.url);
-
     // Return a placeholder image for failed image requests
     return new Response(
       '<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#f3f4f6"/><text x="50%" y="50%" font-family="system-ui" font-size="14" fill="#9ca3af" text-anchor="middle" dy=".3em">Image unavailable</text></svg>',
@@ -207,8 +200,6 @@ async function handleStaticRequest(request) {
 
     return networkResponse;
   } catch (error) {
-    console.log('Failed to fetch static resource:', request.url);
-
     // Try cache as fallback
     const cachedResponse = await cache.match(request);
     if (cachedResponse) {
@@ -284,8 +275,6 @@ async function handleNetworkFirst(request) {
 
 // Background sync for offline actions
 self.addEventListener('sync', event => {
-  console.log('Background sync triggered:', event.tag);
-
   if (event.tag === 'dashboard-sync') {
     event.waitUntil(syncDashboardData());
   }
@@ -311,7 +300,7 @@ async function syncDashboardData() {
       });
     }
   } catch (error) {
-    console.error('Failed to sync dashboard data:', error);
+    // Sync failed, will retry later
   }
 }
 
@@ -340,4 +329,4 @@ self.addEventListener('message', event => {
   }
 });
 
-console.log('QMS Service Worker loaded');
+// QMS Service Worker loaded
