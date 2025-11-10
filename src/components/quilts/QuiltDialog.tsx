@@ -138,10 +138,14 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
         weightGrams: parseFloat(formData.weightGrams) || 0,
       };
 
-      // Only include image fields if there are images
+      // Always include image fields to handle deletion
       if (images.length > 0) {
         data.mainImage = images[0];
         data.attachmentImages = images.length > 1 ? images.slice(1) : [];
+      } else {
+        // Explicitly set to null to clear images from database
+        data.mainImage = null;
+        data.attachmentImages = [];
       }
 
       if (quilt) {
