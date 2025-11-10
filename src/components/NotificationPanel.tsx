@@ -28,11 +28,25 @@ export function NotificationPanel({ onClose }: NotificationPanelProps) {
   const router = useRouter();
   const lang = t('language') === 'zh' ? 'zh' : 'en';
 
-  // Fetch notifications from database
-  const { data: notifications = [], isLoading, refetch } = api.notifications.getAll.useQuery({
-    limit: 50,
-    offset: 0,
-  });
+  // Fetch notifications from database with error handling
+  const {
+    data: notifications = [],
+    isLoading,
+    refetch,
+    error,
+  } = api.notifications.getAll.useQuery(
+    {
+      limit: 50,
+      offset: 0,
+    },
+    {
+      retry: 1,
+      retryDelay: 1000,
+      onError: (err) => {
+        console.warn('Failed to fetch notifications:', err.message);
+      },
+    }
+  );
 
   // Mutations
   const markAsReadMutation = api.notifications.markAsRead.useMutation({
