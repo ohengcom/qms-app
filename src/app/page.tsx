@@ -3,11 +3,11 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useDashboardStats } from '@/hooks/useDashboard';
-import { useWeather } from '@/hooks/useWeather';
+// import { useWeather } from '@/hooks/useWeather'; // Temporarily disabled
 import { useLanguage } from '@/lib/language-provider';
 import { DashboardStatsSkeleton, CardSkeleton } from '@/components/ui/skeleton-layouts';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Package, Activity, Archive, Calendar, Cloud, History, PackageOpen } from 'lucide-react';
+import { Package, Activity, Archive, Calendar, History, PackageOpen } from 'lucide-react';
 import { PageTransition } from '@/components/motion/PageTransition';
 import { AnimatedList, AnimatedListItem } from '@/components/motion/AnimatedList';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -15,7 +15,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 export default function DashboardPage() {
   const router = useRouter();
   const { data: stats, isLoading, error } = useDashboardStats();
-  const { data: weather, isLoading: weatherLoading } = useWeather();
+  // const { data: weather, isLoading: weatherLoading } = useWeather(); // Temporarily disabled
   const { t } = useLanguage();
 
   // Format date
@@ -89,8 +89,8 @@ export default function DashboardPage() {
               <Calendar className="w-5 h-5" />
               <span>{lang === 'zh' ? dateStr : dateStrEn}</span>
             </div>
-            {/* Weather */}
-            {!weatherLoading && weather && (
+            {/* Weather - Temporarily disabled due to API changes */}
+            {/* {!weatherLoading && weather && (
               <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg">
                 <Cloud className="w-5 h-5 text-blue-600" />
                 <span className="font-medium text-blue-900">
@@ -106,7 +106,7 @@ export default function DashboardPage() {
                   {lang === 'zh' ? weather.current.weather.zh : weather.current.weather.en}
                 </span>
               </div>
-            )}
+            )} */}
           </div>
         </div>
 
