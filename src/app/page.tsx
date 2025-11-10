@@ -11,7 +11,8 @@ import { Package, Activity, Archive, History, PackageOpen, Sparkles } from 'luci
 import { PageTransition } from '@/components/motion/PageTransition';
 import { AnimatedList, AnimatedListItem } from '@/components/motion/AnimatedList';
 import { EmptyState } from '@/components/ui/empty-state';
-import { WeatherWidget } from '@/components/weather/WeatherWidget';
+import { WeatherForecastWidget } from '@/components/weather/WeatherForecast';
+import { QuiltRecommendationContent } from '@/components/dashboard/QuiltRecommendationContent';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -64,8 +65,8 @@ export default function DashboardPage() {
   return (
     <PageTransition>
       <div className="space-y-6">
-        {/* Weather Widget at Top */}
-        <WeatherWidget />
+        {/* Weather Forecast at Top */}
+        <WeatherForecastWidget />
 
         {/* Enhanced Stats Grid - 3 Cards */}
         <AnimatedList className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -314,16 +315,8 @@ export default function DashboardPage() {
 
             {/* Recommended Tab */}
             {activeTab === 'recommended' && (
-              <div className="px-6 py-8">
-                <EmptyState
-                  icon={Sparkles}
-                  title={lang === 'zh' ? '智能推荐' : 'Smart Recommendations'}
-                  description={
-                    lang === 'zh'
-                      ? '基于天气和历史使用数据的被子推荐功能即将推出'
-                      : 'Quilt recommendations based on weather and historical data coming soon'
-                  }
-                />
+              <div className="p-6">
+                <QuiltRecommendationContent />
               </div>
             )}
           </div>
