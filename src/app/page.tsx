@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
 import { useDashboardStats } from '@/hooks/useDashboard';
 import { useLanguage } from '@/lib/language-provider';
 import { DashboardStatsSkeleton, CardSkeleton } from '@/components/ui/skeleton-layouts';
@@ -13,12 +12,13 @@ import { AnimatedList, AnimatedListItem } from '@/components/motion/AnimatedList
 import { EmptyState } from '@/components/ui/empty-state';
 import { WeatherForecastWidget } from '@/components/weather/WeatherForecast';
 import { QuiltRecommendationContent } from '@/components/dashboard/QuiltRecommendationContent';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent } from '@/components/ui/card';
 
 export default function DashboardPage() {
   const router = useRouter();
   const { data: stats, isLoading, error } = useDashboardStats();
   const { t } = useLanguage();
-  const [activeTab, setActiveTab] = useState<'current' | 'history' | 'recommended'>('current');
 
   if (isLoading) {
     return (
@@ -133,84 +133,45 @@ export default function DashboardPage() {
         </AnimatedList>
 
         {/* Tabbed Content Section */}
-        <div className="card-elevated bg-white rounded-lg overflow-hidden">
-          {/* Tab Navigation */}
-          <div className="border-b border-border">
-            <div className="flex">
-              <button
-                onClick={() => setActiveTab('current')}
-                className={`flex-1 px-6 py-4 text-sm font-medium transition-colors relative ${
-                  activeTab === 'current'
-                    ? 'text-primary bg-primary/5'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/30'
-                }`}
-              >
-                <div className="flex items-center justify-center gap-2">
-                  <Activity className="w-4 h-4" />
-                  <span>{lang === 'zh' ? '当前使用' : 'Current Use'}</span>
-                  {activeTab === 'current' && inUseQuilts.length > 0 && (
-                    <span className="px-2 py-0.5 bg-primary/10 text-primary text-xs font-medium rounded-full">
-                      {inUseQuilts.length}
-                    </span>
-                  )}
-                </div>
-                {activeTab === 'current' && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
+        <Card>
+          <Tabs defaultValue="current" className="w-full">
+            <TabsList className="w-full grid grid-cols-3">
+              <TabsTrigger value="current" className="flex items-center gap-2">
+                <Activity className="w-4 h-4" />
+                <span>{lang === 'zh' ? '当前使用' : 'Current Use'}</span>
+                {inUseQuilts.length > 0 && (
+                  <span className="ml-1 px-2 py-0.5 bg-primary/10 text-primary text-xs font-medium rounded-full">
+                    {inUseQuilts.length}
+                  </span>
                 )}
-              </button>
-              <button
-                onClick={() => setActiveTab('history')}
-                className={`flex-1 px-6 py-4 text-sm font-medium transition-colors relative ${
-                  activeTab === 'history'
-                    ? 'text-primary bg-primary/5'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/30'
-                }`}
-              >
-                <div className="flex items-center justify-center gap-2">
-                  <History className="w-4 h-4" />
-                  <span>{lang === 'zh' ? '历史使用' : 'Historical Use'}</span>
-                  {activeTab === 'history' && historicalUsage.length > 0 && (
-                    <span className="px-2 py-0.5 bg-primary/10 text-primary text-xs font-medium rounded-full">
-                      {historicalUsage.length}
-                    </span>
-                  )}
-                </div>
-                {activeTab === 'history' && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
+              </TabsTrigger>
+              <TabsTrigger value="history" className="flex items-center gap-2">
+                <History className="w-4 h-4" />
+                <span>{lang === 'zh' ? '历史使用' : 'Historical Use'}</span>
+                {historicalUsage.length > 0 && (
+                  <span className="ml-1 px-2 py-0.5 bg-primary/10 text-primary text-xs font-medium rounded-full">
+                    {historicalUsage.length}
+                  </span>
                 )}
-              </button>
-              <button
-                onClick={() => setActiveTab('recommended')}
-                className={`flex-1 px-6 py-4 text-sm font-medium transition-colors relative ${
-                  activeTab === 'recommended'
-                    ? 'text-primary bg-primary/5'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/30'
-                }`}
-              >
-                <div className="flex items-center justify-center gap-2">
-                  <Sparkles className="w-4 h-4" />
-                  <span>{lang === 'zh' ? '推荐使用' : 'Recommended'}</span>
-                </div>
-                {activeTab === 'recommended' && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
-                )}
-              </button>
-            </div>
-          </div>
+              </TabsTrigger>
+              <TabsTrigger value="recommended" className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4" />
+                <span>{lang === 'zh' ? '推荐使用' : 'Recommended'}</span>
+              </TabsTrigger>
+            </TabsList>
 
-          {/* Tab Content */}
-          <div className="divide-y divide-border">
-            {/* Current Use Tab */}
-            {activeTab === 'current' && (
-              <>
+            <TabsContent value="current" className="mt-0">
+              <CardContent className="divide-y divide-border p-0">
                 {inUseQuilts.length === 0 ? (
-                  <EmptyState
-                    icon={PackageOpen}
-                    title={t('pages.noQuiltsInUse')}
-                    description={
-                      lang === 'zh' ? '当前没有正在使用的被子' : 'No quilts are currently in use'
-                    }
-                  />
+                  <div className="p-6">
+                    <EmptyState
+                      icon={PackageOpen}
+                      title={t('pages.noQuiltsInUse')}
+                      description={
+                        lang === 'zh' ? '当前没有正在使用的被子' : 'No quilts are currently in use'
+                      }
+                    />
+                  </div>
                 ) : (
                   inUseQuilts.map((quilt: any) => (
                     <div
@@ -250,22 +211,23 @@ export default function DashboardPage() {
                     </div>
                   ))
                 )}
-              </>
-            )}
+              </CardContent>
+            </TabsContent>
 
-            {/* Historical Use Tab */}
-            {activeTab === 'history' && (
-              <>
+            <TabsContent value="history" className="mt-0">
+              <CardContent className="divide-y divide-border p-0">
                 {historicalUsage.length === 0 ? (
-                  <EmptyState
-                    icon={History}
-                    title={t('pages.noHistoricalRecords')}
-                    description={
-                      lang === 'zh'
-                        ? '这一天在往年没有使用记录'
-                        : 'No historical records for this date'
-                    }
-                  />
+                  <div className="p-6">
+                    <EmptyState
+                      icon={History}
+                      title={t('pages.noHistoricalRecords')}
+                      description={
+                        lang === 'zh'
+                          ? '这一天在往年没有使用记录'
+                          : 'No historical records for this date'
+                      }
+                    />
+                  </div>
                 ) : (
                   historicalUsage.map((record: any) => (
                     <div
@@ -310,17 +272,16 @@ export default function DashboardPage() {
                     </div>
                   ))
                 )}
-              </>
-            )}
+              </CardContent>
+            </TabsContent>
 
-            {/* Recommended Tab */}
-            {activeTab === 'recommended' && (
-              <div className="p-6">
+            <TabsContent value="recommended" className="mt-0">
+              <CardContent className="p-6">
                 <QuiltRecommendationContent />
-              </div>
-            )}
-          </div>
-        </div>
+              </CardContent>
+            </TabsContent>
+          </Tabs>
+        </Card>
       </div>
     </PageTransition>
   );
