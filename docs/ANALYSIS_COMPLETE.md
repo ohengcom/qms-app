@@ -31,12 +31,14 @@
 ### 1. 分析文档 (4 个)
 
 #### 中文文档
-- ✅ **项目优化分析报告_中文.md**
+
+- ✅ **项目优化分析报告\_中文.md**
   - 完整的中文分析报告
   - 包含所有关键信息
   - 推荐首先阅读
 
 #### 英文文档
+
 - ✅ **PROJECT_OPTIMIZATION_ANALYSIS.md**
   - 详细的技术分析
   - 优化建议和预期收益
@@ -89,6 +91,7 @@ npm run cleanup:check
 ```
 
 **输出示例**:
+
 ```
 🧹 QMS 项目清理工具
 ============================================================
@@ -105,6 +108,7 @@ npm run cleanup:check
 ### 第二步: 阅读分析报告
 
 **推荐中文用户**:
+
 ```bash
 # 打开中文完整报告
 cat 项目优化分析报告_中文.md
@@ -114,6 +118,7 @@ code 项目优化分析报告_中文.md
 ```
 
 **推荐英文用户**:
+
 ```bash
 # 打开英文分析报告
 cat PROJECT_OPTIMIZATION_ANALYSIS.md
@@ -132,6 +137,7 @@ npm run cleanup:auto
 ```
 
 **自动清理内容**:
+
 - ✅ 创建归档目录
 - ✅ 移动测试脚本到 `scripts/archive/`
 - ✅ 移动迁移脚本到 `scripts/migrations/`
@@ -150,11 +156,13 @@ npm run cleanup:auto
 **问题**: 生产代码中存在大量 console.log
 
 **影响**:
+
 - 性能下降
 - 安全风险
 - 打包体积增大
 
 **解决方案**:
+
 ```typescript
 // ❌ 不推荐
 console.log('Debug info:', data);
@@ -169,11 +177,13 @@ logger.debug('Debug info', data);
 ### 2. 未完成功能 (27 处)
 
 **核心功能缺失**:
+
 - ❌ 导入导出功能 (6 个 API)
 - ❌ 被子使用管理 (5 个 API)
 - ❌ 其他功能 (16 处)
 
 **建议**:
+
 - 实现核心功能
 - 移除不需要的功能
 - 更新文档说明
@@ -183,11 +193,13 @@ logger.debug('Debug info', data);
 ### 3. 文件整理 (7 个文件)
 
 **需要归档**:
+
 - 6 个过时的测试脚本
 - 5 个已完成的迁移脚本
 - 7 个临时文档
 
 **解决方案**:
+
 ```bash
 npm run cleanup:auto
 ```
@@ -197,6 +209,7 @@ npm run cleanup:auto
 ### 4. 代码重复 (3 对)
 
 **可能重复的组件**:
+
 - skeleton.tsx ↔ skeleton-layouts.tsx
 - button.tsx ↔ ripple-button.tsx
 - next-image.tsx ↔ optimized-image.tsx
@@ -251,30 +264,30 @@ npm run cleanup:auto
 
 ### 代码质量
 
-| 指标 | 改进 |
-|------|------|
-| Console 日志 | -100% (153 → 0) |
-| TODO 注释 | -81% (27 → 5) |
-| 代码覆盖率 | +20% (60% → 80%) |
-| TypeScript 严格度 | +30% |
+| 指标              | 改进             |
+| ----------------- | ---------------- |
+| Console 日志      | -100% (153 → 0)  |
+| TODO 注释         | -81% (27 → 5)    |
+| 代码覆盖率        | +20% (60% → 80%) |
+| TypeScript 严格度 | +30%             |
 
 ### 性能
 
-| 指标 | 改进 |
-|------|------|
-| 打包大小 | -10% |
-| 首次加载 | -25% (2s → 1.5s) |
+| 指标     | 改进                 |
+| -------- | -------------------- |
+| 打包大小 | -10%                 |
+| 首次加载 | -25% (2s → 1.5s)     |
 | 页面切换 | -40% (500ms → 300ms) |
 | API 响应 | -40% (500ms → 300ms) |
 
 ### 可维护性
 
-| 指标 | 改进 |
-|------|------|
+| 指标       | 改进             |
+| ---------- | ---------------- |
 | 文档覆盖率 | +30% (60% → 90%) |
-| 代码重复率 | -60% (5% → 2%) |
-| 技术债务 | -70% |
-| 开发效率 | +40% |
+| 代码重复率 | -60% (5% → 2%)   |
+| 技术债务   | -70%             |
+| 开发效率   | +40%             |
 
 ---
 
@@ -328,21 +341,23 @@ npm run analyze
 
 ### 按用途查找
 
-| 需求 | 推荐文档 |
-|------|---------|
-| 快速了解项目状况 | `项目优化分析报告_中文.md` ⭐ |
-| 详细技术分析 | `PROJECT_OPTIMIZATION_ANALYSIS.md` |
-| 执行计划 | `CLEANUP_EXECUTION_PLAN.md` |
-| 工具使用指南 | `PROJECT_CLEANUP_SUMMARY.md` |
-| 文档导航 | `OPTIMIZATION_README.md` |
+| 需求             | 推荐文档                           |
+| ---------------- | ---------------------------------- |
+| 快速了解项目状况 | `项目优化分析报告_中文.md` ⭐      |
+| 详细技术分析     | `PROJECT_OPTIMIZATION_ANALYSIS.md` |
+| 执行计划         | `CLEANUP_EXECUTION_PLAN.md`        |
+| 工具使用指南     | `PROJECT_CLEANUP_SUMMARY.md`       |
+| 文档导航         | `OPTIMIZATION_README.md`           |
 
 ### 按语言查找
 
 **中文**:
+
 - `项目优化分析报告_中文.md` - 完整分析报告
 - `OPTIMIZATION_README.md` - 使用指南（中英双语）
 
 **英文**:
+
 - `PROJECT_OPTIMIZATION_ANALYSIS.md` - 优化分析
 - `CLEANUP_EXECUTION_PLAN.md` - 执行计划
 - `PROJECT_CLEANUP_SUMMARY.md` - 清理总结
@@ -354,12 +369,14 @@ npm run analyze
 ### 执行清理前
 
 1. **创建备份分支**
+
    ```bash
    git checkout -b backup/before-cleanup
    git push origin backup/before-cleanup
    ```
 
 2. **创建清理分支**
+
    ```bash
    git checkout -b optimization/cleanup
    ```
@@ -474,16 +491,19 @@ npm run cleanup:auto
 ### 完成的工作
 
 ✅ **全面分析**
+
 - 扫描了整个项目代码库
 - 识别了 190 个需要关注的项目
 - 创建了详细的分析报告
 
 ✅ **解决方案**
+
 - 创建了 6 个详细文档
 - 开发了自动化清理脚本
 - 提供了清晰的执行计划
 
 ✅ **工具支持**
+
 - 自动扫描工具
 - 自动清理功能
 - 详细的使用指南
@@ -491,10 +511,12 @@ npm run cleanup:auto
 ### 项目状态
 
 **当前状态**: ⚠️ 需要清理
+
 - 190 个需要关注的项目
 - 5-7 天预计工作量
 
 **清理后状态**: ✅ 优化完成
+
 - 代码质量提升 30%
 - 性能提升 20-30%
 - 可维护性提升 40%

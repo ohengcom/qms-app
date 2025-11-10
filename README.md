@@ -13,10 +13,13 @@ A modern Next.js application with Neon PostgreSQL that transforms simple Excel-b
 ### 📊 Core Functionality
 
 - **Quilt Management**: Complete CRUD operations with auto-generated names and numbers
+- **Image Management**: Upload and manage quilt photos with Cloudinary integration
 - **Usage Tracking**: Automated usage record creation with smart status detection
-- **Status Management**: Three states (In Use, Storage, Maintenance) with intelligent transitions
+- **Status Management**: Four states (Available, In Use, Storage, Maintenance) with intelligent transitions
+- **Weather Integration**: Real-time weather-based quilt recommendations
+- **Smart Notifications**: Proactive alerts for maintenance, seasonal changes, and usage patterns
 - **Data Analytics**: Usage statistics, seasonal analysis, and trend visualization
-- **Import/Export**: Excel support with Chinese language compatibility
+- **PWA Support**: Installable app with offline capabilities and push notifications
 - **Settings Management**: Centralized configuration with database storage
 
 ### 🎨 Modern UI/UX
@@ -24,12 +27,14 @@ A modern Next.js application with Neon PostgreSQL that transforms simple Excel-b
 - **Responsive Design**: Optimized for desktop, tablet, and mobile devices
 - **Smooth Animations**: Framer Motion powered transitions and micro-interactions
 - **Dual View Modes**: Grid and list views with seamless switching
+- **Advanced Filtering**: Multi-criteria search with season, status, location, brand, and weight filters
 - **Bilingual Support**: Full Chinese/English interface with language switcher
 - **Empty States**: Friendly guidance when no data is available with contextual actions
 - **Loading States**: Skeleton screens for better perceived performance
 - **Real-time Stats**: Live database statistics with auto-refresh
 - **Design System**: Consistent spacing, colors, and typography throughout
 - **Optimistic Updates**: Instant UI feedback for better user experience
+- **Dashboard**: Comprehensive overview with quick actions and statistics
 
 ### 🔐 Security & Authentication
 
@@ -40,14 +45,16 @@ A modern Next.js application with Neon PostgreSQL that transforms simple Excel-b
 - **Database Password Storage**: Passwords stored securely in database (no environment variable updates needed)
 - **Instant Password Changes**: Change password without redeployment
 
-### 🚀 Performance
+### 🚀 Performance & Reliability
 
 - **Fast Loading**: < 2s first load, < 500ms page transitions
 - **Optimized Queries**: Indexed database operations with repository pattern
 - **Efficient Rendering**: React Query with optimistic updates for instant feedback
-- **Smart Caching**: 5-minute stale time, 10-minute cache retention
+- **Smart Caching**: Multi-layer caching with Redis-like in-memory cache
 - **Code Splitting**: Automatic route-based code splitting with Next.js
 - **Serverless**: Neon PostgreSQL for scalable database
+- **Error Handling**: Comprehensive error boundaries with user-friendly messages
+- **Monitoring**: Prometheus metrics endpoint for system monitoring
 
 ## 🏗️ Tech Stack
 
@@ -68,6 +75,10 @@ A modern Next.js application with Neon PostgreSQL that transforms simple Excel-b
 - **Authentication**: JWT + bcryptjs
 - **Validation**: Zod schemas
 - **ORM**: Custom Repository Pattern
+- **Image Storage**: Cloudinary
+- **Weather API**: OpenWeatherMap
+- **Caching**: In-memory cache service
+- **Notifications**: Database-driven notification system
 
 ### DevOps
 
@@ -115,6 +126,13 @@ DATABASE_URL="postgresql://..."
 # Authentication (Required)
 QMS_JWT_SECRET="..."
 
+# Image Upload (Optional)
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="..."
+NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET="..."
+
+# Weather API (Optional)
+OPENWEATHER_API_KEY="..."
+
 # Optional - Password can be managed in Settings page
 QMS_PASSWORD_HASH="..."  # Only needed for initial setup
 ```
@@ -142,14 +160,23 @@ This will:
 
 - Basic info: name, season, dimensions, weight, materials
 - Storage: location, packaging, brand, purchase date
-- Status: current_status (IN_USE, STORAGE, MAINTENANCE)
+- Status: current_status (AVAILABLE, IN_USE, STORAGE, MAINTENANCE)
+- Images: main_image, attachment_images (Cloudinary URLs)
 
 **usage_records** - Usage tracking
 
 - Quilt reference
 - Start/end dates
+- Usage type (REGULAR, GUEST, SPECIAL_OCCASION, SEASONAL_ROTATION)
 - Status (ACTIVE, COMPLETED)
 - Notes
+
+**notifications** - Smart notification system
+
+- Type (MAINTENANCE_DUE, SEASONAL_CHANGE, USAGE_REMINDER, etc.)
+- Priority (LOW, MEDIUM, HIGH, URGENT)
+- Status (UNREAD, READ, DISMISSED)
+- Metadata (JSON)
 
 **system_settings** - Application configuration
 
@@ -167,6 +194,7 @@ When you change a quilt's status:
 - **To IN_USE**: Automatically creates a new usage record
 - **From IN_USE**: Automatically ends the active usage record
 - **Date Selection**: Choose custom start/end dates
+- **Usage Types**: Regular, Guest, Special Occasion, Seasonal Rotation
 - **Notes Support**: Add optional notes to records
 
 ### 2. Smart Quilt Naming
@@ -176,11 +204,48 @@ Automatically generates names in format:
 
 Example: `百思寒褐色1100克春秋被`
 
-### 3. Dual View Modes
+### 3. Weather-Based Recommendations
+
+Real-time quilt recommendations based on:
+
+- Current temperature and weather conditions
+- Seasonal patterns
+- Historical usage data
+- User preferences
+
+### 4. Smart Notification System
+
+Proactive alerts for:
+
+- **Maintenance Due**: Reminders for quilt care
+- **Seasonal Changes**: Suggestions to rotate quilts
+- **Usage Patterns**: Long-term usage alerts
+- **Weather Changes**: Temperature-based recommendations
+- **Storage Reminders**: Unused quilt notifications
+
+### 5. Image Management
+
+- Upload main quilt photo
+- Add multiple attachment images
+- Cloudinary integration for optimized storage
+- Image preview and management
+
+### 6. Advanced Filtering
+
+Multi-criteria search with:
+
+- Season (Winter, Spring/Autumn, Summer, All-Season)
+- Status (Available, In Use, Storage, Maintenance)
+- Location
+- Brand
+- Weight range
+- Text search
+
+### 7. Dual View Modes
 
 **Grid View**:
 
-- Beautiful card layout
+- Beautiful card layout with images
 - Season color indicators
 - Status badges
 - Hover effects
@@ -193,14 +258,12 @@ Example: `百思寒褐色1100克春秋被`
 - Batch operations
 - Quick actions
 
-### 4. Empty States
+### 8. PWA Features
 
-Friendly guidance when:
-
-- No quilts exist
-- Search returns no results
-- No usage records
-- With helpful action buttons
+- **Installable**: Add to home screen
+- **Offline Support**: Service worker caching
+- **Push Notifications**: Real-time alerts
+- **App-like Experience**: Full-screen mode
 
 ## 📚 Available Scripts
 
@@ -293,13 +356,16 @@ qms-app/
 
 ## 🗺️ Roadmap
 
-### ✅ Completed (v0.3.0 - Nov 2025)
+### ✅ Completed (v0.5.0 - Nov 2025)
 
 - **Code Quality & Architecture**
   - Logging utility with environment-based filtering
   - Repository pattern for database operations
   - Type-safe database operations
   - Error boundaries with bilingual support
+  - Comprehensive error handling
+  - In-memory caching service
+  - Prometheus metrics endpoint
 - **Authentication & Security**
   - Password utilities (bcrypt hashing)
   - JWT token management
@@ -312,6 +378,7 @@ qms-app/
   - Unified error handling
   - Removed duplicate REST APIs
   - Type-safe API calls
+  - Cleaned up TODO items
 - **Enhanced Settings Page**
   - Change password (instant, no redeployment)
   - Modify application name
@@ -319,20 +386,54 @@ qms-app/
   - Real-time database statistics
   - System information display
 
-- **Usage Tracking Improvements**
+- **Usage Tracking**
   - Migrated to tRPC
   - Edit usage records
-  - Simplified UI (removed unnecessary fields)
+  - Usage types (Regular, Guest, Special Occasion, Seasonal Rotation)
+  - Automated record creation/completion
+- **Image Management**
+  - Cloudinary integration
+  - Main image upload
+  - Multiple attachment images
+  - Image migration tools
+- **Weather Integration**
+  - OpenWeatherMap API integration
+  - Real-time weather data
+  - Temperature-based recommendations
+  - Historical weather data
+- **Smart Notifications**
+  - Database-driven notification system
+  - Multiple notification types
+  - Priority levels
+  - Read/unread status
+  - Notification checker service
+- **Advanced Features**
+  - Advanced filtering system
+  - Dashboard with statistics
+  - PWA support with service worker
+  - Offline capabilities
+  - Push notifications
 
-### 📋 Planned (Phase 2)
+### 📋 Planned (Future Releases)
 
-- Theme switching (dark mode)
-- Display preferences
-- Image upload
-- Advanced search
-- Batch editing
-- Tag system
-- Data export enhancements
+- **Import/Export**
+  - Excel/CSV import with preview
+  - Data export with filters
+  - Usage reports
+  - Maintenance reports
+- **Maintenance System**
+  - Maintenance record tracking
+  - Scheduled maintenance reminders
+  - Care instructions
+- **Analytics**
+  - Usage trend analysis
+  - Seasonal insights
+  - Cost tracking
+- **UI Enhancements**
+  - Theme switching (dark mode)
+  - Display preferences
+  - Batch editing
+  - Tag system
 
 ## 🤝 Contributing
 
@@ -356,8 +457,8 @@ For questions or issues, please open an issue on GitHub.
 
 ---
 
-**Version**: 0.3.0  
+**Version**: 0.5.0  
 **Status**: ✅ Production Ready  
-**Last Updated**: 2025-11-03
+**Last Updated**: 2025-11-10
 
 Made with ❤️ for better home organization

@@ -29,6 +29,7 @@
 **问题**: 生产代码中存在大量 console.log 和 console.error
 
 **影响文件** (共 20+ 处):
+
 - `src/server/api/routers/dashboard.ts` - 8 处 console.log
 - `src/components/NotificationChecker.tsx` - 4 处 console.log
 - `src/lib/excel-analyzer.ts` - 10+ 处 console.log
@@ -36,6 +37,7 @@
 - 其他组件和工具文件
 
 **建议**:
+
 ```typescript
 // 替换为统一的日志系统
 import { logger } from '@/lib/logger';
@@ -80,6 +82,7 @@ logger.error('Error occurred', error);
    - ❌ 错误提示 (`src/components/quilts/QuiltDialog.tsx`)
 
 **建议**:
+
 - 评估每个功能的必要性
 - 实现核心功能
 - 移除不需要的功能代码
@@ -92,6 +95,7 @@ logger.error('Error occurred', error);
 #### 2.1 归档历史文档
 
 **当前状态**:
+
 - `docs/archive/` - 17 个历史文档
 - `docs/sessions/` - 5 个会话记录
 - 根目录 - 7 个临时文档
@@ -123,6 +127,7 @@ logger.error('Error occurred', error);
 #### 2.2 更新过时文档
 
 **需要更新的文档**:
+
 - `README.md` - 更新到 v0.5.0 功能
 - `CHANGELOG.md` - 添加最新变更
 - `docs/INDEX.md` - 更新文档索引
@@ -164,6 +169,7 @@ logger.error('Error occurred', error);
 ```
 
 **建议**:
+
 1. 创建 `scripts/archive/` 目录
 2. 移动一次性迁移脚本到归档
 3. 删除过时的测试脚本
@@ -176,6 +182,7 @@ logger.error('Error occurred', error);
 #### 4.1 合并重复组件
 
 **潜在重复**:
+
 - `src/components/ui/skeleton.tsx` 和 `skeleton-layouts.tsx` - 可能可以合并
 - `src/components/ui/button.tsx` 和 `ripple-button.tsx` - 考虑合并
 - `src/components/ui/next-image.tsx` 和 `optimized-image.tsx` - 功能重叠
@@ -188,7 +195,8 @@ logger.error('Error occurred', error);
 
 **问题**: 某些文件可能有未使用的导入
 
-**建议**: 
+**建议**:
+
 ```bash
 # 使用 ESLint 检查
 npm run lint
@@ -208,6 +216,7 @@ npm run lint -- --fix
 **问题**: Edit Dialog 中图片显示为黑色
 
 **建议**:
+
 1. 提高图片压缩质量（0.6 → 0.8）
 2. 检查 CSS z-index 冲突
 3. 添加图片加载错误处理
@@ -285,16 +294,19 @@ npm run analyze
 ## 📊 预期收益
 
 ### 代码质量
+
 - ✅ 减少 30% 的调试代码
 - ✅ 提高代码可维护性
 - ✅ 减少潜在的安全风险
 
 ### 性能
+
 - ✅ 减少 10-15% 的打包大小
 - ✅ 提高页面加载速度
 - ✅ 减少运行时错误
 
 ### 可维护性
+
 - ✅ 清晰的文档结构
 - ✅ 减少 50% 的冗余文档
 - ✅ 更好的代码组织
@@ -329,18 +341,21 @@ npm run analyze
 ## 📝 下一步行动
 
 ### 立即执行 (本周)
+
 1. 创建清理分支
 2. 移除所有 console.log
 3. 修复天气功能错误
 4. 更新 README 和 CHANGELOG
 
 ### 短期计划 (2 周内)
+
 1. 完成或移除 TODO 功能
 2. 清理脚本目录
 3. 归档历史文档
 4. 优化图片功能
 
 ### 长期计划 (1 个月内)
+
 1. 实现完整的导入导出功能
 2. 优化性能和打包大小
 3. 完善文档体系
@@ -351,6 +366,7 @@ npm run analyze
 ## 🤝 建议的工作流程
 
 1. **创建优化分支**
+
    ```bash
    git checkout -b optimization/cleanup
    ```
@@ -380,16 +396,19 @@ npm run analyze
 ## 📞 需要决策的问题
 
 ### 功能决策
+
 1. **导入导出功能** - 是否需要实现？如果需要，优先级如何？
 2. **报告功能** - 是否需要实现？功能范围是什么？
 3. **维护记录** - 是否需要独立的维护管理模块？
 
 ### 技术决策
+
 1. **日志系统** - 是否需要集成第三方日志服务（如 Sentry）？
 2. **图片存储** - 是否考虑使用云存储（如 Cloudinary）？
 3. **缓存策略** - 是否需要更复杂的缓存机制？
 
 ### 文档决策
+
 1. **文档结构** - 当前的文档组织是否合理？
 2. **API 文档** - 是否需要生成 API 文档？
 3. **用户手册** - 是否需要详细的用户使用手册？

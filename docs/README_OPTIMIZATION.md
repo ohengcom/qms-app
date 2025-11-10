@@ -19,11 +19,13 @@ npm run cleanup:check
 ### 第二步：阅读分析报告
 
 **推荐中文用户**:
+
 ```bash
 cat 项目优化分析报告_中文.md
 ```
 
 **推荐英文用户**:
+
 ```bash
 cat PROJECT_OPTIMIZATION_ANALYSIS.md
 ```
@@ -57,7 +59,7 @@ npm run cleanup:auto
 
 ### 核心分析文档
 
-1. **项目优化分析报告_中文.md** (13.66 KB) ⭐ 推荐
+1. **项目优化分析报告\_中文.md** (13.66 KB) ⭐ 推荐
    - 完整的中文分析报告
    - 包含所有关键信息
 
@@ -106,6 +108,7 @@ npm run cleanup:auto
 **问题**: 生产代码中的 console.log
 
 **解决方案**:
+
 ```typescript
 // ❌ 不推荐
 console.log('Debug info:', data);
@@ -120,6 +123,7 @@ logger.debug('Debug info', data);
 ### 2. 未完成功能 (27 处)
 
 **主要缺失**:
+
 - 导入导出功能 (6 个 API)
 - 被子使用管理 (5 个 API)
 - 其他功能 (16 处)
@@ -129,11 +133,13 @@ logger.debug('Debug info', data);
 ### 3. 文件整理 (7 个)
 
 **需要归档**:
+
 - 6 个过时的测试脚本
 - 5 个已完成的迁移脚本
 - 4 个临时文档
 
 **解决方案**:
+
 ```bash
 npm run cleanup:auto
 ```
@@ -143,6 +149,7 @@ npm run cleanup:auto
 ### 4. 代码重复 (3 对)
 
 **可能重复的组件**:
+
 - skeleton.tsx ↔ skeleton-layouts.tsx
 - button.tsx ↔ ripple-button.tsx
 - next-image.tsx ↔ optimized-image.tsx
@@ -159,10 +166,12 @@ npm run cleanup:auto
 **实际状态**: ✅ 天气功能正常工作
 
 **已确认正常工作的功能**:
+
 - `WeatherForecastWidget` - 7天天气预报
 - `QuiltRecommendationContent` - 智能推荐
 
 **文档已更新**:
+
 - ✅ 移除天气功能错误相关内容
 - ✅ 更新所有分析文档
 - ✅ 删除 WEATHER_FEATURE_STATUS.md
@@ -256,17 +265,17 @@ npm run analyze
 
 ### 代码质量
 
-| 指标 | 改进 |
-|------|------|
-| Console 日志 | -100% (153 → 0) |
-| TODO 注释 | -81% (27 → 5) |
-| 代码覆盖率 | +20% |
-| TypeScript 严格度 | +30% |
+| 指标              | 改进            |
+| ----------------- | --------------- |
+| Console 日志      | -100% (153 → 0) |
+| TODO 注释         | -81% (27 → 5)   |
+| 代码覆盖率        | +20%            |
+| TypeScript 严格度 | +30%            |
 
 ### 性能
 
-| 指标 | 改进 |
-|------|------|
+| 指标     | 改进 |
+| -------- | ---- |
 | 打包大小 | -10% |
 | 首次加载 | -25% |
 | 页面切换 | -40% |
@@ -274,12 +283,12 @@ npm run analyze
 
 ### 可维护性
 
-| 指标 | 改进 |
-|------|------|
+| 指标       | 改进 |
+| ---------- | ---- |
 | 文档覆盖率 | +30% |
 | 代码重复率 | -60% |
-| 技术债务 | -70% |
-| 开发效率 | +40% |
+| 技术债务   | -70% |
+| 开发效率   | +40% |
 
 ---
 
@@ -288,12 +297,14 @@ npm run analyze
 ### 执行前
 
 1. **创建备份**
+
    ```bash
    git checkout -b backup/before-cleanup
    git push origin backup/before-cleanup
    ```
 
 2. **创建清理分支**
+
    ```bash
    git checkout -b optimization/cleanup
    ```
@@ -324,22 +335,24 @@ npm run analyze
 
 ### 按需求查找
 
-| 需求 | 推荐文档 |
-|------|---------|
-| 快速了解 | `项目优化分析报告_中文.md` ⭐ |
+| 需求     | 推荐文档                           |
+| -------- | ---------------------------------- |
+| 快速了解 | `项目优化分析报告_中文.md` ⭐      |
 | 详细分析 | `PROJECT_OPTIMIZATION_ANALYSIS.md` |
-| 执行计划 | `CLEANUP_EXECUTION_PLAN.md` |
-| 工具使用 | `PROJECT_CLEANUP_SUMMARY.md` |
-| 使用指南 | `OPTIMIZATION_README.md` |
-| 更新说明 | `OPTIMIZATION_UPDATE.md` |
+| 执行计划 | `CLEANUP_EXECUTION_PLAN.md`        |
+| 工具使用 | `PROJECT_CLEANUP_SUMMARY.md`       |
+| 使用指南 | `OPTIMIZATION_README.md`           |
+| 更新说明 | `OPTIMIZATION_UPDATE.md`           |
 
 ### 按语言查找
 
 **中文**:
+
 - `项目优化分析报告_中文.md` - 完整分析
 - `README_OPTIMIZATION.md` - 使用指南（本文档）
 
 **英文**:
+
 - `PROJECT_OPTIMIZATION_ANALYSIS.md` - 优化分析
 - `CLEANUP_EXECUTION_PLAN.md` - 执行计划
 - `PROJECT_CLEANUP_SUMMARY.md` - 清理总结
