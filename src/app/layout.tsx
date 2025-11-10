@@ -3,7 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { TRPCProvider } from '@/lib/trpc-provider';
 import { LanguageProvider } from '@/lib/language-provider';
-import { AppLayout } from '@/components/layout/AppLayout';
+import { ConditionalLayout } from '@/components/layout/ConditionalLayout';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Toaster } from '@/components/ui/toaster';
 import { Toaster as SonnerToaster } from 'sonner';
@@ -63,7 +63,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <GlobalErrorHandler />
               <RoutePreloader />
               <ServiceWorkerRegistration />
-              <AppLayout>{children}</AppLayout>
+              <ConditionalLayout>{children}</ConditionalLayout>
               <Toaster />
               <SonnerToaster position="top-right" richColors closeButton />
             </TRPCProvider>
