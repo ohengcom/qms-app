@@ -30,15 +30,15 @@
 
 ```sql
 -- 检查表是否存在
-SELECT * FROM information_schema.tables 
+SELECT * FROM information_schema.tables
 WHERE table_name = 'notifications';
 
 -- 查看表结构
 \d notifications
 
 -- 检查索引
-SELECT indexname, indexdef 
-FROM pg_indexes 
+SELECT indexname, indexdef
+FROM pg_indexes
 WHERE tablename = 'notifications';
 ```
 
@@ -59,7 +59,7 @@ WHERE tablename = 'notifications';
 SELECT * FROM usage_records WHERE end_date IS NULL;
 
 -- 修改开始时间为 35 天前
-UPDATE usage_records 
+UPDATE usage_records
 SET start_date = NOW() - INTERVAL '35 days'
 WHERE id = 'your-usage-record-id';
 ```
@@ -68,19 +68,23 @@ WHERE id = 'your-usage-record-id';
    - 刷新应用页面（会自动触发检查）
    - 或者等待 1 小时（自动检查）
    - 或者在浏览器控制台运行：
+
    ```javascript
    // 手动触发检查
    fetch('/api/trpc/notifications.checkMaintenance', {
      method: 'POST',
      headers: { 'Content-Type': 'application/json' },
-     body: JSON.stringify({})
-   }).then(r => r.json()).then(console.log);
+     body: JSON.stringify({}),
+   })
+     .then(r => r.json())
+     .then(console.log);
    ```
 
 5. 点击右上角的通知图标（铃铛）
 6. 应该看到一条维护提醒通知，优先级为"中"
 
 **预期结果**：
+
 - ✅ 通知面板显示维护提醒
 - ✅ 通知标题：`维护提醒：[被子名称]`
 - ✅ 通知内容：`已连续使用 35 天，建议进行清洗或晾晒维护`
@@ -115,6 +119,7 @@ VALUES (
 5. 查看通知面板
 
 **预期结果**：
+
 - ✅ 通知面板显示淘汰建议
 - ✅ 通知标题：`淘汰建议：[被子名称]`
 - ✅ 通知内容：`已经 400 天未使用，建议考虑是否需要保留`
@@ -130,27 +135,32 @@ VALUES (
 3. 测试以下功能：
 
 #### 3.1 查看通知
+
 - ✅ 未读通知有蓝色背景
 - ✅ 未读通知右侧有蓝色圆点
 - ✅ 显示优先级徽章
 - ✅ 显示相对时间（如"5分钟前"）
 
 #### 3.2 标记已读
+
 - 点击任意通知
 - ✅ 蓝色背景消失
 - ✅ 蓝色圆点消失
 - ✅ 如果有 actionUrl，页面跳转到相关页面
 
 #### 3.3 删除通知
+
 - 点击通知右下角的垃圾桶图标
 - ✅ 通知从列表中消失
 
 #### 3.4 全部标记已读
+
 - 点击顶部的"全部标记已读"按钮（双勾图标）
 - ✅ 所有通知变为已读状态
 - ✅ 未读数量变为 0
 
 #### 3.5 未读计数
+
 - ✅ 通知图标上显示未读数量徽章
 - ✅ 数量正确（最多显示 9+）
 - ✅ 没有未读时不显示徽章
@@ -165,6 +175,7 @@ VALUES (
 4. 查看控制台输出
 
 **预期结果**：
+
 - ✅ 看到 "Running initial notification check..." 日志
 - ✅ 看到 "Notification check completed" 日志
 - ✅ 如果创建了新通知，看到 "Created X new notifications"
@@ -179,6 +190,7 @@ VALUES (
 4. 查看通知面板
 
 **预期结果**：
+
 - ✅ 之前的通知仍然存在
 - ✅ 未读状态保持不变
 - ✅ 通知按时间倒序排列
@@ -188,7 +200,7 @@ VALUES (
 ### 查看所有通知
 
 ```sql
-SELECT 
+SELECT
   id,
   type,
   priority,
@@ -213,7 +225,7 @@ WHERE is_read = false;
 ### 查看各类型通知统计
 
 ```sql
-SELECT 
+SELECT
   type,
   priority,
   COUNT(*) as count,
@@ -227,7 +239,7 @@ ORDER BY type, priority;
 
 ```sql
 INSERT INTO notifications (
-  id, type, priority, title, message, 
+  id, type, priority, title, message,
   quilt_id, action_url, metadata, created_at, updated_at
 )
 VALUES (
@@ -249,6 +261,7 @@ VALUES (
 ### 问题 1：通知不显示
 
 **检查清单**：
+
 1. 数据库表是否创建？
    ```sql
    SELECT * FROM notifications LIMIT 1;
@@ -263,6 +276,7 @@ VALUES (
 ### 问题 2：通知检查不运行
 
 **检查清单**：
+
 1. 查看浏览器控制台是否有 "Running initial notification check" 日志
 2. 检查是否有 JavaScript 错误
 3. 确认 NotificationChecker 组件已加载
@@ -271,6 +285,7 @@ VALUES (
 ### 问题 3：未读计数不更新
 
 **解决方法**：
+
 1. 刷新页面
 2. 检查 `getUnreadCount` API 是否返回正确数据
 3. 在浏览器控制台运行：
@@ -288,7 +303,7 @@ VALUES (
 
 ```sql
 INSERT INTO notifications (id, type, priority, title, message, created_at, updated_at)
-SELECT 
+SELECT
   gen_random_uuid(),
   (ARRAY['weather_change', 'maintenance_reminder', 'disposal_suggestion'])[floor(random() * 3 + 1)],
   (ARRAY['high', 'medium', 'low'])[floor(random() * 3 + 1)],
@@ -300,6 +315,7 @@ FROM generate_series(1, 100);
 ```
 
 **验证**：
+
 - ✅ 通知面板滚动流畅
 - ✅ 加载时间 < 2 秒
 - ✅ 分页正常工作（默认显示 50 条）
@@ -327,14 +343,17 @@ FROM generate_series(1, 100);
    fetch('/api/trpc/notifications.cleanup', {
      method: 'POST',
      headers: { 'Content-Type': 'application/json' },
-     body: JSON.stringify({ daysOld: 30 })
-   }).then(r => r.json()).then(console.log);
+     body: JSON.stringify({ daysOld: 30 }),
+   })
+     .then(r => r.json())
+     .then(console.log);
    ```
 5. 验证旧的已读通知被删除
 
 ## 📝 测试检查清单
 
 ### 基础功能
+
 - [ ] 数据库表创建成功
 - [ ] 可以创建通知
 - [ ] 可以查看通知列表
@@ -343,11 +362,13 @@ FROM generate_series(1, 100);
 - [ ] 未读计数正确
 
 ### 通知规则
+
 - [ ] 维护提醒（30天）正常触发
 - [ ] 淘汰建议（365天）正常触发
 - [ ] 不会创建重复通知
 
 ### UI/UX
+
 - [ ] 通知面板正常打开/关闭
 - [ ] 优先级徽章显示正确
 - [ ] 图标显示正确
@@ -357,6 +378,7 @@ FROM generate_series(1, 100);
 - [ ] 空状态显示
 
 ### 性能
+
 - [ ] 大量通知时性能良好
 - [ ] 自动检查不影响用户体验
 - [ ] API 响应时间 < 1 秒
@@ -374,6 +396,7 @@ FROM generate_series(1, 100);
 ## 📞 需要帮助？
 
 如果遇到问题：
+
 1. 查看浏览器控制台错误
 2. 查看 Vercel 部署日志
 3. 查看 Neon 数据库日志
