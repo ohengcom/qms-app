@@ -14,22 +14,13 @@ const protectedPaths = [
   '/', // Dashboard/home page
   '/quilts',
   '/usage',
-  '/import',
-  '/export',
   '/settings',
   '/analytics',
-  '/reports',
-  '/seasonal',
-  '/maintenance',
 ];
 
 // Define API routes that require authentication
 const protectedApiPaths = [
   '/api/trpc', // tRPC endpoints (quilts, usage, etc.)
-  '/api/import',
-  '/api/export',
-  '/api/analytics',
-  '/api/reports',
   '/api/dashboard',
   '/api/admin',
 ];
