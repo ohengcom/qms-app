@@ -51,10 +51,10 @@ const getNavigation = (t: (key: string) => string) => [
     description: t('dashboardSpecific.usageInsightsAndTrends'),
   },
   {
-    name: t('language') === 'zh' ? '导入导出' : 'Import/Export',
+    name: t('language') === 'zh' ? '导入导出' : 'Reports',
     href: '/reports',
     icon: Upload,
-    description: t('language') === 'zh' ? '数据导入和导出' : 'Import and export data',
+    description: t('language') === 'zh' ? '数据导入和导出' : 'Data import and export',
   },
   {
     name: t('navigation.settings'),
