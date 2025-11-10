@@ -71,71 +71,87 @@ export default function DashboardPage() {
         {/* Enhanced Stats Grid - 3 Cards */}
         <AnimatedList className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Total Quilts Card */}
-          <AnimatedListItem className="group relative bg-gradient-to-br from-blue-50 to-white border-2 border-blue-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1">
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <Package className="w-4 h-4 text-blue-600" />
-                  <p className="text-sm font-medium text-blue-900">
-                    {t('dashboard.stats.totalQuilts')}
-                  </p>
+          <AnimatedListItem>
+            <Card className="hover:shadow-md transition-shadow">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Package className="w-4 h-4 text-blue-600" />
+                      <p className="text-sm font-medium text-muted-foreground">
+                        {t('dashboard.stats.totalQuilts')}
+                      </p>
+                    </div>
+                    <p className="text-3xl font-bold text-blue-600 mt-2">{overview.totalQuilts}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {lang === 'zh' ? '总收藏' : 'Total Collection'}
+                    </p>
+                  </div>
+                  <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                    <Package className="w-6 h-6 text-blue-600" />
+                  </div>
                 </div>
-                <p className="text-3xl font-bold text-blue-600 mt-2">{overview.totalQuilts}</p>
-                <p className="text-xs text-blue-600/70 mt-1">
-                  {lang === 'zh' ? '总收藏' : 'Total Collection'}
-                </p>
-              </div>
-              <div className="w-14 h-14 rounded-full bg-blue-500 flex items-center justify-center shadow-lg">
-                <Package className="w-7 h-7 text-white" />
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </AnimatedListItem>
 
           {/* In Use Card */}
-          <AnimatedListItem className="group relative bg-gradient-to-br from-green-50 to-white border-2 border-green-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1">
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <Activity className="w-4 h-4 text-green-600" />
-                  <p className="text-sm font-medium text-green-900">{t('dashboard.stats.inUse')}</p>
+          <AnimatedListItem>
+            <Card className="hover:shadow-md transition-shadow">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Activity className="w-4 h-4 text-green-600" />
+                      <p className="text-sm font-medium text-muted-foreground">
+                        {t('dashboard.stats.inUse')}
+                      </p>
+                    </div>
+                    <p className="text-3xl font-bold text-green-600 mt-2">{overview.inUseCount}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {lang === 'zh' ? '使用中' : 'Currently Active'}
+                    </p>
+                  </div>
+                  <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+                    <Activity className="w-6 h-6 text-green-600" />
+                  </div>
                 </div>
-                <p className="text-3xl font-bold text-green-600 mt-2">{overview.inUseCount}</p>
-                <p className="text-xs text-green-600/70 mt-1">
-                  {lang === 'zh' ? '使用中' : 'Currently Active'}
-                </p>
-              </div>
-              <div className="w-14 h-14 rounded-full bg-green-500 flex items-center justify-center shadow-lg">
-                <Activity className="w-7 h-7 text-white" />
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </AnimatedListItem>
 
           {/* Storage Card */}
-          <AnimatedListItem className="group relative bg-gradient-to-br from-orange-50 to-white border-2 border-orange-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1">
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <Archive className="w-4 h-4 text-orange-600" />
-                  <p className="text-sm font-medium text-orange-900">
-                    {t('dashboard.stats.storage')}
-                  </p>
+          <AnimatedListItem>
+            <Card className="hover:shadow-md transition-shadow">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Archive className="w-4 h-4 text-orange-600" />
+                      <p className="text-sm font-medium text-muted-foreground">
+                        {t('dashboard.stats.storage')}
+                      </p>
+                    </div>
+                    <p className="text-3xl font-bold text-orange-600 mt-2">
+                      {overview.storageCount}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {lang === 'zh' ? '已存储' : 'In Storage'}
+                    </p>
+                  </div>
+                  <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center">
+                    <Archive className="w-6 h-6 text-orange-600" />
+                  </div>
                 </div>
-                <p className="text-3xl font-bold text-orange-600 mt-2">{overview.storageCount}</p>
-                <p className="text-xs text-orange-600/70 mt-1">
-                  {lang === 'zh' ? '已存储' : 'In Storage'}
-                </p>
-              </div>
-              <div className="w-14 h-14 rounded-full bg-orange-500 flex items-center justify-center shadow-lg">
-                <Archive className="w-7 h-7 text-white" />
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </AnimatedListItem>
         </AnimatedList>
 
         {/* Tabbed Content Section */}
         <Card>
           <Tabs defaultValue="current" className="w-full">
-            <TabsList className="w-full grid grid-cols-3">
+            <TabsList className="w-full justify-start">
               <TabsTrigger value="current" className="flex items-center gap-2">
                 <Activity className="w-4 h-4" />
                 <span>{lang === 'zh' ? '当前使用' : 'Current Use'}</span>
