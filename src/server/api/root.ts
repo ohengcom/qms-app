@@ -4,6 +4,7 @@ import { usageRouter } from '@/server/api/routers/usage';
 import { dashboardRouter } from '@/server/api/routers/dashboard';
 import { importExportRouter } from '@/server/api/routers/import-export';
 import { settingsRouter } from '@/server/api/routers/settings';
+import { notificationsRouter } from '@/server/api/routers/notifications';
 
 /**
  * This is the primary router for your server.
@@ -16,6 +17,7 @@ export const appRouter = createTRPCRouter({
   dashboard: dashboardRouter,
   importExport: importExportRouter,
   settings: settingsRouter,
+  notifications: notificationsRouter,
 });
 
 // export type definition of API

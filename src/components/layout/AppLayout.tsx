@@ -9,6 +9,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useLanguage } from '@/lib/language-provider';
 import { useNotificationStore } from '@/lib/notification-store';
 import { NotificationPanel } from '@/components/NotificationPanel';
+import { NotificationChecker } from '@/components/NotificationChecker';
 import {
   Home,
   Package,
@@ -71,6 +72,9 @@ export function AppLayout({ children }: AppLayoutProps) {
 
   return (
     <div>
+      {/* Notification Checker - runs in background */}
+      <NotificationChecker />
+      
       <div className="min-h-screen bg-gray-50">
         {/* Mobile sidebar */}
         <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
