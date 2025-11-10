@@ -54,7 +54,14 @@ export function QuiltRecommendation({ className }: QuiltRecommendationProps) {
       }
 
       const data = await response.json();
-      setWeather(data.current);
+
+      // Validate data structure
+      if (!data.success) {
+        throw new Error(data.error || 'Weather API returned error');
+      }
+
+      // Set data with defaults
+      setWeather(data.current || null);
       setForecast(data.forecast || []);
       setRecommendations(data.recommendations || []);
     } catch (err) {

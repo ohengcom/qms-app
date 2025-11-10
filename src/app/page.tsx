@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useDashboardStats } from '@/hooks/useDashboard';
-// import { useWeather } from '@/hooks/useWeather'; // Temporarily disabled
 import { useLanguage } from '@/lib/language-provider';
 import { DashboardStatsSkeleton, CardSkeleton } from '@/components/ui/skeleton-layouts';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -11,11 +10,11 @@ import { Package, Activity, Archive, Calendar, History, PackageOpen } from 'luci
 import { PageTransition } from '@/components/motion/PageTransition';
 import { AnimatedList, AnimatedListItem } from '@/components/motion/AnimatedList';
 import { EmptyState } from '@/components/ui/empty-state';
+import { QuiltRecommendation } from '@/components/dashboard/QuiltRecommendation';
 
 export default function DashboardPage() {
   const router = useRouter();
   const { data: stats, isLoading, error } = useDashboardStats();
-  // const { data: weather, isLoading: weatherLoading } = useWeather(); // Temporarily disabled
   const { t } = useLanguage();
 
   // Format date
@@ -89,26 +88,11 @@ export default function DashboardPage() {
               <Calendar className="w-5 h-5" />
               <span>{lang === 'zh' ? dateStr : dateStrEn}</span>
             </div>
-            {/* Weather - Temporarily disabled due to API changes */}
-            {/* {!weatherLoading && weather && (
-              <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg">
-                <Cloud className="w-5 h-5 text-blue-600" />
-                <span className="font-medium text-blue-900">
-                  {lang === 'zh' ? weather.location.city : weather.location.cityEn}
-                </span>
-                <span className="text-xl">{weather.current.weather.icon}</span>
-                {weather.current.temperature !== null && (
-                  <span className="font-semibold text-blue-900">
-                    {weather.current.temperature}°C
-                  </span>
-                )}
-                <span className="text-sm text-blue-700">
-                  {lang === 'zh' ? weather.current.weather.zh : weather.current.weather.en}
-                </span>
-              </div>
-            )} */}
           </div>
         </div>
+
+        {/* Weather and Quilt Recommendation */}
+        <QuiltRecommendation />
 
         {/* Enhanced Stats Grid - 3 Cards */}
         <AnimatedList className="grid grid-cols-1 md:grid-cols-3 gap-4">
