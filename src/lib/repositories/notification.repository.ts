@@ -97,40 +97,75 @@ export class NotificationRepository extends BaseRepositoryImpl<NotificationRow, 
   async findAll(filter?: NotificationFilter): Promise<Notification[]> {
     return this.executeQuery(
       async () => {
-        const conditions: string[] = [];
-        const params: any[] = [];
-        let paramIndex = 1;
-
-        if (filter?.isRead !== undefined) {
-          conditions.push(`is_read = $${paramIndex++}`);
-          params.push(filter.isRead);
-        }
-
-        if (filter?.type) {
-          conditions.push(`type = $${paramIndex++}`);
-          params.push(filter.type);
-        }
-
-        if (filter?.priority) {
-          conditions.push(`priority = $${paramIndex++}`);
-          params.push(filter.priority);
-        }
-
-        const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
         const limit = filter?.limit || 20;
         const offset = filter?.offset || 0;
 
-        const query = `
-          SELECT * FROM notifications
-          ${whereClause}
-          ORDER BY created_at DESC
-          LIMIT $${paramIndex++} OFFSET $${paramIndex}
-        `;
+        // Build query using Neon's tagged template syntax
+        let rows: any[];
 
-        params.push(limit, offset);
+        if (filter?.isRead !== undefined && filter?.type && filter?.priority) {
+          rows = await sql`
+            SELECT * FROM notifications
+            WHERE is_read = ${filter.isRead}
+              AND type = ${filter.type}
+              AND priority = ${filter.priority}
+            ORDER BY created_at DESC
+            LIMIT ${limit} OFFSET ${offset}
+          `;
+        } else if (filter?.isRead !== undefined && filter?.type) {
+          rows = await sql`
+            SELECT * FROM notifications
+            WHERE is_read = ${filter.isRead}
+              AND type = ${filter.type}
+            ORDER BY created_at DESC
+            LIMIT ${limit} OFFSET ${offset}
+          `;
+        } else if (filter?.isRead !== undefined && filter?.priority) {
+          rows = await sql`
+            SELECT * FROM notifications
+            WHERE is_read = ${filter.isRead}
+              AND priority = ${filter.priority}
+            ORDER BY created_at DESC
+            LIMIT ${limit} OFFSET ${offset}
+          `;
+        } else if (filter?.type && filter?.priority) {
+          rows = await sql`
+            SELECT * FROM notifications
+            WHERE type = ${filter.type}
+              AND priority = ${filter.priority}
+            ORDER BY created_at DESC
+            LIMIT ${limit} OFFSET ${offset}
+          `;
+        } else if (filter?.isRead !== undefined) {
+          rows = await sql`
+            SELECT * FROM notifications
+            WHERE is_read = ${filter.isRead}
+            ORDER BY created_at DESC
+            LIMIT ${limit} OFFSET ${offset}
+          `;
+        } else if (filter?.type) {
+          rows = await sql`
+            SELECT * FROM notifications
+            WHERE type = ${filter.type}
+            ORDER BY created_at DESC
+            LIMIT ${limit} OFFSET ${offset}
+          `;
+        } else if (filter?.priority) {
+          rows = await sql`
+            SELECT * FROM notifications
+            WHERE priority = ${filter.priority}
+            ORDER BY created_at DESC
+            LIMIT ${limit} OFFSET ${offset}
+          `;
+        } else {
+          rows = await sql`
+            SELECT * FROM notifications
+            ORDER BY created_at DESC
+            LIMIT ${limit} OFFSET ${offset}
+          `;
+        }
 
-        const rows = await sql.query(query, params);
-        return rows.rows.map((row) => this.rowToModel(row as NotificationRow));
+        return rows.map((row) => this.rowToModel(row as NotificationRow));
       },
       'findAllNotifications',
       { filter }
@@ -190,22 +225,24 @@ export class NotificationRepository extends BaseRepositoryImpl<NotificationRow, 
   async markAllAsRead(type?: string): Promise<number> {
     return this.executeQuery(
       async () => {
-        let query;
+        let result;
         if (type) {
-          query = await sql`
+          result = await sql`
             UPDATE notifications
             SET is_read = true, updated_at = CURRENT_TIMESTAMP
             WHERE is_read = false AND type = ${type}
+            RETURNING id
           `;
         } else {
-          query = await sql`
+          result = await sql`
             UPDATE notifications
             SET is_read = true, updated_at = CURRENT_TIMESTAMP
             WHERE is_read = false
+            RETURNING id
           `;
         }
 
-        return query.rowCount || 0;
+        return result.length;
       },
       'markAllNotificationsAsRead',
       { type }
@@ -221,9 +258,10 @@ export class NotificationRepository extends BaseRepositoryImpl<NotificationRow, 
         const result = await sql`
           DELETE FROM notifications
           WHERE id = ${id}
+          RETURNING id
         `;
 
-        return (result.rowCount || 0) > 0;
+        return result.length > 0;
       },
       'deleteNotification',
       { id }
@@ -258,9 +296,10 @@ export class NotificationRepository extends BaseRepositoryImpl<NotificationRow, 
           DELETE FROM notifications
           WHERE is_read = true
           AND created_at < NOW() - INTERVAL '${daysOld} days'
+          RETURNING id
         `;
 
-        return result.rowCount || 0;
+        return result.length;
       },
       'deleteOldReadNotifications',
       { daysOld }
