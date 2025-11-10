@@ -49,8 +49,8 @@ interface QuiltCardProps {
     weightGrams: number;
     fillMaterial: string;
     brand?: string | null;
-    imageUrl?: string | null;
-    thumbnailUrl?: string | null;
+    mainImage?: string | null;
+    attachmentImages?: string[] | null;
     currentUsage?: {
       id: string;
       startedAt: Date;
@@ -178,9 +178,9 @@ export function QuiltCard({ quilt, variant = 'card', onEdit, onView }: QuiltCard
         <div className="flex items-center space-x-4">
           <div className="flex-shrink-0">
             <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-              {quilt.thumbnailUrl ? (
+              {quilt.mainImage ? (
                 <QuiltThumbnail
-                  src={quilt.thumbnailUrl}
+                  src={quilt.mainImage}
                   alt={quilt.name}
                   className="w-full h-full"
                 />
@@ -328,9 +328,9 @@ export function QuiltCard({ quilt, variant = 'card', onEdit, onView }: QuiltCard
 
       <CardContent>
         {/* Image */}
-        {quilt.imageUrl && (
+        {quilt.mainImage && (
           <div className="mb-4">
-            <QuiltImage src={quilt.imageUrl} alt={quilt.name} className="w-full h-48" />
+            <QuiltImage src={quilt.mainImage} alt={quilt.name} className="w-full h-48" />
           </div>
         )}
 
