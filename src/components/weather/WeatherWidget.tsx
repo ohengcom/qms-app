@@ -146,7 +146,11 @@ export function WeatherWidget({ className, showRecommendations = true }: Weather
         {/* Current Weather */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            {getWeatherIcon(weather.icon)}
+            {weather.icon ? (
+              getWeatherIcon(weather.icon)
+            ) : (
+              <Cloud className="w-8 h-8 text-gray-400" />
+            )}
             <div>
               <div className="text-2xl font-bold">{formatTemperature(weather.temperature)}</div>
               <div className="text-sm text-gray-600">
@@ -155,7 +159,7 @@ export function WeatherWidget({ className, showRecommendations = true }: Weather
             </div>
           </div>
           <div className="text-right">
-            <div className="text-sm font-medium">{weather.description}</div>
+            <div className="text-sm font-medium">{weather.description || '未知'}</div>
             <div className="text-xs text-gray-500">
               {getTemperatureDescription(weather.temperature)}
             </div>

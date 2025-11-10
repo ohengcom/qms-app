@@ -155,7 +155,11 @@ export function QuiltRecommendation({ className }: QuiltRecommendationProps) {
         {/* Current Weather Summary */}
         <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg">
           <div className="flex items-center gap-3">
-            {getWeatherIcon(weather.icon, 'w-10 h-10')}
+            {weather.icon ? (
+              getWeatherIcon(weather.icon, 'w-10 h-10')
+            ) : (
+              <Cloud className="w-10 h-10 text-gray-400" />
+            )}
             <div>
               <div className="text-2xl font-bold text-gray-900">
                 {formatTemperature(weather.temperature)}
@@ -166,7 +170,7 @@ export function QuiltRecommendation({ className }: QuiltRecommendationProps) {
             </div>
           </div>
           <div className="text-right">
-            <div className="text-sm font-medium text-gray-900">{weather.description}</div>
+            <div className="text-sm font-medium text-gray-900">{weather.description || '未知'}</div>
             <div className="flex items-center gap-3 mt-1 text-xs text-gray-600">
               <span className="flex items-center gap-1">
                 <Droplets className="w-3 h-3" />
@@ -201,7 +205,11 @@ export function QuiltRecommendation({ className }: QuiltRecommendationProps) {
                       {isToday ? '今天' : dayName}
                     </div>
                     <div className="flex justify-center mb-1">
-                      {getWeatherIcon(day.icon, 'w-6 h-6')}
+                      {day.icon ? (
+                        getWeatherIcon(day.icon, 'w-6 h-6')
+                      ) : (
+                        <Cloud className="w-6 h-6 text-gray-400" />
+                      )}
                     </div>
                     <div className="text-xs font-semibold text-gray-900">
                       {Math.round(day.maxTemp)}°
