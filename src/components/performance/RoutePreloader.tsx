@@ -7,7 +7,7 @@ interface RoutePreloaderProps {
   routes?: string[];
 }
 
-const DEFAULT_PRELOAD_ROUTES = ['/quilts', '/seasonal', '/usage', '/import', '/export'];
+const DEFAULT_PRELOAD_ROUTES = ['/quilts', '/usage', '/analytics', '/settings'];
 
 export function RoutePreloader({ routes = DEFAULT_PRELOAD_ROUTES }: RoutePreloaderProps) {
   const router = useRouter();

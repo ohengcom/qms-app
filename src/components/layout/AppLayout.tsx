@@ -19,7 +19,6 @@ import {
   Bell,
   User,
   Calendar,
-  FileText,
   Github,
 } from 'lucide-react';
 import packageJson from '../../../package.json';
@@ -48,13 +47,6 @@ const getNavigation = (t: (key: string) => string) => [
     href: '/analytics',
     icon: BarChart3,
     description: t('dashboardSpecific.usageInsightsAndTrends'),
-  },
-
-  {
-    name: t('navigation.reports'),
-    href: '/reports',
-    icon: FileText,
-    description: t('dashboardSpecific.exportAndReporting'),
   },
   {
     name: t('navigation.settings'),
