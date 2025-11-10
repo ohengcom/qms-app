@@ -97,18 +97,14 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
             ? quilt.mainImage 
             : `data:image/jpeg;base64,${quilt.mainImage}`;
           existingImages.push(imageData);
-          console.log('Loaded mainImage, length:', imageData.length, 'starts with:', imageData.substring(0, 30));
         }
         if (quilt.attachmentImages && Array.isArray(quilt.attachmentImages)) {
           // Ensure all attachment images have data: prefix
-          const attachments = quilt.attachmentImages.map((img: string) => {
-            const imgData = img.startsWith('data:') ? img : `data:image/jpeg;base64,${img}`;
-            console.log('Loaded attachment, length:', imgData.length, 'starts with:', imgData.substring(0, 30));
-            return imgData;
-          });
+          const attachments = quilt.attachmentImages.map((img: string) => 
+            img.startsWith('data:') ? img : `data:image/jpeg;base64,${img}`
+          );
           existingImages.push(...attachments);
         }
-        console.log('Total images loaded:', existingImages.length);
         setImages(existingImages);
       } else {
         // Add mode - reset to defaults with STORAGE status
