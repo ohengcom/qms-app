@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useLanguage } from '@/lib/language-provider';
-import { useNotificationStore } from '@/lib/notification-store';
+import { api } from '@/lib/trpc';
 import { NotificationPanel } from '@/components/NotificationPanel';
 import { NotificationChecker } from '@/components/NotificationChecker';
 import {
@@ -66,7 +66,12 @@ export function AppLayout({ children }: AppLayoutProps) {
   const [notificationPanelOpen, setNotificationPanelOpen] = useState(false);
   const pathname = usePathname();
   const { t } = useLanguage();
-  const unreadCount = useNotificationStore(state => state.getUnreadCount());
+  
+  // Get unread count from database
+  const { data: unreadData } = api.notifications.getUnreadCount.useQuery(undefined, {
+    refetchInterval: 60000, // Refetch every minute
+  });
+  const unreadCount = unreadData?.count || 0;
 
   const navigation = getNavigation(t);
 
