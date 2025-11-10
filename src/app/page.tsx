@@ -77,22 +77,16 @@ export default function DashboardPage() {
   return (
     <PageTransition>
       <div className="space-y-6">
-        {/* Header with Date and Weather */}
+        {/* Header with Date */}
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-2xl font-semibold text-gray-900">{t('dashboard.title')}</h1>
           </div>
-          <div className="flex items-center gap-6 text-base">
-            {/* Date */}
-            <div className="flex items-center gap-2 text-gray-700">
-              <Calendar className="w-5 h-5" />
-              <span>{lang === 'zh' ? dateStr : dateStrEn}</span>
-            </div>
+          <div className="flex items-center gap-2 text-gray-700">
+            <Calendar className="w-5 h-5" />
+            <span className="text-sm">{lang === 'zh' ? dateStr : dateStrEn}</span>
           </div>
         </div>
-
-        {/* Weather and Quilt Recommendation */}
-        <QuiltRecommendation />
 
         {/* Enhanced Stats Grid - 3 Cards */}
         <AnimatedList className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -157,6 +151,9 @@ export default function DashboardPage() {
             </div>
           </AnimatedListItem>
         </AnimatedList>
+
+        {/* Weather and Quilt Recommendation */}
+        <QuiltRecommendation />
 
         {/* Currently In Use Quilts - List View */}
         <div className="card-elevated bg-white rounded-lg overflow-hidden">

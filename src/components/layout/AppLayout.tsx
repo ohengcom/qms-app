@@ -21,6 +21,7 @@ import {
   User,
   Calendar,
   Github,
+  Upload,
 } from 'lucide-react';
 import packageJson from '../../../package.json';
 
@@ -50,6 +51,12 @@ const getNavigation = (t: (key: string) => string) => [
     description: t('dashboardSpecific.usageInsightsAndTrends'),
   },
   {
+    name: t('language') === 'zh' ? '导入导出' : 'Import/Export',
+    href: '/reports',
+    icon: Upload,
+    description: t('language') === 'zh' ? '数据导入和导出' : 'Import and export data',
+  },
+  {
     name: t('navigation.settings'),
     href: '/settings',
     icon: Settings,
@@ -66,7 +73,7 @@ export function AppLayout({ children }: AppLayoutProps) {
   const [notificationPanelOpen, setNotificationPanelOpen] = useState(false);
   const pathname = usePathname();
   const { t } = useLanguage();
-  
+
   // Get unread count from database with error handling
   const { data: unreadData, error: unreadError } = api.notifications.getUnreadCount.useQuery(
     undefined,
@@ -90,7 +97,7 @@ export function AppLayout({ children }: AppLayoutProps) {
     <div>
       {/* Notification Checker - runs in background */}
       <NotificationChecker />
-      
+
       <div className="min-h-screen bg-gray-50">
         {/* Mobile sidebar */}
         <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
