@@ -75,9 +75,11 @@ export function ImageUpload({
   };
 
   const handleDelete = (index: number) => {
+    console.log('删除图片:', index, '总数:', images.length);
     const newImages = images.filter((_, i) => i !== index);
+    console.log('删除后:', newImages.length);
     onImagesChange(newImages);
-    toast.success('图片已删除');
+    toast.success('图片已删除，点击保存按钮完成删除');
   };
 
   const handleDragStart = (index: number) => {
@@ -147,8 +149,11 @@ export function ImageUpload({
             <img
               src={image}
               alt={`图片 ${imageIndex + 1}`}
-              className="w-full h-full object-cover"
-
+              className="w-full h-full object-cover bg-gray-100"
+              onError={(e) => {
+                console.error('图片加载失败:', image.substring(0, 50));
+                e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%23f3f4f6" width="200" height="200"/%3E%3Ctext x="50%25" y="50%25" font-family="system-ui" font-size="14" fill="%239ca3af" text-anchor="middle" dy=".3em"%3E图片加载失败%3C/text%3E%3C/svg%3E';
+              }}
             />
 
             {/* Delete Button */}

@@ -325,10 +325,17 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
             <div className="mb-3">
               <Label className="text-base font-semibold">被子图片</Label>
               <p className="text-xs text-gray-500 mt-0.5">
-                上传被子的照片，第一张将作为主图显示
+                上传被子的照片，第一张将作为主图显示。拖动图片可以调整顺序。
               </p>
             </div>
-            <ImageUpload images={images} onImagesChange={setImages} maxImages={5} />
+            <ImageUpload 
+              images={images} 
+              onImagesChange={(newImages) => {
+                console.log('图片数量变化:', images.length, '->', newImages.length);
+                setImages(newImages);
+              }} 
+              maxImages={5} 
+            />
           </div>
 
           <DialogFooter>
