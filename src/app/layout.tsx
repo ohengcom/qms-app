@@ -9,6 +9,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { Toaster as SonnerToaster } from 'sonner';
 import { RoutePreloader } from '@/components/performance/RoutePreloader';
 import { GlobalErrorHandler } from '@/components/GlobalErrorHandler';
+import { ServiceWorkerRegistration } from '@/components/ServiceWorkerRegistration';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -33,6 +34,14 @@ export const metadata: Metadata = {
       { url: '/icons/icon-152x152.svg', sizes: '152x152', type: 'image/svg+xml' },
     ],
   },
+  other: {
+    'mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-status-bar-style': 'default',
+    'apple-mobile-web-app-title': 'QMS',
+    'msapplication-TileColor': '#3b82f6',
+    'msapplication-tap-highlight': 'no',
+  },
 };
 
 export const viewport: Viewport = {
@@ -46,67 +55,20 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="zh" className="h-full">
-      <head>
-        <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="QMS" />
-        <meta name="msapplication-TileColor" content="#3b82f6" />
-        <meta name="msapplication-tap-highlight" content="no" />
-        <link rel="apple-touch-icon" href="/icons/icon-152x152.svg" />
-        <link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#3b82f6" />
-      </head>
-      <body className={`${inter.className} h-full`}>
+    <html lang="zh" className="h-full" suppressHydrationWarning>
+      <body className={`${inter.className} h-full`} suppressHydrationWarning>
         <ErrorBoundary>
           <LanguageProvider>
             <TRPCProvider>
               <GlobalErrorHandler />
               <RoutePreloader />
+              <ServiceWorkerRegistration />
               <AppLayout>{children}</AppLayout>
               <Toaster />
               <SonnerToaster position="top-right" richColors closeButton />
             </TRPCProvider>
           </LanguageProvider>
         </ErrorBoundary>
-
-        {/* Service Worker Registration */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              if ('serviceWorker' in navigator) {
-                window.addEventListener('load', function() {
-                  navigator.serviceWorker.register('/sw.js', {
-                    updateViaCache: 'none'
-                  })
-                    .then(function(registration) {
-                      // Check for updates every 60 seconds
-                      setInterval(function() {
-                        registration.update();
-                      }, 60000);
-                      
-                      // Handle updates
-                      registration.addEventListener('updatefound', function() {
-                        const newWorker = registration.installing;
-                        if (newWorker) {
-                          newWorker.addEventListener('statechange', function() {
-                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                              // New version available, skip waiting and reload
-                              newWorker.postMessage({ type: 'SKIP_WAITING' });
-                              window.location.reload();
-                            }
-                          });
-                        }
-                      });
-                    })
-                    .catch(function() {
-                      // SW registration failed
-                    });
-                });
-              }
-            `,
-          }}
-        />
       </body>
     </html>
   );
