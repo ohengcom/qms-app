@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/lib/language-provider';
+import { toast } from 'sonner';
 import {
   Dialog,
   DialogContent,
@@ -85,7 +86,7 @@ export function StatusChangeDialog({
       await onStatusChange(quilt.id, newStatus, options);
       onOpenChange(false);
     } catch (error) {
-      // TODO: Show error toast
+      toast.error(error instanceof Error ? error.message : '状态更新失败');
     } finally {
       setLoading(false);
     }

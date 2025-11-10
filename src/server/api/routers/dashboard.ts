@@ -10,7 +10,7 @@ export const dashboardRouter = createTRPCRouter({
     .input(
       dashboardStatsSchema.optional().default({ includeAnalytics: true, includeTrends: false })
     )
-    .query(async ({ ctx, input }) => {
+    .query(async () => {
       try {
         // Get total quilts count
         const totalQuilts = await db.countQuilts();
@@ -31,10 +31,8 @@ export const dashboardRouter = createTRPCRouter({
           SUMMER: allQuilts.filter(q => q.season === 'SUMMER').length,
         };
 
-        // Get recent activity - TODO: Implement with Neon
+        // Get recent activity and top used quilts - simplified for now
         const recentActivity: any[] = [];
-
-        // Get top used quilts - TODO: Implement with Neon
         const topUsedWithStats: any[] = [];
 
         const result = {
@@ -51,19 +49,12 @@ export const dashboardRouter = createTRPCRouter({
             brand: {},
           },
           topUsedQuilts: topUsedWithStats,
-          recentActivity: recentActivity.map(period => ({
-            id: period.id,
-            type: period.endDate ? 'usage_ended' : 'usage_started',
-            date: period.endDate || period.startDate,
-            quilt: period.quilt,
-            duration: period.durationDays,
-          })),
+          recentActivity,
           lastUpdated: new Date(),
         };
 
         return result;
       } catch (error) {
-
         // Return fallback data instead of throwing
         return {
           overview: {

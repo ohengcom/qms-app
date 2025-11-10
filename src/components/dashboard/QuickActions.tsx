@@ -143,7 +143,8 @@ export function QuickActions({
       bgColor: 'bg-pink-50',
       borderColor: 'border-pink-200',
       onClick: () => {
-        // TODO: Implement report generation
+        // Future feature: Report generation will be implemented
+        console.log('Report generation feature coming soon');
       },
     },
   ];

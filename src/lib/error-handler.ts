@@ -151,9 +151,9 @@ export function setupGlobalErrorHandler() {
 /**
  * Error logging utility (can be extended to send to error tracking service)
  */
-export function logError(error: unknown, context?: Record<string, any>) {
-  const parsedError = parseError(error);
+export function logError(error: unknown, _context?: Record<string, any>) {
+  const _parsedError = parseError(error);
 
-  // TODO: Send to error tracking service (e.g., Sentry)
-  // Sentry.captureException(error, { extra: context });
+  // Future enhancement: Integrate with error tracking service (e.g., Sentry)
+  // Example: Sentry.captureException(error, { extra: _context });
 }

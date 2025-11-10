@@ -1,4 +1,3 @@
-import { NextResponse } from 'next/server';
 import { db } from '@/lib/neon';
 
 // Simple metrics collection for Prometheus
@@ -6,11 +5,14 @@ export async function GET() {
   try {
     const startTime = Date.now();
 
-    // Collect application metrics - TODO: Implement with Neon
-    const totalQuilts = 0; // await db.countQuilts();
-    const activeUsage = 0; // TODO: Implement with Neon
-    const totalUsers = 0; // TODO: Implement with Neon
-    const recentActivity = 0; // TODO: Implement with Neon
+    // Collect application metrics
+    const totalQuilts = await db.countQuilts();
+    const allQuilts = await db.getQuilts({ limit: 1000 });
+    const activeUsage = allQuilts.filter(q => q.currentStatus === 'IN_USE').length;
+    const totalUsers = 1; // Single user application
+
+    // Get recent activity (last 24 hours) - simplified for now
+    const recentActivity = 0; // Future: Implement with usage repository
 
     // Database connection time
     const dbResponseTime = Date.now() - startTime;

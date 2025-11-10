@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { useLanguage } from '@/lib/language-provider';
+import { toast } from 'sonner';
 import {
   Dialog,
   DialogContent,
@@ -25,10 +26,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Loader2 } from 'lucide-react';
 
 // Dynamically import ImageUpload to avoid SSR issues
-const ImageUpload = dynamic(() => import('./ImageUpload').then(mod => ({ default: mod.ImageUpload })), {
-  ssr: false,
-  loading: () => <div className="text-sm text-gray-500">加载图片上传组件...</div>,
-});
+const ImageUpload = dynamic(
+  () => import('./ImageUpload').then(mod => ({ default: mod.ImageUpload })),
+  {
+    ssr: false,
+    loading: () => <div className="text-sm text-gray-500">加载图片上传组件...</div>,
+  }
+);
 
 interface QuiltDialogProps {
   open: boolean;
@@ -93,14 +97,14 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
         const existingImages: string[] = [];
         if (quilt.mainImage) {
           // Check if mainImage starts with data: prefix
-          const imageData = quilt.mainImage.startsWith('data:') 
-            ? quilt.mainImage 
+          const imageData = quilt.mainImage.startsWith('data:')
+            ? quilt.mainImage
             : `data:image/jpeg;base64,${quilt.mainImage}`;
           existingImages.push(imageData);
         }
         if (quilt.attachmentImages && Array.isArray(quilt.attachmentImages)) {
           // Ensure all attachment images have data: prefix
-          const attachments = quilt.attachmentImages.map((img: string) => 
+          const attachments = quilt.attachmentImages.map((img: string) =>
             img.startsWith('data:') ? img : `data:image/jpeg;base64,${img}`
           );
           existingImages.push(...attachments);
@@ -163,7 +167,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
 
       onOpenChange(false);
     } catch (error) {
-      // TODO: Show error toast
+      toast.error(error instanceof Error ? error.message : '保存失败');
     } finally {
       setLoading(false);
     }
@@ -339,11 +343,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
                 上传被子的照片，第一张将作为主图显示。拖动图片可以调整顺序。
               </p>
             </div>
-            <ImageUpload 
-              images={images} 
-              onImagesChange={setImages} 
-              maxImages={5} 
-            />
+            <ImageUpload images={images} onImagesChange={setImages} maxImages={5} />
           </div>
 
           <DialogFooter>

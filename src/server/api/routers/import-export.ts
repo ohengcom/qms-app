@@ -32,8 +32,8 @@ const exportOptionsSchema = z.object({
 });
 
 export const importExportRouter = createTRPCRouter({
-  // Preview import data before actual import - TODO: Implement with Neon
-  previewImport: publicProcedure.input(importPreviewSchema).mutation(async ({ ctx, input }) => {
+  // Future feature: Preview import data before actual import
+  previewImport: publicProcedure.input(importPreviewSchema).mutation(async ({ input }) => {
     // For now, return a mock preview
     return {
       success: true,
@@ -51,8 +51,8 @@ export const importExportRouter = createTRPCRouter({
     };
   }),
 
-  // Execute confirmed import - TODO: Implement with Neon
-  confirmImport: publicProcedure.input(importConfirmSchema).mutation(async ({ ctx, input }) => {
+  // Future feature: Execute confirmed import
+  confirmImport: publicProcedure.input(importConfirmSchema).mutation(async ({ input }) => {
     if (!input.confirmed) {
       throw new Error('Import must be confirmed');
     }
@@ -70,8 +70,8 @@ export const importExportRouter = createTRPCRouter({
     };
   }),
 
-  // Export quilts - TODO: Implement with Neon
-  exportQuilts: publicProcedure.input(exportOptionsSchema).mutation(async ({ ctx, input }) => {
+  // Future feature: Export quilts to CSV/Excel
+  exportQuilts: publicProcedure.input(exportOptionsSchema).mutation(async () => {
     // Return mock data for now to avoid breaking the frontend
     return {
       success: false,
@@ -82,21 +82,19 @@ export const importExportRouter = createTRPCRouter({
     };
   }),
 
-  // Export quilts to Excel file - TODO: Implement with Neon
-  exportQuiltsToExcel: publicProcedure
-    .input(exportOptionsSchema)
-    .mutation(async ({ ctx, input }) => {
-      // Return mock data for now to avoid breaking the frontend
-      return {
-        success: false,
-        fileData: '',
-        filename: 'quilts-export.xlsx',
-        totalRecords: 0,
-        message: 'Excel export functionality not yet implemented with Neon',
-      };
-    }),
+  // Future feature: Export quilts to Excel file
+  exportQuiltsToExcel: publicProcedure.input(exportOptionsSchema).mutation(async () => {
+    // Return mock data for now to avoid breaking the frontend
+    return {
+      success: false,
+      fileData: '',
+      filename: 'quilts-export.xlsx',
+      totalRecords: 0,
+      message: 'Excel export functionality not yet implemented with Neon',
+    };
+  }),
 
-  // Export usage report - TODO: Implement with Neon
+  // Future feature: Export usage report
   exportUsageReport: publicProcedure
     .input(
       z.object({
@@ -107,12 +105,11 @@ export const importExportRouter = createTRPCRouter({
         format: z.enum(['xlsx', 'csv']).default('xlsx'),
       })
     )
-    .mutation(async ({ ctx, input }) => {
-      // TODO: Implement usage report export with Neon
-      throw new Error('Usage report export functionality not yet implemented with Neon');
+    .mutation(async () => {
+      throw new Error('Usage report export functionality not yet implemented');
     }),
 
-  // Export usage report to Excel - TODO: Implement with Neon
+  // Future feature: Export usage report to Excel
   exportUsageReportToExcel: publicProcedure
     .input(
       z.object({
@@ -122,7 +119,7 @@ export const importExportRouter = createTRPCRouter({
         }),
       })
     )
-    .mutation(async ({ ctx, input }) => {
+    .mutation(async () => {
       // Return mock data for now to avoid breaking the frontend
       return {
         success: false,
@@ -133,14 +130,13 @@ export const importExportRouter = createTRPCRouter({
       };
     }),
 
-  // Export maintenance report - TODO: Implement with Neon
-  exportMaintenanceReport: publicProcedure.mutation(async ({ ctx }) => {
-    // TODO: Implement maintenance report export with Neon
-    throw new Error('Maintenance report export functionality not yet implemented with Neon');
+  // Future feature: Export maintenance report
+  exportMaintenanceReport: publicProcedure.mutation(async () => {
+    throw new Error('Maintenance report export functionality not yet implemented');
   }),
 
-  // Export maintenance report to Excel - TODO: Implement with Neon
-  exportMaintenanceReportToExcel: publicProcedure.mutation(async ({ ctx }) => {
+  // Future feature: Export maintenance report to Excel
+  exportMaintenanceReportToExcel: publicProcedure.mutation(async () => {
     // Return mock data for now to avoid breaking the frontend
     return {
       success: false,
@@ -152,9 +148,9 @@ export const importExportRouter = createTRPCRouter({
   }),
 
   // Get import/export statistics
-  getImportExportStats: publicProcedure.query(async ({ ctx }) => {
-    const totalQuilts = 0; // TODO: Implement with Neon
-    const recentImports: any[] = []; // TODO: Implement import log with Neon
+  getImportExportStats: publicProcedure.query(async () => {
+    const totalQuilts = 0; // Future: Get from database
+    const recentImports: unknown[] = []; // Future: Implement import log
 
     return {
       totalQuilts,
