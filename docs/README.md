@@ -1,61 +1,159 @@
 # QMS 项目文档
 
-本目录包含 QMS 项目的开发文档、分析报告和历史记录。
+## 📚 文档目录
 
-## 📁 文档结构
+### UI 优化文档 (`ui-optimization/`)
 
-### 优化与分析报告
+#### 核心文档
 
-- **PROJECT_OPTIMIZATION_ANALYSIS.md** - 项目优化分析（英文）
-- **项目优化分析报告\_中文.md** - 项目优化分析（中文）
-- **OPTIMIZATION_README.md** - 优化说明文档
-- **OPTIMIZATION_UPDATE.md** - 优化更新记录
-- **README_OPTIMIZATION.md** - README 优化建议
+1. **[UI_UNIFICATION_PLAN.md](./ui-optimization/UI_UNIFICATION_PLAN.md)**
+   - UI 统一改造的总体计划
+   - 包含改造目标、页面清单、组件规范
 
-### 清理与重构
+2. **[UI_UNIFICATION_COMPLETE.md](./ui-optimization/UI_UNIFICATION_COMPLETE.md)**
+   - UI 统一改造完成报告
+   - 详细的改造前后对比
+   - 设计系统说明
 
-- **CLEANUP_COMPLETE_SUMMARY.md** - 清理完成总结
-- **CLEANUP_EXECUTION_PLAN.md** - 清理执行计划
-- **PROJECT_CLEANUP_SUMMARY.md** - 项目清理总结
-- **CONSOLE_LOG_CLEANUP_FINAL.md** - Console 日志清理最终报告
-- **CONSOLE_LOG_CLEANUP_PROGRESS.md** - Console 日志清理进度
+3. **[UI_UNIFICATION_FINAL_CHECK.md](./ui-optimization/UI_UNIFICATION_FINAL_CHECK.md)**
+   - 最终检查报告
+   - 完整的页面检查清单
+   - 验证方法和结果
 
-### TODO 与任务管理
+#### 优化文档
 
-- **TODO_ANALYSIS.md** - TODO 项目分析
-- **TODO_CLEANUP_SUMMARY.md** - TODO 清理总结
-- **ANALYSIS_COMPLETE.md** - 分析完成报告
+4. **[UI_OPTIMIZATION_SUGGESTIONS.md](./ui-optimization/UI_OPTIMIZATION_SUGGESTIONS.md)**
+   - 详细的优化建议
+   - 优先级矩阵
+   - 实施计划
 
-### 测试与部署
+5. **[UI_OPTIMIZATION_COMPLETE.md](./ui-optimization/UI_OPTIMIZATION_COMPLETE.md)**
+   - 第一阶段优化报告（高优先级）
+   - 容器样式、间距、标题统一
 
-- **TEST_RESULTS.md** - 测试结果
-- **PRODUCTION_TESTING_CHECKLIST.md** - 生产环境测试清单
-- **DEPLOYMENT_SUMMARY.md** - 部署总结
+6. **[UI_OPTIMIZATION_PHASE2_COMPLETE.md](./ui-optimization/UI_OPTIMIZATION_PHASE2_COMPLETE.md)**
+   - 第二阶段优化报告（中优先级）
+   - 错误提示、卡片内边距、空状态
 
-## 📊 文档用途
+#### 规范文档
 
-这些文档记录了：
+7. **[CARD_PADDING_STANDARDS.md](./ui-optimization/CARD_PADDING_STANDARDS.md)**
+   - 卡片内边距规范
+   - 使用指南和示例
 
-1. **代码质量改进** - 清理、重构和优化过程
-2. **功能实现** - 新功能的设计和实现记录
-3. **问题解决** - Bug 修复和问题排查过程
-4. **性能优化** - 性能分析和优化措施
-5. **测试验证** - 测试计划和结果记录
+8. **[SHADCN_TAILWIND_COMPATIBILITY.md](./ui-optimization/SHADCN_TAILWIND_COMPATIBILITY.md)**
+   - Shadcn UI 与 Tailwind CSS 兼容性说明
 
-## 🔍 如何使用
-
-- **开发参考** - 了解项目的演进历史和设计决策
-- **问题排查** - 查找类似问题的解决方案
-- **代码审查** - 理解代码变更的背景和原因
-- **知识传承** - 保留项目的技术知识和经验
-
-## 📝 文档维护
-
-- 定期归档过时的文档
-- 保持文档的准确性和时效性
-- 记录重要的技术决策和变更
-- 更新测试和部署流程
+9. **[UI_UNIFICATION_PROGRESS.md](./ui-optimization/UI_UNIFICATION_PROGRESS.md)**
+   - 进度追踪文档
+   - 完成度统计
 
 ---
 
-**最后更新**: 2025-11-10
+### 重构文档 (`refactoring/`)
+
+1. **[QUILTS_PAGE_REFACTOR_PLAN.md](./refactoring/QUILTS_PAGE_REFACTOR_PLAN.md)**
+   - 被子管理页面重构计划
+   - 组件拆分方案
+
+2. **[USAGE_PAGE_REFACTOR_PLAN.md](./refactoring/USAGE_PAGE_REFACTOR_PLAN.md)**
+   - 使用记录页面改造计划
+
+3. **[REFACTOR_SUMMARY.md](./refactoring/REFACTOR_SUMMARY.md)**
+   - 重构总结
+
+4. **[REFACTOR_COMPLETE.md](./refactoring/REFACTOR_COMPLETE.md)**
+   - 重构完成报告
+
+---
+
+## 🎯 快速导航
+
+### 想了解 UI 统一改造？
+
+👉 从 [UI_UNIFICATION_PLAN.md](./ui-optimization/UI_UNIFICATION_PLAN.md) 开始
+
+### 想查看优化建议？
+
+👉 查看 [UI_OPTIMIZATION_SUGGESTIONS.md](./ui-optimization/UI_OPTIMIZATION_SUGGESTIONS.md)
+
+### 想了解设计规范？
+
+👉 查看 [CARD_PADDING_STANDARDS.md](./ui-optimization/CARD_PADDING_STANDARDS.md)
+
+### 想了解重构过程？
+
+👉 查看 [QUILTS_PAGE_REFACTOR_PLAN.md](./refactoring/QUILTS_PAGE_REFACTOR_PLAN.md)
+
+---
+
+## 📊 项目进度
+
+### UI 统一改造
+
+- **状态**: ✅ 完成
+- **完成度**: 100%
+- **改造页面**: 8 个
+
+### UI 优化
+
+- **第一阶段**: ✅ 完成（高优先级）
+- **第二阶段**: ✅ 完成（中优先级）
+- **第三阶段**: ⏳ 待定（低优先级）
+- **总体完成度**: 85%
+
+### 代码重构
+
+- **被子管理页面**: ✅ 完成
+- **使用记录页面**: ✅ 完成
+- **其他页面**: ✅ 完成
+
+---
+
+## 🎨 设计系统
+
+### 颜色系统
+
+- 使用 Tailwind CSS 语义化颜色
+- `primary`, `secondary`, `muted`, `accent`, `destructive`
+
+### 组件库
+
+- 基于 Shadcn UI
+- 统一的 Card, Table, Badge, Button 等组件
+
+### 间距系统
+
+- 页面容器: `space-y-6` (24px)
+- 卡片内部: `space-y-4` (16px)
+- 表单字段: `space-y-2` (8px)
+
+### 卡片内边距
+
+- 统计卡片: `p-4` (16px)
+- 内容卡片: `p-6` (24px)
+- 紧凑卡片: `p-3` (12px)
+
+---
+
+## 📝 文档更新日志
+
+### 2025-11-11
+
+- ✅ 创建文档目录结构
+- ✅ 整理所有 UI 优化文档
+- ✅ 整理所有重构文档
+- ✅ 创建文档索引
+
+---
+
+## 🔗 相关链接
+
+- [主 README](../README.md)
+- [中文 README](../README_zh.md)
+- [项目仓库](https://github.com/ohengcom/qms-app)
+
+---
+
+**最后更新**: 2025-11-11  
+**维护者**: Kiro AI
