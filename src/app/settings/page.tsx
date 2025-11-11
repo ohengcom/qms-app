@@ -60,7 +60,7 @@ export default function SettingsPage() {
 
   if (settingsLoading || dbLoading || systemLoading) {
     return (
-      <div className="container mx-auto px-4 py-8 space-y-6">
+      <div className="space-y-6">
         <Skeleton className="h-8 w-48" />
         <Skeleton className="h-4 w-96" />
         <Skeleton className="h-64 w-full" />
@@ -70,7 +70,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-6">
+    <div className="space-y-6">
       {/* Two-column layout: 2/3 for settings, 1/3 for info */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left column - Settings (2/3 width) */}

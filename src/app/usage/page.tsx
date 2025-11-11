@@ -213,10 +213,6 @@ function UsageTrackingContent() {
   if (loading) {
     return (
       <div className="space-y-6">
-        {/* Header Skeleton */}
-        <div className="flex items-center justify-between">
-          <Skeleton className="h-8 w-32" />
-        </div>
         {/* Stats Skeleton */}
         <div className="grid grid-cols-3 gap-4">
           {[1, 2, 3].map(i => (

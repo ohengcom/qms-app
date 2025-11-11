@@ -8,21 +8,11 @@
 
 import { WeatherWidget } from '@/components/weather/WeatherWidget';
 import { PageTransition } from '@/components/motion/PageTransition';
-import { Cloud } from 'lucide-react';
 
 export default function WeatherPage() {
   return (
     <PageTransition>
       <div className="space-y-6">
-        {/* Header */}
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <Cloud className="w-6 h-6 text-primary" />
-            <h1 className="text-2xl font-semibold">天气与被子推荐</h1>
-          </div>
-          <p className="text-muted-foreground">根据当前天气情况，为您推荐最适合的被子</p>
-        </div>
-
         {/* Weather Widget */}
         <div className="max-w-2xl">
           <WeatherWidget showRecommendations={true} />

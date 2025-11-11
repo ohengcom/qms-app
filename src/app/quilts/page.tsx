@@ -286,7 +286,7 @@ export default function QuiltsPage() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-6">
         <Skeleton className="h-12 w-full" />
         <Skeleton className="h-96 w-full" />
       </div>
@@ -296,7 +296,7 @@ export default function QuiltsPage() {
   // Empty state
   if (quilts.length === 0) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-6">
         <QuiltToolbar
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
@@ -329,7 +329,7 @@ export default function QuiltsPage() {
   // No results state
   if (filteredQuilts.length === 0) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-6">
         <QuiltToolbar
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
@@ -364,7 +364,7 @@ export default function QuiltsPage() {
 
   // Main render
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <QuiltToolbar
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}

@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useDashboardStats } from '@/hooks/useDashboard';
 import { useLanguage } from '@/lib/language-provider';
 import { DashboardStatsSkeleton, CardSkeleton } from '@/components/ui/skeleton-layouts';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Package, Activity, Archive, History, PackageOpen, Sparkles } from 'lucide-react';
 import { PageTransition } from '@/components/motion/PageTransition';
 import { AnimatedList, AnimatedListItem } from '@/components/motion/AnimatedList';
@@ -23,11 +22,6 @@ export default function DashboardPage() {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        {/* Header Skeleton */}
-        <div className="space-y-2">
-          <Skeleton className="h-8 w-48" />
-          <Skeleton className="h-4 w-64" />
-        </div>
         {/* Stats Cards Skeleton */}
         <DashboardStatsSkeleton cards={3} />
         {/* Charts Skeleton */}
