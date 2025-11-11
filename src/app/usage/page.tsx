@@ -170,14 +170,12 @@ function UsageTrackingContent() {
   // Render sort icon
   const renderSortIcon = (field: string) => {
     if (sortField !== field) {
-      return (
-        <ArrowUpDown className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-50 transition-opacity" />
-      );
+      return <ArrowUpDown className="w-3 h-3 ml-1 opacity-50" />;
     }
     return sortDirection === 'asc' ? (
-      <ArrowUp className="w-3 h-3 ml-1 text-blue-600" />
+      <ArrowUp className="w-3 h-3 ml-1" />
     ) : (
-      <ArrowDown className="w-3 h-3 ml-1 text-blue-600" />
+      <ArrowDown className="w-3 h-3 ml-1" />
     );
   };
 
@@ -308,9 +306,9 @@ function UsageTrackingContent() {
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow>
+                <TableRow className="bg-muted/50">
                   <TableHead
-                    className="text-center cursor-pointer hover:bg-muted/80 transition-colors select-none"
+                    className="h-12 text-center font-medium text-muted-foreground cursor-pointer hover:bg-muted/80 transition-colors select-none"
                     onClick={() => handleSort('itemNumber')}
                   >
                     <div className="flex items-center justify-center">
@@ -319,7 +317,7 @@ function UsageTrackingContent() {
                     </div>
                   </TableHead>
                   <TableHead
-                    className="text-center cursor-pointer hover:bg-muted/80 transition-colors select-none"
+                    className="h-12 text-center font-medium text-muted-foreground cursor-pointer hover:bg-muted/80 transition-colors select-none"
                     onClick={() => handleSort('quiltName')}
                   >
                     <div className="flex items-center justify-center">
@@ -328,7 +326,7 @@ function UsageTrackingContent() {
                     </div>
                   </TableHead>
                   <TableHead
-                    className="text-center cursor-pointer hover:bg-muted/80 transition-colors select-none"
+                    className="h-12 text-center font-medium text-muted-foreground cursor-pointer hover:bg-muted/80 transition-colors select-none"
                     onClick={() => handleSort('startedAt')}
                   >
                     <div className="flex items-center justify-center">
@@ -337,7 +335,7 @@ function UsageTrackingContent() {
                     </div>
                   </TableHead>
                   <TableHead
-                    className="text-center cursor-pointer hover:bg-muted/80 transition-colors select-none"
+                    className="h-12 text-center font-medium text-muted-foreground cursor-pointer hover:bg-muted/80 transition-colors select-none"
                     onClick={() => handleSort('endedAt')}
                   >
                     <div className="flex items-center justify-center">
@@ -346,7 +344,7 @@ function UsageTrackingContent() {
                     </div>
                   </TableHead>
                   <TableHead
-                    className="text-center cursor-pointer hover:bg-muted/80 transition-colors select-none"
+                    className="h-12 text-center font-medium text-muted-foreground cursor-pointer hover:bg-muted/80 transition-colors select-none"
                     onClick={() => handleSort('duration')}
                   >
                     <div className="flex items-center justify-center">
@@ -355,7 +353,7 @@ function UsageTrackingContent() {
                     </div>
                   </TableHead>
                   <TableHead
-                    className="text-center cursor-pointer hover:bg-muted/80 transition-colors select-none"
+                    className="h-12 text-center font-medium text-muted-foreground cursor-pointer hover:bg-muted/80 transition-colors select-none"
                     onClick={() => handleSort('isActive')}
                   >
                     <div className="flex items-center justify-center">
@@ -363,7 +361,9 @@ function UsageTrackingContent() {
                       {renderSortIcon('isActive')}
                     </div>
                   </TableHead>
-                  <TableHead className="text-center">{t('quilts.views.actions')}</TableHead>
+                  <TableHead className="h-12 text-center font-medium text-muted-foreground">
+                    {t('quilts.views.actions')}
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -457,21 +457,31 @@ function UsageTrackingContent() {
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-center">#</TableHead>
-                    <TableHead className="text-center">{t('usage.labels.started')}</TableHead>
-                    <TableHead className="text-center">
+                  <TableRow className="bg-muted/50">
+                    <TableHead className="h-12 text-center font-medium text-muted-foreground">
+                      #
+                    </TableHead>
+                    <TableHead className="h-12 text-center font-medium text-muted-foreground">
+                      {t('usage.labels.started')}
+                    </TableHead>
+                    <TableHead className="h-12 text-center font-medium text-muted-foreground">
                       {language === 'zh' ? '开始温度' : 'Start Temp'}
                     </TableHead>
-                    <TableHead className="text-center">{t('usage.labels.ended')}</TableHead>
-                    <TableHead className="text-center">
+                    <TableHead className="h-12 text-center font-medium text-muted-foreground">
+                      {t('usage.labels.ended')}
+                    </TableHead>
+                    <TableHead className="h-12 text-center font-medium text-muted-foreground">
                       {language === 'zh' ? '结束温度' : 'End Temp'}
                     </TableHead>
-                    <TableHead className="text-center">
+                    <TableHead className="h-12 text-center font-medium text-muted-foreground">
                       {language === 'zh' ? '持续时间' : 'Duration'}
                     </TableHead>
-                    <TableHead className="text-center">{t('usage.labels.notes')}</TableHead>
-                    <TableHead className="text-center">{t('quilts.table.status')}</TableHead>
+                    <TableHead className="h-12 text-center font-medium text-muted-foreground">
+                      {t('usage.labels.notes')}
+                    </TableHead>
+                    <TableHead className="h-12 text-center font-medium text-muted-foreground">
+                      {t('quilts.table.status')}
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
