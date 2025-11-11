@@ -310,60 +310,60 @@ function UsageTrackingContent() {
               <TableHeader>
                 <TableRow>
                   <TableHead
-                    className="cursor-pointer hover:bg-muted/80 transition-colors select-none"
+                    className="text-center cursor-pointer hover:bg-muted/80 transition-colors select-none"
                     onClick={() => handleSort('itemNumber')}
                   >
-                    <div className="flex items-center">
+                    <div className="flex items-center justify-center">
                       {t('quilts.table.itemNumber')}
                       {renderSortIcon('itemNumber')}
                     </div>
                   </TableHead>
                   <TableHead
-                    className="cursor-pointer hover:bg-muted/80 transition-colors select-none"
+                    className="text-center cursor-pointer hover:bg-muted/80 transition-colors select-none"
                     onClick={() => handleSort('quiltName')}
                   >
-                    <div className="flex items-center">
+                    <div className="flex items-center justify-center">
                       {t('quilts.views.name')}
                       {renderSortIcon('quiltName')}
                     </div>
                   </TableHead>
                   <TableHead
-                    className="cursor-pointer hover:bg-muted/80 transition-colors select-none"
+                    className="text-center cursor-pointer hover:bg-muted/80 transition-colors select-none"
                     onClick={() => handleSort('startedAt')}
                   >
-                    <div className="flex items-center">
+                    <div className="flex items-center justify-center">
                       {t('usage.labels.started')}
                       {renderSortIcon('startedAt')}
                     </div>
                   </TableHead>
                   <TableHead
-                    className="cursor-pointer hover:bg-muted/80 transition-colors select-none"
+                    className="text-center cursor-pointer hover:bg-muted/80 transition-colors select-none"
                     onClick={() => handleSort('endedAt')}
                   >
-                    <div className="flex items-center">
+                    <div className="flex items-center justify-center">
                       {t('usage.labels.ended')}
                       {renderSortIcon('endedAt')}
                     </div>
                   </TableHead>
                   <TableHead
-                    className="cursor-pointer hover:bg-muted/80 transition-colors select-none"
+                    className="text-center cursor-pointer hover:bg-muted/80 transition-colors select-none"
                     onClick={() => handleSort('duration')}
                   >
-                    <div className="flex items-center">
+                    <div className="flex items-center justify-center">
                       {t('usage.labels.duration')}
                       {renderSortIcon('duration')}
                     </div>
                   </TableHead>
                   <TableHead
-                    className="cursor-pointer hover:bg-muted/80 transition-colors select-none"
+                    className="text-center cursor-pointer hover:bg-muted/80 transition-colors select-none"
                     onClick={() => handleSort('isActive')}
                   >
-                    <div className="flex items-center">
+                    <div className="flex items-center justify-center">
                       {t('quilts.table.status')}
                       {renderSortIcon('isActive')}
                     </div>
                   </TableHead>
-                  <TableHead className="text-right">{t('quilts.views.actions')}</TableHead>
+                  <TableHead className="text-center">{t('quilts.views.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -386,25 +386,32 @@ function UsageTrackingContent() {
                       className="cursor-pointer"
                       title={language === 'zh' ? '双击执行操作' : 'Double-click to perform action'}
                     >
-                      <TableCell className="font-medium">#{record.itemNumber}</TableCell>
-                      <TableCell className="font-medium">{record.quiltName}</TableCell>
-                      <TableCell>{formatDate(record.startedAt)}</TableCell>
-                      <TableCell>{record.endedAt ? formatDate(record.endedAt) : '-'}</TableCell>
-                      <TableCell>{formatDuration(record.duration)}</TableCell>
-                      <TableCell>
+                      <TableCell className="text-center font-medium">
+                        #{record.itemNumber}
+                      </TableCell>
+                      <TableCell className="text-center font-medium">{record.quiltName}</TableCell>
+                      <TableCell className="text-center text-sm text-muted-foreground">
+                        {formatDate(record.startedAt)}
+                      </TableCell>
+                      <TableCell className="text-center text-sm text-muted-foreground">
+                        {record.endedAt ? formatDate(record.endedAt) : '-'}
+                      </TableCell>
+                      <TableCell className="text-center text-sm text-muted-foreground">
+                        {formatDuration(record.duration)}
+                      </TableCell>
+                      <TableCell className="text-center">
                         <Badge variant={record.isActive ? 'default' : 'secondary'}>
                           {record.isActive ? t('usage.status.active') : t('usage.status.completed')}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-2">
+                      <TableCell className="text-center">
+                        <div className="flex items-center justify-center gap-1">
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => handleRecordClick(record)}
                           >
-                            <Eye className="h-3.5 w-3.5 mr-1" />
-                            {language === 'zh' ? '查看' : 'View'}
+                            <Eye className="w-4 h-4" />
                           </Button>
                           <EditUsageRecordDialog
                             record={{
@@ -423,7 +430,7 @@ function UsageTrackingContent() {
                             onDelete={loadUsageHistory}
                             trigger={
                               <Button variant="ghost" size="sm" data-action="edit">
-                                <Edit className="h-3.5 w-3.5" />
+                                <Edit className="w-4 h-4" />
                               </Button>
                             }
                           />
@@ -451,33 +458,41 @@ function UsageTrackingContent() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>#</TableHead>
-                    <TableHead>{t('usage.labels.started')}</TableHead>
-                    <TableHead>{language === 'zh' ? '开始温度' : 'Start Temp'}</TableHead>
-                    <TableHead>{t('usage.labels.ended')}</TableHead>
-                    <TableHead>{language === 'zh' ? '结束温度' : 'End Temp'}</TableHead>
-                    <TableHead>{language === 'zh' ? '持续时间' : 'Duration'}</TableHead>
-                    <TableHead>{t('usage.labels.notes')}</TableHead>
-                    <TableHead>{t('quilts.table.status')}</TableHead>
+                    <TableHead className="text-center">#</TableHead>
+                    <TableHead className="text-center">{t('usage.labels.started')}</TableHead>
+                    <TableHead className="text-center">
+                      {language === 'zh' ? '开始温度' : 'Start Temp'}
+                    </TableHead>
+                    <TableHead className="text-center">{t('usage.labels.ended')}</TableHead>
+                    <TableHead className="text-center">
+                      {language === 'zh' ? '结束温度' : 'End Temp'}
+                    </TableHead>
+                    <TableHead className="text-center">
+                      {language === 'zh' ? '持续时间' : 'Duration'}
+                    </TableHead>
+                    <TableHead className="text-center">{t('usage.labels.notes')}</TableHead>
+                    <TableHead className="text-center">{t('quilts.table.status')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {selectedQuiltUsage.map((usage: any, index: number) => (
                     <TableRow key={usage.id}>
-                      <TableCell className="font-medium">
+                      <TableCell className="text-center font-medium">
                         {selectedQuiltUsage.length - index}
                       </TableCell>
-                      <TableCell>{formatDate(usage.startDate?.toString())}</TableCell>
-                      <TableCell>
+                      <TableCell className="text-center text-sm text-muted-foreground">
+                        {formatDate(usage.startDate?.toString())}
+                      </TableCell>
+                      <TableCell className="text-center">
                         <TemperatureDisplay date={usage.startDate} compact />
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="text-center text-sm text-muted-foreground">
                         {usage.endDate ? formatDate(usage.endDate.toString()) : '-'}
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="text-center">
                         {usage.endDate ? <TemperatureDisplay date={usage.endDate} compact /> : '-'}
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="text-center text-sm text-muted-foreground">
                         {usage.endDate
                           ? formatDuration(
                               Math.floor(
@@ -488,8 +503,10 @@ function UsageTrackingContent() {
                             )
                           : '-'}
                       </TableCell>
-                      <TableCell>{usage.notes || '-'}</TableCell>
-                      <TableCell>
+                      <TableCell className="text-center text-sm text-muted-foreground">
+                        {usage.notes || '-'}
+                      </TableCell>
+                      <TableCell className="text-center">
                         <Badge variant={!usage.endDate ? 'default' : 'secondary'}>
                           {!usage.endDate
                             ? t('usage.labels.active')
