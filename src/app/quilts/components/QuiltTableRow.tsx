@@ -79,7 +79,11 @@ export function QuiltTableRow({
           {t(`season.${quilt.season}`)}
         </Badge>
       </td>
-      <td className="p-4 align-middle text-center text-sm text-muted-foreground">{quilt.size}</td>
+      <td className="p-4 align-middle text-center text-sm text-muted-foreground">
+        {quilt.lengthCm && quilt.widthCm
+          ? `${quilt.lengthCm}×${quilt.widthCm}cm`
+          : quilt.size || '-'}
+      </td>
       <td className="p-4 align-middle text-center text-sm text-muted-foreground">
         {quilt.weightGrams}g
       </td>

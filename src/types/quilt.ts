@@ -26,6 +26,8 @@ export interface Quilt {
   name: string;
   season: Season;
   size: string;
+  lengthCm?: number;
+  widthCm?: number;
   weightGrams: number;
   fillMaterial: string;
   color: string;
