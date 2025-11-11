@@ -200,7 +200,7 @@ export default function AnalyticsPage() {
               {/* Overview Statistics */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <Card>
-                  <CardContent className="pt-6">
+                  <CardContent className="p-4">
                     <div className="flex items-center space-x-3">
                       <Package className="w-10 h-10 text-primary" />
                       <div>
@@ -214,7 +214,7 @@ export default function AnalyticsPage() {
                 </Card>
 
                 <Card>
-                  <CardContent className="pt-6">
+                  <CardContent className="p-4">
                     <div className="flex items-center space-x-3">
                       <Activity className="w-10 h-10 text-green-600" />
                       <div>
@@ -228,7 +228,7 @@ export default function AnalyticsPage() {
                 </Card>
 
                 <Card>
-                  <CardContent className="pt-6">
+                  <CardContent className="p-4">
                     <div className="flex items-center space-x-3">
                       <Clock className="w-10 h-10 text-purple-600" />
                       <div>
@@ -242,7 +242,7 @@ export default function AnalyticsPage() {
                 </Card>
 
                 <Card>
-                  <CardContent className="pt-6">
+                  <CardContent className="p-4">
                     <div className="flex items-center space-x-3">
                       <Calendar className="w-10 h-10 text-orange-600" />
                       <div>

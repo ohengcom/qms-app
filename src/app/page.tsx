@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useDashboardStats } from '@/hooks/useDashboard';
 import { useLanguage } from '@/lib/language-provider';
 import { DashboardStatsSkeleton, CardSkeleton } from '@/components/ui/skeleton-layouts';
+import { ErrorAlert } from '@/components/ui/error-alert';
 import { Package, Activity, Archive, History, PackageOpen, Sparkles } from 'lucide-react';
 import { PageTransition } from '@/components/motion/PageTransition';
 import { AnimatedList, AnimatedListItem } from '@/components/motion/AnimatedList';
@@ -35,12 +36,8 @@ export default function DashboardPage() {
 
   if (error) {
     return (
-      <div className="p-6">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p className="text-red-800">
-            {t('common.error')}: {error.message}
-          </p>
-        </div>
+      <div className="space-y-6">
+        <ErrorAlert title={t('common.error')} message={error.message} />
       </div>
     );
   }
