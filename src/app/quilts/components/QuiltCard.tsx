@@ -118,7 +118,7 @@ export function QuiltCard({
               {t('common.edit')}
             </Button>
             <Button variant="outline" size="sm" onClick={onStatusChange} className="flex-1">
-              {t('quilts.actions.changeStatus')}
+              {t('quilts.dialogs.changeStatus')}
             </Button>
             <Button variant="destructive" size="sm" onClick={onDelete}>
               <Trash2 className="w-3 h-3" />
