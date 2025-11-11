@@ -4,6 +4,16 @@ import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/lib/language-provider';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
 import { TableSkeleton } from '@/components/ui/skeleton-layouts';
 import {
@@ -210,19 +220,21 @@ function UsageTrackingContent() {
         {/* Stats Skeleton */}
         <div className="grid grid-cols-3 gap-4">
           {[1, 2, 3].map(i => (
-            <div key={i} className="bg-white border border-gray-200 rounded-lg p-4">
-              <div className="flex items-center gap-3">
-                <Skeleton className="h-10 w-10 rounded-lg" />
-                <div className="space-y-2 flex-1">
-                  <Skeleton className="h-6 w-16" />
-                  <Skeleton className="h-3 w-20" />
+            <Card key={i}>
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-10 w-10 rounded-lg" />
+                  <div className="space-y-2 flex-1">
+                    <Skeleton className="h-6 w-16" />
+                    <Skeleton className="h-3 w-20" />
+                  </div>
                 </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           ))}
         </div>
         {/* Table Skeleton */}
-        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm p-4">
+        <div className="rounded-md border p-4">
           <TableSkeleton rows={6} columns={6} />
         </div>
       </div>
@@ -257,168 +269,149 @@ function UsageTrackingContent() {
 
       {/* Statistics */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-white border border-gray-200 rounded-lg p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-50 rounded-lg">
-              <BarChart3 className="w-5 h-5 text-blue-600" />
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <BarChart3 className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <p className="text-2xl font-semibold">{stats.total}</p>
+                <p className="text-xs text-muted-foreground">{t('usage.stats.totalRecords')}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-2xl font-semibold text-gray-900">{stats.total}</p>
-              <p className="text-xs text-gray-500">{t('usage.stats.totalRecords')}</p>
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
-        <div className="bg-white border border-gray-200 rounded-lg p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-50 rounded-lg">
-              <Clock className="w-5 h-5 text-green-600" />
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-green-500/10 rounded-lg">
+                <Clock className="w-5 h-5 text-green-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-semibold">{stats.active}</p>
+                <p className="text-xs text-muted-foreground">{t('usage.status.active')}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-2xl font-semibold text-gray-900">{stats.active}</p>
-              <p className="text-xs text-gray-500">{t('usage.status.active')}</p>
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
-        <div className="bg-white border border-gray-200 rounded-lg p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-gray-50 rounded-lg">
-              <Package className="w-5 h-5 text-gray-600" />
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-muted rounded-lg">
+                <Package className="w-5 h-5 text-muted-foreground" />
+              </div>
+              <div>
+                <p className="text-2xl font-semibold">{stats.completed}</p>
+                <p className="text-xs text-muted-foreground">{t('usage.status.completed')}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-2xl font-semibold text-gray-900">{stats.completed}</p>
-              <p className="text-xs text-gray-500">{t('usage.status.completed')}</p>
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Usage History Table */}
       {view === 'list' ? (
-        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+        <div className="rounded-md border">
           <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-300">
-                  <th
-                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead
+                    className="cursor-pointer hover:bg-muted/80 transition-colors select-none"
                     onClick={() => handleSort('itemNumber')}
                   >
                     <div className="flex items-center">
                       {t('quilts.table.itemNumber')}
                       {renderSortIcon('itemNumber')}
                     </div>
-                  </th>
-                  <th
-                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
+                  </TableHead>
+                  <TableHead
+                    className="cursor-pointer hover:bg-muted/80 transition-colors select-none"
                     onClick={() => handleSort('quiltName')}
                   >
                     <div className="flex items-center">
                       {t('quilts.views.name')}
                       {renderSortIcon('quiltName')}
                     </div>
-                  </th>
-                  <th
-                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
+                  </TableHead>
+                  <TableHead
+                    className="cursor-pointer hover:bg-muted/80 transition-colors select-none"
                     onClick={() => handleSort('startedAt')}
                   >
                     <div className="flex items-center">
                       {t('usage.labels.started')}
                       {renderSortIcon('startedAt')}
                     </div>
-                  </th>
-                  <th
-                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
+                  </TableHead>
+                  <TableHead
+                    className="cursor-pointer hover:bg-muted/80 transition-colors select-none"
                     onClick={() => handleSort('endedAt')}
                   >
                     <div className="flex items-center">
                       {t('usage.labels.ended')}
                       {renderSortIcon('endedAt')}
                     </div>
-                  </th>
-                  <th
-                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
+                  </TableHead>
+                  <TableHead
+                    className="cursor-pointer hover:bg-muted/80 transition-colors select-none"
                     onClick={() => handleSort('duration')}
                   >
                     <div className="flex items-center">
                       {t('usage.labels.duration')}
                       {renderSortIcon('duration')}
                     </div>
-                  </th>
-                  <th
-                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors group select-none"
+                  </TableHead>
+                  <TableHead
+                    className="cursor-pointer hover:bg-muted/80 transition-colors select-none"
                     onClick={() => handleSort('isActive')}
                   >
                     <div className="flex items-center">
                       {t('quilts.table.status')}
                       {renderSortIcon('isActive')}
                     </div>
-                  </th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('quilts.views.actions')}
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
+                  </TableHead>
+                  <TableHead className="text-right">{t('quilts.views.actions')}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {sortedUsageHistory.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} className="px-4">
+                  <TableRow>
+                    <TableCell colSpan={7} className="h-24">
                       <EmptyState
                         icon={PackageOpen}
                         title={t('usage.empty.title')}
                         description={t('usage.empty.description')}
                       />
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ) : (
-                  sortedUsageHistory.map((record: any, index: number) => (
-                    <tr
+                  sortedUsageHistory.map((record: any) => (
+                    <TableRow
                       key={record.id}
                       data-record-id={record.id}
                       onDoubleClick={() => handleRecordDoubleClick(record)}
-                      className={`
-                      transition-all duration-150 ease-in-out
-                      hover:bg-blue-50 hover:shadow-sm
-                      cursor-pointer
-                      ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}
-                      border-b border-gray-100 last:border-b-0
-                    `}
+                      className="cursor-pointer"
                       title={language === 'zh' ? '双击执行操作' : 'Double-click to perform action'}
                     >
-                      <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                        #{record.itemNumber}
-                      </td>
-                      <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                        {record.quiltName}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-700">
-                        {formatDate(record.startedAt)}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-700">
-                        {record.endedAt ? formatDate(record.endedAt) : '-'}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-700">
-                        {formatDuration(record.duration)}
-                      </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
-                            record.isActive
-                              ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                              : 'bg-gray-50 text-gray-700 border border-gray-200'
-                          }`}
-                        >
+                      <TableCell className="font-medium">#{record.itemNumber}</TableCell>
+                      <TableCell className="font-medium">{record.quiltName}</TableCell>
+                      <TableCell>{formatDate(record.startedAt)}</TableCell>
+                      <TableCell>{record.endedAt ? formatDate(record.endedAt) : '-'}</TableCell>
+                      <TableCell>{formatDuration(record.duration)}</TableCell>
+                      <TableCell>
+                        <Badge variant={record.isActive ? 'default' : 'secondary'}>
                           {record.isActive ? t('usage.status.active') : t('usage.status.completed')}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-right">
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-2">
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => handleRecordClick(record)}
-                            className="h-8 px-3"
                           >
                             <Eye className="h-3.5 w-3.5 mr-1" />
                             {language === 'zh' ? '查看' : 'View'}
@@ -439,93 +432,62 @@ function UsageTrackingContent() {
                             onUpdate={loadUsageHistory}
                             onDelete={loadUsageHistory}
                             trigger={
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-8 px-2"
-                                data-action="edit"
-                              >
+                              <Button variant="ghost" size="sm" data-action="edit">
                                 <Edit className="h-3.5 w-3.5" />
                               </Button>
                             }
                           />
                         </div>
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   ))
                 )}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
         </div>
       ) : (
         /* Quilt Detail View */
-        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+        <div className="rounded-md border">
           {detailLoading ? (
-            <div className="p-12 text-center text-gray-500">{t('common.loading')}</div>
+            <div className="p-12 text-center text-muted-foreground">{t('common.loading')}</div>
           ) : selectedQuiltUsage.length === 0 ? (
-            <div className="p-12 text-center text-gray-500">
-              <Package className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+            <div className="p-12 text-center text-muted-foreground">
+              <Package className="w-12 h-12 mx-auto mb-3" />
               <p>{t('usage.details.noHistory')}</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-300">
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      #
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      {t('usage.labels.started')}
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      {language === 'zh' ? '开始温度' : 'Start Temp'}
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      {t('usage.labels.ended')}
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      {language === 'zh' ? '结束温度' : 'End Temp'}
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      {language === 'zh' ? '持续时间' : 'Duration'}
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      {t('usage.labels.notes')}
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      {t('quilts.table.status')}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>#</TableHead>
+                    <TableHead>{t('usage.labels.started')}</TableHead>
+                    <TableHead>{language === 'zh' ? '开始温度' : 'Start Temp'}</TableHead>
+                    <TableHead>{t('usage.labels.ended')}</TableHead>
+                    <TableHead>{language === 'zh' ? '结束温度' : 'End Temp'}</TableHead>
+                    <TableHead>{language === 'zh' ? '持续时间' : 'Duration'}</TableHead>
+                    <TableHead>{t('usage.labels.notes')}</TableHead>
+                    <TableHead>{t('quilts.table.status')}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
                   {selectedQuiltUsage.map((usage: any, index: number) => (
-                    <tr
-                      key={usage.id}
-                      className={`
-                      transition-all duration-150 ease-in-out
-                      hover:bg-blue-50 hover:shadow-sm
-                      ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}
-                      border-b border-gray-100 last:border-b-0
-                    `}
-                    >
-                      <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                    <TableRow key={usage.id}>
+                      <TableCell className="font-medium">
                         {selectedQuiltUsage.length - index}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-700">
-                        {formatDate(usage.startDate?.toString())}
-                      </td>
-                      <td className="px-4 py-3">
+                      </TableCell>
+                      <TableCell>{formatDate(usage.startDate?.toString())}</TableCell>
+                      <TableCell>
                         <TemperatureDisplay date={usage.startDate} compact />
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-700">
+                      </TableCell>
+                      <TableCell>
                         {usage.endDate ? formatDate(usage.endDate.toString()) : '-'}
-                      </td>
-                      <td className="px-4 py-3">
+                      </TableCell>
+                      <TableCell>
                         {usage.endDate ? <TemperatureDisplay date={usage.endDate} compact /> : '-'}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-700">
+                      </TableCell>
+                      <TableCell>
                         {usage.endDate
                           ? formatDuration(
                               Math.floor(
@@ -535,27 +497,21 @@ function UsageTrackingContent() {
                               )
                             )
                           : '-'}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-700">{usage.notes || '-'}</td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
-                            !usage.endDate
-                              ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                              : 'bg-gray-50 text-gray-700 border border-gray-200'
-                          }`}
-                        >
+                      </TableCell>
+                      <TableCell>{usage.notes || '-'}</TableCell>
+                      <TableCell>
+                        <Badge variant={!usage.endDate ? 'default' : 'secondary'}>
                           {!usage.endDate
                             ? t('usage.labels.active')
                             : language === 'zh'
                               ? '已完成'
                               : 'Completed'}
-                        </span>
-                      </td>
-                    </tr>
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
                   ))}
-                </tbody>
-              </table>
+                </TableBody>
+              </Table>
             </div>
           )}
         </div>
