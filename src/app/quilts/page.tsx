@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useLanguage } from '@/lib/language-provider';
 import { PackageOpen, SearchX } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -25,6 +25,7 @@ import type {
 
 export default function QuiltsPage() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const urlSearchTerm = searchParams.get('search') || '';
 
   // State
@@ -231,8 +232,8 @@ export default function QuiltsPage() {
     setStatusDialogOpen(true);
   };
 
-  const handleViewHistory = (_quilt: Quilt) => {
-    // TODO: Implement history view
+  const handleViewHistory = (quilt: Quilt) => {
+    router.push(`/usage?quiltId=${quilt.id}`);
   };
 
   const handleSaveQuilt = async (data: any) => {
