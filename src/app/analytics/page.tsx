@@ -371,7 +371,7 @@ export default function AnalyticsPage() {
                           </div>
                           <div>
                             <span className="font-semibold">{quilt.name}</span>
-                            <span className="text-sm text-gray-600 ml-2">
+                            <span className="text-sm text-muted-foreground ml-2">
                               {t('analytics.avg')}: {quilt.averageDays} {t('analytics.days')}
                             </span>
                           </div>
@@ -380,7 +380,9 @@ export default function AnalyticsPage() {
                           <span className="text-xl font-bold text-blue-600">
                             {quilt.usageCount}
                           </span>
-                          <span className="text-sm text-gray-600 ml-1">{t('analytics.uses')}</span>
+                          <span className="text-sm text-muted-foreground ml-1">
+                            {t('analytics.uses')}
+                          </span>
                         </div>
                       </div>
                     ))}
@@ -405,7 +407,7 @@ export default function AnalyticsPage() {
                         <div key={item.year} className="space-y-2">
                           <div className="flex justify-between text-sm">
                             <span className="font-semibold">{item.year}</span>
-                            <span className="text-gray-600">
+                            <span className="text-muted-foreground">
                               {item.count} {language === 'zh' ? '次' : 'uses'}
                             </span>
                           </div>
@@ -440,10 +442,8 @@ export default function AnalyticsPage() {
                     {Object.entries(analytics.usageBySeason).map(([season, count]) => (
                       <div key={season} className="text-center p-6 bg-gray-50 rounded-lg">
                         <p className="text-3xl font-bold text-blue-600 mb-2">{count}</p>
-                        <p className="text-sm font-semibold text-gray-900">
-                          {t(`season.${season}`)}
-                        </p>
-                        <p className="text-xs text-gray-600 mt-1">
+                        <p className="text-sm font-semibold font-medium">{t(`season.${season}`)}</p>
+                        <p className="text-xs text-muted-foreground mt-1">
                           {language === 'zh' ? '次使用' : 'uses'}
                         </p>
                       </div>
@@ -467,7 +467,7 @@ export default function AnalyticsPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-green-600">{recommendationCounts.keep}</div>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   {language === 'zh' ? '使用频率正常的被子' : 'Quilts with normal usage'}
                 </p>
               </CardContent>
@@ -484,7 +484,7 @@ export default function AnalyticsPage() {
                 <div className="text-2xl font-bold text-yellow-600">
                   {recommendationCounts.low_usage}
                 </div>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   {language === 'zh' ? '使用频率较低的被子' : 'Quilts with low usage'}
                 </p>
               </CardContent>
@@ -501,7 +501,7 @@ export default function AnalyticsPage() {
                 <div className="text-2xl font-bold text-red-600">
                   {recommendationCounts.consider_removal}
                 </div>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   {language === 'zh' ? '建议考虑淘汰的被子' : 'Quilts to consider removing'}
                 </p>
               </CardContent>
@@ -566,27 +566,27 @@ export default function AnalyticsPage() {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b">
-                      <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-left text-xs font-bold text-muted-foreground uppercase">
                         {language === 'zh' ? '排名' : 'Rank'}
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-left text-xs font-bold text-muted-foreground uppercase">
                         {language === 'zh' ? '编号' : 'Item #'}
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-left text-xs font-bold text-muted-foreground uppercase">
                         {language === 'zh' ? '名称' : 'Name'}
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-left text-xs font-bold text-muted-foreground uppercase">
                         {language === 'zh' ? '季节' : 'Season'}
                       </th>
-                      <th className="px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-center text-xs font-bold text-muted-foreground uppercase">
                         {language === 'zh'
                           ? `使用次数 (${getPeriodLabel()})`
                           : `Usage Count (${getPeriodLabel()})`}
                       </th>
-                      <th className="px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-center text-xs font-bold text-muted-foreground uppercase">
                         {language === 'zh' ? '最后使用' : 'Last Used'}
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">
+                      <th className="px-4 py-3 text-left text-xs font-bold text-muted-foreground uppercase">
                         {language === 'zh' ? '建议' : 'Recommendation'}
                       </th>
                     </tr>
@@ -594,7 +594,7 @@ export default function AnalyticsPage() {
                   <tbody className="divide-y divide-gray-200">
                     {filteredStats.length === 0 ? (
                       <tr>
-                        <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
+                        <td colSpan={7} className="px-4 py-8 text-center text-muted-foreground">
                           {language === 'zh' ? '暂无数据' : 'No data available'}
                         </td>
                       </tr>
@@ -608,20 +608,20 @@ export default function AnalyticsPage() {
                             ${stat.recommendation === 'low_usage' ? 'bg-yellow-50' : ''}
                           `}
                         >
-                          <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                          <td className="px-4 py-3 text-sm font-medium font-medium">
                             #{index + 1}
                           </td>
-                          <td className="px-4 py-3 text-sm text-gray-700">#{stat.itemNumber}</td>
-                          <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                          <td className="px-4 py-3 text-sm text-foreground">#{stat.itemNumber}</td>
+                          <td className="px-4 py-3 text-sm font-medium font-medium">
                             {stat.quiltName}
                           </td>
-                          <td className="px-4 py-3 text-sm text-gray-700">
+                          <td className="px-4 py-3 text-sm text-foreground">
                             {t(`season.${stat.season}`)}
                           </td>
-                          <td className="px-4 py-3 text-sm text-center font-semibold text-gray-900">
+                          <td className="px-4 py-3 text-sm text-center font-semibold font-medium">
                             {getUsageCount(stat)}
                           </td>
-                          <td className="px-4 py-3 text-sm text-center text-gray-700">
+                          <td className="px-4 py-3 text-sm text-center text-foreground">
                             {stat.daysSinceLastUse !== null
                               ? language === 'zh'
                                 ? `${stat.daysSinceLastUse}天前`

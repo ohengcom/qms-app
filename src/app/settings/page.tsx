@@ -99,11 +99,11 @@ export default function SettingsPage() {
                 </Label>
                 <div className="flex items-center gap-3">
                   <LanguageSwitcher />
-                  <span className="text-sm text-gray-500">
+                  <span className="text-sm text-muted-foreground">
                     {language === 'zh' ? '当前语言：中文' : 'Current language: English'}
                   </span>
                 </div>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   {language === 'zh'
                     ? '更改语言后立即生效，无需刷新页面'
                     : 'Language changes take effect immediately without page refresh'}
@@ -145,7 +145,7 @@ export default function SettingsPage() {
                         <span className="font-medium">
                           {language === 'zh' ? '无动作' : 'No Action'}
                         </span>
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-muted-foreground">
                           {language === 'zh' ? '双击不执行任何操作' : 'Double-click does nothing'}
                         </span>
                       </div>
@@ -155,7 +155,7 @@ export default function SettingsPage() {
                         <span className="font-medium">
                           {language === 'zh' ? '查看详情' : 'View Details'}
                         </span>
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-muted-foreground">
                           {language === 'zh'
                             ? '双击查看被子详情'
                             : 'Double-click to view quilt details'}
@@ -167,7 +167,7 @@ export default function SettingsPage() {
                         <span className="font-medium">
                           {language === 'zh' ? '修改状态' : 'Change Status'}
                         </span>
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-muted-foreground">
                           {language === 'zh'
                             ? '双击打开状态修改对话框'
                             : 'Double-click opens status dialog'}
@@ -179,14 +179,14 @@ export default function SettingsPage() {
                         <span className="font-medium">
                           {language === 'zh' ? '编辑被子' : 'Edit Quilt'}
                         </span>
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-muted-foreground">
                           {language === 'zh' ? '双击打开编辑表单' : 'Double-click opens edit form'}
                         </span>
                       </div>
                     </SelectItem>
                   </SelectContent>
                 </Select>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   {language === 'zh'
                     ? '设置在被子列表中双击行时的默认行为'
                     : 'Set the default behavior when double-clicking a row in the quilt list'}
@@ -231,7 +231,7 @@ export default function SettingsPage() {
                         <span className="font-medium">
                           {language === 'zh' ? '无动作' : 'No Action'}
                         </span>
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-muted-foreground">
                           {language === 'zh' ? '双击不执行任何操作' : 'Double-click does nothing'}
                         </span>
                       </div>
@@ -241,7 +241,7 @@ export default function SettingsPage() {
                         <span className="font-medium">
                           {language === 'zh' ? '查看详情' : 'View Details'}
                         </span>
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-muted-foreground">
                           {language === 'zh'
                             ? '双击查看被子详情'
                             : 'Double-click to view quilt details'}
@@ -253,7 +253,7 @@ export default function SettingsPage() {
                         <span className="font-medium">
                           {language === 'zh' ? '编辑记录' : 'Edit Record'}
                         </span>
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-muted-foreground">
                           {language === 'zh'
                             ? '双击编辑使用记录'
                             : 'Double-click to edit usage record'}
@@ -262,7 +262,7 @@ export default function SettingsPage() {
                     </SelectItem>
                   </SelectContent>
                 </Select>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   {language === 'zh'
                     ? '设置在使用记录列表中双击行时的默认行为'
                     : 'Set the default behavior when double-clicking a row in the usage record list'}

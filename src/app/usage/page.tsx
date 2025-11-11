@@ -253,12 +253,12 @@ function UsageTrackingContent() {
             </Button>
           )}
           <div>
-            <h1 className="text-2xl font-semibold text-gray-900">
+            <h1 className="text-2xl font-semibold">
               {view === 'detail' && selectedQuilt
                 ? `${selectedQuilt.name} - ${t('usage.details.title')}`
                 : t('usage.title')}
             </h1>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-muted-foreground mt-1">
               {view === 'detail' && selectedQuilt
                 ? `${t('quilts.table.itemNumber')} #${selectedQuilt.itemNumber}`
                 : t('usage.subtitle')}

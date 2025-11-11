@@ -89,7 +89,7 @@ export default function ImportExportPage() {
         window.URL.revokeObjectURL(url);
         document.body.removeChild(a);
       }
-    } catch (error) {
+    } catch {
       window.alert(t('reports.export.downloadFailed'));
     } finally {
       setLoading(null);
@@ -124,8 +124,8 @@ export default function ImportExportPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold text-gray-900">{t('reports.title')}</h1>
-        <p className="text-sm text-gray-500 mt-1">{t('reports.subtitle')}</p>
+        <h1 className="text-2xl font-semibold">{t('reports.title')}</h1>
+        <p className="text-sm text-muted-foreground mt-1">{t('reports.subtitle')}</p>
       </div>
 
       {/* Tabs */}
