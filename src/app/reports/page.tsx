@@ -122,12 +122,6 @@ export default function ImportExportPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-semibold">{t('reports.title')}</h1>
-        <p className="text-sm text-muted-foreground mt-1">{t('reports.subtitle')}</p>
-      </div>
-
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={v => setActiveTab(v as 'import' | 'export')}>
         <TabsList className="grid w-full max-w-md grid-cols-2">

@@ -180,14 +180,6 @@ export default function AnalyticsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-semibold">{t('navigation.analytics')}</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          {language === 'zh' ? '被子使用分析和统计' : 'Quilt usage analysis and statistics'}
-        </p>
-      </div>
-
       <Tabs defaultValue="overview" className="space-y-6">
         <TabsList>
           <TabsTrigger value="overview">

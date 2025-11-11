@@ -244,28 +244,22 @@ function UsageTrackingContent() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      {view === 'detail' && selectedQuilt && (
         <div className="flex items-center gap-3">
-          {view === 'detail' && (
-            <Button variant="ghost" size="sm" onClick={handleBackToList}>
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              {t('common.back')}
-            </Button>
-          )}
+          <Button variant="ghost" size="sm" onClick={handleBackToList}>
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            {t('common.back')}
+          </Button>
           <div>
             <h1 className="text-2xl font-semibold">
-              {view === 'detail' && selectedQuilt
-                ? `${selectedQuilt.name} - ${t('usage.details.title')}`
-                : t('usage.title')}
+              {selectedQuilt.name} - {t('usage.details.title')}
             </h1>
             <p className="text-sm text-muted-foreground mt-1">
-              {view === 'detail' && selectedQuilt
-                ? `${t('quilts.table.itemNumber')} #${selectedQuilt.itemNumber}`
-                : t('usage.subtitle')}
+              {t('quilts.table.itemNumber')} #{selectedQuilt.itemNumber}
             </p>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Statistics */}
       <div className="grid grid-cols-3 gap-4">

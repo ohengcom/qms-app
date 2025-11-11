@@ -71,12 +71,6 @@ export default function SettingsPage() {
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold">{t('settings.title')}</h1>
-        <p className="text-muted-foreground">{t('settings.subtitle')}</p>
-      </div>
-
       {/* Two-column layout: 2/3 for settings, 1/3 for info */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left column - Settings (2/3 width) */}
