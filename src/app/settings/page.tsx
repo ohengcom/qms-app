@@ -2,6 +2,7 @@
 
 import { useLanguage } from '@/lib/language-provider';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -72,8 +73,8 @@ export default function SettingsPage() {
     <div className="container mx-auto px-4 py-8 space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">{t('settings.title')}</h1>
-        <p className="text-gray-500">{t('settings.subtitle')}</p>
+        <h1 className="text-2xl font-bold">{t('settings.title')}</h1>
+        <p className="text-muted-foreground">{t('settings.subtitle')}</p>
       </div>
 
       {/* Two-column layout: 2/3 for settings, 1/3 for info */}
@@ -309,21 +310,15 @@ export default function SettingsPage() {
                 <Label>{t('settings.sections.database.connectionStatus')}</Label>
                 <div className="flex items-center space-x-2">
                   <div
-                    className={`w-2 h-2 rounded-full ${dbStats?.connected ? 'bg-green-500' : 'bg-red-500'}`}
+                    className={`w-2 h-2 rounded-full ${dbStats?.connected ? 'bg-green-500' : 'bg-destructive'}`}
                   ></div>
-                  <span
-                    className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
-                      dbStats?.connected
-                        ? 'bg-green-50 text-green-700 border border-green-200'
-                        : 'bg-red-50 text-red-700 border border-red-200'
-                    }`}
-                  >
+                  <Badge variant={dbStats?.connected ? 'default' : 'destructive'}>
                     {dbStats?.connected
                       ? t('settings.sections.database.connected')
                       : language === 'zh'
                         ? '未连接'
                         : 'Disconnected'}
-                  </span>
+                  </Badge>
                 </div>
               </div>
             </CardContent>
@@ -343,19 +338,19 @@ export default function SettingsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
-              <div className="flex items-center justify-between py-2 border-b border-gray-100">
+              <div className="flex items-center justify-between py-2 border-b">
                 <div className="flex items-center space-x-2">
-                  <Info className="w-4 h-4 text-gray-400" />
-                  <span className="text-sm text-gray-600">
+                  <Info className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">
                     {t('settings.sections.system.version')}
                   </span>
                 </div>
                 <span className="text-sm font-medium">{systemInfo?.version || '0.5.0'}</span>
               </div>
-              <div className="flex items-center justify-between py-2 border-b border-gray-100">
+              <div className="flex items-center justify-between py-2 border-b">
                 <div className="flex items-center space-x-2">
-                  <Info className="w-4 h-4 text-gray-400" />
-                  <span className="text-sm text-gray-600">
+                  <Info className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">
                     {t('settings.sections.system.deployment')}
                   </span>
                 </div>
@@ -363,20 +358,17 @@ export default function SettingsPage() {
               </div>
               <div className="flex items-center justify-between py-2">
                 <div className="flex items-center space-x-2">
-                  <Info className="w-4 h-4 text-gray-400" />
-                  <span className="text-sm text-gray-600">
+                  <Info className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">
                     {language === 'zh' ? '环境' : 'Environment'}
                   </span>
                 </div>
-                <span
-                  className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium capitalize ${
-                    systemInfo?.environment === 'production'
-                      ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                      : 'bg-yellow-50 text-yellow-700 border border-yellow-200'
-                  }`}
+                <Badge
+                  variant={systemInfo?.environment === 'production' ? 'default' : 'secondary'}
+                  className="capitalize"
                 >
                   {systemInfo?.environment || 'production'}
-                </span>
+                </Badge>
               </div>
             </CardContent>
           </Card>
