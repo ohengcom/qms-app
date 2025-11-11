@@ -182,8 +182,8 @@ export default function AnalyticsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold text-gray-900">{t('navigation.analytics')}</h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <h1 className="text-2xl font-semibold">{t('navigation.analytics')}</h1>
+        <p className="text-sm text-muted-foreground mt-1">
           {language === 'zh' ? '被子使用分析和统计' : 'Quilt usage analysis and statistics'}
         </p>
       </div>
@@ -210,10 +210,12 @@ export default function AnalyticsPage() {
                 <Card>
                   <CardContent className="pt-6">
                     <div className="flex items-center space-x-3">
-                      <Package className="w-10 h-10 text-blue-600" />
+                      <Package className="w-10 h-10 text-primary" />
                       <div>
                         <p className="text-3xl font-bold">{analytics.overview.totalQuilts}</p>
-                        <p className="text-sm text-gray-600">{t('analytics.totalQuilts')}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {t('analytics.totalQuilts')}
+                        </p>
                       </div>
                     </div>
                   </CardContent>
@@ -225,7 +227,9 @@ export default function AnalyticsPage() {
                       <Activity className="w-10 h-10 text-green-600" />
                       <div>
                         <p className="text-3xl font-bold">{analytics.overview.totalUsagePeriods}</p>
-                        <p className="text-sm text-gray-600">{t('analytics.usageRecords')}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {t('analytics.usageRecords')}
+                        </p>
                       </div>
                     </div>
                   </CardContent>
@@ -237,7 +241,9 @@ export default function AnalyticsPage() {
                       <Clock className="w-10 h-10 text-purple-600" />
                       <div>
                         <p className="text-3xl font-bold">{analytics.overview.totalUsageDays}</p>
-                        <p className="text-sm text-gray-600">{t('analytics.totalUsageDays')}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {t('analytics.totalUsageDays')}
+                        </p>
                       </div>
                     </div>
                   </CardContent>
@@ -249,7 +255,9 @@ export default function AnalyticsPage() {
                       <Calendar className="w-10 h-10 text-orange-600" />
                       <div>
                         <p className="text-3xl font-bold">{analytics.overview.averageUsageDays}</p>
-                        <p className="text-sm text-gray-600">{t('analytics.avgUsageDays')}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {t('analytics.avgUsageDays')}
+                        </p>
                       </div>
                     </div>
                   </CardContent>
