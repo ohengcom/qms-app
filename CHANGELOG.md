@@ -5,6 +5,62 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0] - 2025-11-11
+
+### 🎉 First Stable Release
+
+This is the first stable release of the Quilt Management System (QMS)!
+
+### Added
+
+- **UI Unification**
+  - Migrated all pages to Shadcn UI component library
+  - Unified table styles across all pages (header colors, sorting icons, action columns)
+  - Created reusable error alert component
+  - Standardized card padding (p-4 for stats, p-6 for content)
+  - Improved empty state displays
+
+- **Quilt Management Enhancements**
+  - Componentized quilt table row for better maintainability
+  - View usage history button (eye icon) in action column
+  - Direct navigation to usage tracking page with quilt details
+  - Fixed duplicate History icons in action column
+
+- **Analytics Page Reorganization**
+  - Split data overview into 4 focused tabs:
+    - Data Overview (基础统计)
+    - Status Distribution (状态分布)
+    - Usage Rankings (使用排行)
+    - Usage Frequency Analysis (使用频率分析)
+  - Better data organization and navigation
+
+- **Documentation**
+  - Created comprehensive docs directory structure
+  - Added PROJECT_SUMMARY.md with complete project overview
+  - Added NEXT_STEPS.md for future development roadmap
+  - Updated README with latest features
+
+### Changed
+
+- Improved table sorting with visual indicators (arrows)
+- Enhanced action column layout and icon consistency
+- Optimized page layouts and spacing
+- Better mobile responsiveness
+
+### Fixed
+
+- Fixed size column sorting to use area calculation (length × width)
+- Fixed view history button functionality in quilt management
+- Fixed duplicate icons in operation columns
+- Improved error handling and user feedback
+
+### Technical
+
+- TypeScript strict mode enabled
+- Better component separation and reusability
+- Consistent styling patterns across all pages
+- Improved code organization
+
 ## [0.5.0] - 2025-11-04
 
 ### Added
@@ -165,6 +221,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+[1.0.0]: https://github.com/ohengcom/qms-app/compare/v0.5.0...v1.0.0
+[0.5.0]: https://github.com/ohengcom/qms-app/compare/v0.3.0...v0.5.0
 [0.3.0]: https://github.com/ohengcom/qms-app/compare/v0.2.2...v0.3.0
 [0.2.2]: https://github.com/ohengcom/qms-app/compare/v0.2.0...v0.2.2
 [0.2.0]: https://github.com/ohengcom/qms-app/releases/tag/v0.2.0
