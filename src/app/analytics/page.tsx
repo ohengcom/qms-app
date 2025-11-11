@@ -183,8 +183,16 @@ export default function AnalyticsPage() {
       <Tabs defaultValue="overview" className="space-y-6">
         <TabsList>
           <TabsTrigger value="overview">
-            <PieChart className="w-4 h-4 mr-2" />
+            <Activity className="w-4 h-4 mr-2" />
             {language === 'zh' ? '数据概览' : 'Overview'}
+          </TabsTrigger>
+          <TabsTrigger value="distribution">
+            <PieChart className="w-4 h-4 mr-2" />
+            {language === 'zh' ? '状态分布' : 'Distribution'}
+          </TabsTrigger>
+          <TabsTrigger value="ranking">
+            <Award className="w-4 h-4 mr-2" />
+            {language === 'zh' ? '使用排行' : 'Rankings'}
           </TabsTrigger>
           <TabsTrigger value="frequency">
             <BarChart3 className="w-4 h-4 mr-2" />
@@ -256,6 +264,42 @@ export default function AnalyticsPage() {
                 </Card>
               </div>
 
+              {/* Usage by Season */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Activity className="w-5 h-5" />
+                    <span>{language === 'zh' ? '各季节被子使用情况' : 'Usage by Season'}</span>
+                  </CardTitle>
+                  <CardDescription>
+                    {language === 'zh'
+                      ? '不同季节类型被子的使用次数'
+                      : 'Usage count by quilt season'}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-3 gap-4">
+                    {Object.entries(analytics.usageBySeason).map(([season, count]) => (
+                      <div key={season} className="text-center p-6 bg-gray-50 rounded-lg">
+                        <p className="text-3xl font-bold text-blue-600 mb-2">{count}</p>
+                        <p className="text-sm font-semibold">{t(`season.${season}`)}</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {language === 'zh' ? '次使用' : 'uses'}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </>
+          )}
+        </TabsContent>
+
+        <TabsContent value="distribution" className="space-y-6">
+          {!analytics ? (
+            <div className="text-center text-red-600">{t('common.error')}</div>
+          ) : (
+            <>
               {/* Distribution Charts */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Status Distribution */}
@@ -340,7 +384,15 @@ export default function AnalyticsPage() {
                   </CardContent>
                 </Card>
               </div>
+            </>
+          )}
+        </TabsContent>
 
+        <TabsContent value="ranking" className="space-y-6">
+          {!analytics ? (
+            <div className="text-center text-red-600">{t('common.error')}</div>
+          ) : (
+            <>
               {/* Most Used Quilts */}
               <Card>
                 <CardHeader>
@@ -412,34 +464,6 @@ export default function AnalyticsPage() {
                         </div>
                       );
                     })}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Usage by Season */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Activity className="w-5 h-5" />
-                    <span>{language === 'zh' ? '各季节被子使用情况' : 'Usage by Season'}</span>
-                  </CardTitle>
-                  <CardDescription>
-                    {language === 'zh'
-                      ? '不同季节类型被子的使用次数'
-                      : 'Usage count by quilt season'}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-3 gap-4">
-                    {Object.entries(analytics.usageBySeason).map(([season, count]) => (
-                      <div key={season} className="text-center p-6 bg-gray-50 rounded-lg">
-                        <p className="text-3xl font-bold text-blue-600 mb-2">{count}</p>
-                        <p className="text-sm font-semibold font-medium">{t(`season.${season}`)}</p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {language === 'zh' ? '次使用' : 'uses'}
-                        </p>
-                      </div>
-                    ))}
                   </div>
                 </CardContent>
               </Card>
