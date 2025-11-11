@@ -120,6 +120,24 @@ export default function QuiltsPage() {
             : b.weightGrams - a.weightGrams;
         }
 
+        if (sortField === 'size') {
+          // Sort by area (length × width) if available, otherwise by size string
+          const aArea = a.lengthCm && a.widthCm ? a.lengthCm * a.widthCm : 0;
+          const bArea = b.lengthCm && b.widthCm ? b.lengthCm * b.widthCm : 0;
+
+          if (aArea !== 0 && bArea !== 0) {
+            return sortDirection === 'asc' ? aArea - bArea : bArea - aArea;
+          }
+
+          // Fallback to string comparison
+          const aStr = String(a.size || '').toLowerCase();
+          const bStr = String(b.size || '').toLowerCase();
+
+          if (aStr < bStr) return sortDirection === 'asc' ? -1 : 1;
+          if (aStr > bStr) return sortDirection === 'asc' ? 1 : -1;
+          return 0;
+        }
+
         const aValue = a[sortField];
         const bValue = b[sortField];
 
