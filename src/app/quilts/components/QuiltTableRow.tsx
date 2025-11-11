@@ -1,6 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Edit, Trash2, History } from 'lucide-react';
+import { Edit, Trash2, History, Eye } from 'lucide-react';
 import { HighlightText } from '@/components/ui/highlight-text';
 import type { Quilt } from '@/types/quilt';
 import { useLanguage } from '@/lib/language-provider';
@@ -108,7 +108,7 @@ export function QuiltTableRow({
             <History className="w-4 h-4" />
           </Button>
           <Button variant="ghost" size="sm" onClick={onViewHistory}>
-            <History className="w-4 h-4" />
+            <Eye className="w-4 h-4" />
           </Button>
           <Button variant="ghost" size="sm" onClick={onDelete}>
             <Trash2 className="w-4 h-4 text-destructive" />
