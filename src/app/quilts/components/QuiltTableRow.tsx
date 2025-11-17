@@ -1,6 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Edit, Trash2, History, Eye } from 'lucide-react';
+import { Edit, Trash2, History, Eye, Image as ImageIcon } from 'lucide-react';
 import { HighlightText } from '@/components/ui/highlight-text';
 import type { Quilt } from '@/types/quilt';
 import { useLanguage } from '@/lib/language-provider';
@@ -15,6 +15,7 @@ interface QuiltTableRowProps {
   onDelete: () => void;
   onStatusChange: () => void;
   onViewHistory: () => void;
+  onViewImages?: () => void;
   onDoubleClick?: () => void;
 }
 
@@ -28,9 +29,16 @@ export function QuiltTableRow({
   onDelete,
   onStatusChange,
   onViewHistory,
+  onViewImages,
   onDoubleClick,
 }: QuiltTableRowProps) {
   const { t, language } = useLanguage();
+
+  // Check if quilt has images
+  const hasImages = !!(
+    quilt.mainImage ||
+    (quilt.attachmentImages && quilt.attachmentImages.length > 0)
+  );
 
   const getSeasonColor = (season: string) => {
     switch (season) {
@@ -113,6 +121,16 @@ export function QuiltTableRow({
       </td>
       <td className="p-4 align-middle text-center">
         <div className="flex items-center justify-center gap-1">
+          {hasImages && onViewImages && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onViewImages}
+              title={language === 'zh' ? '查看图片' : 'View Images'}
+            >
+              <ImageIcon className="w-4 h-4" />
+            </Button>
+          )}
           <Button variant="ghost" size="sm" onClick={onEdit}>
             <Edit className="w-4 h-4" />
           </Button>

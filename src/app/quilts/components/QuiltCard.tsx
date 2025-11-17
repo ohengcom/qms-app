@@ -1,7 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Edit, Trash2, Package } from 'lucide-react';
+import { Edit, Trash2, Package, Image as ImageIcon } from 'lucide-react';
 import { HighlightText } from '@/components/ui/highlight-text';
 import type { Quilt } from '@/types/quilt';
 import { useLanguage } from '@/lib/language-provider';
@@ -16,6 +16,7 @@ interface QuiltCardProps {
   onEdit: () => void;
   onDelete: () => void;
   onStatusChange: () => void;
+  onViewImages?: () => void;
   onDoubleClick?: () => void;
 }
 
@@ -28,9 +29,16 @@ export function QuiltCard({
   onEdit,
   onDelete,
   onStatusChange,
+  onViewImages,
   onDoubleClick,
 }: QuiltCardProps) {
   const { t, language } = useLanguage();
+
+  // Check if quilt has images
+  const hasImages = !!(
+    quilt.mainImage ||
+    (quilt.attachmentImages && quilt.attachmentImages.length > 0)
+  );
 
   const getSeasonColor = (season: string) => {
     switch (season) {
@@ -122,17 +130,25 @@ export function QuiltCard({
             </div>
           </div>
 
-          <div className="flex gap-2 pt-2">
-            <Button variant="outline" size="sm" onClick={onEdit} className="flex-1">
-              <Edit className="w-3 h-3 mr-1" />
-              {t('common.edit')}
-            </Button>
-            <Button variant="outline" size="sm" onClick={onStatusChange} className="flex-1">
-              {t('quilts.dialogs.changeStatus')}
-            </Button>
-            <Button variant="destructive" size="sm" onClick={onDelete}>
-              <Trash2 className="w-3 h-3" />
-            </Button>
+          <div className="flex flex-col gap-2 pt-2">
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={onEdit} className="flex-1">
+                <Edit className="w-3 h-3 mr-1" />
+                {t('common.edit')}
+              </Button>
+              <Button variant="outline" size="sm" onClick={onStatusChange} className="flex-1">
+                {t('quilts.dialogs.changeStatus')}
+              </Button>
+              <Button variant="destructive" size="sm" onClick={onDelete}>
+                <Trash2 className="w-3 h-3" />
+              </Button>
+            </div>
+            {hasImages && onViewImages && (
+              <Button variant="secondary" size="sm" onClick={onViewImages} className="w-full">
+                <ImageIcon className="w-3 h-3 mr-1" />
+                {language === 'zh' ? '查看图片' : 'View Images'}
+              </Button>
+            )}
           </div>
         </div>
       </CardContent>

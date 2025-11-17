@@ -10,6 +10,7 @@ interface QuiltGridViewProps {
   onEdit: (quilt: Quilt) => void;
   onDelete: (quilt: Quilt) => void;
   onStatusChange: (quilt: Quilt) => void;
+  onViewImages?: (quilt: Quilt) => void;
   onDoubleClick?: (quilt: Quilt) => void;
 }
 
@@ -22,6 +23,7 @@ export function QuiltGridView({
   onEdit,
   onDelete,
   onStatusChange,
+  onViewImages,
   onDoubleClick,
 }: QuiltGridViewProps) {
   return (
@@ -37,6 +39,7 @@ export function QuiltGridView({
           onEdit={() => onEdit(quilt)}
           onDelete={() => onDelete(quilt)}
           onStatusChange={() => onStatusChange(quilt)}
+          onViewImages={onViewImages ? () => onViewImages(quilt) : undefined}
           onDoubleClick={onDoubleClick ? () => onDoubleClick(quilt) : undefined}
         />
       ))}

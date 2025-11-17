@@ -17,6 +17,7 @@ interface QuiltListViewProps {
   onDelete: (quilt: Quilt) => void;
   onStatusChange: (quilt: Quilt) => void;
   onViewHistory: (quilt: Quilt) => void;
+  onViewImages?: (quilt: Quilt) => void;
   onDoubleClick?: (quilt: Quilt) => void;
 }
 
@@ -34,6 +35,7 @@ export function QuiltListView({
   onDelete,
   onStatusChange,
   onViewHistory,
+  onViewImages,
   onDoubleClick,
 }: QuiltListViewProps) {
   const { t } = useLanguage();
@@ -106,6 +108,7 @@ export function QuiltListView({
                 onDelete={() => onDelete(quilt)}
                 onStatusChange={() => onStatusChange(quilt)}
                 onViewHistory={() => onViewHistory(quilt)}
+                onViewImages={onViewImages ? () => onViewImages(quilt) : undefined}
                 onDoubleClick={onDoubleClick ? () => onDoubleClick(quilt) : undefined}
               />
             ))}

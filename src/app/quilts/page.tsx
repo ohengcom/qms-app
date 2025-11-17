@@ -8,6 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { QuiltDialog } from '@/components/quilts/QuiltDialog';
 import { StatusChangeDialog } from '@/components/quilts/StatusChangeDialog';
+import { QuiltImageDialog } from '@/components/quilts/QuiltImageDialog';
 import { QuiltToolbar } from './components/QuiltToolbar';
 import { QuiltListView } from './components/QuiltListView';
 import { QuiltGridView } from './components/QuiltGridView';
@@ -32,6 +33,7 @@ export default function QuiltsPage() {
   });
   const [quiltDialogOpen, setQuiltDialogOpen] = useState(false);
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
+  const [imageDialogOpen, setImageDialogOpen] = useState(false);
   const [selectedQuilt, setSelectedQuilt] = useState<Quilt | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isSelectMode, setIsSelectMode] = useState(false);
@@ -231,6 +233,11 @@ export default function QuiltsPage() {
     router.push(`/usage?quiltId=${quilt.id}`);
   };
 
+  const handleViewImages = (quilt: Quilt) => {
+    setSelectedQuilt(quilt);
+    setImageDialogOpen(true);
+  };
+
   const handleQuiltDoubleClick = (quilt: Quilt) => {
     const doubleClickAction = (appSettings?.doubleClickAction as string) || 'status';
 
@@ -423,6 +430,7 @@ export default function QuiltsPage() {
           onDelete={handleDeleteQuilt}
           onStatusChange={handleStatusChange}
           onViewHistory={handleViewHistory}
+          onViewImages={handleViewImages}
           onDoubleClick={handleQuiltDoubleClick}
         />
       ) : (
@@ -435,6 +443,7 @@ export default function QuiltsPage() {
           onEdit={handleEditQuilt}
           onDelete={handleDeleteQuilt}
           onStatusChange={handleStatusChange}
+          onViewImages={handleViewImages}
           onDoubleClick={handleQuiltDoubleClick}
         />
       )}
@@ -451,6 +460,12 @@ export default function QuiltsPage() {
         onOpenChange={setStatusDialogOpen}
         quilt={selectedQuilt}
         onStatusChange={handleStatusChangeConfirm}
+      />
+
+      <QuiltImageDialog
+        open={imageDialogOpen}
+        onOpenChange={setImageDialogOpen}
+        quilt={selectedQuilt}
       />
     </div>
   );
