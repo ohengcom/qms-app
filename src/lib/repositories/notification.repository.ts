@@ -5,9 +5,12 @@
  */
 
 import { sql } from '@/lib/neon';
-import { dbLogger } from '@/lib/logger';
 import { BaseRepositoryImpl } from './base.repository';
-import type { Notification, CreateNotificationInput, NotificationFilter } from '@/types/notification';
+import type {
+  Notification,
+  CreateNotificationInput,
+  NotificationFilter,
+} from '@/types/notification';
 
 export interface NotificationRow {
   id: string;
@@ -165,7 +168,7 @@ export class NotificationRepository extends BaseRepositoryImpl<NotificationRow, 
           `;
         }
 
-        return rows.map((row) => this.rowToModel(row as NotificationRow));
+        return rows.map(row => this.rowToModel(row as NotificationRow));
       },
       'findAllNotifications',
       { filter }
@@ -272,18 +275,15 @@ export class NotificationRepository extends BaseRepositoryImpl<NotificationRow, 
    * Get unread notification count
    */
   async getUnreadCount(): Promise<number> {
-    return this.executeQuery(
-      async () => {
-        const rows = await sql`
+    return this.executeQuery(async () => {
+      const rows = await sql`
           SELECT COUNT(*) as count
           FROM notifications
           WHERE is_read = false
         `;
 
-        return parseInt(rows[0].count as string, 10);
-      },
-      'getUnreadNotificationCount'
-    );
+      return parseInt(rows[0].count as string, 10);
+    }, 'getUnreadNotificationCount');
   }
 
   /**
@@ -292,10 +292,13 @@ export class NotificationRepository extends BaseRepositoryImpl<NotificationRow, 
   async deleteOldReadNotifications(daysOld: number = 30): Promise<number> {
     return this.executeQuery(
       async () => {
+        // Calculate the threshold timestamp
+        const thresholdTime = new Date(Date.now() - daysOld * 24 * 60 * 60 * 1000);
+
         const result = await sql`
           DELETE FROM notifications
           WHERE is_read = true
-          AND created_at < NOW() - INTERVAL '${daysOld} days'
+          AND created_at < ${thresholdTime.toISOString()}
           RETURNING id
         `;
 
@@ -316,11 +319,14 @@ export class NotificationRepository extends BaseRepositoryImpl<NotificationRow, 
   ): Promise<Notification | null> {
     return this.executeQuery(
       async () => {
+        // Calculate the timestamp threshold
+        const thresholdTime = new Date(Date.now() - hoursWindow * 60 * 60 * 1000);
+
         const rows = await sql`
           SELECT * FROM notifications
           WHERE type = ${type}
           AND quilt_id = ${quiltId || null}
-          AND created_at > NOW() - INTERVAL '${hoursWindow} hours'
+          AND created_at > ${thresholdTime.toISOString()}
           ORDER BY created_at DESC
           LIMIT 1
         `;
