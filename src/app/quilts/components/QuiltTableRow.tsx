@@ -15,6 +15,7 @@ interface QuiltTableRowProps {
   onDelete: () => void;
   onStatusChange: () => void;
   onViewHistory: () => void;
+  onDoubleClick?: () => void;
 }
 
 export function QuiltTableRow({
@@ -27,8 +28,9 @@ export function QuiltTableRow({
   onDelete,
   onStatusChange,
   onViewHistory,
+  onDoubleClick,
 }: QuiltTableRowProps) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const getSeasonColor = (season: string) => {
     switch (season) {
@@ -59,7 +61,17 @@ export function QuiltTableRow({
   };
 
   return (
-    <tr className="border-b transition-colors hover:bg-muted/50">
+    <tr
+      className="border-b transition-colors hover:bg-muted/50 cursor-pointer"
+      onDoubleClick={onDoubleClick}
+      title={
+        onDoubleClick
+          ? language === 'zh'
+            ? '双击执行操作'
+            : 'Double-click to perform action'
+          : undefined
+      }
+    >
       {isSelectMode && (
         <td className="p-4 align-middle">
           <input

@@ -14,14 +14,8 @@ import { QuiltGridView } from './components/QuiltGridView';
 import { toast } from '@/lib/toast';
 import { useQuilts, useCreateQuilt, useUpdateQuilt, useDeleteQuilt } from '@/hooks/useQuilts';
 import { useCreateUsageRecord, useEndUsageRecord } from '@/hooks/useUsage';
-import type {
-  Quilt,
-  FilterCriteria,
-  SortField,
-  SortDirection,
-  ViewMode,
-  QuiltStatus,
-} from '@/types/quilt';
+import { useAppSettings } from '@/hooks/useSettings';
+import type { Quilt, FilterCriteria, SortField, SortDirection, ViewMode } from '@/types/quilt';
 
 export default function QuiltsPage() {
   const searchParams = useSearchParams();
@@ -49,6 +43,7 @@ export default function QuiltsPage() {
 
   // Data fetching
   const { data: quiltsData, isLoading } = useQuilts();
+  const { data: appSettings } = useAppSettings();
   const createQuiltMutation = useCreateQuilt();
   const updateQuiltMutation = useUpdateQuilt();
   const deleteQuiltMutation = useDeleteQuilt();
@@ -236,6 +231,29 @@ export default function QuiltsPage() {
     router.push(`/usage?quiltId=${quilt.id}`);
   };
 
+  const handleQuiltDoubleClick = (quilt: Quilt) => {
+    const doubleClickAction = (appSettings?.doubleClickAction as string) || 'status';
+
+    switch (doubleClickAction) {
+      case 'status':
+        // Change status
+        handleStatusChange(quilt);
+        break;
+      case 'edit':
+        // Edit quilt
+        handleEditQuilt(quilt);
+        break;
+      case 'view':
+        // View usage history
+        handleViewHistory(quilt);
+        break;
+      case 'none':
+      default:
+        // Do nothing
+        break;
+    }
+  };
+
   const handleSaveQuilt = async (data: any) => {
     try {
       if (selectedQuilt) {
@@ -251,35 +269,42 @@ export default function QuiltsPage() {
     }
   };
 
-  const handleStatusChangeConfirm = async (status: QuiltStatus, date?: Date, notes?: string) => {
+  const handleStatusChangeConfirm = async (
+    quiltId: string,
+    newStatus: string,
+    options?: { startDate?: string; endDate?: string; notes?: string }
+  ) => {
     if (!selectedQuilt) return;
 
     try {
       // Update quilt status
       await updateQuiltMutation.mutateAsync({
-        id: selectedQuilt.id,
-        currentStatus: status as any,
+        id: quiltId,
+        currentStatus: newStatus as any,
       });
 
       // Handle usage records
-      if (status === 'IN_USE' && selectedQuilt.currentStatus !== 'IN_USE') {
+      if (newStatus === 'IN_USE' && selectedQuilt.currentStatus !== 'IN_USE') {
+        // Starting usage - create new usage record
         await createUsageRecordMutation.mutateAsync({
-          quiltId: selectedQuilt.id,
-          startDate: date || new Date(),
+          quiltId: quiltId,
+          startDate: options?.startDate ? new Date(options.startDate) : new Date(),
           usageType: 'REGULAR',
-          notes,
+          notes: options?.notes,
         });
-      } else if (status !== 'IN_USE' && selectedQuilt.currentStatus === 'IN_USE') {
+      } else if (newStatus !== 'IN_USE' && selectedQuilt.currentStatus === 'IN_USE') {
+        // Ending usage - end active usage record
         await endUsageRecordMutation.mutateAsync({
-          quiltId: selectedQuilt.id,
-          endDate: date || new Date(),
-          notes,
+          quiltId: quiltId,
+          endDate: options?.endDate ? new Date(options.endDate) : new Date(),
+          notes: options?.notes,
         });
       }
 
       toast.success(t('toasts.statusUpdated'));
       setStatusDialogOpen(false);
-    } catch {
+    } catch (error) {
+      console.error('Status change error:', error);
       toast.error(t('toasts.failedToUpdateStatus'));
     }
   };
@@ -398,6 +423,7 @@ export default function QuiltsPage() {
           onDelete={handleDeleteQuilt}
           onStatusChange={handleStatusChange}
           onViewHistory={handleViewHistory}
+          onDoubleClick={handleQuiltDoubleClick}
         />
       ) : (
         <QuiltGridView
@@ -409,6 +435,7 @@ export default function QuiltsPage() {
           onEdit={handleEditQuilt}
           onDelete={handleDeleteQuilt}
           onStatusChange={handleStatusChange}
+          onDoubleClick={handleQuiltDoubleClick}
         />
       )}
 
@@ -423,7 +450,7 @@ export default function QuiltsPage() {
         open={statusDialogOpen}
         onOpenChange={setStatusDialogOpen}
         quilt={selectedQuilt}
-        onStatusChange={handleStatusChangeConfirm as any}
+        onStatusChange={handleStatusChangeConfirm}
       />
     </div>
   );

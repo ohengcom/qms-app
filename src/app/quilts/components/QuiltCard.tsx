@@ -16,6 +16,7 @@ interface QuiltCardProps {
   onEdit: () => void;
   onDelete: () => void;
   onStatusChange: () => void;
+  onDoubleClick?: () => void;
 }
 
 export function QuiltCard({
@@ -27,8 +28,9 @@ export function QuiltCard({
   onEdit,
   onDelete,
   onStatusChange,
+  onDoubleClick,
 }: QuiltCardProps) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const getSeasonColor = (season: string) => {
     switch (season) {
@@ -60,7 +62,15 @@ export function QuiltCard({
 
   return (
     <Card
-      className={`hover:shadow-md transition-shadow ${isSelected ? 'ring-2 ring-primary' : ''}`}
+      className={`hover:shadow-md transition-shadow cursor-pointer ${isSelected ? 'ring-2 ring-primary' : ''}`}
+      onDoubleClick={onDoubleClick}
+      title={
+        onDoubleClick
+          ? language === 'zh'
+            ? '双击执行操作'
+            : 'Double-click to perform action'
+          : undefined
+      }
     >
       <CardContent className="p-4">
         {isSelectMode && (
