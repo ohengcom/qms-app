@@ -1,7 +1,7 @@
 'use client';
 
 import { Suspense, useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useLanguage } from '@/lib/language-provider';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -46,6 +46,7 @@ interface QuiltUsageDetail {
 
 function UsageTrackingContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const quiltIdParam = searchParams.get('quiltId');
 
   const [selectedQuilt, setSelectedQuilt] = useState<QuiltUsageDetail | null>(null);
@@ -134,6 +135,8 @@ function UsageTrackingContent() {
   const handleBackToList = () => {
     setView('list');
     setSelectedQuilt(null);
+    // Clear URL parameter to prevent re-entering detail view
+    router.push('/usage');
   };
 
   const formatDate = (dateString: string | null | undefined) => {
