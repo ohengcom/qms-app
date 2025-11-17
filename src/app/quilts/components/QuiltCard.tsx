@@ -34,12 +34,6 @@ export function QuiltCard({
 }: QuiltCardProps) {
   const { t, language } = useLanguage();
 
-  // Check if quilt has images
-  const hasImages = !!(
-    quilt.mainImage ||
-    (quilt.attachmentImages && quilt.attachmentImages.length > 0)
-  );
-
   const getSeasonColor = (season: string) => {
     switch (season) {
       case 'WINTER':
@@ -143,7 +137,7 @@ export function QuiltCard({
                 <Trash2 className="w-3 h-3" />
               </Button>
             </div>
-            {hasImages && onViewImages && (
+            {onViewImages && (
               <Button variant="secondary" size="sm" onClick={onViewImages} className="w-full">
                 <ImageIcon className="w-3 h-3 mr-1" />
                 {language === 'zh' ? '查看图片' : 'View Images'}

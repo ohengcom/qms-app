@@ -34,12 +34,6 @@ export function QuiltTableRow({
 }: QuiltTableRowProps) {
   const { t, language } = useLanguage();
 
-  // Check if quilt has images
-  const hasImages = !!(
-    quilt.mainImage ||
-    (quilt.attachmentImages && quilt.attachmentImages.length > 0)
-  );
-
   const getSeasonColor = (season: string) => {
     switch (season) {
       case 'WINTER':
@@ -121,7 +115,7 @@ export function QuiltTableRow({
       </td>
       <td className="p-4 align-middle text-center">
         <div className="flex items-center justify-center gap-1">
-          {hasImages && onViewImages && (
+          {onViewImages && (
             <Button
               variant="ghost"
               size="sm"
