@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { useLanguage } from '@/lib/language-provider';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, X, ImageIcon } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ImageIcon } from 'lucide-react';
 import type { Quilt } from '@/types/quilt';
 
 interface QuiltImageDialogProps {
@@ -91,18 +91,13 @@ export function QuiltImageDialog({ open, onOpenChange, quilt }: QuiltImageDialog
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-5xl max-h-[90vh] p-0">
         <DialogHeader className="px-6 pt-6 pb-4">
-          <DialogTitle className="flex items-center justify-between">
-            <div>
-              <span>{quilt.name}</span>
-              {hasMultipleImages && (
-                <span className="ml-3 text-sm font-normal text-muted-foreground">
-                  {currentIndex + 1} / {allImages.length}
-                </span>
-              )}
-            </div>
-            <Button variant="ghost" size="sm" onClick={handleClose}>
-              <X className="w-4 h-4" />
-            </Button>
+          <DialogTitle>
+            <span>{quilt.name}</span>
+            {hasMultipleImages && (
+              <span className="ml-3 text-sm font-normal text-muted-foreground">
+                {currentIndex + 1} / {allImages.length}
+              </span>
+            )}
           </DialogTitle>
         </DialogHeader>
 
