@@ -98,12 +98,7 @@ export default function QuiltUsageDetailPage() {
           <ArrowLeft className="w-4 h-4 mr-2" />
           {t('common.back')}
         </Button>
-        <div>
-          <h1 className="text-2xl font-semibold">{t('usage.details.title')}</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            {language === 'zh' ? '查看被子的使用历史记录' : 'View quilt usage history'}
-          </p>
-        </div>
+        <h1 className="text-2xl font-semibold">{t('usage.details.title')}</h1>
       </div>
 
       {/* Quilt Information Card */}
