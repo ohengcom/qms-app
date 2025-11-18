@@ -53,6 +53,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
     materialDetails: '',
     color: '白',
     brand: '无品牌',
+    purchaseDate: '',
     location: '未存储',
     currentStatus: 'STORAGE',
     notes: '',
@@ -89,6 +90,9 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
           materialDetails: quilt.materialDetails || '',
           color: quilt.color || '',
           brand: quilt.brand || '',
+          purchaseDate: quilt.purchaseDate
+            ? new Date(quilt.purchaseDate).toISOString().split('T')[0]
+            : '',
           location: quilt.location || '',
           currentStatus: quilt.currentStatus || 'MAINTENANCE',
           notes: quilt.notes || '',
@@ -121,6 +125,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
           materialDetails: '',
           color: '白',
           brand: '无品牌',
+          purchaseDate: '',
           location: '未存储',
           currentStatus: 'STORAGE',
           notes: '',
@@ -140,6 +145,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
         lengthCm: parseFloat(formData.lengthCm) || 0,
         widthCm: parseFloat(formData.widthCm) || 0,
         weightGrams: parseFloat(formData.weightGrams) || 0,
+        purchaseDate: formData.purchaseDate ? new Date(formData.purchaseDate) : null,
       };
 
       // Always include image fields to handle deletion
@@ -304,6 +310,17 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
                 value={formData.brand}
                 onChange={e => handleInputChange('brand', e.target.value)}
                 placeholder={t('quilts.form.brandPlaceholder')}
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="purchaseDate">{t('quilts.form.purchaseDate')}</Label>
+              <Input
+                id="purchaseDate"
+                type="date"
+                value={formData.purchaseDate}
+                onChange={e => handleInputChange('purchaseDate', e.target.value)}
+                max={new Date().toISOString().split('T')[0]}
               />
             </div>
           </div>
