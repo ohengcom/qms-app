@@ -230,7 +230,7 @@ export default function QuiltsPage() {
   };
 
   const handleViewHistory = (quilt: Quilt) => {
-    router.push(`/usage?quiltId=${quilt.id}`);
+    router.push(`/usage/${quilt.id}?from=quilts`);
   };
 
   const handleViewImages = (quilt: Quilt) => {

@@ -1,0 +1,187 @@
+'use client';
+
+import { useLanguage } from '@/lib/language-provider';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Edit, PackageOpen } from 'lucide-react';
+import { EditUsageRecordDialog } from './EditUsageRecordDialog';
+import { TemperatureDisplay } from './TemperatureDisplay';
+import { EmptyState } from '@/components/ui/empty-state';
+
+interface UsageRecord {
+  id: string;
+  quiltId?: string;
+  startDate: Date;
+  endDate?: Date | null;
+  notes?: string | null;
+  usageType?: string;
+  startedAt?: string;
+  endedAt?: string;
+}
+
+interface UsageHistoryTableProps {
+  usageRecords: UsageRecord[];
+  isLoading: boolean;
+  quiltName: string;
+  quiltId?: string;
+  itemNumber?: number;
+}
+
+export function UsageHistoryTable({
+  usageRecords,
+  isLoading,
+  quiltName,
+  quiltId,
+  itemNumber,
+}: UsageHistoryTableProps) {
+  const { t, language } = useLanguage();
+
+  const formatDate = (date: Date | string | null | undefined) => {
+    if (!date) return '-';
+    try {
+      const d = new Date(date);
+      if (isNaN(d.getTime())) return 'Invalid Date';
+      return d.toLocaleDateString(language === 'zh' ? 'zh-CN' : 'en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+    } catch {
+      return 'Invalid Date';
+    }
+  };
+
+  const formatDuration = (startDate: Date, endDate?: Date | null) => {
+    if (!endDate) return '-';
+    try {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      const days = Math.floor((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+      if (days === 0) return language === 'zh' ? '不到1天' : '<1 day';
+      return language === 'zh' ? `${days}天` : `${days} days`;
+    } catch {
+      return '-';
+    }
+  };
+
+  if (isLoading) {
+    return <div className="text-center py-8 text-muted-foreground">{t('common.loading')}</div>;
+  }
+
+  if (usageRecords.length === 0) {
+    return (
+      <EmptyState
+        icon={PackageOpen}
+        title={t('usage.details.noHistory')}
+        description={
+          language === 'zh' ? '这个被子还没有使用记录' : 'This quilt has no usage records yet'
+        }
+      />
+    );
+  }
+
+  return (
+    <>
+      <div className="overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-muted/50">
+              <TableHead className="h-12 text-center font-medium text-muted-foreground">
+                #
+              </TableHead>
+              <TableHead className="h-12 text-center font-medium text-muted-foreground">
+                {t('usage.labels.started')}
+              </TableHead>
+              <TableHead className="h-12 text-center font-medium text-muted-foreground">
+                {language === 'zh' ? '开始温度' : 'Start Temp'}
+              </TableHead>
+              <TableHead className="h-12 text-center font-medium text-muted-foreground">
+                {t('usage.labels.ended')}
+              </TableHead>
+              <TableHead className="h-12 text-center font-medium text-muted-foreground">
+                {language === 'zh' ? '结束温度' : 'End Temp'}
+              </TableHead>
+              <TableHead className="h-12 text-center font-medium text-muted-foreground">
+                {language === 'zh' ? '持续时间' : 'Duration'}
+              </TableHead>
+              <TableHead className="h-12 text-center font-medium text-muted-foreground">
+                {t('usage.labels.notes')}
+              </TableHead>
+              <TableHead className="h-12 text-center font-medium text-muted-foreground">
+                {t('quilts.table.status')}
+              </TableHead>
+              <TableHead className="h-12 text-center font-medium text-muted-foreground">
+                {t('quilts.views.actions')}
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {usageRecords.map((record, index) => (
+              <TableRow key={record.id}>
+                <TableCell className="text-center font-medium">
+                  {usageRecords.length - index}
+                </TableCell>
+                <TableCell className="text-center text-sm text-muted-foreground">
+                  {formatDate(record.startDate)}
+                </TableCell>
+                <TableCell className="text-center">
+                  <TemperatureDisplay date={record.startDate} compact />
+                </TableCell>
+                <TableCell className="text-center text-sm text-muted-foreground">
+                  {record.endDate ? formatDate(record.endDate) : '-'}
+                </TableCell>
+                <TableCell className="text-center">
+                  {record.endDate ? <TemperatureDisplay date={record.endDate} compact /> : '-'}
+                </TableCell>
+                <TableCell className="text-center text-sm text-muted-foreground">
+                  {formatDuration(record.startDate, record.endDate)}
+                </TableCell>
+                <TableCell className="text-center text-sm text-muted-foreground">
+                  {record.notes || '-'}
+                </TableCell>
+                <TableCell className="text-center">
+                  <Badge variant={!record.endDate ? 'default' : 'secondary'}>
+                    {!record.endDate
+                      ? t('usage.labels.active')
+                      : language === 'zh'
+                        ? '已完成'
+                        : 'Completed'}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-center">
+                  <EditUsageRecordDialog
+                    record={{
+                      id: record.id,
+                      quiltId: quiltId || record.quiltId || '',
+                      startedAt: record.startDate?.toString() || record.startedAt || '',
+                      endedAt: record.endDate?.toString() || record.endedAt || null,
+                      usageType: record.usageType || 'REGULAR',
+                      notes: record.notes || null,
+                      quiltName: quiltName,
+                      itemNumber: itemNumber || 0,
+                      color: '',
+                      isActive: !record.endDate,
+                    }}
+                    trigger={
+                      <Button variant="ghost" size="sm">
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                    }
+                  />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </>
+  );
+}
