@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, useParams } from 'next/navigation';
 import { useLanguage } from '@/lib/language-provider';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,21 +11,19 @@ import { useQuilt } from '@/hooks/useQuilts';
 import { useQuiltUsageRecords } from '@/hooks/useUsage';
 import { UsageHistoryTable } from '@/components/usage/UsageHistoryTable';
 
-interface PageProps {
-  params: {
-    quiltId: string;
-  };
-}
-
-export default function QuiltUsageDetailPage({ params }: PageProps) {
+export default function QuiltUsageDetailPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const params = useParams();
   const { t, language } = useLanguage();
   const from = searchParams.get('from') || 'usage';
 
+  // Get quiltId from URL params
+  const quiltId = params.quiltId as string;
+
   // Fetch quilt data
-  const { data: quiltData, isLoading: quiltLoading } = useQuilt(params.quiltId);
-  const { data: usageData, isLoading: usageLoading } = useQuiltUsageRecords(params.quiltId);
+  const { data: quiltData, isLoading: quiltLoading } = useQuilt(quiltId);
+  const { data: usageData, isLoading: usageLoading } = useQuiltUsageRecords(quiltId);
 
   const quilt = (quiltData as any)?.json || quiltData;
   const usageRecords = (usageData as any)?.json || usageData || [];
