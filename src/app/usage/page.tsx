@@ -1,11 +1,11 @@
 'use client';
 
-import { Suspense, useState, useEffect } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { Suspense, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/lib/language-provider';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
@@ -14,13 +14,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Skeleton } from '@/components/ui/skeleton';
 import { TableSkeleton } from '@/components/ui/skeleton-layouts';
 import {
   Clock,
   Package,
   BarChart3,
-  ArrowLeft,
   Eye,
   PackageOpen,
   Edit,
@@ -30,27 +28,11 @@ import {
 } from 'lucide-react';
 import { EmptyState } from '@/components/ui/empty-state';
 import { EditUsageRecordDialog } from '@/components/usage/EditUsageRecordDialog';
-import { TemperatureDisplay } from '@/components/usage/TemperatureDisplay';
-import { useUsageRecords, useOverallUsageStats, useQuiltUsageRecords } from '@/hooks/useUsage';
-import { useQuilts } from '@/hooks/useQuilts';
+import { useUsageRecords, useOverallUsageStats } from '@/hooks/useUsage';
 import { useAppSettings } from '@/hooks/useSettings';
 
-interface QuiltUsageDetail {
-  id: string;
-  name: string;
-  itemNumber: number;
-  color: string;
-  season: string;
-  currentStatus: string;
-}
-
 function UsageTrackingContent() {
-  const searchParams = useSearchParams();
   const router = useRouter();
-  const quiltIdParam = searchParams.get('quiltId');
-
-  const [selectedQuilt, setSelectedQuilt] = useState<QuiltUsageDetail | null>(null);
-  const [view, setView] = useState<'list' | 'detail'>('list');
   const [sortField, setSortField] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const { t, language } = useLanguage();
@@ -58,54 +40,15 @@ function UsageTrackingContent() {
   // Use tRPC hooks
   const { data: usageData, isLoading: loading } = useUsageRecords();
   const { data: statsData } = useOverallUsageStats();
-  const { data: quiltsData } = useQuilts();
   const { data: appSettings } = useAppSettings();
-  const { data: quiltUsageData, isLoading: detailLoading } = useQuiltUsageRecords(
-    selectedQuilt?.id || ''
-  );
 
   // Extract data with superjson wrapper handling
   const usageHistory = (usageData as any)?.json || usageData || [];
   const stats = (statsData as any)?.json || statsData || { total: 0, active: 0, completed: 0 };
-  const quilts = (quiltsData as any)?.json?.quilts || quiltsData?.quilts || [];
-  const selectedQuiltUsage = (quiltUsageData as any)?.json || quiltUsageData || [];
-
-  // Handle quiltId from URL parameter
-  useEffect(() => {
-    if (quiltIdParam && quilts.length > 0 && !selectedQuilt) {
-      const quilt = quilts.find((q: any) => q.id === quiltIdParam);
-      if (quilt) {
-        // Use setTimeout to avoid setState in effect warning
-        setTimeout(() => {
-          setSelectedQuilt({
-            id: quilt.id,
-            name: quilt.name,
-            itemNumber: quilt.itemNumber,
-            color: quilt.color,
-            season: quilt.season,
-            currentStatus: quilt.currentStatus,
-          });
-          setView('detail');
-        }, 0);
-      }
-    }
-  }, [quiltIdParam, quilts, selectedQuilt]);
-
-  const loadUsageHistory = () => {
-    // Refetch is handled by tRPC automatically
-  };
 
   const handleRecordClick = (record: any) => {
-    // Set selected quilt info and switch to detail view
-    setSelectedQuilt({
-      id: record.quiltId,
-      name: record.quiltName || 'Unknown',
-      itemNumber: record.itemNumber || 0,
-      color: record.color || '',
-      season: record.season || '',
-      currentStatus: record.currentStatus || '',
-    });
-    setView('detail');
+    // Navigate to detail page
+    router.push(`/usage/${record.quiltId}?from=usage`);
   };
 
   const handleRecordDoubleClick = (record: any) => {
@@ -130,13 +73,6 @@ function UsageTrackingContent() {
         // Do nothing
         break;
     }
-  };
-
-  const handleBackToList = () => {
-    setView('list');
-    setSelectedQuilt(null);
-    // Clear URL parameter to prevent re-entering detail view
-    router.push('/usage');
   };
 
   const formatDate = (dateString: string | null | undefined) => {
@@ -220,10 +156,10 @@ function UsageTrackingContent() {
             <Card key={i}>
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
-                  <Skeleton className="h-10 w-10 rounded-lg" />
+                  <div className="h-10 w-10 rounded-lg bg-muted animate-pulse" />
                   <div className="space-y-2 flex-1">
-                    <Skeleton className="h-6 w-16" />
-                    <Skeleton className="h-3 w-20" />
+                    <div className="h-6 w-16 bg-muted animate-pulse rounded" />
+                    <div className="h-3 w-20 bg-muted animate-pulse rounded" />
                   </div>
                 </div>
               </CardContent>
@@ -232,7 +168,7 @@ function UsageTrackingContent() {
         </div>
         {/* Table Skeleton */}
         <div className="rounded-md border p-4">
-          <TableSkeleton rows={6} columns={6} />
+          <TableSkeleton rows={6} columns={7} />
         </div>
       </div>
     );
@@ -240,24 +176,6 @@ function UsageTrackingContent() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      {view === 'detail' && selectedQuilt && (
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm" onClick={handleBackToList}>
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            {t('common.back')}
-          </Button>
-          <div>
-            <h1 className="text-2xl font-semibold">
-              {selectedQuilt.name} - {t('usage.details.title')}
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              {t('quilts.table.itemNumber')} #{selectedQuilt.itemNumber}
-            </p>
-          </div>
-        </div>
-      )}
-
       {/* Statistics */}
       <div className="grid grid-cols-3 gap-4">
         <Card>
@@ -304,238 +222,144 @@ function UsageTrackingContent() {
       </div>
 
       {/* Usage History Table */}
-      {view === 'list' ? (
-        <div className="rounded-md border">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-muted/50">
-                  <TableHead
-                    className="h-12 text-center font-medium text-muted-foreground cursor-pointer hover:bg-muted/80 transition-colors select-none"
-                    onClick={() => handleSort('itemNumber')}
-                  >
-                    <div className="flex items-center justify-center">
-                      {t('quilts.table.itemNumber')}
-                      {renderSortIcon('itemNumber')}
-                    </div>
-                  </TableHead>
-                  <TableHead
-                    className="h-12 text-center font-medium text-muted-foreground cursor-pointer hover:bg-muted/80 transition-colors select-none"
-                    onClick={() => handleSort('quiltName')}
-                  >
-                    <div className="flex items-center justify-center">
-                      {t('quilts.views.name')}
-                      {renderSortIcon('quiltName')}
-                    </div>
-                  </TableHead>
-                  <TableHead
-                    className="h-12 text-center font-medium text-muted-foreground cursor-pointer hover:bg-muted/80 transition-colors select-none"
-                    onClick={() => handleSort('startedAt')}
-                  >
-                    <div className="flex items-center justify-center">
-                      {t('usage.labels.started')}
-                      {renderSortIcon('startedAt')}
-                    </div>
-                  </TableHead>
-                  <TableHead
-                    className="h-12 text-center font-medium text-muted-foreground cursor-pointer hover:bg-muted/80 transition-colors select-none"
-                    onClick={() => handleSort('endedAt')}
-                  >
-                    <div className="flex items-center justify-center">
-                      {t('usage.labels.ended')}
-                      {renderSortIcon('endedAt')}
-                    </div>
-                  </TableHead>
-                  <TableHead
-                    className="h-12 text-center font-medium text-muted-foreground cursor-pointer hover:bg-muted/80 transition-colors select-none"
-                    onClick={() => handleSort('duration')}
-                  >
-                    <div className="flex items-center justify-center">
-                      {t('usage.labels.duration')}
-                      {renderSortIcon('duration')}
-                    </div>
-                  </TableHead>
-                  <TableHead
-                    className="h-12 text-center font-medium text-muted-foreground cursor-pointer hover:bg-muted/80 transition-colors select-none"
-                    onClick={() => handleSort('isActive')}
-                  >
-                    <div className="flex items-center justify-center">
-                      {t('quilts.table.status')}
-                      {renderSortIcon('isActive')}
-                    </div>
-                  </TableHead>
-                  <TableHead className="h-12 text-center font-medium text-muted-foreground">
-                    {t('quilts.views.actions')}
-                  </TableHead>
+      <div className="rounded-md border">
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-muted/50">
+                <TableHead
+                  className="h-12 text-center font-medium text-muted-foreground cursor-pointer hover:bg-muted/80 transition-colors select-none"
+                  onClick={() => handleSort('itemNumber')}
+                >
+                  <div className="flex items-center justify-center">
+                    {t('quilts.table.itemNumber')}
+                    {renderSortIcon('itemNumber')}
+                  </div>
+                </TableHead>
+                <TableHead
+                  className="h-12 text-center font-medium text-muted-foreground cursor-pointer hover:bg-muted/80 transition-colors select-none"
+                  onClick={() => handleSort('quiltName')}
+                >
+                  <div className="flex items-center justify-center">
+                    {t('quilts.views.name')}
+                    {renderSortIcon('quiltName')}
+                  </div>
+                </TableHead>
+                <TableHead
+                  className="h-12 text-center font-medium text-muted-foreground cursor-pointer hover:bg-muted/80 transition-colors select-none"
+                  onClick={() => handleSort('startedAt')}
+                >
+                  <div className="flex items-center justify-center">
+                    {t('usage.labels.started')}
+                    {renderSortIcon('startedAt')}
+                  </div>
+                </TableHead>
+                <TableHead
+                  className="h-12 text-center font-medium text-muted-foreground cursor-pointer hover:bg-muted/80 transition-colors select-none"
+                  onClick={() => handleSort('endedAt')}
+                >
+                  <div className="flex items-center justify-center">
+                    {t('usage.labels.ended')}
+                    {renderSortIcon('endedAt')}
+                  </div>
+                </TableHead>
+                <TableHead
+                  className="h-12 text-center font-medium text-muted-foreground cursor-pointer hover:bg-muted/80 transition-colors select-none"
+                  onClick={() => handleSort('duration')}
+                >
+                  <div className="flex items-center justify-center">
+                    {t('usage.labels.duration')}
+                    {renderSortIcon('duration')}
+                  </div>
+                </TableHead>
+                <TableHead
+                  className="h-12 text-center font-medium text-muted-foreground cursor-pointer hover:bg-muted/80 transition-colors select-none"
+                  onClick={() => handleSort('isActive')}
+                >
+                  <div className="flex items-center justify-center">
+                    {t('quilts.table.status')}
+                    {renderSortIcon('isActive')}
+                  </div>
+                </TableHead>
+                <TableHead className="h-12 text-center font-medium text-muted-foreground">
+                  {t('quilts.views.actions')}
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {sortedUsageHistory.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="h-24">
+                    <EmptyState
+                      icon={PackageOpen}
+                      title={t('usage.empty.title')}
+                      description={t('usage.empty.description')}
+                    />
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sortedUsageHistory.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="h-24">
-                      <EmptyState
-                        icon={PackageOpen}
-                        title={t('usage.empty.title')}
-                        description={t('usage.empty.description')}
-                      />
+              ) : (
+                sortedUsageHistory.map((record: any) => (
+                  <TableRow
+                    key={record.id}
+                    data-record-id={record.id}
+                    onDoubleClick={() => handleRecordDoubleClick(record)}
+                    className="cursor-pointer hover:bg-muted/50"
+                    title={language === 'zh' ? '双击执行操作' : 'Double-click to perform action'}
+                  >
+                    <TableCell className="text-center font-medium">#{record.itemNumber}</TableCell>
+                    <TableCell className="text-center font-medium">{record.quiltName}</TableCell>
+                    <TableCell className="text-center text-sm text-muted-foreground">
+                      {formatDate(record.startedAt)}
+                    </TableCell>
+                    <TableCell className="text-center text-sm text-muted-foreground">
+                      {record.endedAt ? formatDate(record.endedAt) : '-'}
+                    </TableCell>
+                    <TableCell className="text-center text-sm text-muted-foreground">
+                      {formatDuration(record.duration)}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Badge variant={record.isActive ? 'default' : 'secondary'}>
+                        {record.isActive ? t('usage.status.active') : t('usage.status.completed')}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <div className="flex items-center justify-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleRecordClick(record)}
+                          title={language === 'zh' ? '查看详情' : 'View Details'}
+                        >
+                          <Eye className="w-4 h-4" />
+                        </Button>
+                        <EditUsageRecordDialog
+                          record={{
+                            id: record.id,
+                            quiltId: record.quiltId,
+                            startedAt: record.startedAt,
+                            endedAt: record.endedAt,
+                            usageType: record.usageType,
+                            notes: record.notes,
+                            quiltName: record.quiltName,
+                            itemNumber: record.itemNumber,
+                            color: record.color,
+                            isActive: record.isActive,
+                          }}
+                          trigger={
+                            <Button variant="ghost" size="sm" data-action="edit">
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                          }
+                        />
+                      </div>
                     </TableCell>
                   </TableRow>
-                ) : (
-                  sortedUsageHistory.map((record: any) => (
-                    <TableRow
-                      key={record.id}
-                      data-record-id={record.id}
-                      onDoubleClick={() => handleRecordDoubleClick(record)}
-                      className="cursor-pointer"
-                      title={language === 'zh' ? '双击执行操作' : 'Double-click to perform action'}
-                    >
-                      <TableCell className="text-center font-medium">
-                        #{record.itemNumber}
-                      </TableCell>
-                      <TableCell className="text-center font-medium">{record.quiltName}</TableCell>
-                      <TableCell className="text-center text-sm text-muted-foreground">
-                        {formatDate(record.startedAt)}
-                      </TableCell>
-                      <TableCell className="text-center text-sm text-muted-foreground">
-                        {record.endedAt ? formatDate(record.endedAt) : '-'}
-                      </TableCell>
-                      <TableCell className="text-center text-sm text-muted-foreground">
-                        {formatDuration(record.duration)}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Badge variant={record.isActive ? 'default' : 'secondary'}>
-                          {record.isActive ? t('usage.status.active') : t('usage.status.completed')}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <div className="flex items-center justify-center gap-1">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleRecordClick(record)}
-                          >
-                            <Eye className="w-4 h-4" />
-                          </Button>
-                          <EditUsageRecordDialog
-                            record={{
-                              id: record.id,
-                              quiltId: record.quiltId,
-                              startedAt: record.startedAt,
-                              endedAt: record.endedAt,
-                              usageType: record.usageType,
-                              notes: record.notes,
-                              quiltName: record.quiltName,
-                              itemNumber: record.itemNumber,
-                              color: record.color,
-                              isActive: record.isActive,
-                            }}
-                            onUpdate={loadUsageHistory}
-                            onDelete={loadUsageHistory}
-                            trigger={
-                              <Button variant="ghost" size="sm" data-action="edit">
-                                <Edit className="w-4 h-4" />
-                              </Button>
-                            }
-                          />
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
+                ))
+              )}
+            </TableBody>
+          </Table>
         </div>
-      ) : (
-        /* Quilt Detail View */
-        <div className="rounded-md border">
-          {detailLoading ? (
-            <div className="p-12 text-center text-muted-foreground">{t('common.loading')}</div>
-          ) : selectedQuiltUsage.length === 0 ? (
-            <div className="p-12 text-center text-muted-foreground">
-              <Package className="w-12 h-12 mx-auto mb-3" />
-              <p>{t('usage.details.noHistory')}</p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-muted/50">
-                    <TableHead className="h-12 text-center font-medium text-muted-foreground">
-                      #
-                    </TableHead>
-                    <TableHead className="h-12 text-center font-medium text-muted-foreground">
-                      {t('usage.labels.started')}
-                    </TableHead>
-                    <TableHead className="h-12 text-center font-medium text-muted-foreground">
-                      {language === 'zh' ? '开始温度' : 'Start Temp'}
-                    </TableHead>
-                    <TableHead className="h-12 text-center font-medium text-muted-foreground">
-                      {t('usage.labels.ended')}
-                    </TableHead>
-                    <TableHead className="h-12 text-center font-medium text-muted-foreground">
-                      {language === 'zh' ? '结束温度' : 'End Temp'}
-                    </TableHead>
-                    <TableHead className="h-12 text-center font-medium text-muted-foreground">
-                      {language === 'zh' ? '持续时间' : 'Duration'}
-                    </TableHead>
-                    <TableHead className="h-12 text-center font-medium text-muted-foreground">
-                      {t('usage.labels.notes')}
-                    </TableHead>
-                    <TableHead className="h-12 text-center font-medium text-muted-foreground">
-                      {t('quilts.table.status')}
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {selectedQuiltUsage.map((usage: any, index: number) => (
-                    <TableRow key={usage.id}>
-                      <TableCell className="text-center font-medium">
-                        {selectedQuiltUsage.length - index}
-                      </TableCell>
-                      <TableCell className="text-center text-sm text-muted-foreground">
-                        {formatDate(usage.startDate?.toString())}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <TemperatureDisplay date={usage.startDate} compact />
-                      </TableCell>
-                      <TableCell className="text-center text-sm text-muted-foreground">
-                        {usage.endDate ? formatDate(usage.endDate.toString()) : '-'}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {usage.endDate ? <TemperatureDisplay date={usage.endDate} compact /> : '-'}
-                      </TableCell>
-                      <TableCell className="text-center text-sm text-muted-foreground">
-                        {usage.endDate
-                          ? formatDuration(
-                              Math.floor(
-                                (new Date(usage.endDate).getTime() -
-                                  new Date(usage.startDate).getTime()) /
-                                  (1000 * 60 * 60 * 24)
-                              )
-                            )
-                          : '-'}
-                      </TableCell>
-                      <TableCell className="text-center text-sm text-muted-foreground">
-                        {usage.notes || '-'}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Badge variant={!usage.endDate ? 'default' : 'secondary'}>
-                          {!usage.endDate
-                            ? t('usage.labels.active')
-                            : language === 'zh'
-                              ? '已完成'
-                              : 'Completed'}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-        </div>
-      )}
+      </div>
     </div>
   );
 }
@@ -545,7 +369,7 @@ export default function UsageTrackingPage() {
     <Suspense
       fallback={
         <div className="p-6">
-          <TableSkeleton rows={8} columns={6} />
+          <TableSkeleton rows={8} columns={7} />
         </div>
       }
     >
