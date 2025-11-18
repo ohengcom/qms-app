@@ -43,7 +43,10 @@
     "monitoring:up": "docker-compose -f docker-compose.prod.yml -f docker-compose.monitoring.yml up -d",
     "monitoring:down": "docker-compose -f docker-compose.prod.yml -f docker-compose.monitoring.yml down",
     "cleanup:check": "tsx scripts/cleanup-project.ts check",
-    "cleanup:auto": "tsx scripts/cleanup-project.ts auto"
+    "cleanup:auto": "tsx scripts/cleanup-project.ts auto",
+    "backup": "powershell -ExecutionPolicy Bypass -File scripts/backup-database.ps1",
+    "backup:compress": "powershell -ExecutionPolicy Bypass -File scripts/backup-database.ps1 -Compress",
+    "restore": "powershell -ExecutionPolicy Bypass -File scripts/restore-database.ps1"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
