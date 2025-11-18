@@ -5,7 +5,72 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - 2025-11-11
+## [1.0.1] - 2025-01-17
+
+### 🐛 Bug Fixes
+
+- Fixed quilt status change failure due to function signature mismatch
+- Fixed double-click behavior not working in quilt management page
+- Fixed usage detail page back button requiring two clicks
+- Fixed notification query SQL parameter count mismatch
+- Fixed duplicate close buttons in image viewer dialog
+- Fixed misaligned action columns in quilt list view
+- Fixed usage detail page unable to get quiltId parameter
+- Added missing translations for quilts.form.notes and quilts.form.purchaseDate
+
+### ✨ New Features
+
+- **Quilt Image Viewer**
+  - View main image and attachment images in full screen
+  - Navigate between images with arrow keys or buttons
+  - Thumbnail navigation bar for quick access
+  - Support ESC key to close dialog
+  - Display current image number and total count
+
+- **Independent Usage Detail Page**
+  - New route: `/usage/[quiltId]`
+  - Display quilt information card with complete details
+  - Show usage history table with temperature data
+  - Smart back button (returns to source page based on `from` parameter)
+  - Shareable direct links to specific quilt usage details
+
+- **Purchase Date Field**
+  - Added purchase date input in quilt add/edit form
+  - Date picker with future date restriction
+  - Properly loads and displays existing purchase dates
+  - Optional field, not required
+
+- **Data Backup & Restore**
+  - Complete backup and restore documentation
+  - PowerShell scripts for Windows (backup-database.ps1, restore-database.ps1)
+  - Support for compressed backups
+  - Automatic cleanup of old backups (keeps 30 most recent)
+  - Pre-restore automatic backup for safety
+  - npm scripts: `npm run backup`, `npm run backup:compress`, `npm run restore`
+
+### 🔄 Refactoring
+
+- **Simplified Usage Tracking Page**
+  - Removed embedded detail view (176 lines of code removed)
+  - All "view details" actions now navigate to independent detail page
+  - Cleaner code structure, improved maintainability
+  - Consistent user experience across the application
+  - Code reduced from 466 lines to 290 lines (38% reduction)
+
+### 📚 Documentation
+
+- Added comprehensive backup and restore guide (BACKUP_RESTORE_GUIDE.md)
+- Added quick start guide for backups (BACKUP_QUICK_START.md)
+- Updated README with new features
+
+### 🎯 Improvements
+
+- All quilts now show image view button for consistent UI alignment
+- Improved navigation flow: only one click needed to return from detail pages
+- Better URL structure for usage details
+- Enhanced user experience with clearer navigation paths
+
+## [1.0.0] - 2025-01-11
 
 ### 🎉 First Stable Release
 
