@@ -172,8 +172,31 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
       }
 
       onOpenChange(false);
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : '保存失败');
+    } catch (error: any) {
+      // Extract detailed error message from tRPC error
+      let errorMessage = t('language') === 'zh' ? '保存失败' : 'Failed to save';
+      let errorDescription = '';
+
+      if (error) {
+        // tRPC errors have message property
+        if (error.message) {
+          errorDescription = error.message;
+        }
+        // Check for nested data with more details
+        if (error.data?.zodError) {
+          const zodErrors = error.data.zodError.fieldErrors;
+          const firstField = Object.keys(zodErrors)[0];
+          if (firstField && zodErrors[firstField]?.[0]) {
+            errorDescription = `${firstField}: ${zodErrors[firstField][0]}`;
+          }
+        }
+      }
+
+      // Show error with details
+      toast.error(errorMessage, {
+        description: errorDescription || (t('language') === 'zh' ? '请检查输入后重试' : 'Please check your input and try again'),
+        duration: 5000,
+      });
     } finally {
       setLoading(false);
     }

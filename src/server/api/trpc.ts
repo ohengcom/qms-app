@@ -78,6 +78,7 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
 
 /**
  * Handle tRPC errors with proper logging and user-friendly messages
+ * Preserves original error message for better user feedback
  */
 export function handleTRPCError(
   error: unknown,
@@ -97,35 +98,55 @@ export function handleTRPCError(
   // Log the original error
   apiLogger.error(`tRPC ${operation} failed`, error as Error, context);
 
-  // Convert to user-friendly TRPCError
+  // Convert to user-friendly TRPCError while preserving the original message
   if (error instanceof Error) {
-    // Check for specific error types
-    if (error.message.includes('not found') || error.message.includes('NOT_FOUND')) {
+    const originalMessage = error.message;
+
+    // Check for specific error types and add context
+    if (originalMessage.includes('not found') || originalMessage.includes('NOT_FOUND')) {
       throw new TRPCError({
         code: 'NOT_FOUND',
-        message: 'Resource not found',
+        message: originalMessage || 'Resource not found',
         cause: error,
       });
     }
 
-    if (error.message.includes('unauthorized') || error.message.includes('UNAUTHORIZED')) {
+    if (originalMessage.includes('unauthorized') || originalMessage.includes('UNAUTHORIZED')) {
       throw new TRPCError({
         code: 'UNAUTHORIZED',
-        message: 'Unauthorized access',
+        message: originalMessage || 'Unauthorized access',
         cause: error,
       });
     }
 
-    if (error.message.includes('validation') || error.message.includes('invalid')) {
+    // For database errors, parse and extract meaningful message
+    if (originalMessage.includes('null value') || originalMessage.includes('violates not-null')) {
+      const fieldMatch = originalMessage.match(/column "(\w+)"/);
+      const fieldName = fieldMatch ? fieldMatch[1] : 'field';
       throw new TRPCError({
         code: 'BAD_REQUEST',
-        message: 'Invalid input data',
+        message: `Missing required field: ${fieldName}`,
         cause: error,
       });
     }
+
+    if (originalMessage.includes('validation') || originalMessage.includes('invalid')) {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: originalMessage || 'Invalid input data',
+        cause: error,
+      });
+    }
+
+    // For any other error, preserve the original message
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: originalMessage || 'An unexpected error occurred',
+      cause: error,
+    });
   }
 
-  // Default to internal server error
+  // Default to internal server error for unknown error types
   throw new TRPCError({
     code: 'INTERNAL_SERVER_ERROR',
     message: 'An unexpected error occurred',
