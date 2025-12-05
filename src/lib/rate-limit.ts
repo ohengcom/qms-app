@@ -1,5 +1,16 @@
 import { NextRequest } from 'next/server';
 
+/**
+ * Rate Limiting Module
+ *
+ * Supports two backends:
+ * 1. Upstash Redis (recommended for production/serverless)
+ *    - Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN env vars
+ *    - Free tier: 500K commands/month
+ * 2. In-memory (fallback for development or when Redis not configured)
+ *    - Note: Does not persist across serverless function instances
+ */
+
 interface RateLimitConfig {
   windowMs: number; // Time window in milliseconds
   maxRequests: number; // Maximum requests per window
@@ -14,21 +25,57 @@ interface RateLimitStore {
   };
 }
 
-// In-memory store for rate limiting (in production, use Redis or similar)
-const store: RateLimitStore = {};
+// Check if Upstash is configured
+const UPSTASH_URL = process.env.UPSTASH_REDIS_REST_URL;
+const UPSTASH_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN;
+const USE_UPSTASH = !!(UPSTASH_URL && UPSTASH_TOKEN);
 
-// Clean up expired entries every 5 minutes
-setInterval(
-  () => {
-    const now = Date.now();
-    Object.keys(store).forEach(key => {
-      if (store[key].resetTime < now) {
-        delete store[key];
-      }
+// In-memory store for rate limiting (fallback when Redis not configured)
+const memoryStore: RateLimitStore = {};
+
+// Clean up expired entries every 5 minutes (only for in-memory store)
+if (typeof setInterval !== 'undefined') {
+  setInterval(
+    () => {
+      const now = Date.now();
+      Object.keys(memoryStore).forEach(key => {
+        if (memoryStore[key].resetTime < now) {
+          delete memoryStore[key];
+        }
+      });
+    },
+    5 * 60 * 1000
+  );
+}
+
+/**
+ * Simple Upstash REST API client (no extra dependencies needed)
+ */
+async function upstashCommand(command: string[]): Promise<any> {
+  if (!UPSTASH_URL || !UPSTASH_TOKEN) return null;
+
+  try {
+    const response = await fetch(`${UPSTASH_URL}`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${UPSTASH_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(command),
     });
-  },
-  5 * 60 * 1000
-);
+
+    if (!response.ok) {
+      console.warn('[RateLimit] Upstash request failed:', response.status);
+      return null;
+    }
+
+    const data = await response.json();
+    return data.result;
+  } catch (error) {
+    console.warn('[RateLimit] Upstash error, falling back to memory:', error);
+    return null;
+  }
+}
 
 export class RateLimiter {
   private config: RateLimitConfig;
@@ -45,20 +92,80 @@ export class RateLimiter {
   }> {
     const key = this.generateKey(request);
     const now = Date.now();
+    const windowSeconds = Math.ceil(this.config.windowMs / 1000);
 
-    // Get or create entry
-    let entry = store[key];
+    // Try Upstash first if configured
+    if (USE_UPSTASH) {
+      const upstashResult = await this.checkUpstash(key, windowSeconds, now);
+      if (upstashResult) return upstashResult;
+    }
+
+    // Fall back to in-memory
+    return this.checkMemory(key, now);
+  }
+
+  private async checkUpstash(
+    key: string,
+    windowSeconds: number,
+    now: number
+  ): Promise<{
+    allowed: boolean;
+    remaining: number;
+    resetTime: number;
+    retryAfter?: number;
+  } | null> {
+    try {
+      // Use INCR with EXPIRE for atomic increment
+      const count = await upstashCommand(['INCR', key]);
+      if (count === null) return null;
+
+      // Set expiry on first request
+      if (count === 1) {
+        await upstashCommand(['EXPIRE', key, windowSeconds.toString()]);
+      }
+
+      // Get TTL for reset time
+      const ttl = await upstashCommand(['TTL', key]);
+      const resetTime = now + (ttl > 0 ? ttl * 1000 : this.config.windowMs);
+
+      if (count > this.config.maxRequests) {
+        return {
+          allowed: false,
+          remaining: 0,
+          resetTime,
+          retryAfter: ttl > 0 ? ttl : windowSeconds,
+        };
+      }
+
+      return {
+        allowed: true,
+        remaining: this.config.maxRequests - count,
+        resetTime,
+      };
+    } catch {
+      return null;
+    }
+  }
+
+  private checkMemory(
+    key: string,
+    now: number
+  ): {
+    allowed: boolean;
+    remaining: number;
+    resetTime: number;
+    retryAfter?: number;
+  } {
+    let entry = memoryStore[key];
 
     if (!entry || entry.resetTime < now) {
-      // Create new entry or reset expired entry
       entry = {
         count: 0,
         resetTime: now + this.config.windowMs,
       };
-      store[key] = entry;
+      memoryStore[key] = entry;
     }
 
-    // Check if limit exceeded
     if (entry.count >= this.config.maxRequests) {
       return {
         allowed: false,
@@ -68,7 +175,6 @@ export class RateLimiter {
       };
     }
 
-    // Increment counter
     entry.count++;
 
     return {
@@ -79,10 +185,8 @@ export class RateLimiter {
   }
 
   private generateKey(request: NextRequest): string {
-    // Use IP address as the key (in production, consider user ID for authenticated requests)
     const forwarded = request.headers.get('x-forwarded-for');
     const ip = forwarded ? forwarded.split(',')[0] : request.headers.get('x-real-ip') || 'unknown';
-
     return `rate_limit:${ip}:${request.nextUrl.pathname}`;
   }
 }
@@ -91,31 +195,31 @@ export class RateLimiter {
 export const rateLimiters = {
   // General API endpoints - 100 requests per minute
   api: new RateLimiter({
-    windowMs: 60 * 1000, // 1 minute
+    windowMs: 60 * 1000,
     maxRequests: 100,
   }),
 
   // Authentication endpoints - 5 requests per minute
   auth: new RateLimiter({
-    windowMs: 60 * 1000, // 1 minute
+    windowMs: 60 * 1000,
     maxRequests: 5,
   }),
 
   // File upload endpoints - 10 requests per minute
   upload: new RateLimiter({
-    windowMs: 60 * 1000, // 1 minute
+    windowMs: 60 * 1000,
     maxRequests: 10,
   }),
 
   // Database operations - 50 requests per minute
   database: new RateLimiter({
-    windowMs: 60 * 1000, // 1 minute
+    windowMs: 60 * 1000,
     maxRequests: 50,
   }),
 
   // Health check - 30 requests per minute
   health: new RateLimiter({
-    windowMs: 60 * 1000, // 1 minute
+    windowMs: 60 * 1000,
     maxRequests: 30,
   }),
 };
@@ -148,13 +252,18 @@ export async function withRateLimit(
     );
   }
 
-  // Execute the handler
   const response = await handler();
 
-  // Add rate limit headers to successful responses
   response.headers.set('X-RateLimit-Limit', limiter['config'].maxRequests.toString());
   response.headers.set('X-RateLimit-Remaining', result.remaining.toString());
   response.headers.set('X-RateLimit-Reset', new Date(result.resetTime).toISOString());
 
   return response;
+}
+
+/**
+ * Check if Upstash Redis is configured
+ */
+export function isUpstashConfigured(): boolean {
+  return USE_UPSTASH;
 }

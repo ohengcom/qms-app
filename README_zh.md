@@ -52,7 +52,7 @@
 
 ### 前端
 
-- **框架**: Next.js 16.0.0 (App Router)
+- **框架**: Next.js 16.0.7 (App Router)
 - **语言**: TypeScript 5.6.3
 - **样式**: Tailwind CSS 4
 - **UI 组件**: Radix UI

@@ -60,7 +60,7 @@ A modern Next.js application with Neon PostgreSQL that transforms simple Excel-b
 
 ### Frontend
 
-- **Framework**: Next.js 16.0.0 (App Router)
+- **Framework**: Next.js 16.0.7 (App Router)
 - **Language**: TypeScript 5.6.3
 - **Styling**: Tailwind CSS 4
 - **UI Components**: Radix UI
@@ -457,8 +457,8 @@ For questions or issues, please open an issue on GitHub.
 
 ---
 
-**Version**: 0.5.0  
+**Version**: 1.0.1  
 **Status**: ✅ Production Ready  
-**Last Updated**: 2025-11-10
+**Last Updated**: 2025-12-05
 
 Made with ❤️ for better home organization
