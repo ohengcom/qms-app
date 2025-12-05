@@ -103,20 +103,17 @@ const baseQuiltSchemaObject = z.object({
 
 // Create Quilt Schema with refinements
 export const createQuiltSchema = baseQuiltSchemaObject
-  .refine(
-    data => {
-      // Validate weight is appropriate for the season
-      const range = SEASON_WEIGHT_RANGES[data.season];
-      return data.weightGrams >= range.min && data.weightGrams <= range.max;
-    },
-    (data: z.infer<typeof baseQuiltSchemaObject>) => {
-      const range = SEASON_WEIGHT_RANGES[data.season];
-      return {
+  .superRefine((data, ctx) => {
+    // Validate weight is appropriate for the season
+    const range = SEASON_WEIGHT_RANGES[data.season];
+    if (data.weightGrams < range.min || data.weightGrams > range.max) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
         message: `Weight should be between ${range.min}g and ${range.max}g for ${data.season} season`,
         path: ['weightGrams'],
-      };
+      });
     }
-  )
+  })
   .refine(
     data => {
       // Validate dimensions are reasonable (length should typically be >= width)
