@@ -4,6 +4,7 @@ import { persist } from 'zustand/middleware';
 export interface Notification {
   id: string;
   type: 'success' | 'error' | 'info' | 'warning';
+  title: string;
   message: string;
   description?: string;
   timestamp: number;
@@ -13,6 +14,7 @@ export interface Notification {
 interface NotificationStore {
   notifications: Notification[];
   addNotification: (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => void;
+  removeNotification: (id: string) => void;
   markAsRead: (id: string) => void;
   markAllAsRead: () => void;
   clearAll: () => void;
@@ -40,6 +42,12 @@ export const useNotificationStore = create<NotificationStore>()(
       markAsRead: id => {
         set(state => ({
           notifications: state.notifications.map(n => (n.id === id ? { ...n, read: true } : n)),
+        }));
+      },
+
+      removeNotification: id => {
+        set(state => ({
+          notifications: state.notifications.filter(n => n.id !== id),
         }));
       },
 

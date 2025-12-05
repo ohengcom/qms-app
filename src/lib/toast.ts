@@ -26,7 +26,8 @@ export const toast = {
     // Add to notification history
     useNotificationStore.getState().addNotification({
       type: 'success',
-      message,
+      title: message,
+      message: description || message,
       description,
     });
   },
@@ -42,7 +43,8 @@ export const toast = {
     // Add to notification history
     useNotificationStore.getState().addNotification({
       type: 'error',
-      message,
+      title: message,
+      message: description || message,
       description,
     });
   },
@@ -58,7 +60,8 @@ export const toast = {
     // Add to notification history
     useNotificationStore.getState().addNotification({
       type: 'info',
-      message,
+      title: message,
+      message: description || message,
       description,
     });
   },
@@ -74,7 +77,8 @@ export const toast = {
     // Add to notification history
     useNotificationStore.getState().addNotification({
       type: 'warning',
-      message,
+      title: message,
+      message: description || message,
       description,
     });
   },
