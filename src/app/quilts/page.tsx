@@ -198,8 +198,11 @@ export default function QuiltsPage() {
     try {
       await deleteQuiltMutation.mutateAsync({ id: quilt.id });
       toast.success(t('toasts.quiltDeleted'));
-    } catch {
-      toast.error(t('toasts.failedToDeleteQuilt'));
+    } catch (error: any) {
+      toast.error(
+        t('language') === 'zh' ? '删除失败' : 'Failed to delete',
+        error?.message || (t('language') === 'zh' ? '请重试' : 'Please try again')
+      );
     }
   };
 
@@ -219,8 +222,11 @@ export default function QuiltsPage() {
       setSelectedIds(new Set());
       setIsSelectMode(false);
       toast.success(t('toasts.quiltDeleted'));
-    } catch {
-      toast.error(t('toasts.failedToDeleteQuilt'));
+    } catch (error: any) {
+      toast.error(
+        t('language') === 'zh' ? '删除失败' : 'Failed to delete',
+        error?.message || (t('language') === 'zh' ? '请重试' : 'Please try again')
+      );
     }
   };
 
@@ -271,8 +277,13 @@ export default function QuiltsPage() {
         toast.success(t('toasts.quiltAdded'));
       }
       setQuiltDialogOpen(false);
-    } catch {
-      toast.error(t('toasts.failedToSaveQuilt'));
+    } catch (error: any) {
+      // Extract error message from tRPC error
+      const errorMessage = error?.message || (t('language') === 'zh' ? '未知错误' : 'Unknown error');
+      toast.error(
+        t('language') === 'zh' ? '保存失败' : 'Failed to save',
+        errorMessage
+      );
     }
   };
 
@@ -310,9 +321,12 @@ export default function QuiltsPage() {
 
       toast.success(t('toasts.statusUpdated'));
       setStatusDialogOpen(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Status change error:', error);
-      toast.error(t('toasts.failedToUpdateStatus'));
+      toast.error(
+        t('language') === 'zh' ? '状态更新失败' : 'Failed to update status',
+        error?.message || (t('language') === 'zh' ? '请重试' : 'Please try again')
+      );
     }
   };
 
