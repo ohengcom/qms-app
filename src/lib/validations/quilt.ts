@@ -49,7 +49,7 @@ const baseQuiltSchemaObject = z.object({
     .trim()
     .optional(), // Optional for create, will be auto-generated
   season: z.enum(['WINTER', 'SPRING_AUTUMN', 'SUMMER'], {
-    errorMap: () => ({ message: 'Invalid season. Must be WINTER, SPRING_AUTUMN, or SUMMER' }),
+    message: 'Invalid season. Must be WINTER, SPRING_AUTUMN, or SUMMER',
   }),
   lengthCm: z
     .number()
@@ -90,7 +90,7 @@ const baseQuiltSchemaObject = z.object({
   packagingInfo: z.string().max(200, 'Packaging info too long (max 200 characters)').optional(),
   currentStatus: z
     .enum(['IN_USE', 'MAINTENANCE', 'STORAGE'], {
-      errorMap: () => ({ message: 'Invalid status' }),
+      message: 'Invalid status',
     })
     .optional()
     .default('STORAGE'),
@@ -142,7 +142,7 @@ export const createUsagePeriodSchema = z
     seasonUsed: z.string().max(50).optional(),
     usageType: z
       .enum(['REGULAR', 'GUEST', 'SPECIAL_OCCASION', 'SEASONAL_ROTATION'], {
-        errorMap: () => ({ message: 'Invalid usage type' }),
+        message: 'Invalid usage type',
       })
       .optional()
       .default('REGULAR'),
@@ -196,7 +196,7 @@ export const createCurrentUsageSchema = z
     expectedEndDate: z.date().optional(),
     usageType: z
       .enum(['REGULAR', 'GUEST', 'SPECIAL_OCCASION', 'SEASONAL_ROTATION'], {
-        errorMap: () => ({ message: 'Invalid usage type' }),
+        message: 'Invalid usage type',
       })
       .optional()
       .default('REGULAR'),
