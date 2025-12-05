@@ -109,7 +109,7 @@ export const createQuiltSchema = baseQuiltSchemaObject
       const range = SEASON_WEIGHT_RANGES[data.season];
       return data.weightGrams >= range.min && data.weightGrams <= range.max;
     },
-    data => {
+    (data: z.infer<typeof baseQuiltSchemaObject>) => {
       const range = SEASON_WEIGHT_RANGES[data.season];
       return {
         message: `Weight should be between ${range.min}g and ${range.max}g for ${data.season} season`,
