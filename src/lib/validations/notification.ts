@@ -20,7 +20,7 @@ export const createNotificationSchema = z.object({
   message: z.string().min(1),
   quiltId: z.string().uuid().optional(),
   actionUrl: z.string().max(500).optional(),
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.string(), z.any()).optional(),
 });
 
 export const updateNotificationSchema = z.object({
