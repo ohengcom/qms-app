@@ -1,14 +1,13 @@
 /**
  * Weather Widget Component
  *
- * Displays current weather and quilt recommendations
+ * Displays current weather information
  */
 
 'use client';
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -23,16 +22,14 @@ import {
   MapPin,
 } from 'lucide-react';
 import { formatTemperature, getTemperatureDescription } from '@/lib/weather-service';
-import type { CurrentWeather, QuiltRecommendation } from '@/types/weather';
+import type { CurrentWeather } from '@/types/weather';
 
 interface WeatherWidgetProps {
   className?: string;
-  showRecommendations?: boolean;
 }
 
-export function WeatherWidget({ className, showRecommendations = true }: WeatherWidgetProps) {
+export function WeatherWidget({ className }: WeatherWidgetProps) {
   const [weather, setWeather] = useState<CurrentWeather | null>(null);
-  const [recommendations, setRecommendations] = useState<QuiltRecommendation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -49,11 +46,7 @@ export function WeatherWidget({ className, showRecommendations = true }: Weather
 
       const data = await response.json();
       setWeather(data.current);
-
-      if (showRecommendations && data.recommendations) {
-        setRecommendations(data.recommendations);
-      }
-    } catch (err) {
+    } catch {
       setError('获取天气数据失败');
     } finally {
       setIsLoading(false);
@@ -62,7 +55,7 @@ export function WeatherWidget({ className, showRecommendations = true }: Weather
 
   useEffect(() => {
     fetchWeatherData();
-  }, [showRecommendations]);
+  }, []);
 
   const getWeatherIcon = (iconCode: string) => {
     if (iconCode.includes('01')) return <Sun className="w-8 h-8 text-yellow-500" />;
@@ -72,12 +65,6 @@ export function WeatherWidget({ className, showRecommendations = true }: Weather
       return <CloudRain className="w-8 h-8 text-blue-500" />;
     if (iconCode.includes('13')) return <Snowflake className="w-8 h-8 text-blue-200" />;
     return <Cloud className="w-8 h-8 text-gray-500" />;
-  };
-
-  const getConfidenceColor = (confidence: number) => {
-    if (confidence >= 0.8) return 'bg-green-500';
-    if (confidence >= 0.6) return 'bg-yellow-500';
-    return 'bg-orange-500';
   };
 
   if (isLoading) {
@@ -189,37 +176,6 @@ export function WeatherWidget({ className, showRecommendations = true }: Weather
             </div>
           </div>
         </div>
-
-        {/* Quilt Recommendations */}
-        {showRecommendations && recommendations.length > 0 && (
-          <div className="border-t pt-4">
-            <h4 className="text-sm font-medium mb-3 flex items-center gap-2">
-              <span>🛏️</span>
-              被子推荐
-            </h4>
-            <div className="space-y-2">
-              {recommendations.map(rec => (
-                <div
-                  key={rec.quiltId}
-                  className="flex items-center justify-between p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-medium text-sm">{rec.quiltName}</span>
-                      <Badge
-                        variant="secondary"
-                        className={`${getConfidenceColor(rec.confidence)} text-white text-xs`}
-                      >
-                        {Math.round(rec.confidence * 100)}%
-                      </Badge>
-                    </div>
-                    <p className="text-xs text-gray-600">{rec.reason}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Last Updated */}
         <div className="text-xs text-gray-400 text-center">数据来源：Open-Meteo</div>

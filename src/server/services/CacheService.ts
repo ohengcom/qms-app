@@ -100,7 +100,7 @@ export class CacheService {
     let expiredCount = 0;
     let totalSize = 0;
 
-    for (const [key, entry] of this.cache.entries()) {
+    for (const [_key, entry] of this.cache.entries()) {
       totalSize++;
       if (now - entry.timestamp > entry.ttl) {
         expiredCount++;
@@ -145,7 +145,7 @@ export class CacheService {
       try {
         const { key, data, ttl } = await fn();
         this.set(key, data, ttl);
-      } catch (error) {
+      } catch {
         // Cache warm-up failed - continue without cache
       }
     });

@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/neon';
+import { sql } from '@/lib/neon';
 import { withRateLimit, rateLimiters } from '@/lib/rate-limit';
 
 export async function GET(request: NextRequest) {
   return withRateLimit(request, rateLimiters.health, async () => {
     try {
       // Check database connection
-      await db.testConnection();
+      await sql`SELECT 1 as test`;
 
       // Check Redis connection (if using Redis)
       // You can add Redis health check here if needed

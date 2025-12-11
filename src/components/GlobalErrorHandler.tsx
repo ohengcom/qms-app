@@ -5,11 +5,11 @@ import { useEffect } from 'react';
 export function GlobalErrorHandler() {
   useEffect(() => {
     // Setup global error handlers
-    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+    const handleUnhandledRejection = (_event: PromiseRejectionEvent) => {
       // Unhandled promise rejection - handled by error boundary
     };
 
-    const handleError = (event: ErrorEvent) => {
+    const handleError = (_event: ErrorEvent) => {
       // Global error - handled by error boundary
     };
 

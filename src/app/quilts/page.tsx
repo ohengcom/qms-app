@@ -103,37 +103,26 @@ export default function QuiltsPage() {
       result = result.filter(quilt => filters.materials.includes(quilt.fillMaterial));
     }
     if (filters.minWeight !== undefined) {
-      result = result.filter(quilt => quilt.weightGrams >= filters.minWeight!);
+      result = result.filter(quilt => (quilt.weightGrams ?? 0) >= filters.minWeight!);
     }
     if (filters.maxWeight !== undefined) {
-      result = result.filter(quilt => quilt.weightGrams <= filters.maxWeight!);
+      result = result.filter(quilt => (quilt.weightGrams ?? 0) <= filters.maxWeight!);
     }
 
     // Sorting
     if (sortField) {
       result.sort((a, b) => {
         if (sortField === 'weight') {
-          return sortDirection === 'asc'
-            ? a.weightGrams - b.weightGrams
-            : b.weightGrams - a.weightGrams;
+          const aWeight = a.weightGrams ?? 0;
+          const bWeight = b.weightGrams ?? 0;
+          return sortDirection === 'asc' ? aWeight - bWeight : bWeight - aWeight;
         }
 
         if (sortField === 'size') {
-          // Sort by area (length × width) if available, otherwise by size string
+          // Sort by area (length × width)
           const aArea = a.lengthCm && a.widthCm ? a.lengthCm * a.widthCm : 0;
           const bArea = b.lengthCm && b.widthCm ? b.lengthCm * b.widthCm : 0;
-
-          if (aArea !== 0 && bArea !== 0) {
-            return sortDirection === 'asc' ? aArea - bArea : bArea - aArea;
-          }
-
-          // Fallback to string comparison
-          const aStr = String(a.size || '').toLowerCase();
-          const bStr = String(b.size || '').toLowerCase();
-
-          if (aStr < bStr) return sortDirection === 'asc' ? -1 : 1;
-          if (aStr > bStr) return sortDirection === 'asc' ? 1 : -1;
-          return 0;
+          return sortDirection === 'asc' ? aArea - bArea : bArea - aArea;
         }
 
         const aValue = a[sortField];
@@ -279,11 +268,9 @@ export default function QuiltsPage() {
       setQuiltDialogOpen(false);
     } catch (error: any) {
       // Extract error message from tRPC error
-      const errorMessage = error?.message || (t('language') === 'zh' ? '未知错误' : 'Unknown error');
-      toast.error(
-        t('language') === 'zh' ? '保存失败' : 'Failed to save',
-        errorMessage
-      );
+      const errorMessage =
+        error?.message || (t('language') === 'zh' ? '未知错误' : 'Unknown error');
+      toast.error(t('language') === 'zh' ? '保存失败' : 'Failed to save', errorMessage);
     }
   };
 

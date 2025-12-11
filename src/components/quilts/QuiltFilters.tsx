@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+// Card components removed - not used in this file
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -27,13 +27,11 @@ import type { QuiltFiltersInput } from '@/lib/validations/quilt';
 import { cn } from '@/lib/utils';
 import {
   Search,
-  Filter,
   X,
   SlidersHorizontal,
   Snowflake,
   Sun,
   Leaf,
-  Package,
   MapPin,
   Building,
   Weight,
@@ -53,7 +51,6 @@ const SEASON_OPTIONS = [
 ];
 
 const STATUS_OPTIONS = [
-  { value: QuiltStatus.AVAILABLE, label: 'Available', color: 'text-green-600' },
   { value: QuiltStatus.IN_USE, label: 'In Use', color: 'text-blue-600' },
   { value: QuiltStatus.STORAGE, label: 'Storage', color: 'text-gray-600' },
   { value: QuiltStatus.MAINTENANCE, label: 'Maintenance', color: 'text-red-600' },

@@ -1,13 +1,11 @@
 /**
  * Weather API Route
  *
- * Fetches current weather and provides quilt recommendations
+ * Fetches current weather and forecast data
  */
 
 import { NextResponse } from 'next/server';
 import { getCurrentWeather, getWeatherForecast } from '@/lib/weather-service';
-import { recommendQuilts } from '@/lib/quilt-recommendation';
-import { quiltRepository } from '@/lib/repositories/quilt.repository';
 
 // Default location: Shanghai, China
 const DEFAULT_LATITUDE = 31.2304;
@@ -20,7 +18,6 @@ export async function GET(request: Request) {
     const latitude = parseFloat(searchParams.get('lat') || String(DEFAULT_LATITUDE));
     const longitude = parseFloat(searchParams.get('lon') || String(DEFAULT_LONGITUDE));
     const locationName = searchParams.get('location') || DEFAULT_LOCATION_NAME;
-    const includeRecommendations = searchParams.get('recommendations') !== 'false';
 
     // Validate parameters
     if (isNaN(latitude) || isNaN(longitude)) {
@@ -33,30 +30,10 @@ export async function GET(request: Request) {
     // Fetch forecast
     const forecast = await getWeatherForecast(latitude, longitude);
 
-    // Get quilt recommendations if requested
-    let recommendations: any[] = [];
-    if (includeRecommendations) {
-      try {
-        const quilts = await quiltRepository.findAll({});
-        // Map quilts to the format expected by recommendQuilts
-        const quiltData = quilts.map(q => ({
-          id: q.id,
-          name: q.name,
-          type: q.fillMaterial || '',
-          season: q.season,
-          status: q.currentStatus,
-        }));
-        recommendations = await recommendQuilts(currentWeather, quiltData);
-      } catch (error) {
-        // Continue without recommendations
-      }
-    }
-
     return NextResponse.json({
       success: true,
       current: currentWeather,
       forecast,
-      recommendations,
       location: {
         name: locationName,
         latitude,

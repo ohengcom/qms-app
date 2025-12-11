@@ -174,7 +174,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
       onOpenChange(false);
     } catch (error: any) {
       // Extract detailed error message from tRPC error
-      let errorMessage = t('language') === 'zh' ? '保存失败' : 'Failed to save';
+      const errorMessage = t('language') === 'zh' ? '保存失败' : 'Failed to save';
       let errorDescription = '';
 
       if (error) {
@@ -194,7 +194,9 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
 
       // Show error with details
       toast.error(errorMessage, {
-        description: errorDescription || (t('language') === 'zh' ? '请检查输入后重试' : 'Please check your input and try again'),
+        description:
+          errorDescription ||
+          (t('language') === 'zh' ? '请检查输入后重试' : 'Please check your input and try again'),
         duration: 5000,
       });
     } finally {

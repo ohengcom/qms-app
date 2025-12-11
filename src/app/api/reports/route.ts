@@ -81,7 +81,6 @@ async function generateInventoryReport() {
     summary: {
       totalQuilts: quilts.length,
       byStatus: {
-        available: quilts.filter(q => q.current_status === 'AVAILABLE').length,
         inUse: quilts.filter(q => q.current_status === 'IN_USE').length,
         storage: quilts.filter(q => q.current_status === 'STORAGE').length,
         maintenance: quilts.filter(q => q.current_status === 'MAINTENANCE').length,
@@ -191,7 +190,6 @@ async function generateAnalyticsReport() {
     inventory: {
       total: quilts.length,
       statusDistribution: {
-        available: quilts.filter(q => q.current_status === 'AVAILABLE').length,
         inUse: quilts.filter(q => q.current_status === 'IN_USE').length,
         storage: quilts.filter(q => q.current_status === 'STORAGE').length,
         maintenance: quilts.filter(q => q.current_status === 'MAINTENANCE').length,
@@ -237,7 +235,6 @@ async function generateStatusReport() {
 
   return {
     summary: {
-      available: quilts.filter(q => q.current_status === 'AVAILABLE').length,
       inUse: quilts.filter(q => q.current_status === 'IN_USE').length,
       storage: quilts.filter(q => q.current_status === 'STORAGE').length,
       maintenance: quilts.filter(q => q.current_status === 'MAINTENANCE').length,

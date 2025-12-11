@@ -1,19 +1,11 @@
 'use client';
 
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import type { DashboardStatsInput, AnalyticsDateRangeInput } from '@/lib/validations/quilt';
+import { api } from '@/lib/trpc';
+import type { DashboardStatsInput } from '@/lib/validations/quilt';
 
 export function useDashboardStats(options?: DashboardStatsInput) {
-  return useQuery({
-    queryKey: ['dashboard'],
-    queryFn: async () => {
-      const response = await fetch('/api/dashboard/stats');
-      if (!response.ok) {
-        throw new Error(`Failed to fetch dashboard stats: ${response.status}`);
-      }
-      return response.json();
-    },
+  return api.dashboard.getStats.useQuery(options, {
     refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
     staleTime: 2 * 60 * 1000, // Consider data stale after 2 minutes
   });

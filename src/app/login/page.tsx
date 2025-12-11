@@ -45,7 +45,7 @@ function LoginForm() {
         // Show error message
         setError(data.message || t('auth.invalidPassword'));
       }
-    } catch (err) {
+    } catch {
       setError('An error occurred. Please try again.');
     } finally {
       setIsLoading(false);

@@ -196,7 +196,7 @@ export function ImportResults({
       {/* Next Steps */}
       <Card>
         <CardHeader>
-          <CardTitle>What's Next?</CardTitle>
+          <CardTitle>What&apos;s Next?</CardTitle>
           <CardDescription>Choose your next action</CardDescription>
         </CardHeader>
         <CardContent>

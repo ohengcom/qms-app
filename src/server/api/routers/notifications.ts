@@ -1,7 +1,8 @@
 /**
  * Notifications tRPC Router
- * 
- * Handles all notification-related API operations
+ *
+ * Simplified notification system - handles basic notification operations
+ * Complex rule engine removed as it was over-engineered for a family app
  */
 
 import { z } from 'zod';
@@ -14,44 +15,34 @@ import {
   deleteNotificationSchema,
   markAllAsReadSchema,
 } from '@/lib/validations/notification';
-import {
-  runAllNotificationChecks,
-  checkMaintenanceReminders,
-  checkDisposalSuggestions,
-  cleanupOldNotifications,
-} from '@/lib/notification-checker';
 
 export const notificationsRouter = createTRPCRouter({
   /**
    * Get all notifications with optional filtering
    */
-  getAll: publicProcedure
-    .input(notificationFilterSchema.optional())
-    .query(async ({ input }) => {
-      try {
-        const notifications = await notificationRepository.findAll(input);
-        return notifications;
-      } catch (error) {
-        return handleTRPCError(error, 'Failed to fetch notifications');
-      }
-    }),
+  getAll: publicProcedure.input(notificationFilterSchema.optional()).query(async ({ input }) => {
+    try {
+      const notifications = await notificationRepository.findAll(input);
+      return notifications;
+    } catch (error) {
+      return handleTRPCError(error, 'Failed to fetch notifications');
+    }
+  }),
 
   /**
    * Get notification by ID
    */
-  getById: publicProcedure
-    .input(z.object({ id: z.string().uuid() }))
-    .query(async ({ input }) => {
-      try {
-        const notification = await notificationRepository.findById(input.id);
-        if (!notification) {
-          throw new Error('Notification not found');
-        }
-        return notification;
-      } catch (error) {
-        return handleTRPCError(error, 'Failed to fetch notification');
+  getById: publicProcedure.input(z.object({ id: z.string().uuid() })).query(async ({ input }) => {
+    try {
+      const notification = await notificationRepository.findById(input.id);
+      if (!notification) {
+        throw new Error('Notification not found');
       }
-    }),
+      return notification;
+    } catch (error) {
+      return handleTRPCError(error, 'Failed to fetch notification');
+    }
+  }),
 
   /**
    * Get unread notification count
@@ -68,33 +59,29 @@ export const notificationsRouter = createTRPCRouter({
   /**
    * Create a new notification
    */
-  create: publicProcedure
-    .input(createNotificationSchema)
-    .mutation(async ({ input }) => {
-      try {
-        const notification = await notificationRepository.create(input);
-        return notification;
-      } catch (error) {
-        return handleTRPCError(error, 'Failed to create notification');
-      }
-    }),
+  create: publicProcedure.input(createNotificationSchema).mutation(async ({ input }) => {
+    try {
+      const notification = await notificationRepository.create(input);
+      return notification;
+    } catch (error) {
+      return handleTRPCError(error, 'Failed to create notification');
+    }
+  }),
 
   /**
    * Mark notification as read
    */
-  markAsRead: publicProcedure
-    .input(updateNotificationSchema)
-    .mutation(async ({ input }) => {
-      try {
-        const notification = await notificationRepository.markAsRead(input.id);
-        if (!notification) {
-          throw new Error('Notification not found');
-        }
-        return notification;
-      } catch (error) {
-        return handleTRPCError(error, 'Failed to mark notification as read');
+  markAsRead: publicProcedure.input(updateNotificationSchema).mutation(async ({ input }) => {
+    try {
+      const notification = await notificationRepository.markAsRead(input.id);
+      if (!notification) {
+        throw new Error('Notification not found');
       }
-    }),
+      return notification;
+    } catch (error) {
+      return handleTRPCError(error, 'Failed to mark notification as read');
+    }
+  }),
 
   /**
    * Mark all notifications as read
@@ -113,58 +100,15 @@ export const notificationsRouter = createTRPCRouter({
   /**
    * Delete a notification
    */
-  delete: publicProcedure
-    .input(deleteNotificationSchema)
-    .mutation(async ({ input }) => {
-      try {
-        const success = await notificationRepository.delete(input.id);
-        if (!success) {
-          throw new Error('Notification not found');
-        }
-        return { success };
-      } catch (error) {
-        return handleTRPCError(error, 'Failed to delete notification');
+  delete: publicProcedure.input(deleteNotificationSchema).mutation(async ({ input }) => {
+    try {
+      const success = await notificationRepository.delete(input.id);
+      if (!success) {
+        throw new Error('Notification not found');
       }
-    }),
-
-  /**
-   * Run all notification checks
-   * This will check for:
-   * - Maintenance reminders (quilts used > 30 days)
-   * - Disposal suggestions (quilts not used for 365 days)
-   */
-  checkAll: publicProcedure.mutation(async () => {
-    try {
-      // Note: Weather data would need to be fetched from a weather API
-      // For now, we'll run checks without weather data
-      const results = await runAllNotificationChecks();
-      return results;
+      return { success };
     } catch (error) {
-      return handleTRPCError(error, 'Failed to run notification checks');
-    }
-  }),
-
-  /**
-   * Check maintenance reminders only
-   */
-  checkMaintenance: publicProcedure.mutation(async () => {
-    try {
-      const count = await checkMaintenanceReminders();
-      return { count };
-    } catch (error) {
-      return handleTRPCError(error, 'Failed to check maintenance reminders');
-    }
-  }),
-
-  /**
-   * Check disposal suggestions only
-   */
-  checkDisposal: publicProcedure.mutation(async () => {
-    try {
-      const count = await checkDisposalSuggestions();
-      return { count };
-    } catch (error) {
-      return handleTRPCError(error, 'Failed to check disposal suggestions');
+      return handleTRPCError(error, 'Failed to delete notification');
     }
   }),
 
@@ -175,8 +119,9 @@ export const notificationsRouter = createTRPCRouter({
     .input(z.object({ daysOld: z.number().min(1).default(30) }).optional())
     .mutation(async ({ input }) => {
       try {
-        const count = await cleanupOldNotifications(input?.daysOld);
-        return { count };
+        const daysOld = input?.daysOld || 30;
+        const deletedCount = await notificationRepository.deleteOldReadNotifications(daysOld);
+        return { count: deletedCount };
       } catch (error) {
         return handleTRPCError(error, 'Failed to cleanup old notifications');
       }

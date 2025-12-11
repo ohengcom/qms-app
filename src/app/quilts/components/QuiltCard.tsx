@@ -51,8 +51,6 @@ export function QuiltCard({
     switch (status) {
       case 'IN_USE':
         return 'bg-green-100 text-green-800';
-      case 'AVAILABLE':
-        return 'bg-blue-100 text-blue-800';
       case 'STORAGE':
         return 'bg-gray-100 text-gray-800';
       case 'MAINTENANCE':
@@ -115,9 +113,11 @@ export function QuiltCard({
           </div>
 
           <div className="text-sm text-muted-foreground space-y-1">
-            <div>{quilt.size}</div>
             <div>
-              {quilt.weightGrams}g · {quilt.fillMaterial}
+              {quilt.lengthCm && quilt.widthCm ? `${quilt.lengthCm}×${quilt.widthCm}cm` : '-'}
+            </div>
+            <div>
+              {quilt.weightGrams ?? '-'}g · {quilt.fillMaterial}
             </div>
             <div>
               {quilt.color} · {quilt.location}

@@ -3,8 +3,10 @@ import { type CreateNextContextOptions } from '@trpc/server/adapters/next';
 import superjson from 'superjson';
 import { ZodError } from 'zod';
 
-import { db } from '@/lib/neon';
 import { apiLogger } from '@/lib/logger';
+
+// Initialize Zod with Chinese error messages for server-side validation
+import '@/lib/validations/init';
 
 /**
  * 1. CONTEXT
@@ -31,7 +33,6 @@ interface CreateContextOptions {
 const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
     session: opts.session,
-    db,
   };
 };
 
@@ -42,7 +43,7 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
  * @see https://trpc.io/docs/context
  */
 export const createTRPCContext = async (opts: CreateNextContextOptions) => {
-  const { req, res } = opts;
+  const { req: _req, res: _res } = opts;
 
   // Get the session from the server using the getServerSession wrapper function
   // const session = await getServerAuthSession({ req, res });

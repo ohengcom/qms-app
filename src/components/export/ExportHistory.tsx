@@ -139,7 +139,7 @@ export function ExportHistory() {
     alert(`Downloading ${exportItem.filename}...`);
   };
 
-  const handleRegenerate = (exportItem: any) => {
+  const handleRegenerate = (_exportItem: any) => {
     // In a real app, this would trigger a new export with the same filters
     alert(`Regenerating export with the same filters...`);
   };

@@ -1,11 +1,47 @@
 /**
  * Quilt Type Definitions
  *
- * Centralized type definitions for quilt-related data structures
+ * This file re-exports core types from the Zod validation schemas (single source of truth)
+ * and defines additional UI-specific types.
  */
 
-export type Season = 'WINTER' | 'SPRING_AUTUMN' | 'SUMMER';
-export type QuiltStatus = 'AVAILABLE' | 'IN_USE' | 'STORAGE' | 'MAINTENANCE';
+// ============================================================================
+// Re-export core types from Zod schemas (single source of truth)
+// ============================================================================
+
+// Re-export enum constants and their types (declaration merging)
+// Using a single export handles both the value and type
+export {
+  Season,
+  QuiltStatus,
+  UsageType,
+  SeasonSchema,
+  QuiltStatusSchema,
+  UsageTypeSchema,
+  QuiltSchema,
+  UsageRecordSchema,
+  MaintenanceRecordSchema,
+  createQuiltSchema,
+  updateQuiltSchema,
+  quiltFiltersSchema,
+  quiltSearchSchema,
+} from '@/lib/validations/quilt';
+
+// Re-export model types (type-only exports)
+export type {
+  Quilt,
+  UsageRecord,
+  MaintenanceRecord,
+  CreateQuiltInput,
+  UpdateQuiltInput,
+  QuiltFiltersInput,
+  QuiltSearchInput,
+} from '@/lib/validations/quilt';
+
+// ============================================================================
+// UI-specific Types
+// ============================================================================
+
 export type ViewMode = 'list' | 'grid';
 export type SortDirection = 'asc' | 'desc';
 
@@ -20,31 +56,16 @@ export type SortField =
   | 'location'
   | 'currentStatus';
 
-export interface Quilt {
-  id: string;
-  itemNumber: number;
-  name: string;
-  season: Season;
-  size: string;
-  lengthCm?: number;
-  widthCm?: number;
-  weightGrams: number;
-  fillMaterial: string;
-  color: string;
-  location: string;
-  currentStatus: QuiltStatus;
-  brand?: string;
-  purchaseDate?: string;
-  mainImage?: string | null;
-  attachmentImages?: string[] | null;
-  notes?: string;
-  createdAt: string;
-  updatedAt: string;
-}
+// Import types for use in interfaces below
+import type {
+  Season as SeasonType,
+  QuiltStatus as QuiltStatusType,
+  Quilt as QuiltType,
+} from '@/lib/validations/quilt';
 
 export interface FilterCriteria {
-  seasons: Season[];
-  statuses: QuiltStatus[];
+  seasons: SeasonType[];
+  statuses: QuiltStatusType[];
   colors: string[];
   materials: string[];
   locations?: string[];
@@ -55,13 +76,13 @@ export interface FilterCriteria {
 
 export interface QuiltFormData {
   name?: string;
-  season: Season;
+  season: SeasonType;
   size: string;
   weightGrams: number;
   fillMaterial: string;
   color: string;
   location: string;
-  currentStatus: QuiltStatus;
+  currentStatus: QuiltStatusType;
   brand?: string;
   purchaseDate?: string;
   mainImage?: string | null;
@@ -72,19 +93,19 @@ export interface QuiltFormData {
 export interface QuiltDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  quilt?: Quilt | null;
+  quilt?: QuiltType | null;
   onSave: (data: QuiltFormData) => Promise<void>;
 }
 
 export interface StatusChangeDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  quilt?: Quilt | null;
-  onStatusChange: (status: QuiltStatus, date?: Date, notes?: string) => Promise<void>;
+  quilt?: QuiltType | null;
+  onStatusChange: (status: QuiltStatusType, date?: Date, notes?: string) => Promise<void>;
 }
 
 // Helper type for quilt list operations
-export type QuiltListItem = Quilt;
+export type QuiltListItem = QuiltType;
 
 // Helper type for quilt card operations
-export type QuiltCardItem = Quilt;
+export type QuiltCardItem = QuiltType;

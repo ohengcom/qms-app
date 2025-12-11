@@ -3,7 +3,169 @@
  * Provides consistent error messages in both Chinese and English
  */
 
+import { z } from 'zod';
 import type { Language } from '../i18n';
+
+/**
+ * Helper function to translate Zod type names to Chinese
+ */
+function getTypeNameInChinese(type: string): string {
+  const typeMap: Record<string, string> = {
+    string: '字符串',
+    number: '数字',
+    bigint: '大整数',
+    boolean: '布尔值',
+    symbol: '符号',
+    undefined: '未定义',
+    object: '对象',
+    function: '函数',
+    array: '数组',
+    null: '空值',
+    nan: 'NaN',
+    integer: '整数',
+    float: '浮点数',
+    date: '日期',
+    map: 'Map',
+    set: 'Set',
+    promise: 'Promise',
+    void: 'void',
+    never: 'never',
+    unknown: '未知类型',
+  };
+  return typeMap[type] || type;
+}
+
+/**
+ * Zod Chinese Error Map
+ * Provides Chinese translations for common Zod validation errors
+ * Compatible with Zod v4 API
+ */
+export const zodChineseErrorMap: z.core.$ZodErrorMap = issue => {
+  const code = issue.code;
+
+  // Handle invalid_type
+  if (code === 'invalid_type') {
+    const received = (issue as { received?: string }).received;
+    const expected = (issue as { expected?: string }).expected;
+    if (received === 'undefined') {
+      return '此字段为必填项';
+    } else if (received === 'null') {
+      return '此字段不能为空';
+    } else {
+      return `类型错误，期望 ${getTypeNameInChinese(expected || '')}，收到 ${getTypeNameInChinese(received || '')}`;
+    }
+  }
+
+  // Handle too_small
+  if (code === 'too_small') {
+    const issueData = issue as {
+      origin?: string;
+      minimum?: number;
+      inclusive?: boolean;
+    };
+    const origin = issueData.origin;
+    const minimum = issueData.minimum;
+
+    if (origin === 'string') {
+      if (minimum === 1) {
+        return '此字段不能为空';
+      }
+      return `最少需要 ${minimum} 个字符`;
+    } else if (origin === 'number') {
+      if (issueData.inclusive) {
+        return `数值不能小于 ${minimum}`;
+      }
+      return `数值必须大于 ${minimum}`;
+    } else if (origin === 'array') {
+      return `数组至少需要 ${minimum} 个元素`;
+    }
+    return `值太小，最小值为 ${minimum}`;
+  }
+
+  // Handle too_big
+  if (code === 'too_big') {
+    const issueData = issue as {
+      origin?: string;
+      maximum?: number;
+      inclusive?: boolean;
+    };
+    const origin = issueData.origin;
+    const maximum = issueData.maximum;
+
+    if (origin === 'string') {
+      return `最多允许 ${maximum} 个字符`;
+    } else if (origin === 'number') {
+      if (issueData.inclusive) {
+        return `数值不能大于 ${maximum}`;
+      }
+      return `数值必须小于 ${maximum}`;
+    } else if (origin === 'array') {
+      return `数组最多允许 ${maximum} 个元素`;
+    }
+    return `值太大，最大值为 ${maximum}`;
+  }
+
+  // Handle invalid_format (replaces invalid_string in v4)
+  if (code === 'invalid_format') {
+    const format = (issue as { format?: string }).format;
+    if (format === 'email') {
+      return '无效的邮箱地址';
+    } else if (format === 'url') {
+      return '无效的网址';
+    } else if (format === 'uuid') {
+      return '无效的 UUID';
+    } else if (format === 'regex') {
+      return '格式不正确';
+    } else if (format === 'datetime') {
+      return '无效的日期时间格式';
+    } else if (format === 'ip' || format === 'ipv4' || format === 'ipv6') {
+      return '无效的 IP 地址';
+    }
+    return '无效的格式';
+  }
+
+  // Handle invalid_value (replaces invalid_enum_value in v4)
+  if (code === 'invalid_value') {
+    const options = (issue as { values?: unknown[] }).values;
+    if (options) {
+      return `无效的选项，有效值为: ${options.join(', ')}`;
+    }
+    return '无效的值';
+  }
+
+  // Handle unrecognized_keys
+  if (code === 'unrecognized_keys') {
+    const keys = (issue as { keys?: string[] }).keys;
+    return `对象包含未知字段: ${keys?.join(', ') || ''}`;
+  }
+
+  // Handle invalid_union
+  if (code === 'invalid_union') {
+    return '输入不匹配任何有效选项';
+  }
+
+  // Handle not_multiple_of
+  if (code === 'not_multiple_of') {
+    const divisor = (issue as { divisor?: number }).divisor;
+    return `数值必须是 ${divisor} 的倍数`;
+  }
+
+  // Handle custom errors
+  if (code === 'custom') {
+    return issue.message || '验证失败';
+  }
+
+  // Default fallback
+  return issue.message || '验证失败';
+};
+
+/**
+ * Initialize Zod with Chinese error messages
+ * Call this function once at application startup
+ */
+export function initZodChineseErrors(): void {
+  z.config({ customError: zodChineseErrorMap });
+}
 
 /**
  * Validation error message keys and their translations
@@ -273,7 +435,7 @@ export function getValidationMessage(key: string, language: Language): string {
     }
 
     return key;
-  } catch (error) {
+  } catch {
     return key;
   }
 }

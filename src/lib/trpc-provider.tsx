@@ -4,6 +4,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React, { useState } from 'react';
 import { api, trpcConfig } from './trpc';
 
+// Initialize Zod with Chinese error messages for client-side validation
+import '@/lib/validations/init';
+
 export function TRPCProvider({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
     () =>

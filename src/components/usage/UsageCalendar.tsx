@@ -5,14 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -20,16 +12,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-import {
-  Calendar,
-  ChevronLeft,
-  ChevronRight,
-  Plus,
-  Clock,
-  MapPin,
-  User,
-  Thermometer,
-} from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight, MapPin } from 'lucide-react';
 
 interface UsagePeriod {
   id: string;

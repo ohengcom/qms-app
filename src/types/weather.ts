@@ -5,9 +5,6 @@
 // Re-export weather service types
 export type { CurrentWeather, WeatherForecast, TemperatureChange } from '@/lib/weather-service';
 
-// Re-export recommendation types
-export type { QuiltRecommendation } from '@/lib/quilt-recommendation';
-
 // Import for use in interfaces
 import type { WeatherForecast as WF } from '@/lib/weather-service';
 

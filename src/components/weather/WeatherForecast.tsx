@@ -44,7 +44,7 @@ export function WeatherForecastWidget({ className }: WeatherForecastProps) {
 
       const data = await response.json();
       setForecast(data.forecast || []);
-    } catch (err) {
+    } catch {
       setError('获取天气数据失败');
     } finally {
       setIsLoading(false);

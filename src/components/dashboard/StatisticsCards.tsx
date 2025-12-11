@@ -22,7 +22,7 @@ import {
 interface DashboardStats {
   totalQuilts: number;
   quiltsInUse: number;
-  availableQuilts: number;
+  storageQuilts: number;
   totalUsageDays: number;
   averageUsageDuration: number;
   mostUsedQuilt?: {
@@ -81,8 +81,8 @@ export function StatisticsCards({ stats, previousStats, isLoading = false }: Sta
   const utilizationRate =
     stats.totalQuilts > 0 ? Math.round((stats.quiltsInUse / stats.totalQuilts) * 100) : 0;
 
-  const availabilityRate =
-    stats.totalQuilts > 0 ? Math.round((stats.availableQuilts / stats.totalQuilts) * 100) : 0;
+  const storageRate =
+    stats.totalQuilts > 0 ? Math.round((stats.storageQuilts / stats.totalQuilts) * 100) : 0;
 
   if (isLoading) {
     return (
@@ -148,25 +148,25 @@ export function StatisticsCards({ stats, previousStats, isLoading = false }: Sta
         </CardContent>
       </Card>
 
-      {/* Available Quilts */}
+      {/* Storage Quilts */}
       <Card>
         <CardContent className="pt-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Target className="w-5 h-5 text-purple-600" />
               <div>
-                <p className="text-2xl font-bold">{stats.availableQuilts}</p>
-                <p className="text-sm text-gray-600">Available</p>
+                <p className="text-2xl font-bold">{stats.storageQuilts}</p>
+                <p className="text-sm text-gray-600">In Storage</p>
               </div>
             </div>
-            {getTrendIndicator(stats.availableQuilts, previousStats?.availableQuilts)}
+            {getTrendIndicator(stats.storageQuilts, previousStats?.storageQuilts)}
           </div>
           <div className="mt-4">
             <div className="flex justify-between text-xs text-gray-500 mb-1">
-              <span>Availability</span>
-              <span>{availabilityRate}%</span>
+              <span>Storage</span>
+              <span>{storageRate}%</span>
             </div>
-            <Progress value={availabilityRate} className="h-2" />
+            <Progress value={storageRate} className="h-2" />
           </div>
         </CardContent>
       </Card>

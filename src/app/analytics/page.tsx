@@ -312,34 +312,32 @@ export default function AnalyticsPage() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {Object.entries(analytics.statusDistribution)
-                        .filter(([status]) => status !== 'AVAILABLE')
-                        .map(([status, count]) => {
-                          const total = analytics.overview.totalQuilts;
-                          const percentage = total > 0 ? Math.round((count / total) * 100) : 0;
-                          return (
-                            <div key={status} className="space-y-2">
-                              <div className="flex justify-between text-sm">
-                                <span>{t(`status.${status}`)}</span>
-                                <span className="font-semibold">
-                                  {count} ({percentage}%)
-                                </span>
-                              </div>
-                              <div className="w-full bg-gray-200 rounded-full h-2">
-                                <div
-                                  className={`h-2 rounded-full ${
-                                    status === 'IN_USE'
-                                      ? 'bg-blue-500'
-                                      : status === 'STORAGE'
-                                        ? 'bg-gray-500'
-                                        : 'bg-yellow-500'
-                                  }`}
-                                  style={{ width: `${percentage}%` }}
-                                />
-                              </div>
+                      {Object.entries(analytics.statusDistribution).map(([status, count]) => {
+                        const total = analytics.overview.totalQuilts;
+                        const percentage = total > 0 ? Math.round((count / total) * 100) : 0;
+                        return (
+                          <div key={status} className="space-y-2">
+                            <div className="flex justify-between text-sm">
+                              <span>{t(`status.${status}`)}</span>
+                              <span className="font-semibold">
+                                {count} ({percentage}%)
+                              </span>
                             </div>
-                          );
-                        })}
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div
+                                className={`h-2 rounded-full ${
+                                  status === 'IN_USE'
+                                    ? 'bg-blue-500'
+                                    : status === 'STORAGE'
+                                      ? 'bg-gray-500'
+                                      : 'bg-yellow-500'
+                                }`}
+                                style={{ width: `${percentage}%` }}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </CardContent>
                 </Card>

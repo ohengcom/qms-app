@@ -2,9 +2,9 @@
 
 **[English](README.md) | [中文](README_zh.md)**
 
-> **生产就绪的智能家居床品库存管理系统**
+> **生产就绪的家居床品库存管理系统**
 
-一个现代化的 Next.js 应用，使用 Neon PostgreSQL，将简单的 Excel 被子跟踪转变为智能库存管理系统。
+一个现代化的 Next.js 应用，使用 Neon PostgreSQL，将简单的 Excel 被子跟踪转变为库存管理系统。
 
 **🌐 在线演示**: https://qms-app-omega.vercel.app
 
@@ -17,14 +17,14 @@
 - **使用追踪**: 自动化使用记录创建，智能状态检测
 - **使用详情**: 独立详情页面，完整的使用历史和温度数据
 - **状态管理**: 三种状态（使用中、存储中、维护中）智能转换
+- **天气显示**: 实时天气信息和预报
 - **数据分析**: 使用统计、季节分析、趋势可视化
 - **数据备份**: 完整的备份恢复方案，PowerShell 脚本支持
-- **导入导出**: 支持 Excel，完美兼容中文
 
 ### 🎨 现代化 UI/UX
 
 - **统一设计系统**: 基于 Shadcn UI 的完全统一界面
-- **响应式设计**: 完美适配桌面、平板和手机
+- **响应式设计**: 使用 Tailwind CSS 完美适配桌面、平板和手机
 - **流畅动画**: Framer Motion 驱动的过渡和微交互
 - **双视图模式**: 网格和列表视图无缝切换
 - **图片查看器**: 全屏查看，缩略图导航，键盘快捷键
@@ -44,9 +44,10 @@
 ### 🚀 性能
 
 - **快速加载**: 首次加载 < 2秒，页面切换 < 500毫秒
-- **优化查询**: 索引化数据库操作
+- **优化查询**: 数据库级别过滤，Repository 模式
 - **高效渲染**: React Query 数据缓存
 - **无服务器**: Neon PostgreSQL 可扩展数据库
+- **错误处理**: 完善的错误边界，中文错误消息
 
 ## 🏗️ 技术栈
 
@@ -201,29 +202,31 @@ npm run update-quilt-names     # 更新被子名称
 qms-app/
 ├── src/
 │   ├── app/                   # Next.js App Router 页面
-│   │   ├── api/              # API 路由
+│   │   ├── api/              # API 路由（天气、认证、健康检查）
 │   │   ├── login/            # 登录页面
 │   │   ├── quilts/           # 被子管理
 │   │   ├── usage/            # 使用追踪
 │   │   ├── analytics/        # 数据分析
+│   │   ├── settings/         # 设置页面
 │   │   └── reports/          # 报表
 │   ├── components/           # React 组件
-│   │   ├── ui/              # 基础 UI 组件
+│   │   ├── ui/              # 基础 UI 组件（基于 Radix）
 │   │   ├── motion/          # 动画组件
-│   │   ├── quilts/          # 被子组件
-│   │   └── layout/          # 布局组件
+│   │   ├── quilts/          # 被子相关组件
+│   │   ├── usage/           # 使用追踪组件
+│   │   ├── weather/         # 天气显示组件
+│   │   └── dashboard/       # 仪表板组件
 │   ├── hooks/               # 自定义 Hooks
 │   ├── lib/                 # 工具库
-│   │   ├── neon.ts         # 数据库操作
+│   │   ├── repositories/   # 数据库 Repository 模式
+│   │   ├── validations/    # Zod schemas 和验证
+│   │   ├── neon.ts         # 数据库连接
 │   │   ├── auth.ts         # 认证
-│   │   ├── i18n.ts         # 国际化
-│   │   └── animations.ts   # 动画配置
-│   └── server/             # 服务器代码
+│   │   └── i18n.ts         # 国际化
+│   └── server/             # 服务器代码（tRPC 路由）
 ├── scripts/                # 工具脚本
 ├── docs/                   # 文档
-│   ├── guides/            # 实现指南
-│   ├── archive/           # 历史文档
-│   └── sessions/          # 开发会话
+│   └── guides/            # 实现指南
 └── .kiro/specs/           # 功能规格
 ```
 
@@ -236,7 +239,6 @@ qms-app/
 - `AnimatedList` - 交错列表动画
 - `AnimatedButton` - 按钮按压动画
 - `AnimatedInput` - 输入框焦点动画
-- `SwipeableListItem` - 滑动删除
 
 ### UI 组件
 
@@ -247,52 +249,77 @@ qms-app/
 
 ## 📖 文档
 
-### 📚 [完整文档索引](./docs/README.md)
+### 📚 [完整文档索引](./docs/INDEX.md)
 
-### UI 优化文档 (docs/ui-optimization/)
+### 实现指南 (docs/guides/)
 
-- **[UI 统一改造计划](./docs/ui-optimization/UI_UNIFICATION_PLAN.md)** - 总体规划和目标
-- **[UI 统一改造完成报告](./docs/ui-optimization/UI_UNIFICATION_COMPLETE.md)** - 改造成果和对比
-- **[UI 优化建议](./docs/ui-optimization/UI_OPTIMIZATION_SUGGESTIONS.md)** - 详细优化方案
-- **[卡片内边距规范](./docs/ui-optimization/CARD_PADDING_STANDARDS.md)** - 设计规范
-
-### 重构文档 (docs/refactoring/)
-
-- **[被子管理页面重构](./docs/refactoring/QUILTS_PAGE_REFACTOR_PLAN.md)** - 组件化重构方案
-- **[使用记录页面改造](./docs/refactoring/USAGE_PAGE_REFACTOR_PLAN.md)** - 页面改造计划
-- **[重构完成报告](./docs/refactoring/REFACTOR_COMPLETE.md)** - 重构成果总结
+- **认证实现** - 认证系统实现和测试
+- **部署指南** - Vercel 部署指南
+- **使用追踪** - 自动化实现
+- **安全审计** - 安全审计总结
 
 ### 其他文档 (docs/)
 
-- **指南** (guides/) - 认证、部署、使用追踪等实现指南
-- **归档** (archive/) - 历史文档和实现记录
-- **会话** (sessions/) - 开发会话日志
+- **[UI 优化](./docs/UI_OPTIMIZATION.md)** - UI 优化方案和规范
+- **[重构文档](./docs/REFACTORING.md)** - 代码重构记录
 
 ## 🗺️ 路线图
 
-### ✅ 已完成
+### ✅ 已完成 (v1.0.2)
 
-- **Phase 1**: 认证系统、双语支持、数据验证
-- **UI 统一改造**: 100% 完成 - 所有页面统一为 Shadcn UI
-- **UI 优化第一阶段**: 布局和间距统一
-- **UI 优化第二阶段**: 错误提示、卡片内边距、空状态统一
-- **代码重构**: 被子管理页面组件化重构
-- 使用追踪自动化
+- **代码质量与架构**
+  - Repository 模式数据库操作
+  - 数据库级别过滤和分页
+  - Zod 类型安全数据库操作
+  - 中文错误消息
+  - 统一类型定义
+- **认证与安全**
+  - 密码工具（bcrypt 哈希）
+  - JWT 令牌管理
+  - 登录限流
+  - 中间件路由保护
+  - 数据库密码存储
+- **API 整合**
+  - tRPC 集成
+  - 统一错误处理
+  - 类型安全 API 调用
+- **设置页面**
+  - 修改密码（即时生效）
+  - 修改应用名称
+  - 语言切换（中文/English）
+  - 实时数据库统计
+- **使用追踪**
+  - 迁移到 tRPC
+  - 编辑使用记录
+  - 使用类型（日常、客人、特殊场合、季节轮换）
+  - 自动记录创建/完成
+- **图片管理**
+  - Cloudinary 集成
+  - 主图上传
+  - 多附加图片
+- **天气显示**
+  - OpenWeatherMap API 集成
+  - 实时天气数据
+  - 使用记录历史天气
+- **高级功能**
+  - 高级过滤系统
+  - 仪表板统计
 
-### 🚧 进行中 (Phase 1D)
+### 📋 计划中
 
-- 设置页面
-- 主题切换（深色模式）
-- 显示偏好
-- 通知设置
-
-### 📋 计划中 (Phase 2)
-
-- 图片上传
-- 高级搜索
-- 批量编辑
-- 标签系统
-- 数据导出增强
+- **导入导出**
+  - Excel/CSV 导入预览
+  - 数据导出过滤
+  - 使用报表
+- **维护系统**
+  - 维护记录追踪
+  - 定期维护提醒
+- **数据分析**
+  - 使用趋势分析
+  - 季节洞察
+- **UI 增强**
+  - 主题切换（深色模式）
+  - 批量编辑
 
 ## 🤝 贡献
 
@@ -316,8 +343,8 @@ MIT License - 详见 [LICENSE](LICENSE) 文件
 
 ---
 
-**版本**: 1.0.1  
+**版本**: 1.0.2  
 **状态**: ✅ 生产就绪  
-**最后更新**: 2025-01-17
+**最后更新**: 2025-12-11
 
 用 ❤️ 打造，为了更好的家居整理

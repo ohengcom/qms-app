@@ -53,7 +53,6 @@ export const translations = {
       stats: {
         totalQuilts: '被子总数',
         inUse: '使用中',
-        available: '可用',
         storage: '存储中',
         maintenance: '维护中',
       },
@@ -251,7 +250,6 @@ export const translations = {
 
     // 状态
     status: {
-      AVAILABLE: '可用',
       IN_USE: '使用中',
       STORAGE: '存储中',
       MAINTENANCE: '维护中',
@@ -787,7 +785,6 @@ export const translations = {
       stats: {
         totalQuilts: 'Total Quilts',
         inUse: 'In Use',
-        available: 'Available',
         storage: 'Storage',
         maintenance: 'Maintenance',
       },
@@ -985,7 +982,6 @@ export const translations = {
 
     // 状态
     status: {
-      AVAILABLE: 'Available',
       IN_USE: 'In Use',
       STORAGE: 'Storage',
       MAINTENANCE: 'Maintenance',

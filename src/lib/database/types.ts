@@ -1,11 +1,25 @@
 /**
  * Database Type Definitions
- * 
- * This file defines types for database rows (snake_case) and application models (camelCase),
- * along with transformer functions to convert between them.
+ *
+ * This file defines types for database rows (snake_case) and transformer functions
+ * to convert between database rows and application models.
+ *
+ * Application model types (Quilt, UsageRecord, MaintenanceRecord) are imported from
+ * the Zod validation schemas which serve as the single source of truth.
  */
 
-import { Season, QuiltStatus, UsageType } from '@/lib/validations/quilt';
+import {
+  Season,
+  QuiltStatus,
+  UsageType,
+  // Import model types from Zod schemas (single source of truth)
+  type Quilt,
+  type UsageRecord,
+  type MaintenanceRecord,
+} from '@/lib/validations/quilt';
+
+// Re-export model types for convenience
+export type { Quilt, UsageRecord, MaintenanceRecord };
 
 // ============================================================================
 // Database Row Types (snake_case - matches PostgreSQL schema)
@@ -58,59 +72,6 @@ export interface MaintenanceRecordRow {
   next_due_date: string | null;
   created_at: string;
   updated_at: string;
-}
-
-// ============================================================================
-// Application Model Types (camelCase - used in application code)
-// ============================================================================
-
-export interface Quilt {
-  id: string;
-  itemNumber: number;
-  groupId: number | null;
-  name: string;
-  season: Season;
-  lengthCm: number | null;
-  widthCm: number | null;
-  weightGrams: number | null;
-  fillMaterial: string;
-  materialDetails: string | null;
-  color: string;
-  brand: string | null;
-  purchaseDate: Date | null;
-  location: string;
-  packagingInfo: string | null;
-  currentStatus: QuiltStatus;
-  notes: string | null;
-  imageUrl: string | null;
-  thumbnailUrl: string | null;
-  mainImage: string | null;
-  attachmentImages: string[] | null;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface UsageRecord {
-  id: string;
-  quiltId: string;
-  startDate: Date;
-  endDate: Date | null;
-  usageType: UsageType;
-  notes: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface MaintenanceRecord {
-  id: string;
-  quiltId: string;
-  maintenanceType: string;
-  description: string;
-  performedAt: Date;
-  cost: number | null;
-  nextDueDate: Date | null;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 // ============================================================================
@@ -267,20 +228,15 @@ export function maintenanceRecordToRow(
  * Check if a value is a valid Season
  */
 export function isSeason(value: unknown): value is Season {
-  return (
-    typeof value === 'string' &&
-    ['WINTER', 'SPRING_AUTUMN', 'SUMMER'].includes(value)
-  );
+  return typeof value === 'string' && ['WINTER', 'SPRING_AUTUMN', 'SUMMER'].includes(value);
 }
 
 /**
  * Check if a value is a valid QuiltStatus
+ * Note: AVAILABLE status removed per Requirements 7.2 - use STORAGE instead
  */
 export function isQuiltStatus(value: unknown): value is QuiltStatus {
-  return (
-    typeof value === 'string' &&
-    ['AVAILABLE', 'IN_USE', 'STORAGE', 'MAINTENANCE'].includes(value)
-  );
+  return typeof value === 'string' && ['IN_USE', 'STORAGE', 'MAINTENANCE'].includes(value);
 }
 
 /**

@@ -97,7 +97,7 @@ export function ExportOptions({ type }: ExportOptionsProps) {
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
-    } catch (err) {
+    } catch {
       error('Download failed', 'Failed to download the exported file');
     }
   };

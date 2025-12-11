@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/neon';
+import { sql } from '@/lib/neon';
+import { quiltRepository } from '@/lib/repositories/quilt.repository';
 
 export async function POST() {
   try {
     // First, create the database schema if it doesn't exist
-    const { sql } = await import('@/lib/neon');
 
     // Create quilts table
     await sql`
@@ -24,7 +24,7 @@ export async function POST() {
         purchase_date TIMESTAMP,
         location TEXT,
         packaging_info TEXT,
-        current_status TEXT CHECK (current_status IN ('AVAILABLE', 'IN_USE', 'MAINTENANCE', 'STORAGE')) DEFAULT 'AVAILABLE',
+        current_status TEXT CHECK (current_status IN ('IN_USE', 'MAINTENANCE', 'STORAGE')) DEFAULT 'STORAGE',
         notes TEXT,
         image_url TEXT,
         thumbnail_url TEXT,
@@ -72,7 +72,7 @@ export async function POST() {
     `;
 
     // Check if database is already set up
-    const quiltCount = await db.countQuilts();
+    const quiltCount = await quiltRepository.count();
 
     if (quiltCount > 0) {
       return NextResponse.json({
@@ -81,11 +81,9 @@ export async function POST() {
       });
     }
 
-    // Create sample quilts using Neon
+    // Create sample quilts using Repository
     const quilts = await Promise.all([
-      db.createQuilt({
-        itemNumber: 1,
-        groupId: 1,
+      quiltRepository.create({
         name: 'Premium Down Winter Quilt',
         season: 'WINTER',
         lengthCm: 220,
@@ -98,12 +96,10 @@ export async function POST() {
         purchaseDate: new Date('2023-10-15'),
         location: 'Master Bedroom Closet',
         packagingInfo: 'Vacuum sealed bag',
-        currentStatus: 'AVAILABLE',
+        currentStatus: 'STORAGE',
         notes: 'Excellent for very cold nights',
       }),
-      db.createQuilt({
-        itemNumber: 2,
-        groupId: 2,
+      quiltRepository.create({
         name: 'Cotton Comfort Quilt',
         season: 'SPRING_AUTUMN',
         lengthCm: 200,
@@ -116,12 +112,10 @@ export async function POST() {
         purchaseDate: new Date('2023-03-10'),
         location: 'Master Bedroom',
         packagingInfo: 'Breathable cotton bag',
-        currentStatus: 'AVAILABLE',
+        currentStatus: 'STORAGE',
         notes: 'Perfect for mild weather',
       }),
-      db.createQuilt({
-        itemNumber: 3,
-        groupId: 3,
+      quiltRepository.create({
         name: 'Light Summer Quilt',
         season: 'SUMMER',
         lengthCm: 200,
@@ -134,7 +128,7 @@ export async function POST() {
         purchaseDate: new Date('2023-05-15'),
         location: 'Master Bedroom',
         packagingInfo: 'Mesh laundry bag',
-        currentStatus: 'AVAILABLE',
+        currentStatus: 'STORAGE',
         notes: 'Ultra-light for hot summer nights',
       }),
     ]);
@@ -159,8 +153,8 @@ export async function POST() {
 
 export async function GET() {
   try {
-    // Check database status using Neon methods
-    const quiltCount = await db.countQuilts();
+    // Check database status using Repository
+    const quiltCount = await quiltRepository.count();
 
     return NextResponse.json({
       status: 'Database connected',

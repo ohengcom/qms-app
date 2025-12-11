@@ -1,14 +1,17 @@
 import { z } from 'zod';
 
-// Define enums locally for type safety
+// ============================================================================
+// Enum Definitions - Single Source of Truth
+// ============================================================================
+
 export const Season = {
   WINTER: 'WINTER',
   SPRING_AUTUMN: 'SPRING_AUTUMN',
   SUMMER: 'SUMMER',
 } as const;
 
+// Note: AVAILABLE status removed per Requirements 7.2 - use STORAGE instead
 export const QuiltStatus = {
-  AVAILABLE: 'AVAILABLE',
   IN_USE: 'IN_USE',
   MAINTENANCE: 'MAINTENANCE',
   STORAGE: 'STORAGE',
@@ -25,6 +28,16 @@ export const UsageType = {
 export type Season = (typeof Season)[keyof typeof Season];
 export type QuiltStatus = (typeof QuiltStatus)[keyof typeof QuiltStatus];
 export type UsageType = (typeof UsageType)[keyof typeof UsageType];
+
+// Zod schemas for enums
+export const SeasonSchema = z.enum(['WINTER', 'SPRING_AUTUMN', 'SUMMER']);
+export const QuiltStatusSchema = z.enum(['IN_USE', 'MAINTENANCE', 'STORAGE']);
+export const UsageTypeSchema = z.enum([
+  'REGULAR',
+  'GUEST',
+  'SPECIAL_OCCASION',
+  'SEASONAL_ROTATION',
+]);
 
 // Season-specific weight ranges (in grams)
 const SEASON_WEIGHT_RANGES = {
@@ -129,6 +142,84 @@ export const createQuiltSchema = baseQuiltSchemaObject
 export const updateQuiltSchema = baseQuiltSchemaObject.partial().extend({
   id: z.string().min(1, 'Quilt ID is required'),
 });
+
+// ============================================================================
+// Complete Quilt Schema - Single Source of Truth for Quilt Type
+// ============================================================================
+
+/**
+ * Complete Quilt Schema representing a quilt record from the database.
+ * This is the single source of truth for the Quilt type.
+ */
+export const QuiltSchema = z.object({
+  id: z.string().uuid(),
+  itemNumber: z.number().int().positive(),
+  groupId: z.number().int().positive().nullable(),
+  name: z.string(),
+  season: SeasonSchema,
+  lengthCm: z.number().int().positive().nullable(),
+  widthCm: z.number().int().positive().nullable(),
+  weightGrams: z.number().int().positive().nullable(),
+  fillMaterial: z.string(),
+  materialDetails: z.string().nullable(),
+  color: z.string(),
+  brand: z.string().nullable(),
+  purchaseDate: z.date().nullable(),
+  location: z.string(),
+  packagingInfo: z.string().nullable(),
+  currentStatus: QuiltStatusSchema,
+  notes: z.string().nullable(),
+  imageUrl: z.string().nullable(),
+  thumbnailUrl: z.string().nullable(),
+  mainImage: z.string().nullable(),
+  attachmentImages: z.array(z.string()).nullable(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+
+/**
+ * Quilt type derived from QuiltSchema - use this throughout the application
+ */
+export type Quilt = z.infer<typeof QuiltSchema>;
+
+/**
+ * UsageRecord Schema representing a usage record from the database.
+ */
+export const UsageRecordSchema = z.object({
+  id: z.string().uuid(),
+  quiltId: z.string().uuid(),
+  startDate: z.date(),
+  endDate: z.date().nullable(),
+  usageType: UsageTypeSchema,
+  notes: z.string().nullable(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+
+/**
+ * UsageRecord type derived from UsageRecordSchema
+ */
+export type UsageRecord = z.infer<typeof UsageRecordSchema>;
+
+/**
+ * MaintenanceRecord Schema representing a maintenance record from the database.
+ */
+export const MaintenanceRecordSchema = z.object({
+  id: z.string().uuid(),
+  quiltId: z.string().uuid(),
+  maintenanceType: z.string(),
+  description: z.string(),
+  performedAt: z.date(),
+  cost: z.number().nullable(),
+  nextDueDate: z.date().nullable(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+
+/**
+ * MaintenanceRecord type derived from MaintenanceRecordSchema
+ */
+export type MaintenanceRecord = z.infer<typeof MaintenanceRecordSchema>;
 
 // Usage Schemas with enhanced validation
 export const createUsagePeriodSchema = z
@@ -251,22 +342,6 @@ export const createMaintenanceRecordSchema = z.object({
   nextDueDate: z.date().optional(),
 });
 
-// Seasonal Recommendation Schemas
-export const createSeasonalRecommendationSchema = z.object({
-  season: z.enum(['WINTER', 'SPRING_AUTUMN', 'SUMMER']),
-  minWeight: z.number().int().positive(),
-  maxWeight: z.number().int().positive(),
-  materials: z.array(z.string()),
-  description: z.string().min(1, 'Description is required'),
-  priority: z.number().int().min(0).optional().default(0),
-});
-
-export const updateSeasonalRecommendationSchema = createSeasonalRecommendationSchema
-  .partial()
-  .extend({
-    id: z.string(),
-  });
-
 // Analytics Schemas
 export const analyticsDateRangeSchema = z.object({
   startDate: z.date(),
@@ -287,7 +362,5 @@ export type EndCurrentUsageInput = z.infer<typeof endCurrentUsageSchema>;
 export type QuiltFiltersInput = z.infer<typeof quiltFiltersSchema>;
 export type QuiltSearchInput = z.infer<typeof quiltSearchSchema>;
 export type CreateMaintenanceRecordInput = z.infer<typeof createMaintenanceRecordSchema>;
-export type CreateSeasonalRecommendationInput = z.infer<typeof createSeasonalRecommendationSchema>;
-export type UpdateSeasonalRecommendationInput = z.infer<typeof updateSeasonalRecommendationSchema>;
 export type AnalyticsDateRangeInput = z.infer<typeof analyticsDateRangeSchema>;
 export type DashboardStatsInput = z.infer<typeof dashboardStatsSchema>;

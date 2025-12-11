@@ -1,5 +1,5 @@
 import { createTRPCReact } from '@trpc/react-query';
-import { httpBatchLink, loggerLink } from '@trpc/client';
+import { httpBatchLink } from '@trpc/client';
 import { inferRouterInputs, inferRouterOutputs } from '@trpc/server';
 import superjson from 'superjson';
 

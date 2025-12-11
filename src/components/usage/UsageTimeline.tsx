@@ -4,14 +4,6 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import {
@@ -22,11 +14,8 @@ import {
   Star,
   Thermometer,
   Droplets,
-  User,
   ChevronDown,
   ChevronUp,
-  TrendingUp,
-  BarChart3,
 } from 'lucide-react';
 
 interface UsagePeriod {

@@ -2,7 +2,7 @@
 
 **[English](README.md) | [中文](README_zh.md)**
 
-> **Production-Ready Intelligent Inventory Management for Home Bedding**
+> **Production-Ready Inventory Management for Home Bedding**
 
 A modern Next.js application with Neon PostgreSQL that transforms simple Excel-based quilt tracking into an intelligent inventory management system.
 
@@ -15,16 +15,14 @@ A modern Next.js application with Neon PostgreSQL that transforms simple Excel-b
 - **Quilt Management**: Complete CRUD operations with auto-generated names and numbers
 - **Image Management**: Upload and manage quilt photos with Cloudinary integration
 - **Usage Tracking**: Automated usage record creation with smart status detection
-- **Status Management**: Four states (Available, In Use, Storage, Maintenance) with intelligent transitions
-- **Weather Integration**: Real-time weather-based quilt recommendations
-- **Smart Notifications**: Proactive alerts for maintenance, seasonal changes, and usage patterns
+- **Status Management**: Three states (In Use, Storage, Maintenance) with intelligent transitions
+- **Weather Display**: Real-time weather information and forecasts
 - **Data Analytics**: Usage statistics, seasonal analysis, and trend visualization
-- **PWA Support**: Installable app with offline capabilities and push notifications
 - **Settings Management**: Centralized configuration with database storage
 
 ### 🎨 Modern UI/UX
 
-- **Responsive Design**: Optimized for desktop, tablet, and mobile devices
+- **Responsive Design**: Optimized for desktop, tablet, and mobile devices using Tailwind CSS
 - **Smooth Animations**: Framer Motion powered transitions and micro-interactions
 - **Dual View Modes**: Grid and list views with seamless switching
 - **Advanced Filtering**: Multi-criteria search with season, status, location, brand, and weight filters
@@ -48,13 +46,11 @@ A modern Next.js application with Neon PostgreSQL that transforms simple Excel-b
 ### 🚀 Performance & Reliability
 
 - **Fast Loading**: < 2s first load, < 500ms page transitions
-- **Optimized Queries**: Indexed database operations with repository pattern
+- **Optimized Queries**: Database-level filtering with repository pattern
 - **Efficient Rendering**: React Query with optimistic updates for instant feedback
-- **Smart Caching**: Multi-layer caching with Redis-like in-memory cache
 - **Code Splitting**: Automatic route-based code splitting with Next.js
 - **Serverless**: Neon PostgreSQL for scalable database
-- **Error Handling**: Comprehensive error boundaries with user-friendly messages
-- **Monitoring**: Prometheus metrics endpoint for system monitoring
+- **Error Handling**: Comprehensive error boundaries with user-friendly Chinese messages
 
 ## 🏗️ Tech Stack
 
@@ -77,8 +73,6 @@ A modern Next.js application with Neon PostgreSQL that transforms simple Excel-b
 - **ORM**: Custom Repository Pattern
 - **Image Storage**: Cloudinary
 - **Weather API**: OpenWeatherMap
-- **Caching**: In-memory cache service
-- **Notifications**: Database-driven notification system
 
 ### DevOps
 
@@ -139,18 +133,7 @@ QMS_PASSWORD_HASH="..."  # Only needed for initial setup
 
 ### Initial Setup
 
-After deployment, initialize system settings:
-
-```bash
-# Visit this URL in your browser to set up password storage
-https://your-app.vercel.app/api/admin/init-settings
-```
-
-This will:
-
-- Create system_settings table
-- Migrate password from environment variable to database
-- Enable password management in Settings page
+After deployment, the system settings will be automatically initialized on first use. You can manage your password in the Settings page.
 
 ## 📊 Database Schema
 
@@ -160,7 +143,7 @@ This will:
 
 - Basic info: name, season, dimensions, weight, materials
 - Storage: location, packaging, brand, purchase date
-- Status: current_status (AVAILABLE, IN_USE, STORAGE, MAINTENANCE)
+- Status: current_status (IN_USE, STORAGE, MAINTENANCE)
 - Images: main_image, attachment_images (Cloudinary URLs)
 
 **usage_records** - Usage tracking
@@ -170,13 +153,6 @@ This will:
 - Usage type (REGULAR, GUEST, SPECIAL_OCCASION, SEASONAL_ROTATION)
 - Status (ACTIVE, COMPLETED)
 - Notes
-
-**notifications** - Smart notification system
-
-- Type (MAINTENANCE_DUE, SEASONAL_CHANGE, USAGE_REMINDER, etc.)
-- Priority (LOW, MEDIUM, HIGH, URGENT)
-- Status (UNREAD, READ, DISMISSED)
-- Metadata (JSON)
 
 **system_settings** - Application configuration
 
@@ -204,44 +180,33 @@ Automatically generates names in format:
 
 Example: `百思寒褐色1100克春秋被`
 
-### 3. Weather-Based Recommendations
+### 3. Weather Display
 
-Real-time quilt recommendations based on:
+Real-time weather information:
 
 - Current temperature and weather conditions
-- Seasonal patterns
-- Historical usage data
-- User preferences
+- Weather forecasts
+- Historical weather data for usage records
 
-### 4. Smart Notification System
-
-Proactive alerts for:
-
-- **Maintenance Due**: Reminders for quilt care
-- **Seasonal Changes**: Suggestions to rotate quilts
-- **Usage Patterns**: Long-term usage alerts
-- **Weather Changes**: Temperature-based recommendations
-- **Storage Reminders**: Unused quilt notifications
-
-### 5. Image Management
+### 4. Image Management
 
 - Upload main quilt photo
 - Add multiple attachment images
 - Cloudinary integration for optimized storage
 - Image preview and management
 
-### 6. Advanced Filtering
+### 5. Advanced Filtering
 
 Multi-criteria search with:
 
 - Season (Winter, Spring/Autumn, Summer, All-Season)
-- Status (Available, In Use, Storage, Maintenance)
+- Status (In Use, Storage, Maintenance)
 - Location
 - Brand
 - Weight range
 - Text search
 
-### 7. Dual View Modes
+### 6. Dual View Modes
 
 **Grid View**:
 
@@ -257,13 +222,6 @@ Multi-criteria search with:
 - Sortable columns
 - Batch operations
 - Quick actions
-
-### 8. PWA Features
-
-- **Installable**: Add to home screen
-- **Offline Support**: Service worker caching
-- **Push Notifications**: Real-time alerts
-- **App-like Experience**: Full-screen mode
 
 ## 📚 Available Scripts
 
@@ -290,29 +248,31 @@ npm run update-quilt-names     # Update quilt names
 qms-app/
 ├── src/
 │   ├── app/                   # Next.js App Router pages
-│   │   ├── api/              # API routes
+│   │   ├── api/              # API routes (weather, auth, health)
 │   │   ├── login/            # Login page
 │   │   ├── quilts/           # Quilt management
 │   │   ├── usage/            # Usage tracking
 │   │   ├── analytics/        # Analytics
+│   │   ├── settings/         # Settings page
 │   │   └── reports/          # Reports
 │   ├── components/           # React components
-│   │   ├── ui/              # Base UI components
+│   │   ├── ui/              # Base UI components (Radix-based)
 │   │   ├── motion/          # Animation components
-│   │   ├── quilts/          # Quilt components
-│   │   └── layout/          # Layout components
+│   │   ├── quilts/          # Quilt-specific components
+│   │   ├── usage/           # Usage tracking components
+│   │   ├── weather/         # Weather display components
+│   │   └── dashboard/       # Dashboard components
 │   ├── hooks/               # Custom hooks
 │   ├── lib/                 # Utilities
-│   │   ├── neon.ts         # Database operations
+│   │   ├── repositories/   # Database repository pattern
+│   │   ├── validations/    # Zod schemas and validation
+│   │   ├── neon.ts         # Database connection
 │   │   ├── auth.ts         # Authentication
-│   │   ├── i18n.ts         # Internationalization
-│   │   └── animations.ts   # Animation configs
-│   └── server/             # Server code
+│   │   └── i18n.ts         # Internationalization
+│   └── server/             # Server code (tRPC routers)
 ├── scripts/                # Utility scripts
 ├── docs/                   # Documentation
-│   ├── guides/            # Implementation guides
-│   ├── archive/           # Historical docs
-│   └── sessions/          # Development sessions
+│   └── guides/            # Implementation guides
 └── .kiro/specs/           # Feature specifications
 ```
 
@@ -325,7 +285,6 @@ qms-app/
 - `AnimatedList` - Staggered list animations
 - `AnimatedButton` - Button press animations
 - `AnimatedInput` - Input focus animations
-- `SwipeableListItem` - Swipe-to-delete
 
 ### UI Components
 
@@ -343,49 +302,32 @@ qms-app/
 - **Usage Tracking**: Automation implementation
 - **Security**: Security audit summary
 
-### Archive (docs/archive/)
-
-- Phase 1 completion summaries
-- Implementation records
-- Historical fixes
-
-### Sessions (docs/sessions/)
-
-- Development session logs
-- Feature implementation notes
-
 ## 🗺️ Roadmap
 
-### ✅ Completed (v0.5.0 - Nov 2025)
+### ✅ Completed (v1.0.1)
 
 - **Code Quality & Architecture**
-  - Logging utility with environment-based filtering
   - Repository pattern for database operations
-  - Type-safe database operations
-  - Error boundaries with bilingual support
-  - Comprehensive error handling
-  - In-memory caching service
-  - Prometheus metrics endpoint
+  - Database-level filtering and pagination
+  - Type-safe database operations with Zod
+  - Error boundaries with Chinese error messages
+  - Unified type definitions
 - **Authentication & Security**
   - Password utilities (bcrypt hashing)
   - JWT token management
   - Rate limiting for login attempts
   - Login/logout functionality
   - Middleware-based route protection
-  - Database password storage (no env var updates needed)
+  - Database password storage
 - **API Consolidation**
   - tRPC integration
   - Unified error handling
-  - Removed duplicate REST APIs
   - Type-safe API calls
-  - Cleaned up TODO items
 - **Enhanced Settings Page**
   - Change password (instant, no redeployment)
   - Modify application name
   - Language switcher (中文/English)
   - Real-time database statistics
-  - System information display
-
 - **Usage Tracking**
   - Migrated to tRPC
   - Edit usage records
@@ -395,24 +337,13 @@ qms-app/
   - Cloudinary integration
   - Main image upload
   - Multiple attachment images
-  - Image migration tools
-- **Weather Integration**
+- **Weather Display**
   - OpenWeatherMap API integration
   - Real-time weather data
-  - Temperature-based recommendations
-  - Historical weather data
-- **Smart Notifications**
-  - Database-driven notification system
-  - Multiple notification types
-  - Priority levels
-  - Read/unread status
-  - Notification checker service
+  - Historical weather data for usage records
 - **Advanced Features**
   - Advanced filtering system
   - Dashboard with statistics
-  - PWA support with service worker
-  - Offline capabilities
-  - Push notifications
 
 ### 📋 Planned (Future Releases)
 
@@ -420,20 +351,15 @@ qms-app/
   - Excel/CSV import with preview
   - Data export with filters
   - Usage reports
-  - Maintenance reports
 - **Maintenance System**
   - Maintenance record tracking
   - Scheduled maintenance reminders
-  - Care instructions
 - **Analytics**
   - Usage trend analysis
   - Seasonal insights
-  - Cost tracking
 - **UI Enhancements**
   - Theme switching (dark mode)
-  - Display preferences
   - Batch editing
-  - Tag system
 
 ## 🤝 Contributing
 
@@ -457,8 +383,8 @@ For questions or issues, please open an issue on GitHub.
 
 ---
 
-**Version**: 1.0.1  
+**Version**: 1.0.2  
 **Status**: ✅ Production Ready  
-**Last Updated**: 2025-12-05
+**Last Updated**: 2025-12-11
 
 Made with ❤️ for better home organization

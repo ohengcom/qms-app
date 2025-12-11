@@ -176,7 +176,7 @@ export function RecentUsageList({
                     variant={item.isCurrentlyInUse ? 'default' : 'secondary'}
                     className="text-xs"
                   >
-                    {item.isCurrentlyInUse ? 'In Use' : 'Available'}
+                    {item.isCurrentlyInUse ? 'In Use' : 'Storage'}
                   </Badge>
 
                   <div className="flex space-x-1">

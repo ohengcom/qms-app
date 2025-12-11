@@ -19,7 +19,7 @@ const exportOptionsSchema = z.object({
   filters: z
     .object({
       season: z.enum(['WINTER', 'SPRING_AUTUMN', 'SUMMER']).optional(),
-      status: z.enum(['AVAILABLE', 'IN_USE', 'STORAGE', 'MAINTENANCE']).optional(),
+      status: z.enum(['IN_USE', 'STORAGE', 'MAINTENANCE']).optional(),
       location: z.string().optional(),
       dateRange: z
         .object({

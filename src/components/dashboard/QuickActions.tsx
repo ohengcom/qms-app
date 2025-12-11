@@ -152,7 +152,7 @@ export function QuickActions({
   const quickFilters = [
     { label: 'Winter Quilts', icon: Package, count: 0 },
     { label: 'In Use', icon: Clock, count: 0 },
-    { label: 'Available', icon: Star, count: 0 },
+    { label: 'Storage', icon: Star, count: 0 },
     { label: 'Need Maintenance', icon: Zap, count: pendingActions },
   ];
 

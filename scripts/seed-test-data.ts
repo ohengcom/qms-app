@@ -3,11 +3,11 @@
  * Adds sample quilts to the database for testing
  */
 
-import { db } from '../src/lib/neon';
+import { sql } from '../src/lib/neon';
+import { quiltRepository } from '../src/lib/repositories/quilt.repository';
 
 const testQuilts = [
   {
-    itemNumber: 1001,
     name: 'Winter Comfort Quilt',
     season: 'WINTER' as const,
     lengthCm: 220,
@@ -20,7 +20,6 @@ const testQuilts = [
     brand: 'Premium Bedding',
   },
   {
-    itemNumber: 1002,
     name: 'Summer Breeze Quilt',
     season: 'SUMMER' as const,
     lengthCm: 200,
@@ -33,7 +32,6 @@ const testQuilts = [
     brand: 'Cool Sleep',
   },
   {
-    itemNumber: 1003,
     name: 'Spring/Autumn All-Season',
     season: 'SPRING_AUTUMN' as const,
     lengthCm: 210,
@@ -52,14 +50,14 @@ async function seedData() {
 
   try {
     // Test connection first
-    const connected = await db.testConnection();
-    if (!connected) {
+    const result = await sql`SELECT 1 as test`;
+    if (!result || result[0]?.test !== 1) {
       throw new Error('Database connection failed');
     }
     console.log('✅ Database connected');
 
     // Check current quilt count
-    const currentCount = await db.countQuilts();
+    const currentCount = await quiltRepository.count();
     console.log(`📊 Current quilts in database: ${currentCount}`);
 
     if (currentCount > 0) {
@@ -70,23 +68,22 @@ async function seedData() {
 
     // Add test quilts
     console.log(`📝 Adding ${testQuilts.length} test quilts...`);
-    
+
     for (const quilt of testQuilts) {
-      const result = await db.createQuilt(quilt);
-      console.log(`   ✓ Added: ${quilt.name} (ID: ${result.id})`);
+      const created = await quiltRepository.create(quilt);
+      console.log(`   ✓ Added: ${quilt.name} (ID: ${created.id})`);
     }
 
     // Verify
-    const newCount = await db.countQuilts();
+    const newCount = await quiltRepository.count();
     console.log(`\n✅ Seeding complete! Total quilts: ${newCount}`);
 
     // Show sample
-    const quilts = await db.getQuilts({ limit: 5 });
+    const quilts = await quiltRepository.findAll({ limit: 5 });
     console.log('\n📋 Sample quilts:');
-    quilts.forEach((q: any) => {
+    quilts.forEach(q => {
       console.log(`   - #${q.itemNumber}: ${q.name} (${q.season})`);
     });
-
   } catch (error) {
     console.error('❌ Seeding failed:', error);
     throw error;
@@ -99,7 +96,7 @@ seedData()
     console.log('\n🎉 Done!');
     process.exit(0);
   })
-  .catch((error) => {
+  .catch(error => {
     console.error('\n💥 Error:', error);
     process.exit(1);
   });

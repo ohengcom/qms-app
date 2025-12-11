@@ -185,6 +185,7 @@ export function sanitizeUrl(input: unknown): string | null {
   const url = input.trim();
 
   // Check for dangerous protocols
+  // eslint-disable-next-line no-script-url
   const dangerousProtocols = ['javascript:', 'data:', 'vbscript:', 'file:'];
   const lowerUrl = url.toLowerCase();
 

@@ -63,8 +63,8 @@ export function useOptimisticQuiltUpdates() {
   );
 
   const optimisticUsageEnd = useCallback(
-    (quiltId: string, usageId: string) => {
-      optimisticStatusUpdate(quiltId, 'AVAILABLE');
+    (quiltId: string, _usageId: string) => {
+      optimisticStatusUpdate(quiltId, 'STORAGE');
 
       // Remove from current usage cache - disabled for now since we're using mock data
       // utils.quilts.getCurrentUsage.setData(undefined, (oldData: any) => {

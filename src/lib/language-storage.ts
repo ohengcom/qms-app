@@ -22,7 +22,7 @@ export function getStoredLanguage(): Language | null {
       return stored as Language;
     }
     return null;
-  } catch (error) {
+  } catch {
     return null;
   }
 }
@@ -38,7 +38,7 @@ export function setStoredLanguage(language: Language): void {
 
   try {
     localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
-  } catch (error) {
+  } catch {
     // Error saving language - continue without saving
   }
 }
@@ -53,7 +53,7 @@ export function clearStoredLanguage(): void {
 
   try {
     localStorage.removeItem(LANGUAGE_STORAGE_KEY);
-  } catch (error) {
+  } catch {
     // Error clearing language - continue
   }
 }

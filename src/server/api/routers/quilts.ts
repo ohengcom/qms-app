@@ -112,25 +112,56 @@ export const quiltsRouter = createTRPCRouter({
     }
   }),
 
-  // Update quilt status (quick status change)
+  // Update quilt status with atomic usage record management
+  // Requirements: 13.1 - Status change atomicity
+  // Requirements: 13.2 - Single active usage record
   updateStatus: publicProcedure
     .input(
       z.object({
         id: z.string(),
-        status: z.enum(['AVAILABLE', 'IN_USE', 'STORAGE', 'MAINTENANCE']),
+        status: z.enum(['IN_USE', 'STORAGE', 'MAINTENANCE']),
+        usageType: z
+          .enum(['REGULAR', 'GUEST', 'SPECIAL_OCCASION', 'SEASONAL_ROTATION'])
+          .optional()
+          .default('REGULAR'),
+        notes: z.string().optional(),
       })
     )
     .mutation(async ({ input }) => {
       try {
-        const quilt = await quiltRepository.updateStatus(input.id, input.status as any);
-        if (!quilt) {
+        const result = await quiltRepository.updateStatusWithUsageRecord(
+          input.id,
+          input.status as any,
+          input.usageType as any,
+          input.notes
+        );
+
+        if (!result.quilt) {
           throw new TRPCError({
             code: 'NOT_FOUND',
             message: 'Quilt not found',
           });
         }
-        return quilt;
+
+        // Return the quilt for backward compatibility
+        // The usageRecord is also available in the result if needed
+        return result.quilt;
       } catch (error) {
+        // Handle specific error cases
+        if (error instanceof Error) {
+          if (error.message === 'Quilt not found') {
+            throw new TRPCError({
+              code: 'NOT_FOUND',
+              message: '被子不存在',
+            });
+          }
+          if (error.message === 'Quilt already has an active usage record') {
+            throw new TRPCError({
+              code: 'CONFLICT',
+              message: '该被子已有活跃的使用记录',
+            });
+          }
+        }
         handleTRPCError(error, 'quilts.updateStatus', {
           id: input.id,
           status: input.status,

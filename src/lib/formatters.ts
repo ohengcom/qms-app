@@ -38,7 +38,7 @@ export function formatDate(
     const defaultFormat = language === 'zh' ? 'yyyy年MM月dd日' : 'MMM dd, yyyy';
 
     return dateFnsFormat(dateObj, formatString || defaultFormat, { locale });
-  } catch (error) {
+  } catch {
     return '';
   }
 }
@@ -64,7 +64,7 @@ export function formatDateTime(
     const defaultFormat = language === 'zh' ? 'yyyy年MM月dd日 HH:mm' : 'MMM dd, yyyy HH:mm';
 
     return dateFnsFormat(dateObj, formatString || defaultFormat, { locale });
-  } catch (error) {
+  } catch {
     return '';
   }
 }
@@ -86,7 +86,7 @@ export function formatRelativeTime(date: Date | number | string, language: Langu
       addSuffix: true,
       locale,
     });
-  } catch (error) {
+  } catch {
     return '';
   }
 }
@@ -105,7 +105,7 @@ export function formatNumber(
   try {
     const locale = language === 'zh' ? 'zh-CN' : 'en-US';
     return new Intl.NumberFormat(locale, options).format(value);
-  } catch (error) {
+  } catch {
     return value.toString();
   }
 }
@@ -125,7 +125,7 @@ export function formatCurrency(value: number, language: Language, currency?: str
       style: 'currency',
       currency: currencyCode,
     }).format(value);
-  } catch (error) {
+  } catch {
     return value.toString();
   }
 }
@@ -142,7 +142,7 @@ export function formatPercentage(value: number, language: Language, decimals: nu
       minimumFractionDigits: decimals,
       maximumFractionDigits: decimals,
     }).format(value);
-  } catch (error) {
+  } catch {
     return `${(value * 100).toFixed(decimals)}%`;
   }
 }

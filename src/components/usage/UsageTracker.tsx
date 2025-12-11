@@ -36,7 +36,7 @@ import { z } from 'zod';
 import { useStartUsage, useEndUsage } from '@/hooks/useQuilts';
 import { useToastContext } from '@/hooks/useToast';
 import { Loading } from '@/components/ui/loading';
-import { Play, Square, Clock, Calendar, MapPin, Thermometer, User, FileText } from 'lucide-react';
+import { Play, Square, Clock, Calendar, MapPin, FileText } from 'lucide-react';
 
 const startUsageSchema = z.object({
   usageType: z.enum(['REGULAR', 'GUEST', 'SPECIAL_OCCASION', 'SEASONAL_ROTATION']),
@@ -191,7 +191,7 @@ export function UsageTracker({ quilt, onUsageChange }: UsageTrackerProps) {
             <span>Usage Tracking</span>
           </div>
           <Badge variant={isInUse ? 'default' : 'secondary'}>
-            {isInUse ? 'In Use' : 'Available'}
+            {isInUse ? 'In Use' : 'Storage'}
           </Badge>
         </CardTitle>
         <CardDescription>Track when and how this quilt is being used</CardDescription>

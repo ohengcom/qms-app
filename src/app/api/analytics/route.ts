@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/neon';
 
 // GET /api/analytics - Get comprehensive analytics data
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // Get all quilts with their current status
     const quilts = await sql`
@@ -42,7 +42,6 @@ export async function GET(request: NextRequest) {
     // Calculate analytics
     const totalQuilts = quilts.length;
     const statusDistribution = {
-      AVAILABLE: quilts.filter(q => q.current_status === 'AVAILABLE').length,
       IN_USE: quilts.filter(q => q.current_status === 'IN_USE').length,
       STORAGE: quilts.filter(q => q.current_status === 'STORAGE').length,
       MAINTENANCE: quilts.filter(q => q.current_status === 'MAINTENANCE').length,
@@ -56,8 +55,12 @@ export async function GET(request: NextRequest) {
 
     // Calculate usage statistics
     const totalUsagePeriods = usagePeriods.length;
-    const totalUsageDays = usagePeriods.reduce((sum, period) => sum + (period.duration_days || 0), 0);
-    const averageUsageDays = totalUsagePeriods > 0 ? Math.round(totalUsageDays / totalUsagePeriods) : 0;
+    const totalUsageDays = usagePeriods.reduce(
+      (sum, period) => sum + (period.duration_days || 0),
+      0
+    );
+    const averageUsageDays =
+      totalUsagePeriods > 0 ? Math.round(totalUsageDays / totalUsagePeriods) : 0;
 
     // Calculate usage by season
     const usageBySeason = {
@@ -67,13 +70,14 @@ export async function GET(request: NextRequest) {
     };
 
     // Calculate most used quilts
-    const quiltUsageCount: { [key: string]: { count: number; name: string; totalDays: number } } = {};
+    const quiltUsageCount: { [key: string]: { count: number; name: string; totalDays: number } } =
+      {};
     usagePeriods.forEach(period => {
       if (!quiltUsageCount[period.quilt_id]) {
         quiltUsageCount[period.quilt_id] = {
           count: 0,
           name: period.quilt_name,
-          totalDays: 0
+          totalDays: 0,
         };
       }
       quiltUsageCount[period.quilt_id].count++;
@@ -86,7 +90,7 @@ export async function GET(request: NextRequest) {
         name: data.name,
         usageCount: data.count,
         totalDays: data.totalDays,
-        averageDays: Math.round(data.totalDays / data.count)
+        averageDays: Math.round(data.totalDays / data.count),
       }))
       .sort((a, b) => b.usageCount - a.usageCount)
       .slice(0, 5);
@@ -122,7 +126,7 @@ export async function GET(request: NextRequest) {
           totalUsagePeriods,
           totalUsageDays,
           averageUsageDays,
-          currentlyInUse: currentUsage.length
+          currentlyInUse: currentUsage.length,
         },
         statusDistribution,
         seasonDistribution,
@@ -131,17 +135,15 @@ export async function GET(request: NextRequest) {
         usageByYear: Object.entries(usageByYear)
           .map(([year, count]) => ({ year: parseInt(year), count }))
           .sort((a, b) => a.year - b.year),
-        usageByMonth: Object.entries(usageByMonth)
-          .map(([month, count]) => ({ month, count }))
-      }
+        usageByMonth: Object.entries(usageByMonth).map(([month, count]) => ({ month, count })),
+      },
     });
-
   } catch (error) {
     return NextResponse.json(
-      { 
-        success: false, 
+      {
+        success: false,
         error: 'Failed to fetch analytics data',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     );

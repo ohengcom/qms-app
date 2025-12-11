@@ -6,12 +6,11 @@ import { useDashboardStats } from '@/hooks/useDashboard';
 import { useLanguage } from '@/lib/language-provider';
 import { DashboardStatsSkeleton, CardSkeleton } from '@/components/ui/skeleton-layouts';
 import { ErrorAlert } from '@/components/ui/error-alert';
-import { Package, Activity, Archive, History, PackageOpen, Sparkles } from 'lucide-react';
+import { Package, Activity, Archive, History, PackageOpen } from 'lucide-react';
 import { PageTransition } from '@/components/motion/PageTransition';
 import { AnimatedList, AnimatedListItem } from '@/components/motion/AnimatedList';
 import { EmptyState } from '@/components/ui/empty-state';
 import { WeatherForecastWidget } from '@/components/weather/WeatherForecast';
-import { QuiltRecommendationContent } from '@/components/dashboard/QuiltRecommendationContent';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
 
@@ -161,10 +160,6 @@ export default function DashboardPage() {
                   </span>
                 )}
               </TabsTrigger>
-              <TabsTrigger value="recommended" className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4" />
-                <span>{lang === 'zh' ? '推荐使用' : 'Recommended'}</span>
-              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="current" className="mt-0">
@@ -279,12 +274,6 @@ export default function DashboardPage() {
                     </div>
                   ))
                 )}
-              </CardContent>
-            </TabsContent>
-
-            <TabsContent value="recommended" className="mt-0">
-              <CardContent className="p-6">
-                <QuiltRecommendationContent />
               </CardContent>
             </TabsContent>
           </Tabs>

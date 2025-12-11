@@ -1,10 +1,10 @@
 /**
  * Quilt Repository
- * 
+ *
  * Handles all database operations for quilts with type safety and proper error handling.
  */
 
-import { sql } from '@/lib/neon';
+import { sql, withTransaction } from '@/lib/neon';
 import { dbLogger } from '@/lib/logger';
 import { BaseRepositoryImpl } from './base.repository';
 import {
@@ -12,8 +12,30 @@ import {
   QuiltRow,
   rowToQuilt,
   quiltToRow,
+  UsageRecordRow,
+  rowToUsageRecord,
 } from '@/lib/database/types';
-import { QuiltStatus, Season } from '@/lib/validations/quilt';
+import { QuiltStatus, Season, UsageType } from '@/lib/validations/quilt';
+
+// Valid sort fields that map to database columns
+export type QuiltSortField =
+  | 'itemNumber'
+  | 'name'
+  | 'season'
+  | 'weightGrams'
+  | 'createdAt'
+  | 'updatedAt';
+export type SortOrder = 'asc' | 'desc';
+
+// Mapping from camelCase field names to snake_case database column names
+const _SORT_FIELD_MAP: Record<QuiltSortField, string> = {
+  itemNumber: 'item_number',
+  name: 'name',
+  season: 'season',
+  weightGrams: 'weight_grams',
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
+};
 
 export interface QuiltFilters {
   season?: Season;
@@ -23,6 +45,8 @@ export interface QuiltFilters {
   search?: string;
   limit?: number;
   offset?: number;
+  sortBy?: QuiltSortField;
+  sortOrder?: SortOrder;
 }
 
 export interface CreateQuiltData {
@@ -63,10 +87,10 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
   async findById(id: string): Promise<Quilt | null> {
     return this.executeQuery(
       async () => {
-        const rows = await sql`
+        const rows = (await sql`
           SELECT * FROM quilts
           WHERE id = ${id}
-        ` as QuiltRow[];
+        `) as QuiltRow[];
         return rows[0] ? this.rowToModel(rows[0]) : null;
       },
       'findById',
@@ -75,55 +99,346 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
   }
 
   /**
-   * Find all quilts with optional filtering
+   * Helper method to execute a sorted query based on the sortBy field
+   *
+   * Since Neon's tagged template literals don't allow dynamic column names for security,
+   * we use a switch statement to select the appropriate query with the correct ORDER BY clause.
+   * This ensures SQL injection safety while supporting database-level sorting.
+   *
+   * Requirements: 14.1 - Sort-before-paginate
+   */
+  private async executeSortedQuery(
+    whereClause: string,
+    params: Record<string, unknown>,
+    sortBy: QuiltSortField,
+    sortOrder: SortOrder,
+    limit: number,
+    offset: number
+  ): Promise<QuiltRow[]> {
+    const { season, status, locationPattern, brandPattern, searchPattern } = params;
+    const isAsc = sortOrder === 'asc';
+
+    // Helper to execute query with specific ORDER BY
+    // We use separate queries for each sort field to maintain SQL injection safety
+    const executeWithSort = async (): Promise<QuiltRow[]> => {
+      // Build WHERE conditions
+      const hasFilters = season || status || locationPattern || brandPattern || searchPattern;
+
+      if (!hasFilters) {
+        // No filters - just sort
+        switch (sortBy) {
+          case 'itemNumber':
+            return isAsc
+              ? ((await sql`SELECT * FROM quilts ORDER BY item_number ASC LIMIT ${limit} OFFSET ${offset}`) as QuiltRow[])
+              : ((await sql`SELECT * FROM quilts ORDER BY item_number DESC LIMIT ${limit} OFFSET ${offset}`) as QuiltRow[]);
+          case 'name':
+            return isAsc
+              ? ((await sql`SELECT * FROM quilts ORDER BY name ASC LIMIT ${limit} OFFSET ${offset}`) as QuiltRow[])
+              : ((await sql`SELECT * FROM quilts ORDER BY name DESC LIMIT ${limit} OFFSET ${offset}`) as QuiltRow[]);
+          case 'season':
+            return isAsc
+              ? ((await sql`SELECT * FROM quilts ORDER BY season ASC LIMIT ${limit} OFFSET ${offset}`) as QuiltRow[])
+              : ((await sql`SELECT * FROM quilts ORDER BY season DESC LIMIT ${limit} OFFSET ${offset}`) as QuiltRow[]);
+          case 'weightGrams':
+            return isAsc
+              ? ((await sql`SELECT * FROM quilts ORDER BY weight_grams ASC NULLS LAST LIMIT ${limit} OFFSET ${offset}`) as QuiltRow[])
+              : ((await sql`SELECT * FROM quilts ORDER BY weight_grams DESC NULLS LAST LIMIT ${limit} OFFSET ${offset}`) as QuiltRow[]);
+          case 'createdAt':
+            return isAsc
+              ? ((await sql`SELECT * FROM quilts ORDER BY created_at ASC LIMIT ${limit} OFFSET ${offset}`) as QuiltRow[])
+              : ((await sql`SELECT * FROM quilts ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`) as QuiltRow[]);
+          case 'updatedAt':
+            return isAsc
+              ? ((await sql`SELECT * FROM quilts ORDER BY updated_at ASC LIMIT ${limit} OFFSET ${offset}`) as QuiltRow[])
+              : ((await sql`SELECT * FROM quilts ORDER BY updated_at DESC LIMIT ${limit} OFFSET ${offset}`) as QuiltRow[]);
+          default:
+            return isAsc
+              ? ((await sql`SELECT * FROM quilts ORDER BY created_at ASC LIMIT ${limit} OFFSET ${offset}`) as QuiltRow[])
+              : ((await sql`SELECT * FROM quilts ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`) as QuiltRow[]);
+        }
+      }
+
+      // With filters - use comprehensive query with dynamic sorting
+      const searchPatternVal = searchPattern || '%';
+      const locationPatternVal = locationPattern || '%';
+      const brandPatternVal = brandPattern || '%';
+
+      switch (sortBy) {
+        case 'itemNumber':
+          return isAsc
+            ? ((await sql`
+                SELECT * FROM quilts
+                WHERE (${season}::text IS NULL OR season = ${season})
+                  AND (${status}::text IS NULL OR current_status = ${status})
+                  AND (${locationPattern}::text IS NULL OR LOWER(location) LIKE ${locationPatternVal})
+                  AND (${brandPattern}::text IS NULL OR LOWER(COALESCE(brand, '')) LIKE ${brandPatternVal})
+                  AND (${searchPattern}::text IS NULL OR (
+                    LOWER(name) LIKE ${searchPatternVal}
+                    OR LOWER(color) LIKE ${searchPatternVal}
+                    OR LOWER(fill_material) LIKE ${searchPatternVal}
+                    OR LOWER(COALESCE(notes, '')) LIKE ${searchPatternVal}
+                  ))
+                ORDER BY item_number ASC
+                LIMIT ${limit} OFFSET ${offset}
+              `) as QuiltRow[])
+            : ((await sql`
+                SELECT * FROM quilts
+                WHERE (${season}::text IS NULL OR season = ${season})
+                  AND (${status}::text IS NULL OR current_status = ${status})
+                  AND (${locationPattern}::text IS NULL OR LOWER(location) LIKE ${locationPatternVal})
+                  AND (${brandPattern}::text IS NULL OR LOWER(COALESCE(brand, '')) LIKE ${brandPatternVal})
+                  AND (${searchPattern}::text IS NULL OR (
+                    LOWER(name) LIKE ${searchPatternVal}
+                    OR LOWER(color) LIKE ${searchPatternVal}
+                    OR LOWER(fill_material) LIKE ${searchPatternVal}
+                    OR LOWER(COALESCE(notes, '')) LIKE ${searchPatternVal}
+                  ))
+                ORDER BY item_number DESC
+                LIMIT ${limit} OFFSET ${offset}
+              `) as QuiltRow[]);
+        case 'name':
+          return isAsc
+            ? ((await sql`
+                SELECT * FROM quilts
+                WHERE (${season}::text IS NULL OR season = ${season})
+                  AND (${status}::text IS NULL OR current_status = ${status})
+                  AND (${locationPattern}::text IS NULL OR LOWER(location) LIKE ${locationPatternVal})
+                  AND (${brandPattern}::text IS NULL OR LOWER(COALESCE(brand, '')) LIKE ${brandPatternVal})
+                  AND (${searchPattern}::text IS NULL OR (
+                    LOWER(name) LIKE ${searchPatternVal}
+                    OR LOWER(color) LIKE ${searchPatternVal}
+                    OR LOWER(fill_material) LIKE ${searchPatternVal}
+                    OR LOWER(COALESCE(notes, '')) LIKE ${searchPatternVal}
+                  ))
+                ORDER BY name ASC
+                LIMIT ${limit} OFFSET ${offset}
+              `) as QuiltRow[])
+            : ((await sql`
+                SELECT * FROM quilts
+                WHERE (${season}::text IS NULL OR season = ${season})
+                  AND (${status}::text IS NULL OR current_status = ${status})
+                  AND (${locationPattern}::text IS NULL OR LOWER(location) LIKE ${locationPatternVal})
+                  AND (${brandPattern}::text IS NULL OR LOWER(COALESCE(brand, '')) LIKE ${brandPatternVal})
+                  AND (${searchPattern}::text IS NULL OR (
+                    LOWER(name) LIKE ${searchPatternVal}
+                    OR LOWER(color) LIKE ${searchPatternVal}
+                    OR LOWER(fill_material) LIKE ${searchPatternVal}
+                    OR LOWER(COALESCE(notes, '')) LIKE ${searchPatternVal}
+                  ))
+                ORDER BY name DESC
+                LIMIT ${limit} OFFSET ${offset}
+              `) as QuiltRow[]);
+        case 'season':
+          return isAsc
+            ? ((await sql`
+                SELECT * FROM quilts
+                WHERE (${season}::text IS NULL OR season = ${season})
+                  AND (${status}::text IS NULL OR current_status = ${status})
+                  AND (${locationPattern}::text IS NULL OR LOWER(location) LIKE ${locationPatternVal})
+                  AND (${brandPattern}::text IS NULL OR LOWER(COALESCE(brand, '')) LIKE ${brandPatternVal})
+                  AND (${searchPattern}::text IS NULL OR (
+                    LOWER(name) LIKE ${searchPatternVal}
+                    OR LOWER(color) LIKE ${searchPatternVal}
+                    OR LOWER(fill_material) LIKE ${searchPatternVal}
+                    OR LOWER(COALESCE(notes, '')) LIKE ${searchPatternVal}
+                  ))
+                ORDER BY season ASC
+                LIMIT ${limit} OFFSET ${offset}
+              `) as QuiltRow[])
+            : ((await sql`
+                SELECT * FROM quilts
+                WHERE (${season}::text IS NULL OR season = ${season})
+                  AND (${status}::text IS NULL OR current_status = ${status})
+                  AND (${locationPattern}::text IS NULL OR LOWER(location) LIKE ${locationPatternVal})
+                  AND (${brandPattern}::text IS NULL OR LOWER(COALESCE(brand, '')) LIKE ${brandPatternVal})
+                  AND (${searchPattern}::text IS NULL OR (
+                    LOWER(name) LIKE ${searchPatternVal}
+                    OR LOWER(color) LIKE ${searchPatternVal}
+                    OR LOWER(fill_material) LIKE ${searchPatternVal}
+                    OR LOWER(COALESCE(notes, '')) LIKE ${searchPatternVal}
+                  ))
+                ORDER BY season DESC
+                LIMIT ${limit} OFFSET ${offset}
+              `) as QuiltRow[]);
+        case 'weightGrams':
+          return isAsc
+            ? ((await sql`
+                SELECT * FROM quilts
+                WHERE (${season}::text IS NULL OR season = ${season})
+                  AND (${status}::text IS NULL OR current_status = ${status})
+                  AND (${locationPattern}::text IS NULL OR LOWER(location) LIKE ${locationPatternVal})
+                  AND (${brandPattern}::text IS NULL OR LOWER(COALESCE(brand, '')) LIKE ${brandPatternVal})
+                  AND (${searchPattern}::text IS NULL OR (
+                    LOWER(name) LIKE ${searchPatternVal}
+                    OR LOWER(color) LIKE ${searchPatternVal}
+                    OR LOWER(fill_material) LIKE ${searchPatternVal}
+                    OR LOWER(COALESCE(notes, '')) LIKE ${searchPatternVal}
+                  ))
+                ORDER BY weight_grams ASC NULLS LAST
+                LIMIT ${limit} OFFSET ${offset}
+              `) as QuiltRow[])
+            : ((await sql`
+                SELECT * FROM quilts
+                WHERE (${season}::text IS NULL OR season = ${season})
+                  AND (${status}::text IS NULL OR current_status = ${status})
+                  AND (${locationPattern}::text IS NULL OR LOWER(location) LIKE ${locationPatternVal})
+                  AND (${brandPattern}::text IS NULL OR LOWER(COALESCE(brand, '')) LIKE ${brandPatternVal})
+                  AND (${searchPattern}::text IS NULL OR (
+                    LOWER(name) LIKE ${searchPatternVal}
+                    OR LOWER(color) LIKE ${searchPatternVal}
+                    OR LOWER(fill_material) LIKE ${searchPatternVal}
+                    OR LOWER(COALESCE(notes, '')) LIKE ${searchPatternVal}
+                  ))
+                ORDER BY weight_grams DESC NULLS LAST
+                LIMIT ${limit} OFFSET ${offset}
+              `) as QuiltRow[]);
+        case 'createdAt':
+          return isAsc
+            ? ((await sql`
+                SELECT * FROM quilts
+                WHERE (${season}::text IS NULL OR season = ${season})
+                  AND (${status}::text IS NULL OR current_status = ${status})
+                  AND (${locationPattern}::text IS NULL OR LOWER(location) LIKE ${locationPatternVal})
+                  AND (${brandPattern}::text IS NULL OR LOWER(COALESCE(brand, '')) LIKE ${brandPatternVal})
+                  AND (${searchPattern}::text IS NULL OR (
+                    LOWER(name) LIKE ${searchPatternVal}
+                    OR LOWER(color) LIKE ${searchPatternVal}
+                    OR LOWER(fill_material) LIKE ${searchPatternVal}
+                    OR LOWER(COALESCE(notes, '')) LIKE ${searchPatternVal}
+                  ))
+                ORDER BY created_at ASC
+                LIMIT ${limit} OFFSET ${offset}
+              `) as QuiltRow[])
+            : ((await sql`
+                SELECT * FROM quilts
+                WHERE (${season}::text IS NULL OR season = ${season})
+                  AND (${status}::text IS NULL OR current_status = ${status})
+                  AND (${locationPattern}::text IS NULL OR LOWER(location) LIKE ${locationPatternVal})
+                  AND (${brandPattern}::text IS NULL OR LOWER(COALESCE(brand, '')) LIKE ${brandPatternVal})
+                  AND (${searchPattern}::text IS NULL OR (
+                    LOWER(name) LIKE ${searchPatternVal}
+                    OR LOWER(color) LIKE ${searchPatternVal}
+                    OR LOWER(fill_material) LIKE ${searchPatternVal}
+                    OR LOWER(COALESCE(notes, '')) LIKE ${searchPatternVal}
+                  ))
+                ORDER BY created_at DESC
+                LIMIT ${limit} OFFSET ${offset}
+              `) as QuiltRow[]);
+        case 'updatedAt':
+          return isAsc
+            ? ((await sql`
+                SELECT * FROM quilts
+                WHERE (${season}::text IS NULL OR season = ${season})
+                  AND (${status}::text IS NULL OR current_status = ${status})
+                  AND (${locationPattern}::text IS NULL OR LOWER(location) LIKE ${locationPatternVal})
+                  AND (${brandPattern}::text IS NULL OR LOWER(COALESCE(brand, '')) LIKE ${brandPatternVal})
+                  AND (${searchPattern}::text IS NULL OR (
+                    LOWER(name) LIKE ${searchPatternVal}
+                    OR LOWER(color) LIKE ${searchPatternVal}
+                    OR LOWER(fill_material) LIKE ${searchPatternVal}
+                    OR LOWER(COALESCE(notes, '')) LIKE ${searchPatternVal}
+                  ))
+                ORDER BY updated_at ASC
+                LIMIT ${limit} OFFSET ${offset}
+              `) as QuiltRow[])
+            : ((await sql`
+                SELECT * FROM quilts
+                WHERE (${season}::text IS NULL OR season = ${season})
+                  AND (${status}::text IS NULL OR current_status = ${status})
+                  AND (${locationPattern}::text IS NULL OR LOWER(location) LIKE ${locationPatternVal})
+                  AND (${brandPattern}::text IS NULL OR LOWER(COALESCE(brand, '')) LIKE ${brandPatternVal})
+                  AND (${searchPattern}::text IS NULL OR (
+                    LOWER(name) LIKE ${searchPatternVal}
+                    OR LOWER(color) LIKE ${searchPatternVal}
+                    OR LOWER(fill_material) LIKE ${searchPatternVal}
+                    OR LOWER(COALESCE(notes, '')) LIKE ${searchPatternVal}
+                  ))
+                ORDER BY updated_at DESC
+                LIMIT ${limit} OFFSET ${offset}
+              `) as QuiltRow[]);
+        default:
+          // Default to createdAt DESC for backwards compatibility
+          return (await sql`
+            SELECT * FROM quilts
+            WHERE (${season}::text IS NULL OR season = ${season})
+              AND (${status}::text IS NULL OR current_status = ${status})
+              AND (${locationPattern}::text IS NULL OR LOWER(location) LIKE ${locationPatternVal})
+              AND (${brandPattern}::text IS NULL OR LOWER(COALESCE(brand, '')) LIKE ${brandPatternVal})
+              AND (${searchPattern}::text IS NULL OR (
+                LOWER(name) LIKE ${searchPatternVal}
+                OR LOWER(color) LIKE ${searchPatternVal}
+                OR LOWER(fill_material) LIKE ${searchPatternVal}
+                OR LOWER(COALESCE(notes, '')) LIKE ${searchPatternVal}
+              ))
+            ORDER BY created_at DESC
+            LIMIT ${limit} OFFSET ${offset}
+          `) as QuiltRow[];
+      }
+    };
+
+    return executeWithSort();
+  }
+
+  /**
+   * Find all quilts with optional filtering and sorting - optimized with database-level operations
+   *
+   * This method builds dynamic WHERE clauses to filter at the database level,
+   * and applies ORDER BY before LIMIT/OFFSET to ensure correct pagination.
+   *
+   * Requirements: 6.1 - Database-level filtering
+   * Requirements: 14.1 - Sort-before-paginate
    */
   async findAll(filters: QuiltFilters = {}): Promise<Quilt[]> {
     return this.executeQuery(
       async () => {
-        const { season, status, location, brand, search, limit = 20, offset = 0 } = filters;
+        const {
+          season,
+          status,
+          location,
+          brand,
+          search,
+          limit = 20,
+          offset = 0,
+          sortBy = 'createdAt',
+          sortOrder = 'desc',
+        } = filters;
 
-        // Get all quilts from database using simple query
-        const rows = await sql`
-          SELECT * FROM quilts
-          ORDER BY created_at DESC
-        ` as QuiltRow[];
-        
-        // Convert to models
-        let quilts = rows.map(row => this.rowToModel(row));
-        
-        // Apply filters in application layer
-        if (season) {
-          quilts = quilts.filter(q => q.season === season);
-        }
-        
-        if (status) {
-          quilts = quilts.filter(q => q.currentStatus === status);
-        }
-        
-        if (location) {
-          const searchLower = location.toLowerCase();
-          quilts = quilts.filter(q => q.location.toLowerCase().includes(searchLower));
-        }
-        
-        if (brand) {
-          const searchLower = brand.toLowerCase();
-          quilts = quilts.filter(q => q.brand?.toLowerCase().includes(searchLower));
-        }
-        
-        if (search) {
-          const searchLower = search.toLowerCase();
-          quilts = quilts.filter(q => 
-            q.name.toLowerCase().includes(searchLower) ||
-            q.color.toLowerCase().includes(searchLower) ||
-            q.fillMaterial.toLowerCase().includes(searchLower) ||
-            q.notes?.toLowerCase().includes(searchLower)
-          );
-        }
-        
-        // Apply pagination
-        const start = offset;
-        const end = offset + limit;
-        return quilts.slice(start, end);
+        // Validate sortBy to prevent SQL injection (whitelist approach)
+        const validSortFields: QuiltSortField[] = [
+          'itemNumber',
+          'name',
+          'season',
+          'weightGrams',
+          'createdAt',
+          'updatedAt',
+        ];
+        const safeSortBy: QuiltSortField = validSortFields.includes(sortBy as QuiltSortField)
+          ? (sortBy as QuiltSortField)
+          : 'createdAt';
+        const safeSortOrder: SortOrder = sortOrder === 'asc' ? 'asc' : 'desc';
+
+        // Prepare filter patterns
+        const searchPattern = search ? `%${search.toLowerCase()}%` : null;
+        const locationPattern = location ? `%${location.toLowerCase()}%` : null;
+        const brandPattern = brand ? `%${brand.toLowerCase()}%` : null;
+
+        // Execute query with sorting
+        const rows = await this.executeSortedQuery(
+          '', // whereClause is built inside executeSortedQuery
+          {
+            season: season || null,
+            status: status || null,
+            locationPattern,
+            brandPattern,
+            searchPattern,
+          },
+          safeSortBy,
+          safeSortOrder,
+          limit,
+          offset
+        );
+
+        return rows.map(row => this.rowToModel(row));
       },
       'findAll',
       { filters }
@@ -136,11 +451,11 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
   async findByStatus(status: QuiltStatus): Promise<Quilt[]> {
     return this.executeQuery(
       async () => {
-        const rows = await sql`
+        const rows = (await sql`
           SELECT * FROM quilts
           WHERE current_status = ${status}
           ORDER BY created_at DESC
-        ` as QuiltRow[];
+        `) as QuiltRow[];
         return rows.map(row => this.rowToModel(row));
       },
       'findByStatus',
@@ -154,11 +469,11 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
   async findBySeason(season: Season): Promise<Quilt[]> {
     return this.executeQuery(
       async () => {
-        const rows = await sql`
+        const rows = (await sql`
           SELECT * FROM quilts
           WHERE season = ${season}
           ORDER BY created_at DESC
-        ` as QuiltRow[];
+        `) as QuiltRow[];
         return rows.map(row => this.rowToModel(row));
       },
       'findBySeason',
@@ -170,16 +485,13 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
    * Get the next available item number
    */
   async getNextItemNumber(): Promise<number> {
-    return this.executeQuery(
-      async () => {
-        const result = await sql`
+    return this.executeQuery(async () => {
+      const result = (await sql`
           SELECT COALESCE(MAX(item_number), 0) + 1 as next_number
           FROM quilts
-        ` as [{ next_number: number }];
-        return result[0]?.next_number || 1;
-      },
-      'getNextItemNumber'
-    );
+        `) as [{ next_number: number }];
+      return result[0]?.next_number || 1;
+    }, 'getNextItemNumber');
   }
 
   /**
@@ -213,7 +525,7 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
 
         dbLogger.info('Creating quilt', { itemNumber, name });
 
-        const rows = await sql`
+        const rows = (await sql`
           INSERT INTO quilts (
             id, item_number, name, season, length_cm, width_cm,
             weight_grams, fill_material, material_details, color,
@@ -245,7 +557,7 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
             ${now},
             ${now}
           ) RETURNING *
-        ` as QuiltRow[];
+        `) as QuiltRow[];
 
         dbLogger.info('Quilt created successfully', { id, itemNumber });
         return this.rowToModel(rows[0]);
@@ -281,7 +593,7 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
           });
         }
 
-        const rows = await sql`
+        const rows = (await sql`
           UPDATE quilts SET
             name = ${rowData.name},
             season = ${rowData.season},
@@ -304,7 +616,7 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
             updated_at = ${now}
           WHERE id = ${id}
           RETURNING *
-        ` as QuiltRow[];
+        `) as QuiltRow[];
 
         if (rows.length === 0) {
           return null;
@@ -319,20 +631,22 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
   }
 
   /**
-   * Update quilt status only
+   * Update quilt status only (without usage record management)
+   *
+   * @deprecated Use updateStatusWithUsageRecord for atomic status changes with usage tracking
    */
   async updateStatus(id: string, status: QuiltStatus): Promise<Quilt | null> {
     return this.executeQuery(
       async () => {
         const now = new Date().toISOString();
 
-        const rows = await sql`
+        const rows = (await sql`
           UPDATE quilts SET
             current_status = ${status},
             updated_at = ${now}
           WHERE id = ${id}
           RETURNING *
-        ` as QuiltRow[];
+        `) as QuiltRow[];
 
         if (rows.length === 0) {
           return null;
@@ -343,6 +657,183 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
       },
       'updateStatus',
       { id, status }
+    );
+  }
+
+  /**
+   * Update quilt status with atomic usage record management
+   *
+   * This method ensures that status changes and usage record operations
+   * are executed atomically within a database transaction.
+   *
+   * Requirements: 13.1 - Status change atomicity
+   * Requirements: 13.2 - Single active usage record
+   *
+   * Behavior:
+   * - When changing TO IN_USE: Creates a new usage record with start_date
+   * - When changing FROM IN_USE: Ends the active usage record with end_date
+   * - Validates that only one active usage record exists for IN_USE quilts
+   *
+   * @param id - The quilt ID
+   * @param newStatus - The new status to set
+   * @param usageType - Optional usage type (defaults to 'REGULAR')
+   * @param notes - Optional notes for the usage record
+   * @returns Object containing the updated quilt and usage record (if applicable)
+   */
+  async updateStatusWithUsageRecord(
+    id: string,
+    newStatus: QuiltStatus,
+    usageType: UsageType = 'REGULAR',
+    notes?: string
+  ): Promise<{
+    quilt: Quilt;
+    usageRecord?: { id: string; quiltId: string; startDate: Date; endDate: Date | null };
+  }> {
+    return this.executeQuery(
+      async () => {
+        return await withTransaction(async () => {
+          const now = new Date();
+          const nowIso = now.toISOString();
+
+          // Get current quilt to check existing status
+          const currentRows = (await sql`
+            SELECT * FROM quilts WHERE id = ${id}
+          `) as QuiltRow[];
+
+          if (currentRows.length === 0) {
+            throw new Error('Quilt not found');
+          }
+
+          const currentQuilt = this.rowToModel(currentRows[0]);
+          const previousStatus = currentQuilt.currentStatus;
+
+          // If status is not changing, just return the current quilt
+          if (previousStatus === newStatus) {
+            dbLogger.info('Status unchanged, no action needed', { id, status: newStatus });
+            return { quilt: currentQuilt };
+          }
+
+          let usageRecord:
+            | { id: string; quiltId: string; startDate: Date; endDate: Date | null }
+            | undefined;
+
+          // Handle transition FROM IN_USE to another status
+          // End the active usage record
+          if (previousStatus === 'IN_USE' && newStatus !== 'IN_USE') {
+            const endedRows = (await sql`
+              UPDATE usage_records
+              SET
+                end_date = ${nowIso},
+                updated_at = ${nowIso}
+              WHERE quilt_id = ${id}
+                AND end_date IS NULL
+              RETURNING *
+            `) as UsageRecordRow[];
+
+            if (endedRows.length > 0) {
+              const record = rowToUsageRecord(endedRows[0]);
+              usageRecord = {
+                id: record.id,
+                quiltId: record.quiltId,
+                startDate: record.startDate,
+                endDate: record.endDate,
+              };
+              dbLogger.info('Usage record ended', { id: record.id, quiltId: id });
+            }
+          }
+
+          // Handle transition TO IN_USE from another status
+          // Create a new usage record
+          if (newStatus === 'IN_USE' && previousStatus !== 'IN_USE') {
+            // First, verify no active usage record exists (Requirements: 13.2)
+            const activeCheck = (await sql`
+              SELECT COUNT(*) as count FROM usage_records
+              WHERE quilt_id = ${id} AND end_date IS NULL
+            `) as [{ count: string }];
+
+            const activeCount = parseInt(activeCheck[0]?.count || '0', 10);
+            if (activeCount > 0) {
+              throw new Error('Quilt already has an active usage record');
+            }
+
+            // Create new usage record
+            const usageId = crypto.randomUUID();
+            const createdRows = (await sql`
+              INSERT INTO usage_records (
+                id, quilt_id, start_date, end_date, usage_type, notes, created_at, updated_at
+              ) VALUES (
+                ${usageId},
+                ${id},
+                ${nowIso},
+                ${null},
+                ${usageType},
+                ${notes || null},
+                ${nowIso},
+                ${nowIso}
+              ) RETURNING *
+            `) as UsageRecordRow[];
+
+            if (createdRows.length > 0) {
+              const record = rowToUsageRecord(createdRows[0]);
+              usageRecord = {
+                id: record.id,
+                quiltId: record.quiltId,
+                startDate: record.startDate,
+                endDate: record.endDate,
+              };
+              dbLogger.info('Usage record created', { id: record.id, quiltId: id });
+            }
+          }
+
+          // Update the quilt status
+          const updatedRows = (await sql`
+            UPDATE quilts SET
+              current_status = ${newStatus},
+              updated_at = ${nowIso}
+            WHERE id = ${id}
+            RETURNING *
+          `) as QuiltRow[];
+
+          if (updatedRows.length === 0) {
+            throw new Error('Failed to update quilt status');
+          }
+
+          const updatedQuilt = this.rowToModel(updatedRows[0]);
+          dbLogger.info('Quilt status updated atomically', {
+            id,
+            previousStatus,
+            newStatus,
+            hasUsageRecord: !!usageRecord,
+          });
+
+          return { quilt: updatedQuilt, usageRecord };
+        });
+      },
+      'updateStatusWithUsageRecord',
+      { id, newStatus, usageType }
+    );
+  }
+
+  /**
+   * Get the count of active usage records for a quilt
+   *
+   * Requirements: 13.2 - Single active usage record validation
+   *
+   * @param quiltId - The quilt ID to check
+   * @returns The count of active usage records (should be 0 or 1)
+   */
+  async getActiveUsageRecordCount(quiltId: string): Promise<number> {
+    return this.executeQuery(
+      async () => {
+        const result = (await sql`
+          SELECT COUNT(*) as count FROM usage_records
+          WHERE quilt_id = ${quiltId} AND end_date IS NULL
+        `) as [{ count: string }];
+
+        return parseInt(result[0]?.count || '0', 10);
+      },
+      'getActiveUsageRecordCount',
+      { quiltId }
     );
   }
 
@@ -374,53 +865,190 @@ export class QuiltRepository extends BaseRepositoryImpl<QuiltRow, Quilt> {
   }
 
   /**
-   * Count quilts with optional filters
+   * Count quilts with optional filters - optimized with database-level filtering
+   *
+   * This method uses SQL COUNT with WHERE clauses to count at the database level,
+   * avoiding fetching all records into memory.
+   *
+   * Requirements: 6.3 - Optimized count queries
    */
   async count(filters: QuiltFilters = {}): Promise<number> {
     return this.executeQuery(
       async () => {
         const { season, status, location, brand, search } = filters;
 
-        // If no filters, use simple count query
-        if (!season && !status && !location && !brand && !search) {
-          const result = await sql`SELECT COUNT(*) as count FROM quilts` as [{ count: string }];
-          return parseInt(result[0]?.count || '0', 10);
+        // Determine which combination of filters we have
+        const hasSeasonFilter = !!season;
+        const hasStatusFilter = !!status;
+        const hasLocationFilter = !!location;
+        const hasBrandFilter = !!brand;
+        const hasSearchFilter = !!search;
+
+        let result: [{ count: string }];
+
+        // No filters - simple count query
+        if (
+          !hasSeasonFilter &&
+          !hasStatusFilter &&
+          !hasLocationFilter &&
+          !hasBrandFilter &&
+          !hasSearchFilter
+        ) {
+          result = (await sql`SELECT COUNT(*) as count FROM quilts`) as [{ count: string }];
+        }
+        // Season only
+        else if (
+          hasSeasonFilter &&
+          !hasStatusFilter &&
+          !hasLocationFilter &&
+          !hasBrandFilter &&
+          !hasSearchFilter
+        ) {
+          result = (await sql`
+            SELECT COUNT(*) as count FROM quilts
+            WHERE season = ${season}
+          `) as [{ count: string }];
+        }
+        // Status only
+        else if (
+          !hasSeasonFilter &&
+          hasStatusFilter &&
+          !hasLocationFilter &&
+          !hasBrandFilter &&
+          !hasSearchFilter
+        ) {
+          result = (await sql`
+            SELECT COUNT(*) as count FROM quilts
+            WHERE current_status = ${status}
+          `) as [{ count: string }];
+        }
+        // Location only (case-insensitive LIKE)
+        else if (
+          !hasSeasonFilter &&
+          !hasStatusFilter &&
+          hasLocationFilter &&
+          !hasBrandFilter &&
+          !hasSearchFilter
+        ) {
+          const locationPattern = `%${location.toLowerCase()}%`;
+          result = (await sql`
+            SELECT COUNT(*) as count FROM quilts
+            WHERE LOWER(location) LIKE ${locationPattern}
+          `) as [{ count: string }];
+        }
+        // Brand only (case-insensitive LIKE)
+        else if (
+          !hasSeasonFilter &&
+          !hasStatusFilter &&
+          !hasLocationFilter &&
+          hasBrandFilter &&
+          !hasSearchFilter
+        ) {
+          const brandPattern = `%${brand.toLowerCase()}%`;
+          result = (await sql`
+            SELECT COUNT(*) as count FROM quilts
+            WHERE LOWER(brand) LIKE ${brandPattern}
+          `) as [{ count: string }];
+        }
+        // Search only (case-insensitive search across multiple fields)
+        else if (
+          !hasSeasonFilter &&
+          !hasStatusFilter &&
+          !hasLocationFilter &&
+          !hasBrandFilter &&
+          hasSearchFilter
+        ) {
+          const searchPattern = `%${search.toLowerCase()}%`;
+          result = (await sql`
+            SELECT COUNT(*) as count FROM quilts
+            WHERE LOWER(name) LIKE ${searchPattern}
+               OR LOWER(color) LIKE ${searchPattern}
+               OR LOWER(fill_material) LIKE ${searchPattern}
+               OR LOWER(COALESCE(notes, '')) LIKE ${searchPattern}
+          `) as [{ count: string }];
+        }
+        // Season + Status
+        else if (
+          hasSeasonFilter &&
+          hasStatusFilter &&
+          !hasLocationFilter &&
+          !hasBrandFilter &&
+          !hasSearchFilter
+        ) {
+          result = (await sql`
+            SELECT COUNT(*) as count FROM quilts
+            WHERE season = ${season}
+              AND current_status = ${status}
+          `) as [{ count: string }];
+        }
+        // Season + Location
+        else if (
+          hasSeasonFilter &&
+          !hasStatusFilter &&
+          hasLocationFilter &&
+          !hasBrandFilter &&
+          !hasSearchFilter
+        ) {
+          const locationPattern = `%${location.toLowerCase()}%`;
+          result = (await sql`
+            SELECT COUNT(*) as count FROM quilts
+            WHERE season = ${season}
+              AND LOWER(location) LIKE ${locationPattern}
+          `) as [{ count: string }];
+        }
+        // Status + Location
+        else if (
+          !hasSeasonFilter &&
+          hasStatusFilter &&
+          hasLocationFilter &&
+          !hasBrandFilter &&
+          !hasSearchFilter
+        ) {
+          const locationPattern = `%${location.toLowerCase()}%`;
+          result = (await sql`
+            SELECT COUNT(*) as count FROM quilts
+            WHERE current_status = ${status}
+              AND LOWER(location) LIKE ${locationPattern}
+          `) as [{ count: string }];
+        }
+        // Season + Status + Location
+        else if (
+          hasSeasonFilter &&
+          hasStatusFilter &&
+          hasLocationFilter &&
+          !hasBrandFilter &&
+          !hasSearchFilter
+        ) {
+          const locationPattern = `%${location.toLowerCase()}%`;
+          result = (await sql`
+            SELECT COUNT(*) as count FROM quilts
+            WHERE season = ${season}
+              AND current_status = ${status}
+              AND LOWER(location) LIKE ${locationPattern}
+          `) as [{ count: string }];
+        }
+        // Complex filter with search - use comprehensive query
+        else {
+          const searchPattern = search ? `%${search.toLowerCase()}%` : '%';
+          const locationPattern = location ? `%${location.toLowerCase()}%` : '%';
+          const brandPattern = brand ? `%${brand.toLowerCase()}%` : '%';
+
+          result = (await sql`
+            SELECT COUNT(*) as count FROM quilts
+            WHERE (${season}::text IS NULL OR season = ${season})
+              AND (${status}::text IS NULL OR current_status = ${status})
+              AND (${location}::text IS NULL OR LOWER(location) LIKE ${locationPattern})
+              AND (${brand}::text IS NULL OR LOWER(COALESCE(brand, '')) LIKE ${brandPattern})
+              AND (${search}::text IS NULL OR (
+                LOWER(name) LIKE ${searchPattern}
+                OR LOWER(color) LIKE ${searchPattern}
+                OR LOWER(fill_material) LIKE ${searchPattern}
+                OR LOWER(COALESCE(notes, '')) LIKE ${searchPattern}
+              ))
+          `) as [{ count: string }];
         }
 
-        // Otherwise, get all and filter in application layer
-        const rows = await sql`SELECT * FROM quilts` as QuiltRow[];
-        let quilts = rows.map(row => this.rowToModel(row));
-        
-        // Apply same filters as findAll
-        if (season) {
-          quilts = quilts.filter(q => q.season === season);
-        }
-        
-        if (status) {
-          quilts = quilts.filter(q => q.currentStatus === status);
-        }
-        
-        if (location) {
-          const searchLower = location.toLowerCase();
-          quilts = quilts.filter(q => q.location.toLowerCase().includes(searchLower));
-        }
-        
-        if (brand) {
-          const searchLower = brand.toLowerCase();
-          quilts = quilts.filter(q => q.brand?.toLowerCase().includes(searchLower));
-        }
-        
-        if (search) {
-          const searchLower = search.toLowerCase();
-          quilts = quilts.filter(q => 
-            q.name.toLowerCase().includes(searchLower) ||
-            q.color.toLowerCase().includes(searchLower) ||
-            q.fillMaterial.toLowerCase().includes(searchLower) ||
-            q.notes?.toLowerCase().includes(searchLower)
-          );
-        }
-        
-        return quilts.length;
+        return parseInt(result[0]?.count || '0', 10);
       },
       'count',
       { filters }

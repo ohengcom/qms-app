@@ -7,9 +7,8 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useLanguage } from '@/lib/language-provider';
-import { api } from '@/lib/trpc';
+import { useNotificationStore } from '@/lib/notification-store';
 import { NotificationPanel } from '@/components/NotificationPanel';
-import { NotificationChecker } from '@/components/NotificationChecker';
 import {
   Home,
   Package,
@@ -74,30 +73,13 @@ export function AppLayout({ children }: AppLayoutProps) {
   const pathname = usePathname();
   const { t } = useLanguage();
 
-  // Get unread count from database with error handling
-  const { data: unreadData, error: unreadError } = api.notifications.getUnreadCount.useQuery(
-    undefined,
-    {
-      refetchInterval: 60000, // Refetch every minute
-      retry: 1, // Only retry once
-      retryDelay: 1000,
-    }
-  );
-
-  // Silently handle errors
-  if (unreadError) {
-    // Failed to fetch unread notification count
-  }
-
-  const unreadCount = unreadData?.count || 0;
+  // Get unread count from local notification store (toast history)
+  const unreadCount = useNotificationStore(state => state.getUnreadCount());
 
   const navigation = getNavigation(t);
 
   return (
     <div>
-      {/* Notification Checker - runs in background */}
-      <NotificationChecker />
-
       <div className="min-h-screen bg-gray-50">
         {/* Mobile sidebar */}
         <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
@@ -331,7 +313,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                       try {
                         await fetch('/api/auth/logout', { method: 'POST' });
                         window.location.href = '/login';
-                      } catch (error) {
+                      } catch {
                         // Logout failed
                         // eslint-disable-next-line no-alert
                         alert(t('common.failedToLogout'));

@@ -165,7 +165,7 @@ class SecurityMonitor {
           }),
         });
       }
-    } catch (error) {
+    } catch {
       // Failed to send security event - fail silently
     }
   }
@@ -200,7 +200,7 @@ class SecurityMonitor {
           }),
         });
       }
-    } catch (error) {
+    } catch {
       // Failed to send security alert - fail silently
     }
   }
