@@ -18,7 +18,7 @@ async function setupUsageTracking() {
       WHERE table_schema = 'public' 
         AND table_name = 'usage_records'
     `;
-    
+
     if (tables.length === 0) {
       throw new Error('usage_records table not found. Please run database setup first.');
     }
@@ -116,7 +116,7 @@ setupUsageTracking()
     console.log('\nSetup completed. You can now use the usage tracking automation.');
     process.exit(0);
   })
-  .catch((error) => {
+  .catch(error => {
     console.error('\nSetup failed:', error);
     process.exit(1);
   });

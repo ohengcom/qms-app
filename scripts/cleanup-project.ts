@@ -1,11 +1,11 @@
 #!/usr/bin/env tsx
 /**
  * 项目清理脚本
- * 
+ *
  * 功能:
  * 1. 检查并报告需要清理的项目
  * 2. 可选: 自动执行一些安全的清理操作
- * 
+ *
  * 使用方法:
  * npm run cleanup:check  # 只检查，不修改
  * npm run cleanup:auto   # 自动执行安全的清理
@@ -43,7 +43,7 @@ interface CleanupReport {
  */
 async function findConsoleLogs(): Promise<string[]> {
   log('\n🔍 扫描 console.log...', 'cyan');
-  
+
   const files = await glob('src/**/*.{ts,tsx}', {
     ignore: [
       '**/node_modules/**',
@@ -64,7 +64,7 @@ async function findConsoleLogs(): Promise<string[]> {
       if (line.includes('console.log') || line.includes('console.error')) {
         // 跳过注释中的
         if (line.trim().startsWith('//')) return;
-        
+
         results.push(`${file}:${index + 1} - ${line.trim()}`);
       }
     });
@@ -78,7 +78,7 @@ async function findConsoleLogs(): Promise<string[]> {
  */
 async function findTodoComments(): Promise<string[]> {
   log('\n🔍 扫描 TODO 注释...', 'cyan');
-  
+
   const files = await glob('src/**/*.{ts,tsx}', {
     ignore: ['**/node_modules/**'],
   });
@@ -104,7 +104,7 @@ async function findTodoComments(): Promise<string[]> {
  */
 async function findUnusedFiles(): Promise<string[]> {
   log('\n🔍 扫描可能未使用的文件...', 'cyan');
-  
+
   const suspiciousPatterns = [
     'scripts/test-*.ts',
     'scripts/*-test.ts',
@@ -130,7 +130,7 @@ async function findUnusedFiles(): Promise<string[]> {
  */
 async function findLargeFiles(): Promise<string[]> {
   log('\n🔍 扫描大文件 (>100KB)...', 'cyan');
-  
+
   const files = await glob('src/**/*.{ts,tsx,js,jsx}', {
     ignore: ['**/node_modules/**'],
   });
@@ -154,7 +154,7 @@ async function findLargeFiles(): Promise<string[]> {
  */
 async function findDuplicateCode(): Promise<string[]> {
   log('\n🔍 扫描可能重复的组件...', 'cyan');
-  
+
   const duplicatePairs = [
     ['src/components/ui/skeleton.tsx', 'src/components/ui/skeleton-layouts.tsx'],
     ['src/components/ui/button.tsx', 'src/components/ui/ripple-button.tsx'],
@@ -177,7 +177,7 @@ async function findDuplicateCode(): Promise<string[]> {
  */
 async function generateReport(): Promise<CleanupReport> {
   log('\n📊 生成清理报告...', 'blue');
-  log('=' .repeat(60), 'blue');
+  log('='.repeat(60), 'blue');
 
   const report: CleanupReport = {
     consoleLogs: await findConsoleLogs(),
@@ -195,7 +195,7 @@ async function generateReport(): Promise<CleanupReport> {
  */
 function printReport(report: CleanupReport) {
   log('\n📋 清理报告', 'magenta');
-  log('=' .repeat(60), 'magenta');
+  log('='.repeat(60), 'magenta');
 
   // Console Logs
   log(`\n🔴 Console Logs (${report.consoleLogs.length} 处)`, 'red');
@@ -255,7 +255,7 @@ function printReport(report: CleanupReport) {
 
   // Summary
   log('\n📊 总结', 'cyan');
-  log('=' .repeat(60), 'cyan');
+  log('='.repeat(60), 'cyan');
   const totalIssues =
     report.consoleLogs.length +
     report.todoComments.length +
@@ -273,7 +273,7 @@ function printReport(report: CleanupReport) {
     log('  3. 逐步执行清理任务', 'cyan');
   }
 
-  log('\n' + '=' .repeat(60), 'blue');
+  log('\n' + '='.repeat(60), 'blue');
 }
 
 /**
@@ -281,15 +281,11 @@ function printReport(report: CleanupReport) {
  */
 async function autoCleanup() {
   log('\n🤖 执行自动清理...', 'green');
-  log('=' .repeat(60), 'green');
+  log('='.repeat(60), 'green');
 
   // 1. 创建归档目录
   log('\n📁 创建归档目录...', 'cyan');
-  const archiveDirs = [
-    'scripts/archive',
-    'scripts/migrations',
-    'docs/archive/temp',
-  ];
+  const archiveDirs = ['scripts/archive', 'scripts/migrations', 'docs/archive/temp'];
 
   for (const dir of archiveDirs) {
     if (!fs.existsSync(dir)) {
@@ -370,7 +366,7 @@ async function main() {
   const mode = args[0] || 'check';
 
   log('\n🧹 QMS 项目清理工具', 'blue');
-  log('=' .repeat(60), 'blue');
+  log('='.repeat(60), 'blue');
 
   if (mode === 'auto') {
     // 先生成报告

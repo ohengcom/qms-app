@@ -7,8 +7,6 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useLanguage } from '@/lib/language-provider';
-import { useNotificationStore } from '@/lib/notification-store';
-import { NotificationPanel } from '@/components/NotificationPanel';
 import {
   Home,
   Package,
@@ -16,7 +14,6 @@ import {
   Settings,
   Menu,
   Search,
-  Bell,
   User,
   Calendar,
   Github,
@@ -69,12 +66,8 @@ interface AppLayoutProps {
 
 export function AppLayout({ children }: AppLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [notificationPanelOpen, setNotificationPanelOpen] = useState(false);
   const pathname = usePathname();
   const { t } = useLanguage();
-
-  // Get unread count from local notification store (toast history)
-  const unreadCount = useNotificationStore(state => state.getUnreadCount());
 
   const navigation = getNavigation(t);
 
@@ -281,24 +274,6 @@ export function AppLayout({ children }: AppLayoutProps) {
 
               {/* Right side */}
               <div className="flex items-center gap-x-4 lg:gap-x-6">
-                {/* Notifications */}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="relative"
-                  onClick={() => setNotificationPanelOpen(true)}
-                  title={t('common.viewNotifications')}
-                >
-                  <Bell className="h-5 w-5" />
-                  <span className="sr-only">{t('common.viewNotifications')}</span>
-                  {/* Notification badge - only show if there are unread notifications */}
-                  {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-xs text-white flex items-center justify-center">
-                      {unreadCount > 9 ? '9+' : unreadCount}
-                    </span>
-                  )}
-                </Button>
-
                 {/* Separator */}
                 <div className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200" />
 
@@ -335,11 +310,6 @@ export function AppLayout({ children }: AppLayoutProps) {
           </main>
         </div>
       </div>
-
-      {/* Notification Panel */}
-      {notificationPanelOpen && (
-        <NotificationPanel onClose={() => setNotificationPanelOpen(false)} />
-      )}
     </div>
   );
 }

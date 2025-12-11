@@ -2,11 +2,7 @@
   "compilerOptions": {
     // Updated target for better performance and smaller bundles
     "target": "ES2022",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     // Enhanced strict mode options for better type safety
@@ -36,24 +32,12 @@
       }
     ],
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@/components/*": [
-        "./src/components/*"
-      ],
-      "@/lib/*": [
-        "./src/lib/*"
-      ],
-      "@/hooks/*": [
-        "./src/hooks/*"
-      ],
-      "@/server/*": [
-        "./src/server/*"
-      ],
-      "@/types/*": [
-        "./src/types/*"
-      ]
+      "@/*": ["./src/*"],
+      "@/components/*": ["./src/components/*"],
+      "@/lib/*": ["./src/lib/*"],
+      "@/hooks/*": ["./src/hooks/*"],
+      "@/server/*": ["./src/server/*"],
+      "@/types/*": ["./src/types/*"]
     },
     "baseUrl": "."
   },
@@ -67,9 +51,5 @@
     ".next\\dev/types/**/*.ts",
     ".next\\dev/types/**/*.ts"
   ],
-  "exclude": [
-    "node_modules",
-    "scripts/archive",
-    "scripts/migrations"
-  ]
+  "exclude": ["node_modules", "scripts/archive", "scripts/migrations"]
 }

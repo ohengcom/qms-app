@@ -102,7 +102,18 @@ export default function ImportExportPage() {
     setCurrentStep('preview');
   };
 
-  const handlePreviewComplete = (preview: unknown) => {
+  const handlePreviewComplete = (preview: {
+    summary?: { totalRows?: number; duplicates?: number };
+    errors?: Array<{ row: number; message: string; field?: string }>;
+    preview?: Array<{
+      itemNumber: number;
+      name: string;
+      season: string;
+      color?: string;
+      brand?: string;
+      location?: string;
+    }>;
+  }) => {
     if (importData) {
       setImportData({ ...importData, preview });
     }

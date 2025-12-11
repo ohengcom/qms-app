@@ -23,8 +23,7 @@ const inputVariants = cva(
 );
 
 export interface InputProps
-  extends Omit<React.ComponentProps<'input'>, 'size'>,
-    VariantProps<typeof inputVariants> {
+  extends Omit<React.ComponentProps<'input'>, 'size'>, VariantProps<typeof inputVariants> {
   icon?: React.ReactNode;
   iconPosition?: 'left' | 'right';
 }

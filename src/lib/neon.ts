@@ -6,7 +6,6 @@
  *
  * Exports:
  * - sql: Neon tagged template literal for direct SQL queries
- * - executeQuery: Helper function for parameterized queries (legacy, prefer sql)
  * - withTransaction: Helper function for executing multiple queries in a transaction
  */
 
@@ -63,54 +62,6 @@ export async function withTransaction<T>(operations: () => Promise<T>): Promise<
     }
 
     dbLogger.error('Transaction failed', error as Error);
-    throw error;
-  }
-}
-
-/**
- * Helper function to execute queries with error handling
- *
- * @deprecated Prefer using the `sql` tagged template directly or Repository methods.
- * This function uses string interpolation which is less safe than tagged templates.
- */
-export async function executeQuery<T = any>(queryText: string, params: any[] = []): Promise<T[]> {
-  try {
-    // For queries without parameters, use simple tagged template
-    if (params.length === 0) {
-      const result = await sql`${queryText}`;
-      return result as T[];
-    }
-
-    // For parameterized queries, we need to use Neon's tagged template syntax
-    // Neon supports parameter interpolation in tagged templates
-    let processedQuery = queryText;
-
-    // Replace $1, $2, etc. with actual parameter values safely
-    params.forEach((param, index) => {
-      const placeholder = `${index + 1}`;
-      let escapedParam: string;
-
-      if (param === null || param === undefined) {
-        escapedParam = 'NULL';
-      } else if (typeof param === 'string') {
-        // Escape single quotes and wrap in quotes
-        escapedParam = `'${param.replace(/'/g, "''")}'`;
-      } else if (param instanceof Date) {
-        escapedParam = `'${param.toISOString()}'`;
-      } else if (typeof param === 'boolean') {
-        escapedParam = param ? 'TRUE' : 'FALSE';
-      } else {
-        escapedParam = String(param);
-      }
-
-      processedQuery = processedQuery.replace(new RegExp(`\\${placeholder}\\b`, 'g'), escapedParam);
-    });
-
-    // Execute with tagged template literal
-    const result = await sql`${processedQuery}`;
-    return result as T[];
-  } catch (error) {
-    dbLogger.error('Database query error', error as Error);
     throw error;
   }
 }

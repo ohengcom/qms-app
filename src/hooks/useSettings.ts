@@ -1,42 +1,240 @@
 'use client';
 
-import { api } from '@/lib/trpc';
+/**
+ * Settings Hooks - REST API + React Query
+ *
+ * Refactored from tRPC to use fetch + React Query.
+ * Maintains the same interface and functionality.
+ *
+ * Requirements: 1.2, 1.3 - REST API migration
+ */
 
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+
+// Query keys for cache management
+const SETTINGS_KEY = ['settings'] as const;
+const DATABASE_STATS_KEY = ['database-stats'] as const;
+const SYSTEM_INFO_KEY = ['system-info'] as const;
+const EXPORT_KEY = ['export'] as const;
+
+// ============================================================================
+// Types
+// ============================================================================
+
+interface AppSettings {
+  appName: string;
+  language: 'zh' | 'en';
+  itemsPerPage: number;
+  defaultView: 'list' | 'grid';
+  doubleClickAction: 'none' | 'view' | 'status' | 'edit';
+  usageDoubleClickAction: 'none' | 'view' | 'edit';
+}
+
+interface UpdateAppSettingsInput {
+  appName?: string;
+  language?: 'zh' | 'en';
+  itemsPerPage?: number;
+  defaultView?: 'list' | 'grid';
+  doubleClickAction?: 'none' | 'view' | 'status' | 'edit';
+  usageDoubleClickAction?: 'none' | 'view' | 'edit';
+}
+
+interface DatabaseStats {
+  totalQuilts: number;
+  totalUsageRecords: number;
+  activeUsage: number;
+  provider: string;
+  connected: boolean;
+}
+
+interface SystemInfo {
+  version: string;
+  framework: string;
+  deployment: string;
+  database: string;
+  nodeVersion: string;
+  environment: string;
+}
+
+interface ChangePasswordInput {
+  currentPassword: string;
+  newPassword: string;
+}
+
+interface ExportData {
+  exportDate: string;
+  quilts: unknown[];
+  usageRecords: unknown[];
+}
+
+// ============================================================================
+// Fetch Functions
+// ============================================================================
+
+/**
+ * Fetch application settings from REST API
+ */
+async function fetchAppSettings(): Promise<AppSettings> {
+  const response = await fetch('/api/settings');
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ error: '获取应用设置失败' }));
+    throw new Error(error.error || '获取应用设置失败');
+  }
+
+  return response.json();
+}
+
+/**
+ * Update application settings via REST API
+ */
+async function updateAppSettings(
+  data: UpdateAppSettingsInput
+): Promise<{ success: boolean; settings: UpdateAppSettingsInput }> {
+  const response = await fetch('/api/settings', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ error: '更新应用设置失败' }));
+    throw new Error(error.error || '更新应用设置失败');
+  }
+
+  return response.json();
+}
+
+/**
+ * Fetch database statistics from REST API
+ */
+async function fetchDatabaseStats(): Promise<DatabaseStats> {
+  const response = await fetch('/api/settings/database-stats');
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ error: '获取数据库统计失败' }));
+    throw new Error(error.error || '获取数据库统计失败');
+  }
+
+  return response.json();
+}
+
+/**
+ * Fetch system information from REST API
+ */
+async function fetchSystemInfo(): Promise<SystemInfo> {
+  const response = await fetch('/api/settings/system-info');
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ error: '获取系统信息失败' }));
+    throw new Error(error.error || '获取系统信息失败');
+  }
+
+  return response.json();
+}
+
+/**
+ * Change password via REST API
+ */
+async function changePassword(
+  data: ChangePasswordInput
+): Promise<{ success: boolean; message: string }> {
+  const response = await fetch('/api/settings/change-password', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ error: '修改密码失败' }));
+    throw new Error(error.error || '修改密码失败');
+  }
+
+  return response.json();
+}
+
+/**
+ * Export all data via REST API
+ */
+async function fetchExportData(): Promise<ExportData> {
+  const response = await fetch('/api/settings/export');
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ error: '导出数据失败' }));
+    throw new Error(error.error || '导出数据失败');
+  }
+
+  return response.json();
+}
+
+// ============================================================================
+// Hooks
+// ============================================================================
+
+/**
+ * Hook to fetch application settings
+ */
 export function useAppSettings() {
-  return api.settings.getAppSettings.useQuery(undefined, {
+  return useQuery({
+    queryKey: SETTINGS_KEY,
+    queryFn: fetchAppSettings,
     staleTime: 60000, // 1 minute
   });
 }
 
+/**
+ * Hook to update application settings
+ */
 export function useUpdateAppSettings() {
-  const utils = api.useUtils();
+  const queryClient = useQueryClient();
 
-  return api.settings.updateAppSettings.useMutation({
+  return useMutation({
+    mutationFn: updateAppSettings,
     onSuccess: () => {
-      utils.settings.getAppSettings.invalidate();
+      queryClient.invalidateQueries({ queryKey: SETTINGS_KEY });
     },
   });
 }
 
+/**
+ * Hook to fetch database statistics
+ */
 export function useDatabaseStats() {
-  return api.settings.getDatabaseStats.useQuery(undefined, {
+  return useQuery({
+    queryKey: DATABASE_STATS_KEY,
+    queryFn: fetchDatabaseStats,
     staleTime: 30000, // 30 seconds
     refetchInterval: 60000, // Refetch every minute
   });
 }
 
-export function useChangePassword() {
-  return api.settings.changePassword.useMutation();
-}
-
+/**
+ * Hook to fetch system information
+ */
 export function useSystemInfo() {
-  return api.settings.getSystemInfo.useQuery(undefined, {
+  return useQuery({
+    queryKey: SYSTEM_INFO_KEY,
+    queryFn: fetchSystemInfo,
     staleTime: 300000, // 5 minutes
   });
 }
 
+/**
+ * Hook to change password
+ */
+export function useChangePassword() {
+  return useMutation({
+    mutationFn: changePassword,
+  });
+}
+
+/**
+ * Hook to export data (only fetches when explicitly requested)
+ */
 export function useExportData() {
-  return api.settings.exportData.useQuery(undefined, {
-    enabled: false, // Only fetch when explicitly requested
+  return useQuery({
+    queryKey: EXPORT_KEY,
+    queryFn: fetchExportData,
+    enabled: false, // Only fetch when explicitly requested via refetch()
   });
 }

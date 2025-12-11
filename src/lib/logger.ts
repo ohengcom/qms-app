@@ -25,7 +25,8 @@ class Logger {
 
   private getLogLevel(): number {
     // Safe access to process.env for Edge Runtime
-    const envLevel = (typeof process !== 'undefined' && process.env?.LOG_LEVEL?.toUpperCase()) || 'INFO';
+    const envLevel =
+      (typeof process !== 'undefined' && process.env?.LOG_LEVEL?.toUpperCase()) || 'INFO';
     return LOG_LEVELS[envLevel as keyof LogLevel] ?? LOG_LEVELS.INFO;
   }
 
@@ -42,7 +43,9 @@ class Logger {
       message,
       ...(meta && { meta }),
       // Only include pid in Node.js environment (not Edge Runtime)
-      ...(typeof process !== 'undefined' && typeof process.pid === 'number' ? { pid: process.pid } : {}),
+      ...(typeof process !== 'undefined' && typeof process.pid === 'number'
+        ? { pid: process.pid }
+        : {}),
       environment: (typeof process !== 'undefined' && process.env?.NODE_ENV) || 'development',
     };
 
@@ -223,7 +226,11 @@ export function logErrorBoundary(error: Error, errorInfo: any): void {
 
 // Unhandled error logging (only in Node.js runtime, not Edge Runtime)
 // This code will only run in Node.js environment, not in Edge Runtime or browser
-if (typeof window === 'undefined' && typeof process !== 'undefined' && typeof process.on === 'function') {
+if (
+  typeof window === 'undefined' &&
+  typeof process !== 'undefined' &&
+  typeof process.on === 'function'
+) {
   try {
     // Server-side error handling (Node.js only)
     process.on('uncaughtException', (error: Error) => {

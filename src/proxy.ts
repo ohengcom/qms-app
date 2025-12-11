@@ -1,7 +1,7 @@
 /**
  * Next.js 16 Proxy Configuration
  * Replaces deprecated middleware.ts
- * 
+ *
  * Handles authentication and route protection
  */
 
@@ -20,8 +20,10 @@ const protectedPaths = [
 
 // Define API routes that require authentication
 const protectedApiPaths = [
-  '/api/trpc', // tRPC endpoints (quilts, usage, etc.)
+  '/api/quilts', // Quilt management endpoints
+  '/api/usage', // Usage tracking endpoints
   '/api/dashboard',
+  '/api/settings',
   '/api/admin',
 ];
 
@@ -35,7 +37,7 @@ export default function proxy(request: NextRequest) {
 
   // Allow health check, public API routes, and static files
   if (
-    pathname === '/api/health' || 
+    pathname === '/api/health' ||
     pathname === '/api/db-test' ||
     pathname.startsWith('/_next/') ||
     pathname.startsWith('/static/') ||
@@ -65,7 +67,7 @@ export default function proxy(request: NextRequest) {
   if (!sessionCookie) {
     // No session, redirect to login
     authLogger.warn('Unauthorized access attempt', { pathname });
-    
+
     if (isProtectedApiPath) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
@@ -82,7 +84,10 @@ export default function proxy(request: NextRequest) {
     return NextResponse.next();
   } catch (error) {
     // Invalid or expired token
-    authLogger.warn('Invalid or expired session token', { pathname, error: (error as Error).message });
+    authLogger.warn('Invalid or expired session token', {
+      pathname,
+      error: (error as Error).message,
+    });
 
     // Clear invalid cookie
     const response = isProtectedApiPath

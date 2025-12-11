@@ -1,6 +1,6 @@
 /**
  * Image Utilities
- * 
+ *
  * Provides functions for image compression, validation, and Base64 encoding
  */
 
@@ -69,7 +69,7 @@ export async function compressAndEncodeImage(
     const reader = new FileReader();
     const img = new Image();
 
-    reader.onload = (e) => {
+    reader.onload = e => {
       if (!e.target?.result) {
         reject(new Error('无法读取文件'));
         return;
@@ -141,7 +141,7 @@ export async function compressAndEncodeImages(
   files: File[],
   options: ImageCompressionOptions = {}
 ): Promise<string[]> {
-  const promises = files.map((file) => compressAndEncodeImage(file, options));
+  const promises = files.map(file => compressAndEncodeImage(file, options));
   return Promise.all(promises);
 }
 
@@ -196,10 +196,7 @@ export function formatFileSize(bytes: number): string {
 /**
  * Create a thumbnail from Base64 image
  */
-export async function createThumbnail(
-  base64: string,
-  maxSize: number = 150
-): Promise<string> {
+export async function createThumbnail(base64: string, maxSize: number = 150): Promise<string> {
   return new Promise((resolve, reject) => {
     const img = new Image();
 

@@ -4,13 +4,7 @@ const API_CACHE_NAME = 'qms-api-v4';
 const IMAGE_CACHE_NAME = 'qms-images-v4';
 
 // Files to cache for offline functionality
-const STATIC_FILES = [
-  '/',
-  '/quilts',
-  '/usage',
-  '/analytics',
-  '/settings',
-];
+const STATIC_FILES = ['/', '/quilts', '/usage', '/analytics', '/settings'];
 
 // API endpoints to cache
 const API_ENDPOINTS = ['/api/trpc/dashboard.getStats', '/api/trpc/quilts.list'];
@@ -21,9 +15,7 @@ self.addEventListener('install', event => {
     Promise.all([
       caches.open(STATIC_CACHE_NAME).then(cache => {
         // Try to cache files, but don't fail if some are missing
-        return Promise.allSettled(
-          STATIC_FILES.map(file => cache.add(file).catch(() => {}))
-        );
+        return Promise.allSettled(STATIC_FILES.map(file => cache.add(file).catch(() => {})));
       }),
       caches.open(API_CACHE_NAME),
       caches.open(IMAGE_CACHE_NAME),

@@ -18,7 +18,7 @@ sizes.forEach(size => {
   <rect width="100%" height="100%" fill="#3b82f6"/>
   <text x="50%" y="50%" font-family="system-ui" font-size="${size / 4}" fill="white" text-anchor="middle" dy=".3em" font-weight="bold">QMS</text>
 </svg>`;
-  
+
   fs.writeFileSync(path.join(iconsDir, `icon-${size}x${size}.svg`), svg);
   console.log(`Created icon-${size}x${size}.svg`);
 });
@@ -30,7 +30,7 @@ shortcuts.forEach(name => {
   <rect width="100%" height="100%" fill="#3b82f6"/>
   <text x="50%" y="50%" font-family="system-ui" font-size="24" fill="white" text-anchor="middle" dy=".3em" font-weight="bold">${name[0].toUpperCase()}</text>
 </svg>`;
-  
+
   fs.writeFileSync(path.join(iconsDir, `shortcut-${name}.svg`), svg);
   console.log(`Created shortcut-${name}.svg`);
 });

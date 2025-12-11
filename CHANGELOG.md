@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-12-11
+
+### 🏗️ Architecture Simplification
+
+This release focuses on simplifying the project architecture and improving maintainability.
+
+#### Version Management
+
+- **Unified Version Number**: All version references now consistently show 1.1.0
+- **Single Source of Truth**: Version is now read from package.json via REST API
+- **New System Info API**: Created `/api/settings/system-info` endpoint
+- **Settings Page Update**: Version display now fetches from API instead of hardcoded fallback
+
+#### Planned Changes (In Progress)
+
+- Remove tRPC framework, migrate to pure REST API + React Query
+- Remove deprecated `executeQuery` function (SQL injection risk)
+- Clean up notification system code
+- Remove unused components and hooks
+- Clean up temporary documentation files
+
+### 📚 Documentation
+
+- Updated README.md version to 1.1.0
+- Updated README_zh.md version to 1.1.0
+- Added architecture simplification changelog
+
 ## [1.0.1] - 2025-01-17
 
 ### 🐛 Bug Fixes
@@ -286,6 +313,8 @@ This is the first stable release of the Quilt Management System (QMS)!
 
 ---
 
+[1.1.0]: https://github.com/ohengcom/qms-app/compare/v1.0.1...v1.1.0
+[1.0.1]: https://github.com/ohengcom/qms-app/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/ohengcom/qms-app/compare/v0.5.0...v1.0.0
 [0.5.0]: https://github.com/ohengcom/qms-app/compare/v0.3.0...v0.5.0
 [0.3.0]: https://github.com/ohengcom/qms-app/compare/v0.2.2...v0.3.0

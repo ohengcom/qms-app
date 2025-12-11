@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import { TRPCProvider } from '@/lib/trpc-provider';
+import { QueryProvider } from '@/components/providers/QueryProvider';
 import { LanguageProvider } from '@/lib/language-provider';
 import { ConditionalLayout } from '@/components/layout/ConditionalLayout';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -37,12 +37,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${inter.className} h-full`} suppressHydrationWarning>
         <ErrorBoundary>
           <LanguageProvider>
-            <TRPCProvider>
+            <QueryProvider>
               <GlobalErrorHandler />
               <ConditionalLayout>{children}</ConditionalLayout>
               <Toaster />
               <SonnerToaster position="top-right" richColors closeButton />
-            </TRPCProvider>
+            </QueryProvider>
           </LanguageProvider>
         </ErrorBoundary>
       </body>

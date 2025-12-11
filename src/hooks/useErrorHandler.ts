@@ -1,24 +1,33 @@
 'use client';
 
 import { useCallback } from 'react';
-import { TRPCClientError } from '@trpc/client';
 
 export interface ErrorInfo {
   message: string;
   code?: string;
   statusCode?: number;
-  details?: any;
+  details?: unknown;
+}
+
+interface ApiError extends Error {
+  code?: string;
+  statusCode?: number;
+  data?: {
+    code?: string;
+    httpStatus?: number;
+  };
 }
 
 export function useErrorHandler() {
   const handleError = useCallback((error: unknown): ErrorInfo => {
-    // Handle tRPC errors
-    if (error instanceof TRPCClientError) {
+    // Handle API errors with code/status
+    if (error && typeof error === 'object' && 'message' in error) {
+      const apiError = error as ApiError;
       return {
-        message: error.message,
-        code: error.data?.code,
-        statusCode: error.data?.httpStatus,
-        details: error.data,
+        message: apiError.message,
+        code: apiError.code || apiError.data?.code,
+        statusCode: apiError.statusCode || apiError.data?.httpStatus,
+        details: apiError,
       };
     }
 
@@ -64,8 +73,10 @@ export function useErrorHandler() {
   );
 
   const isNetworkError = useCallback((error: unknown): boolean => {
-    if (error instanceof TRPCClientError) {
-      return error.data?.httpStatus === undefined || error.data?.httpStatus >= 500;
+    if (error && typeof error === 'object' && 'statusCode' in error) {
+      const apiError = error as ApiError;
+      const status = apiError.statusCode || apiError.data?.httpStatus;
+      return status === undefined || status >= 500;
     }
     return false;
   }, []);

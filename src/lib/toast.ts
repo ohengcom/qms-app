@@ -1,5 +1,4 @@
 import { toast as sonnerToast, ExternalToast } from 'sonner';
-import { useNotificationStore } from './notification-store';
 
 // Enhanced toast configuration
 const defaultToastConfig: ExternalToast = {
@@ -13,7 +12,7 @@ const defaultToastConfig: ExternalToast = {
   },
 };
 
-// Toast utility with bilingual support and notification history
+// Toast utility with bilingual support
 export const toast = {
   success: (message: string, description?: string, config?: ExternalToast) => {
     sonnerToast.success(message, {
@@ -21,14 +20,6 @@ export const toast = {
       description,
       duration: 3000,
       ...config,
-    });
-
-    // Add to notification history
-    useNotificationStore.getState().addNotification({
-      type: 'success',
-      title: message,
-      message: description || message,
-      description,
     });
   },
 
@@ -39,14 +30,6 @@ export const toast = {
       duration: 5000, // Longer duration for errors
       ...config,
     });
-
-    // Add to notification history
-    useNotificationStore.getState().addNotification({
-      type: 'error',
-      title: message,
-      message: description || message,
-      description,
-    });
   },
 
   info: (message: string, description?: string, config?: ExternalToast) => {
@@ -56,14 +39,6 @@ export const toast = {
       duration: 3000,
       ...config,
     });
-
-    // Add to notification history
-    useNotificationStore.getState().addNotification({
-      type: 'info',
-      title: message,
-      message: description || message,
-      description,
-    });
   },
 
   warning: (message: string, description?: string, config?: ExternalToast) => {
@@ -72,14 +47,6 @@ export const toast = {
       description,
       duration: 4000,
       ...config,
-    });
-
-    // Add to notification history
-    useNotificationStore.getState().addNotification({
-      type: 'warning',
-      title: message,
-      message: description || message,
-      description,
     });
   },
 

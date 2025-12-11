@@ -339,7 +339,7 @@ export default function SettingsPage() {
                     {t('settings.sections.system.version')}
                   </span>
                 </div>
-                <span className="text-sm font-medium">{systemInfo?.version || '0.5.0'}</span>
+                <span className="text-sm font-medium">{systemInfo?.version || '-'}</span>
               </div>
               <div className="flex items-center justify-between py-2 border-b">
                 <div className="flex items-center space-x-2">

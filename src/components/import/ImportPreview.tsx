@@ -1,18 +1,55 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/useToast';
-import { api } from '@/lib/trpc';
 import { FileSpreadsheet, AlertTriangle, CheckCircle, Eye, Upload, Loader2 } from 'lucide-react';
+
+interface ImportResults {
+  success: boolean;
+  imported: number;
+  skipped: number;
+  errors: Array<{
+    row: number;
+    message: string;
+    field?: string;
+    data?: unknown;
+  }>;
+  summary: {
+    totalRows: number;
+    successfulImports: number;
+    duplicates: number;
+    validationErrors: number;
+  };
+}
 
 interface ImportPreviewProps {
   fileName: string;
   fileData: string;
-  onPreviewComplete: (preview: any) => void;
-  onImportComplete: (results: any) => void;
+  onPreviewComplete: (preview: PreviewData) => void;
+  onImportComplete: (results: ImportResults) => void;
+}
+
+interface PreviewData {
+  summary?: {
+    totalRows?: number;
+    duplicates?: number;
+  };
+  errors?: Array<{
+    row: number;
+    message: string;
+    field?: string;
+  }>;
+  preview?: Array<{
+    itemNumber: number;
+    name: string;
+    season: string;
+    color?: string;
+    brand?: string;
+    location?: string;
+  }>;
 }
 
 export function ImportPreview({
@@ -21,44 +58,64 @@ export function ImportPreview({
   onPreviewComplete,
   onImportComplete,
 }: ImportPreviewProps) {
-  const [preview, setPreview] = useState<any>(null);
+  const [preview, setPreview] = useState<PreviewData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isImporting, setIsImporting] = useState(false);
   const { success, error } = useToast();
 
-  // Get preview data
-  const previewMutation = api.importExport.previewImport.useMutation({
-    onSuccess: data => {
+  // Preview import using fetch API
+  const fetchPreview = useCallback(async () => {
+    try {
+      const response = await fetch('/api/import/preview', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fileName, fileData }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Preview failed');
+      }
+
+      const data = await response.json();
       setPreview(data.preview);
       onPreviewComplete(data.preview);
+    } catch (err) {
+      error('Preview failed', err instanceof Error ? err.message : 'Unknown error');
+    } finally {
       setIsLoading(false);
-    },
-    onError: err => {
-      error('Preview failed', err.message);
-      setIsLoading(false);
-    },
-  });
+    }
+  }, [fileName, fileData, onPreviewComplete, error]);
 
-  // Confirm import
-  const confirmMutation = api.importExport.confirmImport.useMutation({
-    onSuccess: data => {
+  // Confirm import using fetch API
+  const confirmImport = useCallback(async () => {
+    setIsImporting(true);
+    try {
+      const response = await fetch('/api/import/confirm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fileName, fileData, confirmed: true }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Import failed');
+      }
+
+      const data = await response.json();
       success('Import completed', `Successfully imported ${data.result.imported} quilts`);
-      onImportComplete(data.result);
+      onImportComplete(data.result as ImportResults);
+    } catch (err) {
+      error('Import failed', err instanceof Error ? err.message : 'Unknown error');
+    } finally {
       setIsImporting(false);
-    },
-    onError: err => {
-      error('Import failed', err.message);
-      setIsImporting(false);
-    },
-  });
+    }
+  }, [fileName, fileData, onImportComplete, success, error]);
 
   useEffect(() => {
-    previewMutation.mutate({ fileName, fileData });
-  }, [fileName, fileData]);
+    fetchPreview();
+  }, [fetchPreview]);
 
   const handleConfirmImport = () => {
-    setIsImporting(true);
-    confirmMutation.mutate({ fileName, fileData, confirmed: true });
+    confirmImport();
   };
 
   if (isLoading) {

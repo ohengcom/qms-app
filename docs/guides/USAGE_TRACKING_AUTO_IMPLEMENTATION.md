@@ -11,6 +11,7 @@
 ### Phase 1: 数据库和 API ✅
 
 #### 1. 数据库操作函数 (src/lib/neon.ts)
+
 - ✅ `createUsageRecord(quiltId, startDate, notes)` - 创建使用记录
 - ✅ `endUsageRecord(quiltId, endDate)` - 结束使用记录
 - ✅ `getActiveUsageRecord(quiltId)` - 获取活动记录
@@ -18,6 +19,7 @@
 - ✅ `getUsageRecordsByQuiltId(quiltId)` - 获取被子的所有使用记录
 
 #### 2. API 端点
+
 - ✅ `POST /api/quilts/[id]/status` - 智能状态更新
   - 自动检测状态变化
   - 改为 IN_USE 时自动创建使用记录
@@ -27,6 +29,7 @@
 ### Phase 2: UI 组件 ✅
 
 #### 3. StatusChangeDialog 组件增强
+
 - ✅ 状态检测逻辑
 - ✅ 改为 IN_USE 时显示：
   - 开始日期选择器（默认今天）
@@ -40,6 +43,7 @@
 - ✅ 视觉反馈和提示信息
 
 #### 4. 被子列表页面更新
+
 - ✅ 修改 `handleStatusChange` 函数
 - ✅ 支持传递日期和备注参数
 - ✅ 调用智能状态更新 API
@@ -48,6 +52,7 @@
 ### Phase 3: 数据库设置 ✅
 
 #### 5. 数据库迁移脚本
+
 - ✅ 创建 `scripts/setup-usage-tracking.ts`
 - ✅ 添加 status 列（如果不存在）
 - ✅ 创建索引优化查询
@@ -93,11 +98,13 @@
 ## 📁 新增/修改的文件
 
 ### 新增文件
+
 1. `src/app/api/quilts/[id]/status/route.ts` - 智能状态更新 API
 2. `scripts/setup-usage-tracking.ts` - 数据库设置脚本
 3. `USAGE_TRACKING_AUTO_IMPLEMENTATION.md` - 实现文档
 
 ### 修改文件
+
 1. `src/lib/neon.ts` - 添加使用记录操作函数
 2. `src/components/quilts/StatusChangeDialog.tsx` - 增强对话框
 3. `src/app/quilts/page.tsx` - 更新状态变更处理
@@ -112,6 +119,7 @@ npm run setup-usage-tracking
 ```
 
 这将：
+
 - 添加必要的数据库列
 - 创建索引
 - 添加唯一约束

@@ -383,7 +383,7 @@ For questions or issues, please open an issue on GitHub.
 
 ---
 
-**Version**: 1.0.2  
+**Version**: 1.1.0  
 **Status**: ✅ Production Ready  
 **Last Updated**: 2025-12-11
 

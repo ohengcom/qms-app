@@ -1,187 +1,187 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clear QMS Cache</title>
-  <style>
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      max-width: 600px;
-      margin: 50px auto;
-      padding: 20px;
-      background: #f5f5f5;
-    }
-    .container {
-      background: white;
-      padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    h1 {
-      color: #333;
-      margin-top: 0;
-    }
-    button {
-      background: #3b82f6;
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 6px;
-      font-size: 16px;
-      cursor: pointer;
-      margin: 10px 5px;
-    }
-    button:hover {
-      background: #2563eb;
-    }
-    button.danger {
-      background: #ef4444;
-    }
-    button.danger:hover {
-      background: #dc2626;
-    }
-    .status {
-      margin-top: 20px;
-      padding: 15px;
-      border-radius: 6px;
-      display: none;
-    }
-    .status.success {
-      background: #d1fae5;
-      color: #065f46;
-      display: block;
-    }
-    .status.error {
-      background: #fee2e2;
-      color: #991b1b;
-      display: block;
-    }
-    .info {
-      background: #e0f2fe;
-      padding: 15px;
-      border-radius: 6px;
-      margin: 20px 0;
-      color: #075985;
-    }
-    ul {
-      margin: 10px 0;
-      padding-left: 20px;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>🧹 Clear QMS Cache</h1>
-    
-    <div class="info">
-      <strong>Why clear cache?</strong>
-      <ul>
-        <li>See the latest version after deployment</li>
-        <li>Fix Service Worker redirect issues</li>
-        <li>Resolve authentication problems</li>
-        <li>Clear stale data</li>
-      </ul>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Clear QMS Cache</title>
+    <style>
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 20px;
+        background: #f5f5f5;
+      }
+      .container {
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        color: #333;
+        margin-top: 0;
+      }
+      button {
+        background: #3b82f6;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 6px;
+        font-size: 16px;
+        cursor: pointer;
+        margin: 10px 5px;
+      }
+      button:hover {
+        background: #2563eb;
+      }
+      button.danger {
+        background: #ef4444;
+      }
+      button.danger:hover {
+        background: #dc2626;
+      }
+      .status {
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 6px;
+        display: none;
+      }
+      .status.success {
+        background: #d1fae5;
+        color: #065f46;
+        display: block;
+      }
+      .status.error {
+        background: #fee2e2;
+        color: #991b1b;
+        display: block;
+      }
+      .info {
+        background: #e0f2fe;
+        padding: 15px;
+        border-radius: 6px;
+        margin: 20px 0;
+        color: #075985;
+      }
+      ul {
+        margin: 10px 0;
+        padding-left: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🧹 Clear QMS Cache</h1>
+
+      <div class="info">
+        <strong>Why clear cache?</strong>
+        <ul>
+          <li>See the latest version after deployment</li>
+          <li>Fix Service Worker redirect issues</li>
+          <li>Resolve authentication problems</li>
+          <li>Clear stale data</li>
+        </ul>
+      </div>
+
+      <h3>Quick Actions:</h3>
+
+      <button onclick="clearAllCaches()">🗑️ Clear All Caches</button>
+
+      <button onclick="unregisterServiceWorker()">⚙️ Unregister Service Worker</button>
+
+      <button onclick="clearAndReload()" class="danger">🔄 Clear Everything & Reload</button>
+
+      <div id="status" class="status"></div>
+
+      <div class="info" style="margin-top: 30px">
+        <strong>Manual Steps (if needed):</strong>
+        <ol>
+          <li>Open DevTools (F12)</li>
+          <li>Go to Application tab</li>
+          <li>Click "Clear storage"</li>
+          <li>Check all boxes</li>
+          <li>Click "Clear site data"</li>
+          <li>Hard refresh (Ctrl+Shift+R or Cmd+Shift+R)</li>
+        </ol>
+      </div>
     </div>
 
-    <h3>Quick Actions:</h3>
-    
-    <button onclick="clearAllCaches()">
-      🗑️ Clear All Caches
-    </button>
-    
-    <button onclick="unregisterServiceWorker()">
-      ⚙️ Unregister Service Worker
-    </button>
-    
-    <button onclick="clearAndReload()" class="danger">
-      🔄 Clear Everything & Reload
-    </button>
+    <script>
+      function showStatus(message, type = 'success') {
+        const status = document.getElementById('status');
+        status.textContent = message;
+        status.className = `status ${type}`;
 
-    <div id="status" class="status"></div>
-
-    <div class="info" style="margin-top: 30px;">
-      <strong>Manual Steps (if needed):</strong>
-      <ol>
-        <li>Open DevTools (F12)</li>
-        <li>Go to Application tab</li>
-        <li>Click "Clear storage"</li>
-        <li>Check all boxes</li>
-        <li>Click "Clear site data"</li>
-        <li>Hard refresh (Ctrl+Shift+R or Cmd+Shift+R)</li>
-      </ol>
-    </div>
-  </div>
-
-  <script>
-    function showStatus(message, type = 'success') {
-      const status = document.getElementById('status');
-      status.textContent = message;
-      status.className = `status ${type}`;
-      
-      if (type === 'success') {
-        setTimeout(() => {
-          status.style.display = 'none';
-        }, 5000);
-      }
-    }
-
-    async function clearAllCaches() {
-      try {
-        const cacheNames = await caches.keys();
-        await Promise.all(cacheNames.map(name => caches.delete(name)));
-        showStatus(`✅ Cleared ${cacheNames.length} cache(s): ${cacheNames.join(', ')}`, 'success');
-      } catch (error) {
-        showStatus(`❌ Error clearing caches: ${error.message}`, 'error');
-      }
-    }
-
-    async function unregisterServiceWorker() {
-      try {
-        if ('serviceWorker' in navigator) {
-          const registrations = await navigator.serviceWorker.getRegistrations();
-          await Promise.all(registrations.map(reg => reg.unregister()));
-          showStatus(`✅ Unregistered ${registrations.length} service worker(s)`, 'success');
-        } else {
-          showStatus('⚠️ Service Workers not supported', 'error');
+        if (type === 'success') {
+          setTimeout(() => {
+            status.style.display = 'none';
+          }, 5000);
         }
-      } catch (error) {
-        showStatus(`❌ Error unregistering service worker: ${error.message}`, 'error');
       }
-    }
 
-    async function clearAndReload() {
-      try {
-        // Clear all caches
-        const cacheNames = await caches.keys();
-        await Promise.all(cacheNames.map(name => caches.delete(name)));
-        
-        // Unregister service workers
-        if ('serviceWorker' in navigator) {
-          const registrations = await navigator.serviceWorker.getRegistrations();
-          await Promise.all(registrations.map(reg => reg.unregister()));
+      async function clearAllCaches() {
+        try {
+          const cacheNames = await caches.keys();
+          await Promise.all(cacheNames.map(name => caches.delete(name)));
+          showStatus(
+            `✅ Cleared ${cacheNames.length} cache(s): ${cacheNames.join(', ')}`,
+            'success'
+          );
+        } catch (error) {
+          showStatus(`❌ Error clearing caches: ${error.message}`, 'error');
         }
-        
-        // Clear local storage
-        localStorage.clear();
-        
-        // Clear session storage
-        sessionStorage.clear();
-        
-        showStatus('✅ Everything cleared! Reloading in 2 seconds...', 'success');
-        
-        setTimeout(() => {
-          window.location.href = '/';
-        }, 2000);
-      } catch (error) {
-        showStatus(`❌ Error: ${error.message}`, 'error');
       }
-    }
 
-    // Auto-clear on load if ?clear=true
-    if (window.location.search.includes('clear=true')) {
-      clearAndReload();
-    }
-  </script>
-</body>
+      async function unregisterServiceWorker() {
+        try {
+          if ('serviceWorker' in navigator) {
+            const registrations = await navigator.serviceWorker.getRegistrations();
+            await Promise.all(registrations.map(reg => reg.unregister()));
+            showStatus(`✅ Unregistered ${registrations.length} service worker(s)`, 'success');
+          } else {
+            showStatus('⚠️ Service Workers not supported', 'error');
+          }
+        } catch (error) {
+          showStatus(`❌ Error unregistering service worker: ${error.message}`, 'error');
+        }
+      }
+
+      async function clearAndReload() {
+        try {
+          // Clear all caches
+          const cacheNames = await caches.keys();
+          await Promise.all(cacheNames.map(name => caches.delete(name)));
+
+          // Unregister service workers
+          if ('serviceWorker' in navigator) {
+            const registrations = await navigator.serviceWorker.getRegistrations();
+            await Promise.all(registrations.map(reg => reg.unregister()));
+          }
+
+          // Clear local storage
+          localStorage.clear();
+
+          // Clear session storage
+          sessionStorage.clear();
+
+          showStatus('✅ Everything cleared! Reloading in 2 seconds...', 'success');
+
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 2000);
+        } catch (error) {
+          showStatus(`❌ Error: ${error.message}`, 'error');
+        }
+      }
+
+      // Auto-clear on load if ?clear=true
+      if (window.location.search.includes('clear=true')) {
+        clearAndReload();
+      }
+    </script>
+  </body>
 </html>

@@ -2,7 +2,7 @@
 
 /**
  * Image Upload Component
- * 
+ *
  * Supports multiple image upload with preview, drag-and-drop reordering, and deletion
  */
 
@@ -124,7 +124,7 @@ export function ImageUpload({
             draggable
             onDragStart={() => handleDragStart(imageIndex)}
             onDragOver={handleDragOver}
-            onDrop={(e) => handleDrop(e, imageIndex)}
+            onDrop={e => handleDrop(e, imageIndex)}
             onDragEnd={handleDragEnd}
             className={`
               relative aspect-square rounded-lg overflow-hidden border-2 
@@ -135,9 +135,7 @@ export function ImageUpload({
             {/* Main Image Badge */}
             {showMainImage && imageIndex === 0 && (
               <div className="absolute top-2 left-2 z-10">
-                <span className="bg-blue-500 text-white text-xs px-2 py-1 rounded">
-                  主图
-                </span>
+                <span className="bg-blue-500 text-white text-xs px-2 py-1 rounded">主图</span>
               </div>
             )}
 
@@ -148,15 +146,16 @@ export function ImageUpload({
               alt={`图片 ${imageIndex + 1}`}
               className="absolute inset-0 w-full h-full object-cover"
               style={{ zIndex: 1 }}
-              onError={(e) => {
-                e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%23f3f4f6" width="200" height="200"/%3E%3Ctext x="50%25" y="50%25" font-family="system-ui" font-size="14" fill="%239ca3af" text-anchor="middle" dy=".3em"%3E图片加载失败%3C/text%3E%3C/svg%3E';
+              onError={e => {
+                e.currentTarget.src =
+                  'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%23f3f4f6" width="200" height="200"/%3E%3Ctext x="50%25" y="50%25" font-family="system-ui" font-size="14" fill="%239ca3af" text-anchor="middle" dy=".3em"%3E图片加载失败%3C/text%3E%3C/svg%3E';
               }}
             />
 
             {/* Delete Button */}
             <button
               type="button"
-              onClick={(e) => {
+              onClick={e => {
                 e.preventDefault();
                 e.stopPropagation();
                 handleDelete(imageIndex);
@@ -173,11 +172,11 @@ export function ImageUpload({
             </button>
 
             {/* Drag Indicator */}
-            <div 
+            <div
               className="absolute inset-0 flex items-center justify-center pointer-events-none transition-all"
-              style={{ 
+              style={{
                 zIndex: 20,
-                backgroundColor: 'transparent'
+                backgroundColor: 'transparent',
               }}
             >
               <span className="text-white opacity-0 group-hover:opacity-100 text-xs bg-black bg-opacity-50 px-2 py-1 rounded">
@@ -191,7 +190,7 @@ export function ImageUpload({
         {images.length < maxImages && (
           <button
             type="button"
-            onClick={(e) => {
+            onClick={e => {
               e.preventDefault();
               e.stopPropagation();
               fileInputRef.current?.click();
@@ -226,7 +225,7 @@ export function ImageUpload({
         type="file"
         accept="image/jpeg,image/jpg,image/png,image/webp"
         multiple
-        onChange={(e) => handleFileSelect(e.target.files)}
+        onChange={e => handleFileSelect(e.target.files)}
         className="hidden"
       />
 
