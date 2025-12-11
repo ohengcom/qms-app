@@ -37,7 +37,7 @@ function UsageTrackingContent() {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const { t, language } = useLanguage();
 
-  // Use tRPC hooks
+  // Use React Query hooks
   const { data: usageData, isLoading: loading } = useUsageRecords();
   const { data: statsData } = useOverallUsageStats();
   const { data: appSettings } = useAppSettings();

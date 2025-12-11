@@ -56,7 +56,7 @@ export function EditUsageRecordDialog({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const { t } = useLanguage();
 
-  // Use tRPC mutations
+  // Use React Query mutations
   const updateMutation = useUpdateUsageRecord();
   const deleteMutation = useDeleteUsageRecord();
 

@@ -8,7 +8,6 @@
 
 import { NextResponse } from 'next/server';
 import { sql } from '@/lib/neon';
-import { quiltRepository } from '@/lib/repositories/quilt.repository';
 import { dbLogger } from '@/lib/logger';
 
 /**
@@ -22,36 +21,66 @@ import { dbLogger } from '@/lib/logger';
  */
 export async function GET() {
   try {
-    // Get total quilts count
-    const totalQuilts = await quiltRepository.count();
+    // Use database-level COUNT queries for efficiency (Requirements: 6.3)
+    const [statusCounts, seasonalCounts, inUseQuiltsResult] = await Promise.all([
+      // Get status counts using database COUNT
+      sql`
+        SELECT 
+          current_status,
+          COUNT(*)::int as count
+        FROM quilts
+        GROUP BY current_status
+      `,
+      // Get seasonal distribution using database COUNT
+      sql`
+        SELECT 
+          season,
+          COUNT(*)::int as count
+        FROM quilts
+        GROUP BY season
+      `,
+      // Get quilts currently in use with their details
+      sql`
+        SELECT 
+          id, name, item_number as "itemNumber", season, 
+          fill_material as "fillMaterial", weight_grams as "weightGrams", location
+        FROM quilts
+        WHERE current_status = 'IN_USE'
+      `,
+    ]);
 
-    // Get all quilts to calculate status counts
-    const allQuilts = await quiltRepository.findAll({ limit: 1000 });
+    // Parse status counts
+    const statusMap: Record<string, number> = {};
+    statusCounts.forEach((row: any) => {
+      statusMap[row.current_status] = row.count;
+    });
+    const totalQuilts = Object.values(statusMap).reduce((sum, count) => sum + count, 0);
+    const inUseCount = statusMap['IN_USE'] || 0;
+    const storageCount = statusMap['STORAGE'] || 0;
+    const maintenanceCount = statusMap['MAINTENANCE'] || 0;
 
-    // Calculate status counts
-    const inUseCount = allQuilts.filter(q => q.currentStatus === 'IN_USE').length;
-    const storageCount = allQuilts.filter(q => q.currentStatus === 'STORAGE').length;
-    const maintenanceCount = allQuilts.filter(q => q.currentStatus === 'MAINTENANCE').length;
-
-    // Calculate seasonal distribution
+    // Parse seasonal distribution
     const seasonalStats = {
-      WINTER: allQuilts.filter(q => q.season === 'WINTER').length,
-      SPRING_AUTUMN: allQuilts.filter(q => q.season === 'SPRING_AUTUMN').length,
-      SUMMER: allQuilts.filter(q => q.season === 'SUMMER').length,
+      WINTER: 0,
+      SPRING_AUTUMN: 0,
+      SUMMER: 0,
     };
+    seasonalCounts.forEach((row: any) => {
+      if (row.season in seasonalStats) {
+        seasonalStats[row.season as keyof typeof seasonalStats] = row.count;
+      }
+    });
 
-    // Get quilts currently in use with their details
-    const inUseQuilts = allQuilts
-      .filter(q => q.currentStatus === 'IN_USE')
-      .map(q => ({
-        id: q.id,
-        name: q.name,
-        itemNumber: q.itemNumber,
-        season: q.season,
-        fillMaterial: q.fillMaterial,
-        weightGrams: q.weightGrams,
-        location: q.location,
-      }));
+    // Map in-use quilts
+    const inUseQuilts = inUseQuiltsResult.map((q: any) => ({
+      id: q.id,
+      name: q.name,
+      itemNumber: q.itemNumber,
+      season: q.season,
+      fillMaterial: q.fillMaterial,
+      weightGrams: q.weightGrams,
+      location: q.location,
+    }));
 
     // Get historical usage data for this day in previous years
     const today = new Date();

@@ -267,7 +267,7 @@ export default function QuiltsPage() {
       }
       setQuiltDialogOpen(false);
     } catch (error: any) {
-      // Extract error message from tRPC error
+      // Extract error message from API error
       const errorMessage =
         error?.message || (t('language') === 'zh' ? '未知错误' : 'Unknown error');
       toast.error(t('language') === 'zh' ? '保存失败' : 'Failed to save', errorMessage);

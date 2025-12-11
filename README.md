@@ -67,7 +67,7 @@ A modern Next.js application with Neon PostgreSQL that transforms simple Excel-b
 ### Backend
 
 - **Database**: Neon Serverless PostgreSQL
-- **API**: tRPC + Next.js API Routes
+- **API**: Next.js API Routes (REST API)
 - **Authentication**: JWT + bcryptjs
 - **Validation**: Zod schemas
 - **ORM**: Custom Repository Pattern

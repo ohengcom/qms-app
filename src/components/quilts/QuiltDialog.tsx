@@ -173,12 +173,12 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
 
       onOpenChange(false);
     } catch (error: any) {
-      // Extract detailed error message from tRPC error
+      // Extract detailed error message from API error
       const errorMessage = t('language') === 'zh' ? '保存失败' : 'Failed to save';
       let errorDescription = '';
 
       if (error) {
-        // tRPC errors have message property
+        // API errors have message property
         if (error.message) {
           errorDescription = error.message;
         }
