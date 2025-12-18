@@ -173,6 +173,14 @@ export default function QuiltUsageDetailPage() {
                 <span className="font-medium">{quilt.location}</span>
               </div>
 
+              {quilt.packagingInfo && (
+                <div className="flex items-center gap-2 text-sm">
+                  <Package className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-muted-foreground">{t('quilts.table.packagingInfo')}:</span>
+                  <span className="font-medium">{quilt.packagingInfo}</span>
+                </div>
+              )}
+
               {quilt.brand && (
                 <div className="flex items-center gap-2 text-sm">
                   <span className="text-muted-foreground">{t('quilts.form.brand')}:</span>
