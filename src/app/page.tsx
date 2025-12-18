@@ -144,7 +144,7 @@ export default function DashboardPage() {
             <TabsList className="w-full justify-start">
               <TabsTrigger value="current" className="flex items-center gap-2">
                 <Activity className="w-4 h-4" />
-                <span>{lang === 'zh' ? '当前使用' : 'Current Use'}</span>
+                <span>{t('dashboard.tabs.currentUse')}</span>
                 {inUseQuilts.length > 0 && (
                   <span className="ml-1 px-2 py-0.5 bg-primary/10 text-primary text-xs font-medium rounded-full">
                     {inUseQuilts.length}
@@ -153,7 +153,7 @@ export default function DashboardPage() {
               </TabsTrigger>
               <TabsTrigger value="history" className="flex items-center gap-2">
                 <History className="w-4 h-4" />
-                <span>{lang === 'zh' ? '历史使用' : 'Historical Use'}</span>
+                <span>{t('dashboard.tabs.historicalUse')}</span>
                 {historicalUsage.length > 0 && (
                   <span className="ml-1 px-2 py-0.5 bg-primary/10 text-primary text-xs font-medium rounded-full">
                     {historicalUsage.length}
@@ -188,13 +188,12 @@ export default function DashboardPage() {
                           <span className="font-medium text-foreground">{quilt.name}</span>
                           <span className="text-sm text-muted-foreground">#{quilt.itemNumber}</span>
                           <span
-                            className={`px-2 py-0.5 text-xs font-medium rounded ${
-                              quilt.season === 'WINTER'
+                            className={`px-2 py-0.5 text-xs font-medium rounded ${quilt.season === 'WINTER'
                                 ? 'bg-info/10 text-info'
                                 : quilt.season === 'SUMMER'
                                   ? 'bg-warning/10 text-warning'
                                   : 'bg-success/10 text-success'
-                            }`}
+                              }`}
                           >
                             {t(`season.${quilt.season}`)}
                           </span>
@@ -245,13 +244,12 @@ export default function DashboardPage() {
                         <span className="font-medium text-foreground">{record.quiltName}</span>
                         <span className="text-sm text-muted-foreground">#{record.itemNumber}</span>
                         <span
-                          className={`px-2 py-0.5 text-xs font-medium rounded ${
-                            record.season === 'WINTER'
+                          className={`px-2 py-0.5 text-xs font-medium rounded ${record.season === 'WINTER'
                               ? 'bg-info/10 text-info'
                               : record.season === 'SUMMER'
                                 ? 'bg-warning/10 text-warning'
                                 : 'bg-success/10 text-success'
-                          }`}
+                            }`}
                         >
                           {t(`season.${record.season}`)}
                         </span>

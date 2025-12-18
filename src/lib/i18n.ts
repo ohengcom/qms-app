@@ -53,10 +53,14 @@ export const translations = {
       stats: {
         totalQuilts: '被子总数',
         inUse: '使用中',
-        storage: '存储中',
+        storage: '已存储',
         maintenance: '维护中',
       },
-      seasonal: {
+      tabs: {
+        currentUse: '当前使用',
+        historicalUse: '历史使用',
+      },
+      charts: {
         title: '季节分布',
         winter: '冬季',
         springAutumn: '春秋',
@@ -787,10 +791,14 @@ export const translations = {
       stats: {
         totalQuilts: 'Total Quilts',
         inUse: 'In Use',
-        storage: 'Storage',
-        maintenance: 'Maintenance',
+        storage: 'In Storage',
+        maintenance: 'In Maintenance',
       },
-      seasonal: {
+      tabs: {
+        currentUse: 'Current Use',
+        historicalUse: 'Historical Use',
+      },
+      charts: {
         title: 'Seasonal Distribution',
         winter: 'Winter',
         springAutumn: 'Spring/Autumn',

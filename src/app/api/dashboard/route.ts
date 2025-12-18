@@ -105,12 +105,21 @@ export async function GET() {
         WHERE 
           EXTRACT(YEAR FROM up.start_date) < EXTRACT(YEAR FROM CURRENT_DATE)
           AND (
-            (EXTRACT(MONTH FROM up.start_date) < ${currentMonth} OR 
-             (EXTRACT(MONTH FROM up.start_date) = ${currentMonth} AND EXTRACT(DAY FROM up.start_date) <= ${currentDay}))
-            AND
-            (up.end_date IS NULL OR 
-             EXTRACT(MONTH FROM up.end_date) > ${currentMonth} OR 
-             (EXTRACT(MONTH FROM up.end_date) = ${currentMonth} AND EXTRACT(DAY FROM up.end_date) >= ${currentDay}))
+            CASE 
+              -- CASE 1: Standard range (e.g., April to Oct: 0401 <= 1218 AND 1218 <= 1031) -- always false if start > end
+              WHEN (EXTRACT(MONTH FROM up.start_date) * 100 + EXTRACT(DAY FROM up.start_date)) <= (EXTRACT(MONTH FROM up.end_date) * 100 + EXTRACT(DAY FROM up.end_date)) THEN
+                (${currentMonth} * 100 + ${currentDay}) >= (EXTRACT(MONTH FROM up.start_date) * 100 + EXTRACT(DAY FROM up.start_date))
+                AND (${currentMonth} * 100 + ${currentDay}) <= (EXTRACT(MONTH FROM up.end_date) * 100 + EXTRACT(DAY FROM up.end_date))
+              
+              -- CASE 2: Wrapping range (e.g., Nov to April: 1101 to 0430)
+              WHEN (EXTRACT(MONTH FROM up.start_date) * 100 + EXTRACT(DAY FROM up.start_date)) > (EXTRACT(MONTH FROM up.end_date) * 100 + EXTRACT(DAY FROM up.end_date)) THEN
+                (${currentMonth} * 100 + ${currentDay}) >= (EXTRACT(MONTH FROM up.start_date) * 100 + EXTRACT(DAY FROM up.start_date))
+                OR (${currentMonth} * 100 + ${currentDay}) <= (EXTRACT(MONTH FROM up.end_date) * 100 + EXTRACT(DAY FROM up.end_date))
+              
+              -- CASE 3: No end date (still in use at that historical time? typically we'd look at start date onwards)
+              ELSE 
+                (${currentMonth} * 100 + ${currentDay}) >= (EXTRACT(MONTH FROM up.start_date) * 100 + EXTRACT(DAY FROM up.start_date))
+            END
           )
         ORDER BY up.start_date DESC
         LIMIT 20
