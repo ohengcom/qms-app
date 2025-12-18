@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowLeft, Package, Calendar, Ruler, Weight, Layers, MapPin } from 'lucide-react';
+import { ArrowLeft, Package, Calendar, Ruler, Weight, Layers, MapPin, Tag, Hash, Archive } from 'lucide-react';
 import { useQuilt } from '@/hooks/useQuilts';
 import { useQuiltUsageRecords } from '@/hooks/useUsage';
 import { UsageHistoryTable } from '@/components/usage/UsageHistoryTable';
@@ -127,7 +127,7 @@ export default function QuiltUsageDetailPage() {
 
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-sm">
-                  <Package className="w-4 h-4 text-muted-foreground" />
+                  <Hash className="w-4 h-4 text-muted-foreground" />
                   <span className="text-muted-foreground">{t('quilts.table.itemNumber')}:</span>
                   <span className="font-medium">#{quilt.itemNumber}</span>
                 </div>
@@ -173,16 +173,17 @@ export default function QuiltUsageDetailPage() {
                 <span className="font-medium">{quilt.location}</span>
               </div>
 
-              {quilt.packagingInfo && (
+              {(quilt.packagingInfo || quilt.packaging_info) && (
                 <div className="flex items-center gap-2 text-sm">
-                  <Package className="w-4 h-4 text-muted-foreground" />
+                  <Archive className="w-4 h-4 text-muted-foreground" />
                   <span className="text-muted-foreground">{t('quilts.table.packagingInfo')}:</span>
-                  <span className="font-medium">{quilt.packagingInfo}</span>
+                  <span className="font-medium">{quilt.packagingInfo || quilt.packaging_info}</span>
                 </div>
               )}
 
               {quilt.brand && (
                 <div className="flex items-center gap-2 text-sm">
+                  <Tag className="w-4 h-4 text-muted-foreground" />
                   <span className="text-muted-foreground">{t('quilts.form.brand')}:</span>
                   <span className="font-medium">{quilt.brand}</span>
                 </div>
