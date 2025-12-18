@@ -55,6 +55,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
     brand: '无品牌',
     purchaseDate: '',
     location: '未存储',
+    packagingInfo: '',
     currentStatus: 'STORAGE',
     notes: '',
   });
@@ -94,6 +95,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
             ? new Date(quilt.purchaseDate).toISOString().split('T')[0]
             : '',
           location: quilt.location || '',
+          packagingInfo: quilt.packagingInfo || '',
           currentStatus: quilt.currentStatus || 'MAINTENANCE',
           notes: quilt.notes || '',
         });
@@ -127,6 +129,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
           brand: '无品牌',
           purchaseDate: '',
           location: '未存储',
+          packagingInfo: '',
           currentStatus: 'STORAGE',
           notes: '',
         });
@@ -242,7 +245,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {/* Season and Location in one row */}
+            {/* Row 1: Season and Purchase Date */}
             <div className="space-y-1.5">
               <Label htmlFor="season">{t('quilts.table.season')}</Label>
               <Select
@@ -261,18 +264,19 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="location">存放位置</Label>
+              <Label htmlFor="purchaseDate">{t('quilts.form.purchaseDate')}</Label>
               <Input
-                id="location"
-                value={formData.location}
-                onChange={e => handleInputChange('location', e.target.value)}
-                placeholder={t('quilts.form.locationPlaceholder')}
+                id="purchaseDate"
+                type="date"
+                value={formData.purchaseDate}
+                onChange={e => handleInputChange('purchaseDate', e.target.value)}
+                max={new Date().toISOString().split('T')[0]}
               />
             </div>
 
-            {/* Dimensions */}
+            {/* Row 2: Dimensions */}
             <div className="space-y-1.5">
-              <Label htmlFor="lengthCm">长度 (cm)</Label>
+              <Label htmlFor="lengthCm">{t('quilts.form.length')}</Label>
               <Input
                 id="lengthCm"
                 type="number"
@@ -284,7 +288,7 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="widthCm">宽度 (cm)</Label>
+              <Label htmlFor="widthCm">{t('quilts.form.width')}</Label>
               <Input
                 id="widthCm"
                 type="number"
@@ -295,8 +299,9 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
               />
             </div>
 
+            {/* Row 3: Weight and Color */}
             <div className="space-y-1.5">
-              <Label htmlFor="weightGrams">重量 (g)</Label>
+              <Label htmlFor="weightGrams">{t('quilts.table.weight')} (g)</Label>
               <Input
                 id="weightGrams"
                 type="number"
@@ -317,9 +322,9 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
               />
             </div>
 
-            {/* Material Information */}
+            {/* Row 4: Material and Brand */}
             <div className="space-y-1.5">
-              <Label htmlFor="fillMaterial">填充材料</Label>
+              <Label htmlFor="fillMaterial">{t('quilts.table.fillMaterial')}</Label>
               <Input
                 id="fillMaterial"
                 value={formData.fillMaterial}
@@ -338,14 +343,24 @@ export function QuiltDialog({ open, onOpenChange, quilt, onSave }: QuiltDialogPr
               />
             </div>
 
+            {/* Row 5: Location and Packaging Info */}
             <div className="space-y-1.5">
-              <Label htmlFor="purchaseDate">{t('quilts.form.purchaseDate')}</Label>
+              <Label htmlFor="location">{t('quilts.table.location')}</Label>
               <Input
-                id="purchaseDate"
-                type="date"
-                value={formData.purchaseDate}
-                onChange={e => handleInputChange('purchaseDate', e.target.value)}
-                max={new Date().toISOString().split('T')[0]}
+                id="location"
+                value={formData.location}
+                onChange={e => handleInputChange('location', e.target.value)}
+                placeholder={t('quilts.form.locationPlaceholder')}
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="packagingInfo">{t('quilts.table.packagingInfo')}</Label>
+              <Input
+                id="packagingInfo"
+                value={formData.packagingInfo}
+                onChange={e => handleInputChange('packagingInfo', e.target.value)}
+                placeholder={t('quilts.form.packagingInfoPlaceholder')}
               />
             </div>
           </div>

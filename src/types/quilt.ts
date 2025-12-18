@@ -82,6 +82,7 @@ export interface QuiltFormData {
   fillMaterial: string;
   color: string;
   location: string;
+  packagingInfo?: string;
   currentStatus: QuiltStatusType;
   brand?: string;
   purchaseDate?: string;
