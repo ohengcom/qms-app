@@ -139,6 +139,13 @@ interface EndUsageInput {
   notes?: string;
 }
 
+interface UpdateQuiltStatusInput {
+  quiltId: string;
+  status: 'IN_USE' | 'STORAGE' | 'MAINTENANCE';
+  usageType?: 'REGULAR' | 'GUEST' | 'SPECIAL_OCCASION' | 'SEASONAL_ROTATION';
+  notes?: string;
+}
+
 interface UsageRecord {
   id: string;
   quiltId: string;
@@ -149,13 +156,12 @@ interface UsageRecord {
 }
 
 async function startUsage(data: StartUsageInput): Promise<UsageRecord> {
-  // Create a usage record via the usage API
-  const response = await fetch('/api/usage', {
-    method: 'POST',
+  // Update the quilt status to IN_USE (which will automatically create the usage record atomically)
+  const response = await fetch(`/api/quilts/${data.quiltId}/status`, {
+    method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      quiltId: data.quiltId,
-      startDate: data.startDate.toISOString(),
+      status: 'IN_USE',
       usageType: data.usageType || 'REGULAR',
       notes: data.notes,
     }),
@@ -166,23 +172,8 @@ async function startUsage(data: StartUsageInput): Promise<UsageRecord> {
     throw new Error(error.error || '开始使用失败');
   }
 
-  // Also update the quilt status to IN_USE
-  const statusResponse = await fetch(`/api/quilts/${data.quiltId}/status`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      status: 'IN_USE',
-      usageType: data.usageType || 'REGULAR',
-      notes: data.notes,
-    }),
-  });
-
-  if (!statusResponse.ok) {
-    // Log but don't fail - the usage record was created
-    console.warn('Failed to update quilt status to IN_USE');
-  }
-
-  return response.json();
+  const result = await response.json();
+  return result.usageRecord;
 }
 
 async function endUsage(data: EndUsageInput): Promise<UsageRecord | null> {
@@ -203,6 +194,25 @@ async function endUsage(data: EndUsageInput): Promise<UsageRecord | null> {
 
   const result = await response.json();
   return result.usageRecord;
+}
+
+async function updateQuiltStatus(data: UpdateQuiltStatusInput): Promise<any> {
+  const response = await fetch(`/api/quilts/${data.quiltId}/status`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      status: data.status,
+      usageType: data.usageType,
+      notes: data.notes,
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ error: '更新状态失败' }));
+    throw new Error(error.error || '更新状态失败');
+  }
+
+  return response.json();
 }
 
 // ============================================================================
@@ -315,6 +325,22 @@ export function useEndUsage() {
 
   return useMutation({
     mutationFn: endUsage,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUILTS_KEY });
+      queryClient.invalidateQueries({ queryKey: USAGE_KEY });
+      queryClient.invalidateQueries({ queryKey: DASHBOARD_KEY });
+    },
+  });
+}
+
+/**
+ * Hook to update a quilt's status with automatic usage record management
+ */
+export function useUpdateQuiltStatus() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: updateQuiltStatus,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUILTS_KEY });
       queryClient.invalidateQueries({ queryKey: USAGE_KEY });

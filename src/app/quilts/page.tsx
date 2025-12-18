@@ -13,8 +13,8 @@ import { QuiltToolbar } from './components/QuiltToolbar';
 import { QuiltListView } from './components/QuiltListView';
 import { QuiltGridView } from './components/QuiltGridView';
 import { toast } from '@/lib/toast';
-import { useQuilts, useCreateQuilt, useUpdateQuilt, useDeleteQuilt } from '@/hooks/useQuilts';
-import { useCreateUsageRecord, useEndUsageRecord } from '@/hooks/useUsage';
+import { useQuilts, useCreateQuilt, useUpdateQuilt, useDeleteQuilt, useUpdateQuiltStatus } from '@/hooks/useQuilts';
+import { useActiveUsageRecord } from '@/hooks/useUsage';
 import { useAppSettings } from '@/hooks/useSettings';
 import type { Quilt, FilterCriteria, SortField, SortDirection, ViewMode } from '@/types/quilt';
 
@@ -49,8 +49,7 @@ export default function QuiltsPage() {
   const createQuiltMutation = useCreateQuilt();
   const updateQuiltMutation = useUpdateQuilt();
   const deleteQuiltMutation = useDeleteQuilt();
-  const createUsageRecordMutation = useCreateUsageRecord();
-  const endUsageRecordMutation = useEndUsageRecord();
+  const updateQuiltStatusMutation = useUpdateQuiltStatus();
 
   const quilts: Quilt[] = (quiltsData as any)?.json?.quilts || quiltsData?.quilts || [];
 
@@ -282,29 +281,13 @@ export default function QuiltsPage() {
     if (!selectedQuilt) return;
 
     try {
-      // Update quilt status
-      await updateQuiltMutation.mutateAsync({
-        id: quiltId,
-        currentStatus: newStatus as any,
+      // Use the atomic status update API
+      await updateQuiltStatusMutation.mutateAsync({
+        quiltId: quiltId,
+        status: newStatus as any,
+        usageType: 'REGULAR', // Default to REGULAR, can be extended if needed
+        notes: options?.notes,
       });
-
-      // Handle usage records
-      if (newStatus === 'IN_USE' && selectedQuilt.currentStatus !== 'IN_USE') {
-        // Starting usage - create new usage record
-        await createUsageRecordMutation.mutateAsync({
-          quiltId: quiltId,
-          startDate: options?.startDate ? new Date(options.startDate) : new Date(),
-          usageType: 'REGULAR',
-          notes: options?.notes,
-        });
-      } else if (newStatus !== 'IN_USE' && selectedQuilt.currentStatus === 'IN_USE') {
-        // Ending usage - end active usage record
-        await endUsageRecordMutation.mutateAsync({
-          quiltId: quiltId,
-          endDate: options?.endDate ? new Date(options.endDate) : new Date(),
-          notes: options?.notes,
-        });
-      }
 
       toast.success(t('toasts.statusUpdated'));
       setStatusDialogOpen(false);
