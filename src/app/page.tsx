@@ -212,6 +212,7 @@ export default function DashboardPage() {
                         </div>
                         <Link
                           href={`/quilts?search=${quilt.name}`}
+                          prefetch={false}
                           className="text-sm text-primary hover:text-primary/80 font-medium transition-colors"
                           onClick={e => e.stopPropagation()}
                         >

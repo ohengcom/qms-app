@@ -101,6 +101,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                     <Link
                       key={item.name}
                       href={item.href}
+                      prefetch={false}
                       onClick={() => setSidebarOpen(false)}
                       className={cn(
                         'group flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors',
@@ -176,6 +177,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                   <Link
                     key={item.name}
                     href={item.href}
+                    prefetch={false}
                     className={cn(
                       'group flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors',
                       isActive
