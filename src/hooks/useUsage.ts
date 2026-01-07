@@ -393,7 +393,8 @@ export function useUsageRecords(filters?: UsageFilters) {
       const result = await fetchUsageRecords(filters);
       return result.records;
     },
-    staleTime: 30000, // 30 seconds
+    staleTime: 60000, // 1 minute
+    refetchOnWindowFocus: false,
   });
 }
 
@@ -448,7 +449,8 @@ export function useAllActiveUsageRecords() {
       const result = await fetchAllActiveUsageRecords();
       return result.records;
     },
-    staleTime: 30000, // 30 seconds
+    staleTime: 60000, // 1 minute
+    refetchOnWindowFocus: false,
   });
 }
 
@@ -548,6 +550,7 @@ export function useOverallUsageStats() {
   return useQuery({
     queryKey: [...USAGE_KEY, 'overall-stats'],
     queryFn: fetchOverallUsageStats,
-    staleTime: 30000, // 30 seconds
+    staleTime: 60000, // 1 minute
+    refetchOnWindowFocus: false,
   });
 }

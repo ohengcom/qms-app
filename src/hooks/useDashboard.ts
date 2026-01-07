@@ -9,7 +9,6 @@
  * Requirements: 1.2, 1.3 - REST API migration
  */
 
-import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 // Query keys for cache management
@@ -118,26 +117,18 @@ export function useDashboardStats(options?: DashboardStatsInput) {
   return useQuery({
     queryKey: [...DASHBOARD_KEY, options],
     queryFn: () => fetchDashboardStats(options),
-    refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
-    staleTime: 2 * 60 * 1000, // Consider data stale after 2 minutes
+    staleTime: 5 * 60 * 1000, // Consider data stale after 5 minutes
+    refetchOnWindowFocus: false, // Don't refetch on window focus to reduce API calls
   });
 }
 
 /**
  * Hook for real-time dashboard with auto-refresh
  * Simplified version - removes unused complex features
+ * Note: Auto-refresh is handled by React Query's refetchInterval in useDashboardStats
  */
 export function useRealtimeDashboard() {
   const { data: stats, isLoading, error, refetch } = useDashboardStats();
-
-  // Auto-refresh every 30 seconds for real-time feel
-  React.useEffect(() => {
-    const interval = setInterval(() => {
-      refetch();
-    }, 30 * 1000); // 30 seconds
-
-    return () => clearInterval(interval);
-  }, [refetch]);
 
   return { stats, isLoading, error, refetch };
 }

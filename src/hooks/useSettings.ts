@@ -257,8 +257,8 @@ export function useDatabaseStats() {
   return useQuery({
     queryKey: DATABASE_STATS_KEY,
     queryFn: fetchDatabaseStats,
-    staleTime: 30000, // 30 seconds
-    refetchInterval: 60000, // Refetch every minute
+    staleTime: 60000, // 1 minute
+    refetchOnWindowFocus: false, // Don't refetch on window focus
   });
 }
 
