@@ -228,23 +228,6 @@
   :lang(zh), :lang(zh-CN), :lang(zh-TW) {
     font-family: var(--font-chinese);
   }
-  
-  /* Hide browser default password reveal buttons */
-  /* Edge/IE */
-  input::-ms-reveal,
-  input::-ms-clear {
-    display: none;
-  }
-  /* Chrome/Safari - hide the password reveal button */
-  input[type="password"]::-webkit-textfield-decoration-container {
-    display: none;
-  }
-  input::-webkit-credentials-auto-fill-button {
-    visibility: hidden;
-    pointer-events: none;
-    position: absolute;
-    right: 0;
-  }
 }
 
 /* Respect user's reduced motion preference */

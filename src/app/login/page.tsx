@@ -78,9 +78,6 @@ function LoginForm() {
                   onChange={e => setPassword(e.target.value)}
                   placeholder={t('auth.passwordPlaceholder')}
                   className="pr-10"
-                  autoComplete="off"
-                  data-lpignore="true"
-                  data-form-type="other"
                   required
                   disabled={isLoading}
                   autoFocus
