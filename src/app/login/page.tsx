@@ -77,7 +77,8 @@ function LoginForm() {
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   placeholder={t('auth.passwordPlaceholder')}
-                  className="pr-10 [&::-ms-reveal]:hidden [&::-ms-clear]:hidden [&::-webkit-credentials-auto-fill-button]:hidden"
+                  className="pr-10"
+                  autoComplete="new-password"
                   required
                   disabled={isLoading}
                   autoFocus
