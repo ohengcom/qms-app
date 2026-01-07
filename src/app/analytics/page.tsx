@@ -127,10 +127,14 @@ export default function AnalyticsPage() {
     try {
       setAnalyticsLoading(true);
       const response = await fetch('/api/analytics');
-      const data = await response.json();
+      const result = await response.json();
 
-      if (data.success) {
-        setAnalytics(data.analytics);
+      // Handle new unified API response format
+      if (result.success && result.data) {
+        setAnalytics(result.data.analytics);
+      } else if (result.analytics) {
+        // Fallback for old format
+        setAnalytics(result.analytics);
       } else {
         // Failed to load analytics
       }
