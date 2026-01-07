@@ -67,6 +67,17 @@ interface ExportData {
   usageRecords: unknown[];
 }
 
+// API response type for unified format
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  meta?: Record<string, unknown>;
+  error?: {
+    code: string;
+    message: string;
+  };
+}
+
 // ============================================================================
 // Fetch Functions
 // ============================================================================
@@ -79,10 +90,18 @@ async function fetchAppSettings(): Promise<AppSettings> {
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: '获取应用设置失败' }));
-    throw new Error(error.error || '获取应用设置失败');
+    throw new Error(error.error?.message || error.error || '获取应用设置失败');
   }
 
-  return response.json();
+  const result: ApiResponse<{ settings: AppSettings }> = await response.json();
+
+  // Handle new unified API response format
+  if (result.success && result.data) {
+    return result.data.settings || (result.data as unknown as AppSettings);
+  }
+
+  // Fallback for old format (backward compatibility)
+  return result as unknown as AppSettings;
 }
 
 /**
@@ -99,10 +118,17 @@ async function updateAppSettings(
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: '更新应用设置失败' }));
-    throw new Error(error.error || '更新应用设置失败');
+    throw new Error(error.error?.message || error.error || '更新应用设置失败');
   }
 
-  return response.json();
+  const result = await response.json();
+
+  // Handle new unified API response format
+  if (result.success && result.data) {
+    return { success: true, settings: result.data.settings || data };
+  }
+
+  return result;
 }
 
 /**
@@ -113,10 +139,17 @@ async function fetchDatabaseStats(): Promise<DatabaseStats> {
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: '获取数据库统计失败' }));
-    throw new Error(error.error || '获取数据库统计失败');
+    throw new Error(error.error?.message || error.error || '获取数据库统计失败');
   }
 
-  return response.json();
+  const result = await response.json();
+
+  // Handle new unified API response format
+  if (result.success && result.data) {
+    return result.data.stats || result.data;
+  }
+
+  return result;
 }
 
 /**
@@ -127,10 +160,17 @@ async function fetchSystemInfo(): Promise<SystemInfo> {
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: '获取系统信息失败' }));
-    throw new Error(error.error || '获取系统信息失败');
+    throw new Error(error.error?.message || error.error || '获取系统信息失败');
   }
 
-  return response.json();
+  const result = await response.json();
+
+  // Handle new unified API response format
+  if (result.success && result.data) {
+    return result.data.info || result.data;
+  }
+
+  return result;
 }
 
 /**
@@ -147,10 +187,17 @@ async function changePassword(
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: '修改密码失败' }));
-    throw new Error(error.error || '修改密码失败');
+    throw new Error(error.error?.message || error.error || '修改密码失败');
   }
 
-  return response.json();
+  const result = await response.json();
+
+  // Handle new unified API response format
+  if (result.success !== undefined) {
+    return { success: result.success, message: result.data?.message || '密码修改成功' };
+  }
+
+  return result;
 }
 
 /**
@@ -161,10 +208,17 @@ async function fetchExportData(): Promise<ExportData> {
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: '导出数据失败' }));
-    throw new Error(error.error || '导出数据失败');
+    throw new Error(error.error?.message || error.error || '导出数据失败');
   }
 
-  return response.json();
+  const result = await response.json();
+
+  // Handle new unified API response format
+  if (result.success && result.data) {
+    return result.data;
+  }
+
+  return result;
 }
 
 // ============================================================================

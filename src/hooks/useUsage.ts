@@ -91,6 +91,21 @@ interface UsageFilters {
 // API Functions
 // ============================================================================
 
+// API response type for unified format
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  meta?: {
+    total?: number;
+    limit?: number;
+    hasMore?: boolean;
+  };
+  error?: {
+    code: string;
+    message: string;
+  };
+}
+
 /**
  * Fetch all usage records with optional filtering
  */
@@ -110,10 +125,21 @@ async function fetchUsageRecords(
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: '获取使用记录列表失败' }));
-    throw new Error(error.error || '获取使用记录列表失败');
+    throw new Error(error.error?.message || error.error || '获取使用记录列表失败');
   }
 
-  return response.json();
+  const result: ApiResponse<{ records: UsageRecordWithQuilt[] }> = await response.json();
+
+  // Handle new unified API response format
+  if (result.success && result.data) {
+    return {
+      records: result.data.records || [],
+      total: result.meta?.total || result.data.records?.length || 0,
+    };
+  }
+
+  // Fallback for old format (backward compatibility)
+  return result as unknown as { records: UsageRecordWithQuilt[]; total: number };
 }
 
 /**
@@ -124,10 +150,17 @@ async function fetchUsageRecordById(id: string): Promise<UsageRecord> {
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: '获取使用记录失败' }));
-    throw new Error(error.error || '获取使用记录失败');
+    throw new Error(error.error?.message || error.error || '获取使用记录失败');
   }
 
-  return response.json();
+  const result = await response.json();
+
+  // Handle new unified API response format
+  if (result.success && result.data) {
+    return result.data.record || result.data;
+  }
+
+  return result;
 }
 
 /**
@@ -140,10 +173,21 @@ async function fetchQuiltUsageRecords(
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: '获取被子使用记录失败' }));
-    throw new Error(error.error || '获取被子使用记录失败');
+    throw new Error(error.error?.message || error.error || '获取被子使用记录失败');
   }
 
-  return response.json();
+  const result = await response.json();
+
+  // Handle new unified API response format
+  if (result.success && result.data) {
+    return {
+      records: result.data.records || [],
+      total: result.meta?.total || result.data.records?.length || 0,
+      activeRecord: result.data.activeRecord || null,
+    };
+  }
+
+  return result;
 }
 
 /**
@@ -157,10 +201,20 @@ async function fetchAllActiveUsageRecords(): Promise<{
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: '获取活跃使用记录失败' }));
-    throw new Error(error.error || '获取活跃使用记录失败');
+    throw new Error(error.error?.message || error.error || '获取活跃使用记录失败');
   }
 
-  return response.json();
+  const result = await response.json();
+
+  // Handle new unified API response format
+  if (result.success && result.data) {
+    return {
+      records: result.data.records || [],
+      total: result.meta?.total || result.data.records?.length || 0,
+    };
+  }
+
+  return result;
 }
 
 /**
@@ -171,11 +225,19 @@ async function fetchUsageStats(quiltId: string): Promise<UsageStats> {
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: '获取使用统计失败' }));
-    throw new Error(error.error || '获取使用统计失败');
+    throw new Error(error.error?.message || error.error || '获取使用统计失败');
   }
 
-  const data = await response.json();
-  return data.stats || { totalUsages: 0, totalDays: 0, averageDays: 0, lastUsedDate: null };
+  const result = await response.json();
+
+  // Handle new unified API response format
+  if (result.success && result.data) {
+    return (
+      result.data.stats || { totalUsages: 0, totalDays: 0, averageDays: 0, lastUsedDate: null }
+    );
+  }
+
+  return result.stats || { totalUsages: 0, totalDays: 0, averageDays: 0, lastUsedDate: null };
 }
 
 /**
@@ -186,10 +248,17 @@ async function fetchOverallUsageStats(): Promise<OverallUsageStats> {
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: '获取使用统计失败' }));
-    throw new Error(error.error || '获取使用统计失败');
+    throw new Error(error.error?.message || error.error || '获取使用统计失败');
   }
 
-  return response.json();
+  const result = await response.json();
+
+  // Handle new unified API response format
+  if (result.success && result.data) {
+    return result.data.stats || result.data;
+  }
+
+  return result;
 }
 
 /**
@@ -210,10 +279,17 @@ async function createUsageRecord(data: CreateUsageRecordInput): Promise<UsageRec
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: '创建使用记录失败' }));
-    throw new Error(error.error || '创建使用记录失败');
+    throw new Error(error.error?.message || error.error || '创建使用记录失败');
   }
 
-  return response.json();
+  const result = await response.json();
+
+  // Handle new unified API response format
+  if (result.success && result.data) {
+    return result.data.record || result.data;
+  }
+
+  return result;
 }
 
 /**
@@ -237,10 +313,17 @@ async function updateUsageRecord(data: UpdateUsageRecordInput): Promise<UsageRec
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: '更新使用记录失败' }));
-    throw new Error(error.error || '更新使用记录失败');
+    throw new Error(error.error?.message || error.error || '更新使用记录失败');
   }
 
-  return response.json();
+  const result = await response.json();
+
+  // Handle new unified API response format
+  if (result.success && result.data) {
+    return result.data.record || result.data;
+  }
+
+  return result;
 }
 
 /**
@@ -259,10 +342,17 @@ async function endUsageRecord(data: EndUsageRecordInput): Promise<UsageRecord> {
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: '结束使用记录失败' }));
-    throw new Error(error.error || '结束使用记录失败');
+    throw new Error(error.error?.message || error.error || '结束使用记录失败');
   }
 
-  return response.json();
+  const result = await response.json();
+
+  // Handle new unified API response format
+  if (result.success && result.data) {
+    return result.data.record || result.data;
+  }
+
+  return result;
 }
 
 /**
@@ -275,10 +365,17 @@ async function deleteUsageRecord(input: { id: string }): Promise<{ success: bool
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: '删除使用记录失败' }));
-    throw new Error(error.error || '删除使用记录失败');
+    throw new Error(error.error?.message || error.error || '删除使用记录失败');
   }
 
-  return response.json();
+  const result = await response.json();
+
+  // Handle new unified API response format
+  if (result.success !== undefined) {
+    return { success: result.success };
+  }
+
+  return result;
 }
 
 // ============================================================================

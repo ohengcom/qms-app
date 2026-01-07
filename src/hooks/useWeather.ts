@@ -23,6 +23,16 @@ interface WeatherData {
   timezone?: string;
 }
 
+// API response type for unified format
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  error?: {
+    code: string;
+    message: string;
+  };
+}
+
 export function useWeather() {
   return useQuery<WeatherData>({
     queryKey: ['weather', 'shanghai'],
@@ -31,7 +41,16 @@ export function useWeather() {
       if (!response.ok) {
         throw new Error('Failed to fetch weather data');
       }
-      return response.json();
+
+      const result: ApiResponse<{ weather: WeatherData }> = await response.json();
+
+      // Handle new unified API response format
+      if (result.success && result.data) {
+        return result.data.weather || (result.data as unknown as WeatherData);
+      }
+
+      // Fallback for old format
+      return result as unknown as WeatherData;
     },
     staleTime: 30 * 60 * 1000, // 30 minutes
     refetchInterval: 30 * 60 * 1000, // Refetch every 30 minutes

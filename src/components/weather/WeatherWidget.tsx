@@ -44,8 +44,15 @@ export function WeatherWidget({ className }: WeatherWidgetProps) {
         throw new Error('Failed to fetch weather data');
       }
 
-      const data = await response.json();
-      setWeather(data.current);
+      const result = await response.json();
+
+      // Handle new unified API response format
+      if (result.success && result.data) {
+        setWeather(result.data.weather?.current || result.data.current);
+      } else {
+        // Fallback for old format
+        setWeather(result.current);
+      }
     } catch {
       setError('获取天气数据失败');
     } finally {

@@ -15,6 +15,16 @@ interface HistoricalWeatherData {
   };
 }
 
+// API response type for unified format
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  error?: {
+    code: string;
+    message: string;
+  };
+}
+
 export function useHistoricalWeather(date: string | null | undefined) {
   return useQuery<HistoricalWeatherData>({
     queryKey: ['weather', 'historical', date],
@@ -29,7 +39,16 @@ export function useHistoricalWeather(date: string | null | undefined) {
         throw new Error('Failed to fetch historical weather data');
       }
 
-      return response.json();
+      const result: ApiResponse<{ historicalWeather: HistoricalWeatherData }> =
+        await response.json();
+
+      // Handle new unified API response format
+      if (result.success && result.data) {
+        return result.data.historicalWeather || (result.data as unknown as HistoricalWeatherData);
+      }
+
+      // Fallback for old format
+      return result as unknown as HistoricalWeatherData;
     },
     enabled: !!date,
     staleTime: 86400000, // 24 hours (historical data doesn't change)

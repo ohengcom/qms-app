@@ -78,6 +78,17 @@ interface DashboardStatsInput {
   };
 }
 
+// API response type for unified format
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  meta?: Record<string, unknown>;
+  error?: {
+    code: string;
+    message: string;
+  };
+}
+
 /**
  * Fetch dashboard statistics from REST API
  */
@@ -86,10 +97,18 @@ async function fetchDashboardStats(_options?: DashboardStatsInput): Promise<Dash
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: '获取仪表板数据失败' }));
-    throw new Error(error.error || '获取仪表板数据失败');
+    throw new Error(error.error?.message || error.error || '获取仪表板数据失败');
   }
 
-  return response.json();
+  const result: ApiResponse<{ dashboard: DashboardStats }> = await response.json();
+
+  // Handle new unified API response format
+  if (result.success && result.data) {
+    return result.data.dashboard || (result.data as unknown as DashboardStats);
+  }
+
+  // Fallback for old format (backward compatibility)
+  return result as unknown as DashboardStats;
 }
 
 /**
