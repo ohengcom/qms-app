@@ -23,6 +23,24 @@ const USAGE_KEY = ['usage'] as const;
 const DASHBOARD_KEY = ['dashboard'] as const;
 
 // API response types
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  meta?: {
+    total?: number;
+    limit?: number;
+    hasMore?: boolean;
+  };
+  error?: {
+    code: string;
+    message: string;
+  };
+}
+
+interface QuiltsData {
+  quilts: Quilt[];
+}
+
 interface QuiltsResponse {
   quilts: Quilt[];
   total: number;
@@ -63,10 +81,22 @@ async function fetchQuilts(searchParams?: QuiltSearchInput): Promise<QuiltsRespo
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: '获取被子列表失败' }));
-    throw new Error(error.error || '获取被子列表失败');
+    throw new Error(error.error?.message || error.error || '获取被子列表失败');
   }
 
-  return response.json();
+  const result: ApiResponse<QuiltsData> = await response.json();
+
+  // Handle new unified API response format
+  if (result.success && result.data) {
+    return {
+      quilts: result.data.quilts || [],
+      total: result.meta?.total || 0,
+      hasMore: result.meta?.hasMore || false,
+    };
+  }
+
+  // Fallback for old format (backward compatibility)
+  return result as unknown as QuiltsResponse;
 }
 
 async function fetchQuiltById(id: string): Promise<Quilt> {
@@ -74,10 +104,17 @@ async function fetchQuiltById(id: string): Promise<Quilt> {
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: '获取被子详情失败' }));
-    throw new Error(error.error || '获取被子详情失败');
+    throw new Error(error.error?.message || error.error || '获取被子详情失败');
   }
 
-  return response.json();
+  const result = await response.json();
+
+  // Handle new unified API response format
+  if (result.success && result.data) {
+    return result.data.quilt || result.data;
+  }
+
+  return result;
 }
 
 async function createQuilt(data: CreateQuiltInput): Promise<Quilt> {
@@ -89,10 +126,17 @@ async function createQuilt(data: CreateQuiltInput): Promise<Quilt> {
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: '创建被子失败' }));
-    throw new Error(error.error || '创建被子失败');
+    throw new Error(error.error?.message || error.error || '创建被子失败');
   }
 
-  return response.json();
+  const result = await response.json();
+
+  // Handle new unified API response format
+  if (result.success && result.data) {
+    return result.data.quilt || result.data;
+  }
+
+  return result;
 }
 
 async function updateQuilt(data: UpdateQuiltInput): Promise<Quilt> {
@@ -105,10 +149,17 @@ async function updateQuilt(data: UpdateQuiltInput): Promise<Quilt> {
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: '更新被子失败' }));
-    throw new Error(error.error || '更新被子失败');
+    throw new Error(error.error?.message || error.error || '更新被子失败');
   }
 
-  return response.json();
+  const result = await response.json();
+
+  // Handle new unified API response format
+  if (result.success && result.data) {
+    return result.data.quilt || result.data;
+  }
+
+  return result;
 }
 
 async function deleteQuilt(input: { id: string }): Promise<{ success: boolean }> {
@@ -118,10 +169,17 @@ async function deleteQuilt(input: { id: string }): Promise<{ success: boolean }>
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: '删除被子失败' }));
-    throw new Error(error.error || '删除被子失败');
+    throw new Error(error.error?.message || error.error || '删除被子失败');
   }
 
-  return response.json();
+  const result = await response.json();
+
+  // Handle new unified API response format
+  if (result.success !== undefined) {
+    return { success: result.success };
+  }
+
+  return result;
 }
 
 // Usage tracking API functions

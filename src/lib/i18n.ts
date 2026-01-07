@@ -409,6 +409,8 @@ export const translations = {
     pages: {
       currentlyInUse: '当前在用被子',
       noQuiltsInUse: '暂无在用被子',
+      noQuilts: '暂无被子',
+      noQuiltsDescription: '点击"添加被子"按钮添加您的第一条被子记录',
       historicalUsage: '往年今日在用被子',
       fillMaterial: '填充物',
       weight: '重量',
@@ -1148,6 +1150,8 @@ export const translations = {
     pages: {
       currentlyInUse: 'Currently in Use',
       noQuiltsInUse: 'No Quilts Currently in Use',
+      noQuilts: 'No Quilts Yet',
+      noQuiltsDescription: 'Click "Add Quilt" button to add your first quilt record',
       historicalUsage: 'Historical Usage on This Day',
       fillMaterial: 'Fill Material',
       weight: 'Weight',
