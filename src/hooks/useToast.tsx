@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useRef, createContext, useContext } from 'react';
+import { X } from 'lucide-react';
 
 export interface Toast {
   id: string;
@@ -161,9 +162,10 @@ function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: (id: string) =
         </div>
         <button
           onClick={() => onRemove(toast.id)}
-          className="ml-4 text-lg leading-none opacity-70 hover:opacity-100"
+          className="ml-4 opacity-70 hover:opacity-100 transition-opacity"
+          aria-label="Close"
         >
-          ×
+          <X className="h-4 w-4" />
         </button>
       </div>
     </div>

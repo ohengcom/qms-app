@@ -44,7 +44,7 @@ The authentication system has been successfully implemented and is ready to use.
 
 ### 4. 路由保护 / Route Protection
 
-- ✅ Next.js middleware（`src/middleware.ts`）
+- ✅ Next.js proxy（`src/proxy.ts`）
   - 保护所有数据修改路由
   - 自动重定向到登录页
   - API 路由保护
@@ -69,7 +69,7 @@ The authentication system has been successfully implemented and is ready to use.
 3. `src/app/login/page.tsx` - 登录页面
 4. `src/app/api/auth/login/route.ts` - 登录 API
 5. `src/app/api/auth/logout/route.ts` - 登出 API
-6. `src/middleware.ts` - 路由保护中间件
+6. `src/proxy.ts` - 路由保护代理
 
 ## 📝 修改的文件 / Modified Files
 

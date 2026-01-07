@@ -15,6 +15,7 @@ import {
   TrendingUp,
   Activity,
 } from 'lucide-react';
+import { useLanguage } from '@/lib/language-provider';
 
 interface RecentUsageItem {
   id: string;
@@ -46,6 +47,9 @@ export function RecentUsageList({
   onEndUsage,
   onViewDetails,
 }: RecentUsageListProps) {
+  const { language } = useLanguage();
+  const locale = language === 'zh' ? 'zh-CN' : 'en-US';
+
   if (isLoading) {
     return (
       <Card className="animate-pulse">
@@ -100,10 +104,10 @@ export function RecentUsageList({
     const now = new Date();
     const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
 
-    if (diffInHours < 1) return 'Just now';
-    if (diffInHours < 24) return `${diffInHours}h ago`;
-    if (diffInHours < 48) return 'Yesterday';
-    return date.toLocaleDateString();
+    if (diffInHours < 1) return language === 'zh' ? '刚刚' : 'Just now';
+    if (diffInHours < 24) return language === 'zh' ? `${diffInHours}小时前` : `${diffInHours}h ago`;
+    if (diffInHours < 48) return language === 'zh' ? '昨天' : 'Yesterday';
+    return date.toLocaleDateString(locale);
   };
 
   const getInitials = (name: string) => {

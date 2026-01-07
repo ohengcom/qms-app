@@ -86,7 +86,14 @@ export function QuiltCard({
 
         {quilt.mainImage && (
           <div className="mb-3 relative h-40 bg-muted rounded-md overflow-hidden">
-            <Image src={quilt.mainImage} alt={quilt.name} fill className="object-cover" />
+            <Image
+              src={quilt.mainImage}
+              alt={quilt.name}
+              fill
+              className="object-cover"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              loading="lazy"
+            />
           </div>
         )}
 

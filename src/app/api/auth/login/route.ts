@@ -1,4 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
+/**
+ * Authentication REST API - Login
+ *
+ * POST /api/auth/login - Authenticate user
+ *
+ * Requirements: 5.3 - Consistent API response format
+ */
+
+import { NextRequest } from 'next/server';
 import {
   verifyPassword,
   generateJWT,
@@ -10,6 +18,13 @@ import {
 } from '@/lib/auth';
 import { authLogger } from '@/lib/logger';
 import { systemSettingsRepository } from '@/lib/repositories/system-settings.repository';
+import {
+  createSuccessResponse,
+  createBadRequestResponse,
+  createUnauthorizedResponse,
+  createRateLimitResponse,
+  createInternalErrorResponse,
+} from '@/lib/api/response';
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,7 +32,7 @@ export async function POST(request: NextRequest) {
 
     // Validate input
     if (!password || typeof password !== 'string') {
-      return NextResponse.json({ message: 'Password is required' }, { status: 400 });
+      return createBadRequestResponse('密码是必需的');
     }
 
     // Get client IP for rate limiting
@@ -26,10 +41,7 @@ export async function POST(request: NextRequest) {
     // Check rate limiting
     if (isRateLimited(ip)) {
       authLogger.warn('Rate limit exceeded', { ip });
-      return NextResponse.json(
-        { message: 'Too many login attempts. Please try again in 15 minutes.' },
-        { status: 429 }
-      );
+      return createRateLimitResponse('登录尝试次数过多，请15分钟后重试');
     }
 
     // Get password hash from database (fallback to environment variable)
@@ -42,7 +54,7 @@ export async function POST(request: NextRequest) {
 
     if (!passwordHash) {
       authLogger.error('Password hash is not configured in database or environment');
-      return NextResponse.json({ message: 'Authentication is not configured' }, { status: 500 });
+      return createInternalErrorResponse('认证未配置');
     }
 
     // Verify password
@@ -53,7 +65,7 @@ export async function POST(request: NextRequest) {
       recordFailedAttempt(ip);
       authLogger.warn('Invalid login attempt', { ip });
 
-      return NextResponse.json({ message: 'Invalid password' }, { status: 401 });
+      return createUnauthorizedResponse('密码错误');
     }
 
     // Clear failed attempts on successful login
@@ -64,11 +76,11 @@ export async function POST(request: NextRequest) {
     const duration = remember ? SESSION_DURATION.remember : SESSION_DURATION.default;
     const token = generateJWT({ userId: 'owner', remember: !!remember }, duration);
 
-    // Create response
-    const response = NextResponse.json(
-      { success: true, message: 'Login successful' },
-      { status: 200 }
-    );
+    // Create response with unified format
+    const response = createSuccessResponse({
+      authenticated: true,
+      message: '登录成功',
+    });
 
     // Set HTTP-only cookie
     response.cookies.set('qms-session', token, {
@@ -82,6 +94,6 @@ export async function POST(request: NextRequest) {
     return response;
   } catch (error) {
     authLogger.error('Login error', error as Error);
-    return NextResponse.json({ message: 'An error occurred during login' }, { status: 500 });
+    return createInternalErrorResponse('登录过程中发生错误', error);
   }
 }

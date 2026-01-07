@@ -48,8 +48,13 @@ const eslintConfig = defineConfig([
       'jsx-a11y/role-supports-aria-props': 'error',
       'jsx-a11y/img-redundant-alt': 'error',
       'jsx-a11y/no-redundant-roles': 'error',
-      'jsx-a11y/click-events-have-key-events': 'off', // Too many false positives
-      'jsx-a11y/no-static-element-interactions': 'off', // Too many false positives
+      'jsx-a11y/click-events-have-key-events': 'warn', // Important for keyboard accessibility
+      'jsx-a11y/no-static-element-interactions': 'warn', // Important for semantic HTML
+      'jsx-a11y/heading-has-content': 'error',
+      'jsx-a11y/html-has-lang': 'error',
+      'jsx-a11y/label-has-associated-control': 'warn',
+      'jsx-a11y/no-noninteractive-element-interactions': 'warn',
+      'jsx-a11y/tabindex-no-positive': 'error',
 
       // Code quality rules (essential)
       'prefer-const': 'error',

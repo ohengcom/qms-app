@@ -1,8 +1,8 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, Plus, RotateCcw, Grid3x3, List, Trash2 } from 'lucide-react';
-import { AdvancedFilters } from '@/components/quilts/AdvancedFilters';
-import type { FilterCriteria, ViewMode } from '@/types/quilt';
+import { AdvancedFilters, type FilterCriteria } from '@/components/quilts/AdvancedFilters';
+import type { ViewMode } from '@/types/quilt';
 
 import { useLanguage } from '@/lib/language-provider';
 
@@ -96,7 +96,7 @@ export function QuiltToolbar({
 
       {/* Advanced Filters */}
       <AdvancedFilters
-        onFilterChange={onFiltersChange as any}
+        onFilterChange={onFiltersChange}
         availableColors={availableColors}
         availableMaterials={availableMaterials}
       />

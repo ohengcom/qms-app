@@ -4,12 +4,11 @@
  * GET /api/usage/active - Get all active usage records (end_date is NULL)
  *
  * Requirements: 1.2, 1.3 - REST API for usage records
+ * Requirements: 5.3 - Consistent API response format
  */
 
-import { NextResponse } from 'next/server';
 import { usageRepository } from '@/lib/repositories/usage.repository';
-import { createError, ErrorCodes } from '@/lib/error-handler';
-import { dbLogger } from '@/lib/logger';
+import { createSuccessResponse, createInternalErrorResponse } from '@/lib/api/response';
 
 /**
  * GET /api/usage/active
@@ -21,14 +20,8 @@ export async function GET() {
   try {
     const records = await usageRepository.getAllActive();
 
-    return NextResponse.json({
-      records,
-      total: records.length,
-    });
+    return createSuccessResponse({ records }, { total: records.length, hasMore: false });
   } catch (error) {
-    dbLogger.error('Failed to fetch active usage records', { error });
-    return NextResponse.json(createError(ErrorCodes.INTERNAL_ERROR, '获取活跃使用记录失败'), {
-      status: 500,
-    });
+    return createInternalErrorResponse('获取活跃使用记录失败', error);
   }
 }

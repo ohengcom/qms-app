@@ -17,6 +17,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from 'lucide-react';
+import { useLanguage } from '@/lib/language-provider';
 
 interface UsagePeriod {
   id: string;
@@ -55,6 +56,8 @@ const CONDITION_COLORS = {
 };
 
 export function UsageTimeline({ usagePeriods, quiltName, showStats = true }: UsageTimelineProps) {
+  const { language } = useLanguage();
+  const locale = language === 'zh' ? 'zh-CN' : 'en-US';
   const [expandedPeriods, setExpandedPeriods] = useState<Set<string>>(new Set());
   const [showAllPeriods, setShowAllPeriods] = useState(false);
 
@@ -69,7 +72,7 @@ export function UsageTimeline({ usagePeriods, quiltName, showStats = true }: Usa
   };
 
   const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString('en-US', {
+    return new Date(date).toLocaleDateString(locale, {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -77,7 +80,7 @@ export function UsageTimeline({ usagePeriods, quiltName, showStats = true }: Usa
   };
 
   const formatDateTime = (date: Date) => {
-    return new Date(date).toLocaleString('en-US', {
+    return new Date(date).toLocaleString(locale, {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -88,7 +91,9 @@ export function UsageTimeline({ usagePeriods, quiltName, showStats = true }: Usa
 
   const getDurationText = (period: UsagePeriod) => {
     if (period.durationDays !== null && period.durationDays !== undefined) {
-      return `${period.durationDays} day${period.durationDays !== 1 ? 's' : ''}`;
+      return language === 'zh'
+        ? `${period.durationDays} 天`
+        : `${period.durationDays} day${period.durationDays !== 1 ? 's' : ''}`;
     }
 
     if (period.endDate) {
@@ -96,7 +101,7 @@ export function UsageTimeline({ usagePeriods, quiltName, showStats = true }: Usa
       const end = new Date(period.endDate);
       const diffMs = end.getTime() - start.getTime();
       const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-      return `${diffDays} day${diffDays !== 1 ? 's' : ''}`;
+      return language === 'zh' ? `${diffDays} 天` : `${diffDays} day${diffDays !== 1 ? 's' : ''}`;
     }
 
     return 'Ongoing';
@@ -237,9 +242,12 @@ export function UsageTimeline({ usagePeriods, quiltName, showStats = true }: Usa
 
                   {/* Period content */}
                   <div className="flex-1 min-w-0">
-                    <div
-                      className="cursor-pointer"
+                    <button
+                      type="button"
+                      className="cursor-pointer w-full text-left"
                       onClick={() => togglePeriodExpansion(period.id)}
+                      aria-expanded={isExpanded}
+                      aria-label={`${period.usageType.replace('_', ' ')} usage period from ${formatDate(period.startDate)}${period.endDate ? ` to ${formatDate(period.endDate)}` : ', ongoing'}. Click to ${isExpanded ? 'collapse' : 'expand'} details.`}
                     >
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center space-x-2">
@@ -275,13 +283,16 @@ export function UsageTimeline({ usagePeriods, quiltName, showStats = true }: Usa
                       <div className="flex items-center space-x-4 text-sm text-gray-600">
                         {period.location && (
                           <div className="flex items-center space-x-1">
-                            <MapPin className="w-3 h-3" />
+                            <MapPin className="w-3 h-3" aria-hidden="true" />
                             <span>{period.location}</span>
                           </div>
                         )}
                         {period.satisfactionRating && (
                           <div className="flex items-center space-x-1">
-                            <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                            <Star
+                              className="w-3 h-3 fill-yellow-400 text-yellow-400"
+                              aria-hidden="true"
+                            />
                             <span>{period.satisfactionRating}/5</span>
                           </div>
                         )}
@@ -292,12 +303,12 @@ export function UsageTimeline({ usagePeriods, quiltName, showStats = true }: Usa
                               CONDITION_COLORS[period.condition as keyof typeof CONDITION_COLORS]
                             )}
                           >
-                            <span className="w-2 h-2 rounded-full bg-current" />
+                            <span className="w-2 h-2 rounded-full bg-current" aria-hidden="true" />
                             <span>{period.condition.replace('_', ' ')}</span>
                           </div>
                         )}
                       </div>
-                    </div>
+                    </button>
 
                     {/* Expanded details */}
                     {isExpanded && (

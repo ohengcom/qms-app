@@ -112,6 +112,7 @@ export function QuiltImageDialog({ open, onOpenChange, quilt }: QuiltImageDialog
               alt={`${quilt.name} - ${language === 'zh' ? '图片' : 'Image'} ${currentIndex + 1}`}
               fill
               className="object-contain"
+              sizes="(max-width: 1280px) 100vw, 1280px"
               priority
             />
           </div>
@@ -164,7 +165,14 @@ export function QuiltImageDialog({ open, onOpenChange, quilt }: QuiltImageDialog
                       : 'border-transparent hover:border-muted-foreground/30'
                   }`}
                 >
-                  <Image src={image} alt={`Thumbnail ${index + 1}`} fill className="object-cover" />
+                  <Image
+                    src={image}
+                    alt={`Thumbnail ${index + 1}`}
+                    fill
+                    className="object-cover"
+                    sizes="80px"
+                    loading="lazy"
+                  />
                   {index === 0 && quilt.mainImage && (
                     <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-[10px] text-center py-0.5">
                       {language === 'zh' ? '主图' : 'Main'}

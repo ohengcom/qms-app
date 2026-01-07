@@ -68,7 +68,7 @@ After deployment completes, visit your production URL:
 **生产 URL / Production URL:**
 
 ```
-https://qms-app-omega.vercel.app
+https://your-app-domain.vercel.app
 ```
 
 **预期行为 / Expected Behavior:**
@@ -87,7 +87,7 @@ https://qms-app-omega.vercel.app
 - [ ] **访问主页** - 自动重定向到登录页
 
   ```
-  https://qms-app-omega.vercel.app
+  https://your-app-domain.vercel.app
   ```
 
 - [ ] **登录功能** - 使用测试密码登录
@@ -205,17 +205,18 @@ git push origin main
 
 ---
 
-### 问题 4: Middleware 警告 / Middleware Warning
+### 问题 4: Proxy 配置 / Proxy Configuration
 
 **症状 / Symptoms:**
 
-- 看到 middleware deprecation 警告
+- 路由保护不工作
+- 认证重定向问题
 
 **解决方案 / Solution:**
 
-- ✅ 这是预期的，可以安全忽略
-- ✅ 查看 `MIDDLEWARE_DEPRECATION_NOTE.md` 了解详情
-- ✅ 功能完全正常
+- ✅ 检查 `src/proxy.ts` 文件存在
+- ✅ 确认 proxy 函数正确导出
+- ✅ 验证受保护路由配置正确
 
 ---
 
@@ -326,7 +327,7 @@ npm run setup-password "YourStrongProductionPassword123!"
 1. **查看文档**
    - `AUTH_IMPLEMENTATION_SUMMARY.md`
    - `AUTH_TEST_GUIDE.md`
-   - `MIDDLEWARE_DEPRECATION_NOTE.md`
+   - `PASSWORD-MIGRATION-GUIDE.md`
 
 2. **检查日志**
    - Vercel 部署日志

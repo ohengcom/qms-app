@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { AlertTriangle, Info, CheckCircle, X, Bell, Clock, Zap } from 'lucide-react';
+import { useLanguage } from '@/lib/language-provider';
 
 interface Alert {
   type: 'info' | 'warning' | 'success' | 'error';
@@ -23,6 +24,9 @@ interface DashboardAlertsProps {
 }
 
 export function DashboardAlerts({ alerts, isLoading = false, onDismissAll }: DashboardAlertsProps) {
+  const { language } = useLanguage();
+  const locale = language === 'zh' ? 'zh-CN' : 'en-US';
+
   if (isLoading) {
     return (
       <Card className="animate-pulse">
@@ -114,15 +118,23 @@ export function DashboardAlerts({ alerts, isLoading = false, onDismissAll }: Das
   };
 
   const formatTimestamp = (timestamp?: Date) => {
-    if (!timestamp) return 'Just now';
+    if (!timestamp) return language === 'zh' ? '刚刚' : 'Just now';
 
     const now = new Date();
     const diffInMinutes = Math.floor((now.getTime() - timestamp.getTime()) / (1000 * 60));
 
-    if (diffInMinutes < 1) return 'Just now';
-    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
-    if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`;
-    return timestamp.toLocaleDateString();
+    if (diffInMinutes < 1) return language === 'zh' ? '刚刚' : 'Just now';
+    if (diffInMinutes < 60)
+      return language === 'zh' ? `${diffInMinutes}分钟前` : `${diffInMinutes}m ago`;
+    if (diffInMinutes < 1440)
+      return language === 'zh'
+        ? `${Math.floor(diffInMinutes / 60)}小时前`
+        : `${Math.floor(diffInMinutes / 60)}h ago`;
+    return timestamp.toLocaleDateString(locale, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
   };
 
   // Sort alerts by priority and timestamp

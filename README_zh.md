@@ -53,13 +53,13 @@
 
 ### 前端
 
-- **框架**: Next.js 16.0.7 (App Router)
-- **语言**: TypeScript 5.6.3
-- **样式**: Tailwind CSS 4
+- **框架**: Next.js 16.1.1 (App Router)
+- **语言**: TypeScript 5.9.3
+- **样式**: Tailwind CSS 4.1.18
 - **UI 组件**: Radix UI
-- **动画**: Framer Motion
-- **状态管理**: Zustand, React Query
-- **表单**: React Hook Form + Zod
+- **动画**: Framer Motion 12.24.7
+- **状态管理**: Zustand 5.0.8, React Query 5.90.16
+- **表单**: React Hook Form + Zod 4.3.5
 
 ### 后端
 
@@ -260,8 +260,8 @@ qms-app/
 
 ### 其他文档 (docs/)
 
-- **[UI 优化](./docs/UI_OPTIMIZATION.md)** - UI 优化方案和规范
-- **[重构文档](./docs/REFACTORING.md)** - 代码重构记录
+- **[项目总结](./docs/PROJECT_SUMMARY.md)** - 项目架构和功能总结
+- **[部署指南](./docs/DEPLOYMENT_SUMMARY.md)** - 部署配置和说明
 
 ## 🗺️ 路线图
 
@@ -305,6 +305,39 @@ qms-app/
   - 高级过滤系统
   - 仪表板统计
 
+### ✅ 已完成 (v1.2.0) - 2026 全面审查
+
+- **依赖升级**
+  - Next.js 16.1.1（最新稳定版）
+  - React 19.2.3
+  - TypeScript 5.9.3
+  - Tailwind CSS 4.1.18
+  - Framer Motion 12.24.7
+  - Zod 4.3.5
+  - 所有依赖更新到最新稳定版本
+- **代码质量改进**
+  - 移除所有未使用的导入和变量
+  - 重构重复代码模式
+  - 增强 TypeScript 类型安全
+  - 统一 API 响应格式
+- **安全性增强**
+  - 验证输入清理
+  - 确认 bcrypt 配置（salt rounds >= 10）
+  - 验证安全 Cookie 设置
+  - 验证认证和速率限制
+- **UI/UX 改进**
+  - 应用设计系统颜色方案
+  - 验证 hover 状态不造成布局偏移
+  - 将 emoji 替换为 SVG 图标（Lucide React）
+  - 使用 Next.js Image 优化图片加载
+  - 添加 prefers-reduced-motion 支持
+- **项目结构**
+  - 清理空目录
+  - 移除未使用文件
+  - 验证命名规范一致性
+- **国际化**
+  - 验证翻译完整性（中文/英文）
+
 ### 📋 计划中
 
 - **导入导出**
@@ -343,8 +376,8 @@ MIT License - 详见 [LICENSE](LICENSE) 文件
 
 ---
 
-**版本**: 1.1.0  
+**版本**: 1.2.0  
 **状态**: ✅ 生产就绪  
-**最后更新**: 2025-12-11
+**最后更新**: 2026-01-07
 
 用 ❤️ 打造，为了更好的家居整理

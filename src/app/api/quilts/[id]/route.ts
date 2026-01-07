@@ -6,13 +6,21 @@
  * DELETE /api/quilts/[id] - Delete a quilt
  *
  * Requirements: 1.2, 1.3 - REST API for quilts
+ * Requirements: 5.3 - Consistent API response format
+ * Requirements: 11.1 - Input sanitization
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { quiltRepository } from '@/lib/repositories/quilt.repository';
 import { updateQuiltSchema } from '@/lib/validations/quilt';
-import { createError, ErrorCodes } from '@/lib/error-handler';
-import { dbLogger } from '@/lib/logger';
+import { sanitizeApiInput } from '@/lib/sanitization';
+import {
+  createSuccessResponse,
+  createValidationErrorResponse,
+  createNotFoundResponse,
+  createInternalErrorResponse,
+  createBadRequestResponse,
+} from '@/lib/api/response';
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -28,25 +36,18 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const { id } = await params;
 
     if (!id) {
-      return NextResponse.json(createError(ErrorCodes.VALIDATION_FAILED, '被子 ID 是必需的'), {
-        status: 400,
-      });
+      return createBadRequestResponse('被子 ID 是必需的');
     }
 
     const quilt = await quiltRepository.findById(id);
 
     if (!quilt) {
-      return NextResponse.json(createError(ErrorCodes.NOT_FOUND, '被子不存在', { id }), {
-        status: 404,
-      });
+      return createNotFoundResponse('被子');
     }
 
-    return NextResponse.json(quilt);
+    return createSuccessResponse({ quilt });
   } catch (error) {
-    dbLogger.error('Failed to fetch quilt', { error });
-    return NextResponse.json(createError(ErrorCodes.INTERNAL_ERROR, '获取被子详情失败'), {
-      status: 500,
-    });
+    return createInternalErrorResponse('获取被子详情失败', error);
   }
 }
 
@@ -62,12 +63,13 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     const { id } = await params;
 
     if (!id) {
-      return NextResponse.json(createError(ErrorCodes.VALIDATION_FAILED, '被子 ID 是必需的'), {
-        status: 400,
-      });
+      return createBadRequestResponse('被子 ID 是必需的');
     }
 
-    const body = await request.json();
+    const rawBody = await request.json();
+
+    // Sanitize input to prevent XSS (Requirements: 11.1)
+    const body = sanitizeApiInput(rawBody);
 
     // Handle purchaseDate conversion if it's a string
     if (body.purchaseDate && typeof body.purchaseDate === 'string') {
@@ -78,20 +80,16 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     const validationResult = updateQuiltSchema.safeParse({ ...body, id });
 
     if (!validationResult.success) {
-      return NextResponse.json(
-        createError(ErrorCodes.VALIDATION_FAILED, '被子数据验证失败', {
-          errors: validationResult.error.flatten().fieldErrors,
-        }),
-        { status: 400 }
+      return createValidationErrorResponse(
+        '被子数据验证失败',
+        validationResult.error.flatten().fieldErrors as Record<string, string[]>
       );
     }
 
     // Check if quilt exists
     const existingQuilt = await quiltRepository.findById(id);
     if (!existingQuilt) {
-      return NextResponse.json(createError(ErrorCodes.NOT_FOUND, '被子不存在', { id }), {
-        status: 404,
-      });
+      return createNotFoundResponse('被子');
     }
 
     // Update the quilt (exclude id from data)
@@ -99,17 +97,12 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     const quilt = await quiltRepository.update(id, updateData);
 
     if (!quilt) {
-      return NextResponse.json(createError(ErrorCodes.NOT_FOUND, '被子不存在', { id }), {
-        status: 404,
-      });
+      return createNotFoundResponse('被子');
     }
 
-    return NextResponse.json(quilt);
+    return createSuccessResponse({ quilt });
   } catch (error) {
-    dbLogger.error('Failed to update quilt', { error });
-    return NextResponse.json(createError(ErrorCodes.INTERNAL_ERROR, '更新被子失败'), {
-      status: 500,
-    });
+    return createInternalErrorResponse('更新被子失败', error);
   }
 }
 
@@ -123,32 +116,23 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     const { id } = await params;
 
     if (!id) {
-      return NextResponse.json(createError(ErrorCodes.VALIDATION_FAILED, '被子 ID 是必需的'), {
-        status: 400,
-      });
+      return createBadRequestResponse('被子 ID 是必需的');
     }
 
     // Check if quilt exists
     const existingQuilt = await quiltRepository.findById(id);
     if (!existingQuilt) {
-      return NextResponse.json(createError(ErrorCodes.NOT_FOUND, '被子不存在', { id }), {
-        status: 404,
-      });
+      return createNotFoundResponse('被子');
     }
 
     const success = await quiltRepository.delete(id);
 
     if (!success) {
-      return NextResponse.json(createError(ErrorCodes.NOT_FOUND, '被子不存在', { id }), {
-        status: 404,
-      });
+      return createNotFoundResponse('被子');
     }
 
-    return NextResponse.json({ success: true });
+    return createSuccessResponse({ deleted: true, id });
   } catch (error) {
-    dbLogger.error('Failed to delete quilt', { error });
-    return NextResponse.json(createError(ErrorCodes.INTERNAL_ERROR, '删除被子失败'), {
-      status: 500,
-    });
+    return createInternalErrorResponse('删除被子失败', error);
   }
 }

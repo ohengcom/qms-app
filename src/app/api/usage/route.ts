@@ -5,13 +5,20 @@
  * POST /api/usage - Create a new usage record
  *
  * Requirements: 1.2, 1.3 - REST API for usage records
+ * Requirements: 5.3 - Consistent API response format
+ * Requirements: 11.1 - Input sanitization
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { usageRepository } from '@/lib/repositories/usage.repository';
-import { createError, ErrorCodes } from '@/lib/error-handler';
-import { dbLogger } from '@/lib/logger';
+import { sanitizeApiInput } from '@/lib/sanitization';
+import {
+  createValidationErrorResponse,
+  createInternalErrorResponse,
+  createSuccessResponse,
+  createCreatedResponse,
+} from '@/lib/api/response';
 
 // Input validation schemas
 const createUsageRecordSchema = z.object({
@@ -57,15 +64,16 @@ export async function GET(request: NextRequest) {
     // Fetch usage records
     const records = await usageRepository.findAll(filters);
 
-    return NextResponse.json({
-      records,
-      total: records.length,
-    });
+    return createSuccessResponse(
+      { records },
+      {
+        total: records.length,
+        limit,
+        hasMore: records.length === limit,
+      }
+    );
   } catch (error) {
-    dbLogger.error('Failed to fetch usage records', { error });
-    return NextResponse.json(createError(ErrorCodes.INTERNAL_ERROR, '获取使用记录列表失败'), {
-      status: 500,
-    });
+    return createInternalErrorResponse('获取使用记录列表失败', error);
   }
 }
 
@@ -83,17 +91,18 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const rawBody = await request.json();
+
+    // Sanitize input to prevent XSS (Requirements: 11.1)
+    const body = sanitizeApiInput(rawBody);
 
     // Validate input using Zod schema
     const validationResult = createUsageRecordSchema.safeParse(body);
 
     if (!validationResult.success) {
-      return NextResponse.json(
-        createError(ErrorCodes.VALIDATION_FAILED, '使用记录数据验证失败', {
-          errors: validationResult.error.flatten().fieldErrors,
-        }),
-        { status: 400 }
+      return createValidationErrorResponse(
+        '使用记录数据验证失败',
+        validationResult.error.flatten().fieldErrors as Record<string, string[]>
       );
     }
 
@@ -108,11 +117,8 @@ export async function POST(request: NextRequest) {
       notes,
     });
 
-    return NextResponse.json(record, { status: 201 });
+    return createCreatedResponse({ record });
   } catch (error) {
-    dbLogger.error('Failed to create usage record', { error });
-    return NextResponse.json(createError(ErrorCodes.INTERNAL_ERROR, '创建使用记录失败'), {
-      status: 500,
-    });
+    return createInternalErrorResponse('创建使用记录失败', error);
   }
 }

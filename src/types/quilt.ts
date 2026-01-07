@@ -77,15 +77,17 @@ export interface FilterCriteria {
 export interface QuiltFormData {
   name?: string;
   season: SeasonType;
-  size: string;
+  lengthCm: number;
+  widthCm: number;
   weightGrams: number;
   fillMaterial: string;
+  materialDetails?: string;
   color: string;
   location: string;
   packagingInfo?: string;
   currentStatus: QuiltStatusType;
   brand?: string;
-  purchaseDate?: string;
+  purchaseDate?: string | Date;
   mainImage?: string | null;
   attachmentImages?: string[] | null;
   notes?: string;

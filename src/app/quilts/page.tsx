@@ -13,10 +13,16 @@ import { QuiltToolbar } from './components/QuiltToolbar';
 import { QuiltListView } from './components/QuiltListView';
 import { QuiltGridView } from './components/QuiltGridView';
 import { toast } from '@/lib/toast';
-import { useQuilts, useCreateQuilt, useUpdateQuilt, useDeleteQuilt, useUpdateQuiltStatus } from '@/hooks/useQuilts';
-import { useActiveUsageRecord } from '@/hooks/useUsage';
+import {
+  useQuilts,
+  useCreateQuilt,
+  useUpdateQuilt,
+  useDeleteQuilt,
+  useUpdateQuiltStatus,
+} from '@/hooks/useQuilts';
 import { useAppSettings } from '@/hooks/useSettings';
-import type { Quilt, FilterCriteria, SortField, SortDirection, ViewMode } from '@/types/quilt';
+import type { Quilt, SortField, SortDirection, ViewMode, QuiltFormData } from '@/types/quilt';
+import type { FilterCriteria } from '@/components/quilts/AdvancedFilters';
 
 export default function QuiltsPage() {
   const searchParams = useSearchParams();
@@ -51,7 +57,7 @@ export default function QuiltsPage() {
   const deleteQuiltMutation = useDeleteQuilt();
   const updateQuiltStatusMutation = useUpdateQuiltStatus();
 
-  const quilts: Quilt[] = (quiltsData as any)?.json?.quilts || quiltsData?.quilts || [];
+  const quilts: Quilt[] = quiltsData?.quilts || [];
 
   // Get unique colors and materials
   const availableColors = useMemo(() => {
@@ -181,23 +187,26 @@ export default function QuiltsPage() {
   };
 
   const handleDeleteQuilt = async (quilt: Quilt) => {
-    if (!confirm(t('quilts.confirmDelete'))) return;
+    if (!window.confirm(t('quilts.confirmDelete'))) return;
 
     try {
       await deleteQuiltMutation.mutateAsync({ id: quilt.id });
       toast.success(t('toasts.quiltDeleted'));
-    } catch (error: any) {
-      toast.error(
-        t('language') === 'zh' ? '删除失败' : 'Failed to delete',
-        error?.message || (t('language') === 'zh' ? '请重试' : 'Please try again')
-      );
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : t('language') === 'zh'
+            ? '请重试'
+            : 'Please try again';
+      toast.error(t('language') === 'zh' ? '删除失败' : 'Failed to delete', errorMessage);
     }
   };
 
   const handleBatchDelete = async () => {
     if (selectedIds.size === 0) return;
     if (
-      !confirm(
+      !window.confirm(
         t('language') === 'zh'
           ? `确定要删除选中的 ${selectedIds.size} 个被子吗？`
           : `Delete ${selectedIds.size} selected quilts?`
@@ -210,11 +219,14 @@ export default function QuiltsPage() {
       setSelectedIds(new Set());
       setIsSelectMode(false);
       toast.success(t('toasts.quiltDeleted'));
-    } catch (error: any) {
-      toast.error(
-        t('language') === 'zh' ? '删除失败' : 'Failed to delete',
-        error?.message || (t('language') === 'zh' ? '请重试' : 'Please try again')
-      );
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : t('language') === 'zh'
+            ? '请重试'
+            : 'Please try again';
+      toast.error(t('language') === 'zh' ? '删除失败' : 'Failed to delete', errorMessage);
     }
   };
 
@@ -255,20 +267,34 @@ export default function QuiltsPage() {
     }
   };
 
-  const handleSaveQuilt = async (data: any) => {
+  const handleSaveQuilt = async (data: QuiltFormData) => {
     try {
+      // Convert purchaseDate string to Date if needed
+      const processedData = {
+        ...data,
+        purchaseDate: data.purchaseDate
+          ? typeof data.purchaseDate === 'string'
+            ? new Date(data.purchaseDate)
+            : data.purchaseDate
+          : undefined,
+      };
+
       if (selectedQuilt) {
-        await updateQuiltMutation.mutateAsync({ id: selectedQuilt.id, ...data });
+        await updateQuiltMutation.mutateAsync({ id: selectedQuilt.id, ...processedData });
         toast.success(t('toasts.quiltUpdated'));
       } else {
-        await createQuiltMutation.mutateAsync(data);
+        await createQuiltMutation.mutateAsync(processedData);
         toast.success(t('toasts.quiltAdded'));
       }
       setQuiltDialogOpen(false);
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Extract error message from API error
       const errorMessage =
-        error?.message || (t('language') === 'zh' ? '未知错误' : 'Unknown error');
+        error instanceof Error
+          ? error.message
+          : t('language') === 'zh'
+            ? '未知错误'
+            : 'Unknown error';
       toast.error(t('language') === 'zh' ? '保存失败' : 'Failed to save', errorMessage);
     }
   };
@@ -284,18 +310,23 @@ export default function QuiltsPage() {
       // Use the atomic status update API
       await updateQuiltStatusMutation.mutateAsync({
         quiltId: quiltId,
-        status: newStatus as any,
+        status: newStatus as 'IN_USE' | 'STORAGE' | 'MAINTENANCE',
         usageType: 'REGULAR', // Default to REGULAR, can be extended if needed
         notes: options?.notes,
       });
 
       toast.success(t('toasts.statusUpdated'));
       setStatusDialogOpen(false);
-    } catch (error: any) {
-      console.error('Status change error:', error);
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : t('language') === 'zh'
+            ? '请重试'
+            : 'Please try again';
       toast.error(
         t('language') === 'zh' ? '状态更新失败' : 'Failed to update status',
-        error?.message || (t('language') === 'zh' ? '请重试' : 'Please try again')
+        errorMessage
       );
     }
   };
@@ -325,8 +356,8 @@ export default function QuiltsPage() {
           selectedCount={selectedIds.size}
           onBatchDelete={handleBatchDelete}
           onAddQuilt={handleAddQuilt}
-          filters={filters as any}
-          onFiltersChange={setFilters as any}
+          filters={filters}
+          onFiltersChange={setFilters}
           availableColors={availableColors}
           availableMaterials={availableMaterials}
         />
@@ -358,8 +389,8 @@ export default function QuiltsPage() {
           selectedCount={selectedIds.size}
           onBatchDelete={handleBatchDelete}
           onAddQuilt={handleAddQuilt}
-          filters={filters as any}
-          onFiltersChange={setFilters as any}
+          filters={filters}
+          onFiltersChange={setFilters}
           availableColors={availableColors}
           availableMaterials={availableMaterials}
         />
@@ -393,8 +424,8 @@ export default function QuiltsPage() {
         selectedCount={selectedIds.size}
         onBatchDelete={handleBatchDelete}
         onAddQuilt={handleAddQuilt}
-        filters={filters as any}
-        onFiltersChange={setFilters as any}
+        filters={filters}
+        onFiltersChange={setFilters}
         availableColors={availableColors}
         availableMaterials={availableMaterials}
       />

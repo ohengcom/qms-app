@@ -5,13 +5,20 @@
  * POST /api/quilts - Create a new quilt
  *
  * Requirements: 1.2, 1.3 - REST API for quilts
+ * Requirements: 5.3 - Consistent API response format
+ * Requirements: 11.1 - Input sanitization
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { quiltRepository } from '@/lib/repositories/quilt.repository';
 import { createQuiltSchema, quiltFiltersSchema } from '@/lib/validations/quilt';
-import { createError, ErrorCodes } from '@/lib/error-handler';
-import { dbLogger } from '@/lib/logger';
+import { sanitizeApiInput, sanitizeSearchQuery } from '@/lib/sanitization';
+import {
+  createValidationErrorResponse,
+  createInternalErrorResponse,
+  createSuccessResponse,
+  createCreatedResponse,
+} from '@/lib/api/response';
 
 /**
  * GET /api/quilts
@@ -33,12 +40,14 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
 
-    // Parse query parameters
+    // Parse and sanitize query parameters
     const season = searchParams.get('season') || undefined;
     const status = searchParams.get('status') || undefined;
     const location = searchParams.get('location') || undefined;
     const brand = searchParams.get('brand') || undefined;
-    const search = searchParams.get('search') || undefined;
+    const search = searchParams.get('search')
+      ? sanitizeSearchQuery(searchParams.get('search'))
+      : undefined;
     const limit = Math.min(parseInt(searchParams.get('limit') || '20', 10), 100);
     const offset = parseInt(searchParams.get('offset') || '0', 10);
     const sortBy = searchParams.get('sortBy') || 'itemNumber';
@@ -54,11 +63,9 @@ export async function GET(request: NextRequest) {
     });
 
     if (!filtersResult.success) {
-      return NextResponse.json(
-        createError(ErrorCodes.VALIDATION_FAILED, '过滤参数无效', {
-          errors: filtersResult.error.flatten().fieldErrors,
-        }),
-        { status: 400 }
+      return createValidationErrorResponse(
+        '过滤参数无效',
+        filtersResult.error.flatten().fieldErrors as Record<string, string[]>
       );
     }
 
@@ -67,7 +74,13 @@ export async function GET(request: NextRequest) {
       ...filtersResult.data,
       limit,
       offset,
-      sortBy: sortBy as any,
+      sortBy: sortBy as
+        | 'itemNumber'
+        | 'name'
+        | 'season'
+        | 'weightGrams'
+        | 'createdAt'
+        | 'updatedAt',
       sortOrder: sortOrder as 'asc' | 'desc',
     };
 
@@ -77,16 +90,16 @@ export async function GET(request: NextRequest) {
       quiltRepository.count(filters),
     ]);
 
-    return NextResponse.json({
-      quilts,
-      total,
-      hasMore: offset + quilts.length < total,
-    });
+    return createSuccessResponse(
+      { quilts },
+      {
+        total,
+        limit,
+        hasMore: offset + quilts.length < total,
+      }
+    );
   } catch (error) {
-    dbLogger.error('Failed to fetch quilts', { error });
-    return NextResponse.json(createError(ErrorCodes.INTERNAL_ERROR, '获取被子列表失败'), {
-      status: 500,
-    });
+    return createInternalErrorResponse('获取被子列表失败', error);
   }
 }
 
@@ -99,7 +112,10 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const rawBody = await request.json();
+
+    // Sanitize input to prevent XSS (Requirements: 11.1)
+    const body = sanitizeApiInput(rawBody);
 
     // Handle purchaseDate conversion if it's a string
     if (body.purchaseDate && typeof body.purchaseDate === 'string') {
@@ -110,22 +126,17 @@ export async function POST(request: NextRequest) {
     const validationResult = createQuiltSchema.safeParse(body);
 
     if (!validationResult.success) {
-      return NextResponse.json(
-        createError(ErrorCodes.VALIDATION_FAILED, '被子数据验证失败', {
-          errors: validationResult.error.flatten().fieldErrors,
-        }),
-        { status: 400 }
+      return createValidationErrorResponse(
+        '被子数据验证失败',
+        validationResult.error.flatten().fieldErrors as Record<string, string[]>
       );
     }
 
     // Create the quilt
     const quilt = await quiltRepository.create(validationResult.data);
 
-    return NextResponse.json(quilt, { status: 201 });
+    return createCreatedResponse({ quilt });
   } catch (error) {
-    dbLogger.error('Failed to create quilt', { error });
-    return NextResponse.json(createError(ErrorCodes.INTERNAL_ERROR, '创建被子失败'), {
-      status: 500,
-    });
+    return createInternalErrorResponse('创建被子失败', error);
   }
 }

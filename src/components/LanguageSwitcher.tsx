@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Languages } from 'lucide-react';
+import { Languages, Check } from 'lucide-react';
 
 const localeNames: Record<Language, { flag: string; name: string }> = {
   zh: { flag: '🇨🇳', name: '中文' },
@@ -40,7 +40,7 @@ export function LanguageSwitcher() {
           >
             <span>{flag}</span>
             <span>{name}</span>
-            {key === language && <span className="ml-auto">✓</span>}
+            {key === language && <Check className="ml-auto h-4 w-4" />}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

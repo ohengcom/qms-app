@@ -4,13 +4,12 @@
  * GET /api/settings/export - Export all data
  *
  * Requirements: 1.2, 1.3 - REST API for settings
+ * Requirements: 5.3 - Consistent API response format
  */
 
-import { NextResponse } from 'next/server';
 import { quiltRepository } from '@/lib/repositories/quilt.repository';
 import { usageRepository } from '@/lib/repositories/usage.repository';
-import { createError, ErrorCodes } from '@/lib/error-handler';
-import { dbLogger } from '@/lib/logger';
+import { createSuccessResponse, createInternalErrorResponse } from '@/lib/api/response';
 
 /**
  * GET /api/settings/export
@@ -25,15 +24,14 @@ export async function GET() {
     const quilts = await quiltRepository.findAll();
     const usageRecords = await usageRepository.findAll();
 
-    return NextResponse.json({
-      exportDate: new Date().toISOString(),
-      quilts,
-      usageRecords,
+    return createSuccessResponse({
+      export: {
+        exportDate: new Date().toISOString(),
+        quilts,
+        usageRecords,
+      },
     });
   } catch (error) {
-    dbLogger.error('Failed to export data', { error });
-    return NextResponse.json(createError(ErrorCodes.INTERNAL_ERROR, '导出数据失败'), {
-      status: 500,
-    });
+    return createInternalErrorResponse('导出数据失败', error);
   }
 }

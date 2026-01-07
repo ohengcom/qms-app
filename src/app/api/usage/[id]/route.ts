@@ -6,13 +6,20 @@
  * DELETE /api/usage/[id] - Delete a usage record
  *
  * Requirements: 1.2, 1.3 - REST API for usage records
+ * Requirements: 5.3 - Consistent API response format
+ * Requirements: 11.1 - Input sanitization
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { usageRepository } from '@/lib/repositories/usage.repository';
-import { createError, ErrorCodes } from '@/lib/error-handler';
-import { dbLogger } from '@/lib/logger';
+import { sanitizeApiInput } from '@/lib/sanitization';
+import {
+  createSuccessResponse,
+  createValidationErrorResponse,
+  createNotFoundResponse,
+  createInternalErrorResponse,
+} from '@/lib/api/response';
 
 // Input validation schema for updates
 const updateUsageRecordSchema = z.object({
@@ -44,17 +51,12 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const record = await usageRepository.findById(id);
 
     if (!record) {
-      return NextResponse.json(createError(ErrorCodes.NOT_FOUND, '使用记录不存在'), {
-        status: 404,
-      });
+      return createNotFoundResponse('使用记录');
     }
 
-    return NextResponse.json(record);
+    return createSuccessResponse({ record });
   } catch (error) {
-    dbLogger.error('Failed to fetch usage record', { error });
-    return NextResponse.json(createError(ErrorCodes.INTERNAL_ERROR, '获取使用记录失败'), {
-      status: 500,
-    });
+    return createInternalErrorResponse('获取使用记录失败', error);
   }
 }
 
@@ -71,43 +73,37 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
-    const body = await request.json();
+    const rawBody = await request.json();
+
+    // Sanitize input to prevent XSS (Requirements: 11.1)
+    const body = sanitizeApiInput(rawBody);
 
     // Validate input using Zod schema
     const validationResult = updateUsageRecordSchema.safeParse(body);
 
     if (!validationResult.success) {
-      return NextResponse.json(
-        createError(ErrorCodes.VALIDATION_FAILED, '使用记录数据验证失败', {
-          errors: validationResult.error.flatten().fieldErrors,
-        }),
-        { status: 400 }
+      return createValidationErrorResponse(
+        '使用记录数据验证失败',
+        validationResult.error.flatten().fieldErrors as Record<string, string[]>
       );
     }
 
     // Check if record exists
     const existingRecord = await usageRepository.findById(id);
     if (!existingRecord) {
-      return NextResponse.json(createError(ErrorCodes.NOT_FOUND, '使用记录不存在'), {
-        status: 404,
-      });
+      return createNotFoundResponse('使用记录');
     }
 
     // Update the record
     const record = await usageRepository.update(id, validationResult.data);
 
     if (!record) {
-      return NextResponse.json(createError(ErrorCodes.NOT_FOUND, '使用记录不存在'), {
-        status: 404,
-      });
+      return createNotFoundResponse('使用记录');
     }
 
-    return NextResponse.json(record);
+    return createSuccessResponse({ record });
   } catch (error) {
-    dbLogger.error('Failed to update usage record', { error });
-    return NextResponse.json(createError(ErrorCodes.INTERNAL_ERROR, '更新使用记录失败'), {
-      status: 500,
-    });
+    return createInternalErrorResponse('更新使用记录失败', error);
   }
 }
 
@@ -123,25 +119,18 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     // Check if record exists
     const existingRecord = await usageRepository.findById(id);
     if (!existingRecord) {
-      return NextResponse.json(createError(ErrorCodes.NOT_FOUND, '使用记录不存在'), {
-        status: 404,
-      });
+      return createNotFoundResponse('使用记录');
     }
 
     // Delete the record
     const success = await usageRepository.delete(id);
 
     if (!success) {
-      return NextResponse.json(createError(ErrorCodes.NOT_FOUND, '使用记录不存在'), {
-        status: 404,
-      });
+      return createNotFoundResponse('使用记录');
     }
 
-    return NextResponse.json({ success: true });
+    return createSuccessResponse({ deleted: true, id });
   } catch (error) {
-    dbLogger.error('Failed to delete usage record', { error });
-    return NextResponse.json(createError(ErrorCodes.INTERNAL_ERROR, '删除使用记录失败'), {
-      status: 500,
-    });
+    return createInternalErrorResponse('删除使用记录失败', error);
   }
 }

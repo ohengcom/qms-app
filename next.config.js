@@ -6,8 +6,17 @@ const nextConfig = {
   // Server external packages (moved from experimental)
   serverExternalPackages: [],
 
-  // Turbopack configuration
-  turbopack: {},
+  // Turbopack configuration (Next.js 16 - now top-level, not experimental)
+  turbopack: {
+    // Root directory for the application
+    root: process.cwd(),
+    // Resolve extensions for imports
+    resolveExtensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
+    // Module resolution aliases
+    resolveAlias: {
+      '@': './src',
+    },
+  },
 
   // Enhanced image optimization
   images: {
@@ -16,6 +25,11 @@ const nextConfig = {
         protocol: 'http',
         hostname: 'localhost',
         port: '3000',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.vercel.app',
         pathname: '/**',
       },
     ],
@@ -32,11 +46,11 @@ const nextConfig = {
   poweredByHeader: false,
   generateEtags: true,
 
-  // Performance monitoring
+  // Experimental features (Next.js 16)
   experimental: {
-    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
-    // Suppress middleware deprecation warning for authentication use case
-    // Middleware is still the correct approach for auth in Next.js 16
+    // Optimize package imports for better tree-shaking
+    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons', 'framer-motion'],
+    // Server Actions configuration
     serverActions: {
       bodySizeLimit: '2mb',
     },

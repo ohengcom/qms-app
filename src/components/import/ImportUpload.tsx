@@ -110,6 +110,7 @@ export function ImportUpload({ onFileUpload }: ImportUploadProps) {
           <CardDescription>{t('reports.import.uploadDescription')}</CardDescription>
         </CardHeader>
         <CardContent>
+          {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
           <div
             className={cn(
               'border-2 border-dashed rounded-lg p-8 text-center transition-colors',
@@ -119,6 +120,8 @@ export function ImportUpload({ onFileUpload }: ImportUploadProps) {
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
+            role="region"
+            aria-label={t('reports.import.uploadTitle')}
           >
             <div className="space-y-4">
               <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">

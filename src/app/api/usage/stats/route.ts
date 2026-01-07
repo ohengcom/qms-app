@@ -4,37 +4,31 @@
  * GET /api/usage/stats - Get overall usage statistics
  *
  * Requirements: 1.2, 1.3 - REST API for usage records
+ * Requirements: 5.1, 5.2 - Database query efficiency
+ * Requirements: 5.3 - Consistent API response format
+ * Requirements: 6.1, 6.2 - Repository pattern for database operations
  */
 
-import { NextResponse } from 'next/server';
-import { usageRepository } from '@/lib/repositories/usage.repository';
-import { createError, ErrorCodes } from '@/lib/error-handler';
-import { dbLogger } from '@/lib/logger';
+import { statsRepository } from '@/lib/repositories/stats.repository';
+import { createSuccessResponse, createInternalErrorResponse } from '@/lib/api/response';
 
 /**
  * GET /api/usage/stats
  *
- * Get overall usage statistics.
+ * Get overall usage statistics using repository pattern.
  *
  * Returns:
  * - total: Total number of usage records
- * - active: Number of active usage records
+ * - active: Number of active usage records (end_date is NULL)
  * - completed: Number of completed usage records
  */
 export async function GET() {
   try {
-    const allRecords = await usageRepository.findAll();
-    const activeRecords = await usageRepository.getAllActive();
+    // Use repository for all database operations (Requirements: 6.1, 6.2)
+    const stats = await statsRepository.getSimpleUsageStats();
 
-    return NextResponse.json({
-      total: allRecords.length,
-      active: activeRecords.length,
-      completed: allRecords.length - activeRecords.length,
-    });
+    return createSuccessResponse({ stats });
   } catch (error) {
-    dbLogger.error('Failed to fetch usage statistics', { error });
-    return NextResponse.json(createError(ErrorCodes.INTERNAL_ERROR, '获取使用统计失败'), {
-      status: 500,
-    });
+    return createInternalErrorResponse('获取使用统计失败', error);
   }
 }

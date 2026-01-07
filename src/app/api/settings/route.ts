@@ -5,13 +5,19 @@
  * PUT /api/settings - Update application settings
  *
  * Requirements: 1.2, 1.3 - REST API for settings
+ * Requirements: 5.3 - Consistent API response format
+ * Requirements: 11.1 - Input sanitization
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { systemSettingsRepository } from '@/lib/repositories/system-settings.repository';
-import { createError, ErrorCodes } from '@/lib/error-handler';
-import { dbLogger } from '@/lib/logger';
+import { sanitizeApiInput } from '@/lib/sanitization';
+import {
+  createSuccessResponse,
+  createValidationErrorResponse,
+  createInternalErrorResponse,
+} from '@/lib/api/response';
 
 // Input schema for updating settings
 const updateAppSettingsSchema = z.object({
@@ -39,19 +45,18 @@ export async function GET() {
     const doubleClickAction = await systemSettingsRepository.getDoubleClickAction();
     const usageDoubleClickAction = await systemSettingsRepository.getUsageDoubleClickAction();
 
-    return NextResponse.json({
-      appName,
-      language: 'zh' as const,
-      itemsPerPage: 25,
-      defaultView: 'list' as const,
-      doubleClickAction: doubleClickAction || 'status',
-      usageDoubleClickAction: usageDoubleClickAction || 'view',
+    return createSuccessResponse({
+      settings: {
+        appName,
+        language: 'zh' as const,
+        itemsPerPage: 25,
+        defaultView: 'list' as const,
+        doubleClickAction: doubleClickAction || 'status',
+        usageDoubleClickAction: usageDoubleClickAction || 'view',
+      },
     });
   } catch (error) {
-    dbLogger.error('Failed to fetch app settings', { error });
-    return NextResponse.json(createError(ErrorCodes.INTERNAL_ERROR, '获取应用设置失败'), {
-      status: 500,
-    });
+    return createInternalErrorResponse('获取应用设置失败', error);
   }
 }
 
@@ -64,17 +69,18 @@ export async function GET() {
  */
 export async function PUT(request: NextRequest) {
   try {
-    const body = await request.json();
+    const rawBody = await request.json();
+
+    // Sanitize input to prevent XSS (Requirements: 11.1)
+    const body = sanitizeApiInput(rawBody);
 
     // Validate input using Zod schema
     const validationResult = updateAppSettingsSchema.safeParse(body);
 
     if (!validationResult.success) {
-      return NextResponse.json(
-        createError(ErrorCodes.VALIDATION_FAILED, '设置数据验证失败', {
-          errors: validationResult.error.flatten().fieldErrors,
-        }),
-        { status: 400 }
+      return createValidationErrorResponse(
+        '设置数据验证失败',
+        validationResult.error.flatten().fieldErrors as Record<string, string[]>
       );
     }
 
@@ -95,14 +101,11 @@ export async function PUT(request: NextRequest) {
       await systemSettingsRepository.updateUsageDoubleClickAction(input.usageDoubleClickAction);
     }
 
-    return NextResponse.json({
-      success: true,
+    return createSuccessResponse({
+      updated: true,
       settings: input,
     });
   } catch (error) {
-    dbLogger.error('Failed to update app settings', { error });
-    return NextResponse.json(createError(ErrorCodes.INTERNAL_ERROR, '更新应用设置失败'), {
-      status: 500,
-    });
+    return createInternalErrorResponse('更新应用设置失败', error);
   }
 }

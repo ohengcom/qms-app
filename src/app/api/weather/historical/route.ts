@@ -1,23 +1,53 @@
-import { NextResponse, NextRequest } from 'next/server';
+/**
+ * Historical Weather API Route
+ *
+ * Fetches historical weather data for a specific date
+ *
+ * Requirements: 5.3 - Consistent API response format
+ * Requirements: 5.4 - Zod validation for all inputs
+ */
+
+import { NextRequest } from 'next/server';
+import { z } from 'zod';
+import {
+  createSuccessResponse,
+  createValidationErrorResponse,
+  createNotFoundResponse,
+  createInternalErrorResponse,
+} from '@/lib/api/response';
 
 // 上海坐标: 31.2304, 121.4737
 const SHANGHAI_LAT = 31.2304;
 const SHANGHAI_LON = 121.4737;
 
+// Zod schema for date parameter validation
+const historicalWeatherQuerySchema = z.object({
+  date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, '无效的日期格式，请使用 YYYY-MM-DD')
+    .refine(date => {
+      const parsed = new Date(date);
+      return !isNaN(parsed.getTime());
+    }, '无效的日期'),
+});
+
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const date = searchParams.get('date');
 
-    if (!date) {
-      return NextResponse.json({ error: 'Date parameter is required' }, { status: 400 });
+    // Validate query parameters using Zod
+    const validationResult = historicalWeatherQuerySchema.safeParse({
+      date: searchParams.get('date'),
+    });
+
+    if (!validationResult.success) {
+      return createValidationErrorResponse(
+        '日期参数验证失败',
+        validationResult.error.flatten().fieldErrors as Record<string, string[]>
+      );
     }
 
-    // 验证日期格式 (YYYY-MM-DD)
-    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-    if (!dateRegex.test(date)) {
-      return NextResponse.json({ error: 'Invalid date format. Use YYYY-MM-DD' }, { status: 400 });
-    }
+    const { date } = validationResult.data;
 
     // 使用 Open-Meteo Historical Weather API
     const response = await fetch(
@@ -33,28 +63,24 @@ export async function GET(request: NextRequest) {
 
     // 检查是否有数据
     if (!data.daily || !data.daily.time || data.daily.time.length === 0) {
-      return NextResponse.json({ error: 'No data available for this date' }, { status: 404 });
+      return createNotFoundResponse('该日期的天气数据');
     }
 
-    return NextResponse.json({
-      date: data.daily.time[0],
-      temperature: {
-        max: Math.round(data.daily.temperature_2m_max[0]),
-        min: Math.round(data.daily.temperature_2m_min[0]),
-      },
-      weatherCode: data.daily.weather_code[0],
-      location: {
-        city: '上海',
-        cityEn: 'Shanghai',
+    return createSuccessResponse({
+      historicalWeather: {
+        date: data.daily.time[0],
+        temperature: {
+          max: Math.round(data.daily.temperature_2m_max[0]),
+          min: Math.round(data.daily.temperature_2m_min[0]),
+        },
+        weatherCode: data.daily.weather_code[0],
+        location: {
+          city: '上海',
+          cityEn: 'Shanghai',
+        },
       },
     });
   } catch (error) {
-    return NextResponse.json(
-      {
-        error: 'Failed to fetch historical weather data',
-        message: error instanceof Error ? error.message : 'Unknown error',
-      },
-      { status: 500 }
-    );
+    return createInternalErrorResponse('获取历史天气数据失败', error);
   }
 }

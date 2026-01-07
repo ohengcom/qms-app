@@ -1,159 +1,115 @@
-# QMS 项目文档
+# QMS 项目文档 / QMS Project Documentation
 
-## 📚 文档目录
+## 📚 文档目录 / Documentation Index
 
-### UI 优化文档 (`ui-optimization/`)
-
-#### 核心文档
-
-1. **[UI_UNIFICATION_PLAN.md](./ui-optimization/UI_UNIFICATION_PLAN.md)**
-   - UI 统一改造的总体计划
-   - 包含改造目标、页面清单、组件规范
-
-2. **[UI_UNIFICATION_COMPLETE.md](./ui-optimization/UI_UNIFICATION_COMPLETE.md)**
-   - UI 统一改造完成报告
-   - 详细的改造前后对比
-   - 设计系统说明
-
-3. **[UI_UNIFICATION_FINAL_CHECK.md](./ui-optimization/UI_UNIFICATION_FINAL_CHECK.md)**
-   - 最终检查报告
-   - 完整的页面检查清单
-   - 验证方法和结果
-
-#### 优化文档
-
-4. **[UI_OPTIMIZATION_SUGGESTIONS.md](./ui-optimization/UI_OPTIMIZATION_SUGGESTIONS.md)**
-   - 详细的优化建议
-   - 优先级矩阵
-   - 实施计划
-
-5. **[UI_OPTIMIZATION_COMPLETE.md](./ui-optimization/UI_OPTIMIZATION_COMPLETE.md)**
-   - 第一阶段优化报告（高优先级）
-   - 容器样式、间距、标题统一
-
-6. **[UI_OPTIMIZATION_PHASE2_COMPLETE.md](./ui-optimization/UI_OPTIMIZATION_PHASE2_COMPLETE.md)**
-   - 第二阶段优化报告（中优先级）
-   - 错误提示、卡片内边距、空状态
-
-#### 规范文档
-
-7. **[CARD_PADDING_STANDARDS.md](./ui-optimization/CARD_PADDING_STANDARDS.md)**
-   - 卡片内边距规范
-   - 使用指南和示例
-
-8. **[SHADCN_TAILWIND_COMPATIBILITY.md](./ui-optimization/SHADCN_TAILWIND_COMPATIBILITY.md)**
-   - Shadcn UI 与 Tailwind CSS 兼容性说明
-
-9. **[UI_UNIFICATION_PROGRESS.md](./ui-optimization/UI_UNIFICATION_PROGRESS.md)**
-   - 进度追踪文档
-   - 完成度统计
+本目录包含 QMS（被子管理系统）的所有技术文档。
+This directory contains all technical documentation for QMS (Quilt Management System).
 
 ---
 
-### 重构文档 (`refactoring/`)
+## 📖 核心文档 / Core Documentation
 
-1. **[QUILTS_PAGE_REFACTOR_PLAN.md](./refactoring/QUILTS_PAGE_REFACTOR_PLAN.md)**
-   - 被子管理页面重构计划
-   - 组件拆分方案
+### 项目概览 / Project Overview
 
-2. **[USAGE_PAGE_REFACTOR_PLAN.md](./refactoring/USAGE_PAGE_REFACTOR_PLAN.md)**
-   - 使用记录页面改造计划
+- **[INDEX.md](./INDEX.md)** - 文档索引和快速导航
+- **[PROJECT_SUMMARY.md](./PROJECT_SUMMARY.md)** - 项目总结和完成度
 
-3. **[REFACTOR_SUMMARY.md](./refactoring/REFACTOR_SUMMARY.md)**
-   - 重构总结
+### 技术文档 / Technical Documentation
 
-4. **[REFACTOR_COMPLETE.md](./refactoring/REFACTOR_COMPLETE.md)**
-   - 重构完成报告
+- **[PROJECT_SUMMARY.md](./PROJECT_SUMMARY.md)** - 项目架构和功能总结
+- **[DEPLOYMENT_SUMMARY.md](./DEPLOYMENT_SUMMARY.md)** - 部署配置和说明
 
----
+### 部署文档 / Deployment Documentation
 
-## 🎯 快速导航
+- **[DEPLOYMENT_SUMMARY.md](./DEPLOYMENT_SUMMARY.md)** - 部署总结
+- **[PRODUCTION_TESTING_CHECKLIST.md](./PRODUCTION_TESTING_CHECKLIST.md)** - 生产测试清单
 
-### 想了解 UI 统一改造？
+### 备份与恢复 / Backup & Restore
 
-👉 从 [UI_UNIFICATION_PLAN.md](./ui-optimization/UI_UNIFICATION_PLAN.md) 开始
-
-### 想查看优化建议？
-
-👉 查看 [UI_OPTIMIZATION_SUGGESTIONS.md](./ui-optimization/UI_OPTIMIZATION_SUGGESTIONS.md)
-
-### 想了解设计规范？
-
-👉 查看 [CARD_PADDING_STANDARDS.md](./ui-optimization/CARD_PADDING_STANDARDS.md)
-
-### 想了解重构过程？
-
-👉 查看 [QUILTS_PAGE_REFACTOR_PLAN.md](./refactoring/QUILTS_PAGE_REFACTOR_PLAN.md)
+- **[BACKUP_QUICK_START.md](./BACKUP_QUICK_START.md)** - 备份快速开始
+- **[BACKUP_RESTORE_GUIDE.md](./BACKUP_RESTORE_GUIDE.md)** - 完整备份恢复指南
 
 ---
 
-## 📊 项目进度
+## 🔧 实现指南 / Implementation Guides
 
-### UI 统一改造
+位于 `docs/guides/` 目录：
 
-- **状态**: ✅ 完成
-- **完成度**: 100%
-- **改造页面**: 8 个
+### 数据库 / Database
 
-### UI 优化
+- **[INITIALIZE-DATABASE.md](./guides/INITIALIZE-DATABASE.md)** - 数据库初始化
 
-- **第一阶段**: ✅ 完成（高优先级）
-- **第二阶段**: ✅ 完成（中优先级）
-- **第三阶段**: ⏳ 待定（低优先级）
-- **总体完成度**: 85%
+### 认证与安全 / Authentication & Security
 
-### 代码重构
+- **[AUTH_IMPLEMENTATION_SUMMARY.md](./guides/AUTH_IMPLEMENTATION_SUMMARY.md)** - 认证实现总结
+- **[AUTH_TEST_GUIDE.md](./guides/AUTH_TEST_GUIDE.md)** - 认证测试指南
+- **[PASSWORD-MIGRATION-GUIDE.md](./guides/PASSWORD-MIGRATION-GUIDE.md)** - 密码迁移指南
+- **[SECURITY_AUDIT_SUMMARY.md](./guides/SECURITY_AUDIT_SUMMARY.md)** - 安全审计总结
 
-- **被子管理页面**: ✅ 完成
-- **使用记录页面**: ✅ 完成
-- **其他页面**: ✅ 完成
+### 部署 / Deployment
+
+- **[VERCEL-ENV-SETUP.md](./guides/VERCEL-ENV-SETUP.md)** - Vercel 环境配置
+- **[VERCEL_DEPLOYMENT_GUIDE.md](./guides/VERCEL_DEPLOYMENT_GUIDE.md)** - Vercel 部署指南
+
+### 使用追踪 / Usage Tracking
+
+- **[USAGE_TRACKING_IMPLEMENTATION.md](./guides/USAGE_TRACKING_IMPLEMENTATION.md)** - 使用追踪实现
 
 ---
 
-## 🎨 设计系统
+## 🎨 设计系统 / Design System
 
-### 颜色系统
+### 颜色系统 / Color System
 
-- 使用 Tailwind CSS 语义化颜色
-- `primary`, `secondary`, `muted`, `accent`, `destructive`
+基于 UI/UX Pro Max 研究结果：
 
-### 组件库
+| 用途       | 颜色       | Hex     |
+| ---------- | ---------- | ------- |
+| Primary    | Trust Blue | #2563EB |
+| Secondary  | Light Blue | #3B82F6 |
+| CTA        | Orange     | #F97316 |
+| Background | Light Gray | #F8FAFC |
+| Text       | Dark Slate | #1E293B |
 
-- 基于 Shadcn UI
+### 组件库 / Component Library
+
+- 基于 Shadcn UI + Radix UI
 - 统一的 Card, Table, Badge, Button 等组件
+- 语义化颜色：`primary`, `secondary`, `muted`, `accent`, `destructive`
 
-### 间距系统
+### 间距系统 / Spacing System
 
 - 页面容器: `space-y-6` (24px)
 - 卡片内部: `space-y-4` (16px)
 - 表单字段: `space-y-2` (8px)
 
-### 卡片内边距
+---
 
-- 统计卡片: `p-4` (16px)
-- 内容卡片: `p-6` (24px)
-- 紧凑卡片: `p-3` (12px)
+## 📊 项目状态 / Project Status
+
+### 当前版本 / Current Version
+
+- **版本**: 1.1.0
+- **状态**: ✅ 生产就绪
+
+### 技术栈 / Tech Stack
+
+- **前端**: Next.js 16 + React 19 + TypeScript
+- **样式**: Tailwind CSS 4 + Shadcn UI
+- **数据获取**: React Query
+- **数据库**: Neon PostgreSQL
+- **部署**: Vercel
 
 ---
 
-## 📝 文档更新日志
-
-### 2025-11-11
-
-- ✅ 创建文档目录结构
-- ✅ 整理所有 UI 优化文档
-- ✅ 整理所有重构文档
-- ✅ 创建文档索引
-
----
-
-## 🔗 相关链接
+## 🔗 相关链接 / Related Links
 
 - [主 README](../README.md)
 - [中文 README](../README_zh.md)
-- [项目仓库](https://github.com/ohengcom/qms-app)
+- [CHANGELOG](../CHANGELOG.md)
+- [需求规格索引](../.kiro/specs/SPECS-INDEX.md)
 
 ---
 
-**最后更新**: 2025-11-11  
-**维护者**: Kiro AI
+**最后更新 / Last Updated**: 2026-01-07  
+**维护者 / Maintainer**: QMS Team

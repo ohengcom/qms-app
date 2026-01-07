@@ -129,4 +129,18 @@ export abstract class BaseRepositoryImpl<TRow, TModel> {
   async exists(_id: string): Promise<boolean> {
     throw new Error('exists must be implemented in child class');
   }
+
+  /**
+   * Check database connection health
+   * This is a simple query to verify the database is accessible
+   */
+  static async checkHealth(): Promise<boolean> {
+    try {
+      const { sql } = await import('@/lib/neon');
+      await sql`SELECT 1 as test`;
+      return true;
+    } catch {
+      return false;
+    }
+  }
 }

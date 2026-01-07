@@ -22,15 +22,19 @@ import {
   Minus,
 } from 'lucide-react';
 import { type WeatherForecast } from '@/lib/weather-service';
+import { useLanguage } from '@/lib/language-provider';
 
 interface WeatherForecastProps {
   className?: string;
 }
 
 export function WeatherForecastWidget({ className }: WeatherForecastProps) {
+  const { language, t } = useLanguage();
   const [forecast, setForecast] = useState<WeatherForecast[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const locale = language === 'zh' ? 'zh-CN' : 'en-US';
 
   const fetchForecast = async () => {
     try {
@@ -45,7 +49,7 @@ export function WeatherForecastWidget({ className }: WeatherForecastProps) {
       const data = await response.json();
       setForecast(data.forecast || []);
     } catch {
-      setError('获取天气数据失败');
+      setError(t('weather.failedToFetch'));
     } finally {
       setIsLoading(false);
     }
@@ -98,7 +102,7 @@ export function WeatherForecastWidget({ className }: WeatherForecastProps) {
             <p className="text-red-600 mb-4">{error}</p>
             <Button onClick={fetchForecast} variant="outline" size="sm">
               <RefreshCw className="w-4 h-4 mr-2" />
-              重试
+              {t('common.retry')}
             </Button>
           </div>
         </CardContent>
@@ -114,7 +118,9 @@ export function WeatherForecastWidget({ className }: WeatherForecastProps) {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <MapPin className="w-5 h-5 text-gray-600" />
-            <h3 className="text-lg font-semibold text-gray-900">上海 · 未来7天天气</h3>
+            <h3 className="text-lg font-semibold text-gray-900">
+              {language === 'zh' ? '上海 · 未来7天天气' : 'Shanghai · 7-Day Forecast'}
+            </h3>
           </div>
           <Button onClick={fetchForecast} variant="ghost" size="sm" className="h-8 w-8 p-0">
             <RefreshCw className="w-4 h-4" />
@@ -124,8 +130,8 @@ export function WeatherForecastWidget({ className }: WeatherForecastProps) {
         <div className="grid grid-cols-7 gap-3">
           {forecast.map((day, idx) => {
             const date = new Date(day.date);
-            const dayName = date.toLocaleDateString('zh-CN', { weekday: 'short' });
-            const monthDay = date.toLocaleDateString('zh-CN', { month: 'numeric', day: 'numeric' });
+            const dayName = date.toLocaleDateString(locale, { weekday: 'short' });
+            const monthDay = date.toLocaleDateString(locale, { month: 'numeric', day: 'numeric' });
             const isToday = idx === 0;
 
             return (
@@ -138,7 +144,7 @@ export function WeatherForecastWidget({ className }: WeatherForecastProps) {
                 }`}
               >
                 <div className="text-xs font-medium text-gray-600 mb-1">
-                  {isToday ? '今天' : dayName}
+                  {isToday ? t('common.today') : dayName}
                 </div>
                 <div className="text-xs text-gray-500 mb-2">{monthDay}</div>
                 <div className="flex justify-center mb-2">
@@ -165,7 +171,9 @@ export function WeatherForecastWidget({ className }: WeatherForecastProps) {
           })}
         </div>
 
-        <div className="mt-4 text-xs text-gray-400 text-center">数据来源：Open-Meteo</div>
+        <div className="mt-4 text-xs text-gray-400 text-center">
+          {language === 'zh' ? '数据来源：Open-Meteo' : 'Data source: Open-Meteo'}
+        </div>
       </CardContent>
     </Card>
   );

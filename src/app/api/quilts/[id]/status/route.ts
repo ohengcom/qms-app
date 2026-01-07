@@ -4,15 +4,24 @@
  * PUT /api/quilts/[id]/status - Update quilt status with automatic usage record management
  *
  * Requirements: 1.2, 1.3 - REST API for quilts
+ * Requirements: 5.3 - Consistent API response format
+ * Requirements: 11.1 - Input sanitization
  * Requirements: 13.1 - Status change atomicity
  * Requirements: 13.2 - Single active usage record
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { quiltRepository } from '@/lib/repositories/quilt.repository';
-import { createError, ErrorCodes } from '@/lib/error-handler';
-import { dbLogger } from '@/lib/logger';
+import { sanitizeApiInput } from '@/lib/sanitization';
+import {
+  createSuccessResponse,
+  createValidationErrorResponse,
+  createNotFoundResponse,
+  createConflictResponse,
+  createInternalErrorResponse,
+  createBadRequestResponse,
+} from '@/lib/api/response';
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -48,22 +57,21 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     const { id } = await params;
 
     if (!id) {
-      return NextResponse.json(createError(ErrorCodes.VALIDATION_FAILED, '被子 ID 是必需的'), {
-        status: 400,
-      });
+      return createBadRequestResponse('被子 ID 是必需的');
     }
 
-    const body = await request.json();
+    const rawBody = await request.json();
+
+    // Sanitize input to prevent XSS (Requirements: 11.1)
+    const body = sanitizeApiInput(rawBody);
 
     // Validate input
     const validationResult = updateStatusSchema.safeParse(body);
 
     if (!validationResult.success) {
-      return NextResponse.json(
-        createError(ErrorCodes.VALIDATION_FAILED, '状态数据验证失败', {
-          errors: validationResult.error.flatten().fieldErrors,
-        }),
-        { status: 400 }
+      return createValidationErrorResponse(
+        '状态数据验证失败',
+        validationResult.error.flatten().fieldErrors as Record<string, string[]>
       );
     }
 
@@ -73,13 +81,11 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     const result = await quiltRepository.updateStatusWithUsageRecord(id, status, usageType, notes);
 
     if (!result.quilt) {
-      return NextResponse.json(createError(ErrorCodes.NOT_FOUND, '被子不存在', { id }), {
-        status: 404,
-      });
+      return createNotFoundResponse('被子');
     }
 
     // Return the updated quilt and usage record info
-    return NextResponse.json({
+    return createSuccessResponse({
       quilt: result.quilt,
       usageRecord: result.usageRecord || null,
     });
@@ -87,18 +93,13 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     // Handle specific error cases
     if (error instanceof Error) {
       if (error.message === 'Quilt not found') {
-        return NextResponse.json(createError(ErrorCodes.NOT_FOUND, '被子不存在'), { status: 404 });
+        return createNotFoundResponse('被子');
       }
       if (error.message === 'Quilt already has an active usage record') {
-        return NextResponse.json(createError('CONFLICT', '该被子已有活跃的使用记录'), {
-          status: 409,
-        });
+        return createConflictResponse('该被子已有活跃的使用记录');
       }
     }
 
-    dbLogger.error('Failed to update quilt status', { error });
-    return NextResponse.json(createError(ErrorCodes.INTERNAL_ERROR, '更新被子状态失败'), {
-      status: 500,
-    });
+    return createInternalErrorResponse('更新被子状态失败', error);
   }
 }

@@ -4,9 +4,18 @@
 
 ### 概述
 
-系统已升级为将密码存储在数据库中，而不是环境变量中。这样修改密码后无需重新部署应用。
+✅ **迁移已完成** - 系统现在将密码存储在数据库中，而不是环境变量中。这样修改密码后无需重新部署应用。
 
-### 迁移步骤
+### 当前状态
+
+- ✅ 密码存储在 `system_settings` 表中
+- ✅ 支持在设置页面直接修改密码
+- ✅ 无需重新部署即可生效
+- ✅ 保持向后兼容性（环境变量作为备用）
+
+### 如果需要重新初始化
+
+如果遇到密码问题，可以重新初始化系统设置：
 
 #### 方法 1：通过浏览器（推荐，适用于 Vercel 部署）
 
@@ -76,9 +85,18 @@ npm run init-system-settings
 
 ### Overview
 
-The system has been upgraded to store passwords in the database instead of environment variables. This allows password changes without redeploying the application.
+✅ **Migration Complete** - The system now stores passwords in the database instead of environment variables. This allows password changes without redeploying the application.
 
-### Migration Steps
+### Current Status
+
+- ✅ Passwords stored in `system_settings` table
+- ✅ Support for direct password changes in Settings page
+- ✅ Changes take effect immediately without redeployment
+- ✅ Maintains backward compatibility (environment variables as fallback)
+
+### If Re-initialization is Needed
+
+If you encounter password issues, you can re-initialize system settings:
 
 #### Method 1: Via Browser (Recommended for Vercel deployment)
 

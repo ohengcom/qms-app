@@ -5,6 +5,79 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-01-07
+
+### 🔄 2026 Comprehensive Project Review
+
+This release focuses on a comprehensive review and upgrade of the entire project, including dependency updates, code quality improvements, security enhancements, and UI/UX optimizations.
+
+#### Dependency Upgrades
+
+- **Next.js**: 16.0.7 → 16.1.1
+- **React**: 19.2.1 → 19.2.3
+- **TypeScript**: 5.6.3 → 5.9.3
+- **Tailwind CSS**: 4.1.17 → 4.1.18
+- **React Query**: 5.90.12 → 5.90.16
+- **Framer Motion**: 12.23.25 → 12.24.7
+- **Zod**: 4.1.13 → 4.3.5
+- **Lucide React**: Updated to 0.562.0
+- All other dependencies updated to latest stable versions
+
+#### Code Quality Improvements
+
+- ✅ Removed all unused imports and variables (ESLint no-unused-vars)
+- ✅ Refactored duplicate code patterns into reusable functions
+- ✅ Enhanced TypeScript type safety (zero type errors)
+- ✅ Unified API response format with `createSuccessResponse` and `createErrorResponse`
+- ✅ Ensured all API inputs use Zod validation
+- ✅ Optimized database queries (COUNT queries instead of fetching all records)
+
+#### Next.js 16 Best Practices
+
+- ✅ Updated middleware to proxy naming convention (`src/proxy.ts`)
+- ✅ Updated `next.config.js` with Turbopack configuration
+- ✅ Verified all API routes follow Next.js 16 patterns
+
+#### Security Enhancements
+
+- ✅ Verified input sanitization using `sanitization.ts`
+- ✅ Confirmed bcrypt configuration (salt rounds >= 10)
+- ✅ Validated secure cookie settings (httpOnly=true, secure=true)
+- ✅ Verified authentication and rate limiting
+- ✅ Confirmed error responses don't leak sensitive information
+
+#### UI/UX Improvements
+
+- ✅ Applied design system color scheme (Trust Blue #2563EB)
+- ✅ Verified hover states don't cause layout shift
+- ✅ Replaced emojis with SVG icons (Lucide React)
+- ✅ Optimized image loading with Next.js Image component
+- ✅ Added `prefers-reduced-motion` support for accessibility
+- ✅ Ran accessibility audit with axe-core
+
+#### Repository Pattern
+
+- ✅ Verified all database operations go through Repository classes
+- ✅ Ensured all SQL uses parameterized queries (Neon sql template literal)
+
+#### Project Structure
+
+- ✅ Cleaned up empty directories
+- ✅ Removed unused files
+- ✅ Verified naming convention consistency
+
+#### Internationalization
+
+- ✅ Verified translation completeness (Chinese/English)
+- ✅ Added missing translation keys
+
+#### Documentation
+
+- ✅ Updated README.md with new version and tech stack
+- ✅ Updated README_zh.md to match English version
+- ✅ Updated CHANGELOG.md with all changes
+- ✅ Updated docs/INDEX.md with current architecture
+
 ## [1.1.0] - 2025-12-11
 
 ### 🏗️ Architecture Simplification
@@ -321,6 +394,7 @@ This is the first stable release of the Quilt Management System (QMS)!
 
 ---
 
+[1.2.0]: https://github.com/ohengcom/qms-app/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/ohengcom/qms-app/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/ohengcom/qms-app/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/ohengcom/qms-app/compare/v0.5.0...v1.0.0

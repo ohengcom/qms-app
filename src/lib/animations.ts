@@ -1,9 +1,47 @@
 /**
  * Animation Variants for Framer Motion
  * Centralized animation configurations for consistent motion design
+ *
+ * All animations respect the user's prefers-reduced-motion preference.
+ * When reduced motion is preferred, animations are minimized or disabled.
  */
 
 import { Variants } from 'framer-motion';
+
+/**
+ * Check if user prefers reduced motion
+ * This should be called at runtime in components
+ */
+export const prefersReducedMotion = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+};
+
+/**
+ * Get animation variants that respect reduced motion preference
+ * Returns minimal/no animation variants when reduced motion is preferred
+ */
+export const getReducedMotionVariants = <T extends Variants>(
+  fullVariants: T,
+  reducedVariants?: Partial<T>
+): T => {
+  if (prefersReducedMotion()) {
+    return {
+      ...fullVariants,
+      ...reducedVariants,
+    } as T;
+  }
+  return fullVariants;
+};
+
+/**
+ * Reduced motion variants - instant transitions with no movement
+ */
+export const reducedMotionVariants: Variants = {
+  initial: { opacity: 1 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0, transition: { duration: 0.01 } },
+};
 
 /**
  * Page transition animations
@@ -200,22 +238,22 @@ export const listItemVariants: Variants = {
 
 /**
  * Card hover animation
+ * Uses shadow and opacity changes instead of scale to avoid visual overlap
+ * Per UI/UX Pro Max guidelines: hover effects should not change dimensions
  */
 export const cardHoverVariants: Variants = {
   initial: {
-    scale: 1,
     boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1)',
   },
   hover: {
-    scale: 1.02,
-    boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
+    boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
     transition: {
       duration: 0.2,
       ease: 'easeOut',
     },
   },
   tap: {
-    scale: 0.98,
+    boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
     transition: {
       duration: 0.1,
     },
@@ -224,15 +262,18 @@ export const cardHoverVariants: Variants = {
 
 /**
  * Button press animation
+ * Uses opacity changes for hover, scale only for tap (active state)
+ * Per UI/UX Pro Max guidelines: hover effects should use color/opacity changes
  */
 export const buttonPressVariants: Variants = {
   initial: {
     scale: 1,
+    opacity: 1,
   },
   hover: {
-    scale: 1.05,
+    opacity: 0.9,
     transition: {
-      duration: 0.2,
+      duration: 0.15,
       ease: 'easeOut',
     },
   },

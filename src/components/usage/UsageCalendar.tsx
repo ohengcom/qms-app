@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { Calendar, ChevronLeft, ChevronRight, MapPin } from 'lucide-react';
+import { useLanguage } from '@/lib/language-provider';
 
 interface UsagePeriod {
   id: string;
@@ -60,6 +61,8 @@ export function UsageCalendar({
   onDateSelect,
   onPeriodSelect,
 }: UsageCalendarProps) {
+  const { language } = useLanguage();
+  const locale = language === 'zh' ? 'zh-CN' : 'en-US';
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [viewMode, setViewMode] = useState<'month' | 'year'>('month');
@@ -147,18 +150,21 @@ export function UsageCalendar({
       const isSelected = selectedDate?.toDateString() === date.toDateString();
 
       days.push(
-        <div
+        <button
+          type="button"
           key={day}
           className={cn(
-            'h-12 border border-gray-100 p-1 cursor-pointer hover:bg-gray-50 relative',
+            'h-12 border border-gray-100 p-1 cursor-pointer hover:bg-gray-50 relative text-left',
             isToday && 'bg-blue-50 border-blue-200',
             isSelected && 'bg-blue-100 border-blue-300'
           )}
           onClick={() => handleDateClick(day)}
+          aria-label={`${MONTHS[currentMonth]} ${day}, ${currentYear}${periodsOnDate.length > 0 ? `, ${periodsOnDate.length} usage period${periodsOnDate.length > 1 ? 's' : ''}` : ''}`}
+          aria-pressed={isSelected}
         >
           <div className="text-sm font-medium">{day}</div>
           {periodsOnDate.length > 0 && (
-            <div className="absolute bottom-1 left-1 right-1 flex space-x-0.5">
+            <div className="absolute bottom-1 left-1 right-1 flex space-x-0.5" aria-hidden="true">
               {periodsOnDate.slice(0, 3).map((period, index) => (
                 <div
                   key={`${period.id}-${index}`}
@@ -175,7 +181,7 @@ export function UsageCalendar({
               )}
             </div>
           )}
-        </div>
+        </button>
       );
     }
 
@@ -215,7 +221,8 @@ export function UsageCalendar({
       });
 
       months.push(
-        <div
+        <button
+          type="button"
           key={month}
           className={cn(
             'p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 text-center',
@@ -227,13 +234,14 @@ export function UsageCalendar({
             setCurrentDate(new Date(currentYear, month, 1));
             setViewMode('month');
           }}
+          aria-label={`${MONTHS[month]} ${currentYear}, ${monthUsage.length} usage period${monthUsage.length !== 1 ? 's' : ''}`}
         >
           <div className="font-medium text-sm">{MONTHS[month]}</div>
           <div className="text-xs text-gray-500 mt-1">
             {monthUsage.length} period{monthUsage.length !== 1 ? 's' : ''}
           </div>
           {monthUsage.length > 0 && (
-            <div className="flex justify-center space-x-1 mt-2">
+            <div className="flex justify-center space-x-1 mt-2" aria-hidden="true">
               {Array.from(new Set(monthUsage.map(p => p.usageType)))
                 .slice(0, 3)
                 .map(type => (
@@ -247,7 +255,7 @@ export function UsageCalendar({
                 ))}
             </div>
           )}
-        </div>
+        </button>
       );
     }
 
@@ -328,7 +336,7 @@ export function UsageCalendar({
         {selectedDate && selectedDatePeriods.length > 0 && (
           <div className="mt-4 p-4 bg-gray-50 rounded-lg">
             <h4 className="font-medium mb-3">
-              {selectedDate.toLocaleDateString('en-US', {
+              {selectedDate.toLocaleDateString(locale, {
                 weekday: 'long',
                 year: 'numeric',
                 month: 'long',
@@ -337,10 +345,12 @@ export function UsageCalendar({
             </h4>
             <div className="space-y-2">
               {selectedDatePeriods.map((period, index) => (
-                <div
+                <button
+                  type="button"
                   key={`${period.id}-${index}`}
-                  className="flex items-center justify-between p-2 bg-white rounded border cursor-pointer hover:bg-gray-50"
+                  className="flex items-center justify-between p-2 bg-white rounded border cursor-pointer hover:bg-gray-50 w-full text-left"
                   onClick={() => onPeriodSelect?.(period)}
+                  aria-label={`${period.usageType.replace('_', ' ')} usage period${period.location ? ` at ${period.location}` : ''}, ${period.endDate ? 'completed' : 'ongoing'}`}
                 >
                   <div className="flex items-center space-x-3">
                     <div
@@ -349,6 +359,7 @@ export function UsageCalendar({
                         USAGE_TYPE_COLORS[period.usageType as keyof typeof USAGE_TYPE_COLORS] ||
                           'bg-gray-400'
                       )}
+                      aria-hidden="true"
                     />
                     <div>
                       <div className="text-sm font-medium">
@@ -356,7 +367,7 @@ export function UsageCalendar({
                       </div>
                       {period.location && (
                         <div className="text-xs text-gray-500 flex items-center">
-                          <MapPin className="w-3 h-3 mr-1" />
+                          <MapPin className="w-3 h-3 mr-1" aria-hidden="true" />
                           {period.location}
                         </div>
                       )}
@@ -365,7 +376,7 @@ export function UsageCalendar({
                   <Badge variant="outline" className="text-xs">
                     {period.endDate ? 'Completed' : 'Ongoing'}
                   </Badge>
-                </div>
+                </button>
               ))}
             </div>
           </div>

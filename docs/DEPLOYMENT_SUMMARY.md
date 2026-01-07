@@ -1,260 +1,152 @@
-# 🚀 部署总结
+# 🚀 部署指南 / Deployment Guide
 
-**部署日期**: 2025-11-10  
-**提交哈希**: a0c4668  
-**状态**: ✅ 已推送到 GitHub
+**最后更新 / Last Updated**: 2026-01-07  
+**当前版本 / Current Version**: 1.1.0
 
 ---
 
-## 📊 本次部署内容
+## 📊 部署概览 / Deployment Overview
 
-### 代码清理
+QMS 项目部署在 Vercel 平台，使用 Neon PostgreSQL 作为数据库。
 
-- ✅ 清理了 102 处 console.log (67%)
-- ✅ 归档了 7 个未使用的测试脚本
-- ✅ 整理了脚本目录结构
-- ✅ 移除了临时文档
-- ✅ 更新了 tsconfig.json
-
-### 文件变更统计
+### 部署架构
 
 ```
-75 files changed
-5302 insertions(+)
-241 deletions(-)
+GitHub Repository → Vercel (自动部署) → Production
+                         ↓
+                  Neon PostgreSQL
 ```
 
-### 新增文档 (11 个)
+### 部署 URL
 
-1. ANALYSIS_COMPLETE.md
-2. CLEANUP_COMPLETE_SUMMARY.md
-3. CLEANUP_EXECUTION_PLAN.md
-4. CONSOLE_LOG_CLEANUP_FINAL.md
-5. CONSOLE_LOG_CLEANUP_PROGRESS.md
-6. OPTIMIZATION_README.md
-7. OPTIMIZATION_UPDATE.md
-8. PROJECT_CLEANUP_SUMMARY.md
-9. PROJECT_OPTIMIZATION_ANALYSIS.md
-10. README_OPTIMIZATION.md
-11. TEST_RESULTS.md
-12. 项目优化分析报告\_中文.md
-
-### 归档文件 (12 个)
-
-- 7 个测试脚本 → scripts/archive/
-- 5 个迁移脚本 → scripts/migrations/
-- 4 个临时文档 → docs/archive/temp/
+- **生产环境**: https://your-app-domain.vercel.app
+- **GitHub 仓库**: https://github.com/ohengcom/qms-app
 
 ---
 
-## ✅ 测试结果
+## 🔧 部署步骤 / Deployment Steps
 
-| 测试项              | 结果             |
-| ------------------- | ---------------- |
-| TypeScript 类型检查 | ✅ 通过          |
-| ESLint 代码检查     | ✅ 通过 (有警告) |
-| 生产构建            | ✅ 成功          |
+### 1. 环境变量配置
 
----
+在 Vercel 项目设置中配置以下环境变量：
 
-## 📈 清理效果
+```env
+# 数据库
+DATABASE_URL=postgresql://...
 
-| 指标         | 改进            |
-| ------------ | --------------- |
-| Console 日志 | -67% (153 → 51) |
-| 未使用文件   | -100% (7 → 0)   |
-| 总问题数     | -57% (190 → 81) |
-| 代码质量     | +70%            |
-| 项目组织     | +80%            |
+# 认证
+QMS_PASSWORD_HASH=<bcrypt hash>
+QMS_JWT_SECRET=<jwt secret>
 
----
-
-## 🔗 GitHub 提交
-
-**仓库**: https://github.com/ohengcom/qms-app.git  
-**分支**: main  
-**提交**: a0c4668
-
-**提交信息**:
-
-```
-chore: 项目清理和优化
-
-- 清理 102 处 console.log (67% 完成)
-- 归档 7 个未使用的测试脚本
-- 整理脚本目录结构 (archive/, migrations/)
-- 移除临时文档
-- 更新 tsconfig.json 排除归档目录
-
-清理效果:
-- 代码质量提升 70%
-- 项目组织提升 80%
-- 技术债务减少 57%
-- 所有测试通过 ✅
-
-详细报告: CLEANUP_COMPLETE_SUMMARY.md
+# 外部服务（可选）
+OPENWEATHERMAP_API_KEY=<api key>
+CLOUDINARY_URL=<cloudinary url>
 ```
 
+### 2. 部署命令
+
+```bash
+# 推送到 GitHub 自动触发部署
+git push origin main
+
+# 或手动部署
+vercel --prod
+```
+
+### 3. 部署验证
+
+部署完成后验证：
+
+1. ✅ 访问生产 URL
+2. ✅ 登录功能正常
+3. ✅ 数据库连接正常
+4. ✅ 所有页面加载正常
+
 ---
 
-## 🎯 Vercel 自动部署
+## ✅ 部署检查清单 / Deployment Checklist
 
-GitHub 推送后，Vercel 将自动触发部署：
+### 部署前
 
-1. ✅ 代码已推送到 GitHub
-2. ⏳ Vercel 检测到更改
-3. ⏳ 开始构建
-4. ⏳ 运行测试
-5. ⏳ 部署到生产环境
+- [ ] 代码通过 ESLint 检查 (`npm run lint`)
+- [ ] 代码通过 TypeScript 检查 (`npm run type-check`)
+- [ ] 本地构建成功 (`npm run build`)
+- [ ] 环境变量已配置
 
-**预计部署时间**: 2-3 分钟
+### 部署后
 
-**部署 URL**: https://qms-app-omega.vercel.app
-
----
-
-## 📝 部署后验证
-
-### 必须检查的项目
-
-1. **主页**
-   - [ ] 页面正常加载
-   - [ ] 天气预报显示
-   - [ ] 统计数据正确
-
-2. **被子管理**
-   - [ ] 列表正常显示
-   - [ ] 添加/编辑功能正常
-   - [ ] 图片上传正常
-
-3. **使用记录**
-   - [ ] 记录正常显示
-   - [ ] 添加/编辑功能正常
-
-4. **通知系统**
-   - [ ] 通知正常显示
-   - [ ] 标记已读功能正常
-
-5. **设置页面**
-   - [ ] 密码修改功能正常
-   - [ ] 语言切换正常
-
-### 性能检查
-
-- [ ] 页面加载速度 < 2 秒
-- [ ] API 响应时间 < 500ms
+- [ ] 生产 URL 可访问
+- [ ] 登录功能正常
+- [ ] 仪表板数据显示正常
+- [ ] 被子管理功能正常
+- [ ] 使用记录功能正常
 - [ ] 无控制台错误
-- [ ] 无 404 错误
 
 ---
 
-## ⚠️ 已知问题
+## 🔍 故障排除 / Troubleshooting
 
-### ESLint 警告 (不影响功能)
+### 常见问题
 
-**未使用的变量** (50 个错误):
+#### 1. 构建失败
 
-- 主要是 catch 块中的 error 变量
-- 不影响功能，可后续优化
+```bash
+# 检查构建日志
+vercel logs
 
-**any 类型警告** (84 个):
+# 本地测试构建
+npm run build
+```
 
-- 主要在 API 路由和数据转换中
-- 不影响功能，可后续优化
+#### 2. 数据库连接失败
 
-**建议**: 这些警告不影响生产环境，可以在后续迭代中优化。
+- 检查 `DATABASE_URL` 环境变量
+- 确认 Neon 数据库状态
+- 检查 IP 白名单设置
 
----
+#### 3. 认证问题
 
-## 🎉 部署成功标志
-
-当看到以下内容时，表示部署成功：
-
-1. ✅ Vercel 部署状态显示 "Ready"
-2. ✅ 访问网站无错误
-3. ✅ 所有功能正常工作
-4. ✅ 无控制台错误
-
----
-
-## 📞 如果遇到问题
-
-### Vercel 部署失败
-
-1. 检查 Vercel 部署日志
-2. 查看构建错误信息
-3. 确认环境变量配置正确
-
-### 功能异常
-
-1. 检查浏览器控制台错误
-2. 查看 Vercel 函数日志
-3. 检查数据库连接
+- 检查 `QMS_PASSWORD_HASH` 和 `QMS_JWT_SECRET`
+- 重新生成密码哈希：`npm run setup-password "YourPassword"`
 
 ### 回滚方案
 
-如果需要回滚到之前的版本：
+如需回滚到之前版本：
 
 ```bash
-# 回滚到上一个提交
+# 在 Vercel 控制台选择之前的部署
+# 或使用 Git 回滚
 git revert HEAD
 git push
-
-# 或者在 Vercel 控制台手动回滚
 ```
 
 ---
 
-## 📊 部署统计
+## 📈 性能指标 / Performance Metrics
 
-### 代码变更
+### 目标指标
 
-- 修改文件: 64 个
-- 新增文件: 11 个
-- 删除文件: 12 个 (已归档)
-- 移动文件: 12 个
+| 指标                     | 目标    |
+| ------------------------ | ------- |
+| First Contentful Paint   | < 1.5s  |
+| Largest Contentful Paint | < 2.5s  |
+| First Input Delay        | < 100ms |
+| Cumulative Layout Shift  | < 0.1   |
 
-### 清理成果
+### 监控
 
-- Console.log: -102 处
-- 未使用文件: -7 个
-- 技术债务: -57%
-
-### 文档完善
-
-- 新增文档: 11 个
-- 总文档数: 40+ 个
-- 文档覆盖率: 90%
+- Vercel Analytics（内置）
+- 浏览器 DevTools Lighthouse
 
 ---
 
-## 🎯 下一步
+## 🔗 相关文档 / Related Documentation
 
-### 立即验证
-
-1. ⏳ 等待 Vercel 部署完成
-2. ⏳ 访问生产环境
-3. ⏳ 验证所有功能
-4. ⏳ 检查性能指标
-
-### 短期计划
-
-1. 📋 处理 27 处 TODO 注释
-2. 🔧 修复 ESLint 警告
-3. 🎨 优化重复组件
-
-### 长期计划
-
-1. 📅 添加自动化测试
-2. 📅 实现完整功能
-3. 📅 持续性能优化
+- [Vercel 环境配置](./guides/VERCEL-ENV-SETUP.md)
+- [Vercel 部署指南](./guides/VERCEL_DEPLOYMENT_GUIDE.md)
+- [生产测试清单](./PRODUCTION_TESTING_CHECKLIST.md)
+- [备份恢复指南](./BACKUP_RESTORE_GUIDE.md)
 
 ---
 
-**部署完成时间**: 2025-11-10  
-**部署者**: Kiro AI  
-**状态**: ✅ 已推送，等待 Vercel 部署
-
----
-
-**🎉 恭喜！代码已成功推送到 GitHub，Vercel 将自动部署！**
+**维护者 / Maintainer**: QMS Team

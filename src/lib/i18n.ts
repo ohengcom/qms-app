@@ -116,6 +116,7 @@ export const translations = {
         materialDetails: '材料详情',
         notes: '备注',
         purchaseDate: '购买日期',
+        packagingInfo: '存放用包',
         namePlaceholder: '例如：冬季羽绒被',
         colorPlaceholder: '白色',
         materialPlaceholder: '羽绒',

@@ -1,23 +1,23 @@
 # Initialize Database with Sample Data
 
-Your Vercel deployment is successful, but the database is empty. Follow these steps to initialize it with sample data:
+Your deployment is successful, but the database is empty. Follow these steps to initialize it with sample data:
 
 ## Option 1: Using the Browser (Easiest)
 
 1. Open your browser
-2. Navigate to: `https://qms-app-omega.vercel.app/api/setup`
+2. Navigate to: `https://your-app-domain.vercel.app/api/setup`
 3. You should see a JSON response indicating the database was initialized
 
 ## Option 2: Using curl (Command Line)
 
 ```bash
-curl -X POST https://qms-app-omega.vercel.app/api/setup
+curl -X POST https://your-app-domain.vercel.app/api/setup
 ```
 
 ## Option 3: Using PowerShell
 
 ```powershell
-Invoke-WebRequest -Uri "https://qms-app-omega.vercel.app/api/setup" -Method POST
+Invoke-WebRequest -Uri "https://your-app-domain.vercel.app/api/setup" -Method POST
 ```
 
 ## What This Does
@@ -34,7 +34,7 @@ The setup endpoint will:
 
 After running the setup, visit:
 
-- https://qms-app-omega.vercel.app/quilts
+- https://your-app-domain.vercel.app/quilts
 
 You should now see the 3 sample quilts instead of "No quilts yet".
 
@@ -43,7 +43,7 @@ You should now see the 3 sample quilts instead of "No quilts yet".
 To check if the database is already initialized:
 
 ```bash
-curl https://qms-app-omega.vercel.app/api/setup
+curl https://your-app-domain.vercel.app/api/setup
 ```
 
 This GET request will show you:
@@ -67,7 +67,7 @@ Check that the `DATABASE_URL` environment variable is set correctly in Vercel:
 
 ### Still showing "No quilts yet"
 
-1. Clear your browser cache (or use the clear-cache page: https://qms-app-omega.vercel.app/clear-cache.html)
+1. Clear your browser cache (or use the clear-cache page: https://your-app-domain.vercel.app/clear-cache.html)
 2. Hard refresh the page (Ctrl+Shift+R or Cmd+Shift+R)
 3. Check the browser console for any errors
 

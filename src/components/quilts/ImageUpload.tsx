@@ -117,8 +117,13 @@ export function ImageUpload({
       </div>
 
       {/* Image Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+      <div
+        className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"
+        role="list"
+        aria-label="Uploaded images"
+      >
         {images.map((image, imageIndex) => (
+          // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
           <div
             key={`${image.substring(0, 30)}-${imageIndex}`}
             draggable
@@ -126,6 +131,8 @@ export function ImageUpload({
             onDragOver={handleDragOver}
             onDrop={e => handleDrop(e, imageIndex)}
             onDragEnd={handleDragEnd}
+            role="listitem"
+            aria-label={`Image ${imageIndex + 1}${showMainImage && imageIndex === 0 ? ', main image' : ''}. Drag to reorder.`}
             className={`
               relative aspect-square rounded-lg overflow-hidden border-2 
               ${draggedIndex === imageIndex ? 'opacity-50 border-blue-500' : 'border-gray-200'}
@@ -140,7 +147,7 @@ export function ImageUpload({
             )}
 
             {/* Image */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
+            {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/no-noninteractive-element-interactions */}
             <img
               src={image}
               alt={`图片 ${imageIndex + 1}`}

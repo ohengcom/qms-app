@@ -179,8 +179,16 @@ export default function DashboardPage() {
                     <div
                       key={quilt.id}
                       className="px-6 py-3 table-row-hover cursor-pointer"
+                      role="row"
+                      tabIndex={0}
                       onDoubleClick={() => router.push(`/quilts?search=${quilt.name}`)}
-                      title={lang === 'zh' ? '双击查看详情' : 'Double-click to view details'}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          router.push(`/quilts?search=${quilt.name}`);
+                        }
+                      }}
+                      aria-label={`${quilt.name}, ${t(`season.${quilt.season}`)}, ${quilt.fillMaterial}, ${quilt.weightGrams}g, ${quilt.location}. ${lang === 'zh' ? '按回车键查看详情' : 'Press Enter to view details'}`}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3 flex-1">
@@ -188,12 +196,13 @@ export default function DashboardPage() {
                           <span className="font-medium text-foreground">{quilt.name}</span>
                           <span className="text-sm text-muted-foreground">#{quilt.itemNumber}</span>
                           <span
-                            className={`px-2 py-0.5 text-xs font-medium rounded ${quilt.season === 'WINTER'
+                            className={`px-2 py-0.5 text-xs font-medium rounded ${
+                              quilt.season === 'WINTER'
                                 ? 'bg-info/10 text-info'
                                 : quilt.season === 'SUMMER'
                                   ? 'bg-warning/10 text-warning'
                                   : 'bg-success/10 text-success'
-                              }`}
+                            }`}
                           >
                             {t(`season.${quilt.season}`)}
                           </span>
@@ -234,8 +243,16 @@ export default function DashboardPage() {
                     <div
                       key={record.id}
                       className="px-6 py-3 table-row-hover cursor-pointer"
+                      role="row"
+                      tabIndex={0}
                       onDoubleClick={() => router.push(`/quilts?search=${record.quiltName}`)}
-                      title={lang === 'zh' ? '双击查看详情' : 'Double-click to view details'}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          router.push(`/quilts?search=${record.quiltName}`);
+                        }
+                      }}
+                      aria-label={`${record.year}, ${record.quiltName}, ${t(`season.${record.season}`)}. ${lang === 'zh' ? '按回车键查看详情' : 'Press Enter to view details'}`}
                     >
                       <div className="flex items-center gap-3">
                         <span className="font-semibold text-accent-foreground w-12 text-center">
@@ -244,12 +261,13 @@ export default function DashboardPage() {
                         <span className="font-medium text-foreground">{record.quiltName}</span>
                         <span className="text-sm text-muted-foreground">#{record.itemNumber}</span>
                         <span
-                          className={`px-2 py-0.5 text-xs font-medium rounded ${record.season === 'WINTER'
+                          className={`px-2 py-0.5 text-xs font-medium rounded ${
+                            record.season === 'WINTER'
                               ? 'bg-info/10 text-info'
                               : record.season === 'SUMMER'
                                 ? 'bg-warning/10 text-warning'
                                 : 'bg-success/10 text-success'
-                            }`}
+                          }`}
                         >
                           {t(`season.${record.season}`)}
                         </span>

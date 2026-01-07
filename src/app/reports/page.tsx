@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Upload, Download, FileSpreadsheet, Database, Loader2 } from 'lucide-react';
 import { ImportUpload } from '@/components/import/ImportUpload';
+import { toast } from '@/lib/toast';
 import dynamic from 'next/dynamic';
 
 // 动态导入组件
@@ -90,7 +91,8 @@ export default function ImportExportPage() {
         document.body.removeChild(a);
       }
     } catch {
-      window.alert(t('reports.export.downloadFailed'));
+      // Use toast instead of alert for better UX
+      toast.error(t('reports.export.downloadFailed'));
     } finally {
       setLoading(null);
     }

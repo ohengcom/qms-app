@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -59,6 +60,8 @@ export function QuickActions({
   pendingActions = 0,
   isLoading = false,
 }: QuickActionsProps) {
+  const router = useRouter();
+
   const primaryActions: QuickAction[] = [
     {
       id: 'add-quilt',
@@ -143,8 +146,8 @@ export function QuickActions({
       bgColor: 'bg-pink-50',
       borderColor: 'border-pink-200',
       onClick: () => {
-        // Future feature: Report generation will be implemented
-        console.log('Report generation feature coming soon');
+        // Navigate to reports page
+        router.push('/reports');
       },
     },
   ];

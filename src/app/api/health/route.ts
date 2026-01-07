@@ -1,15 +1,26 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { sql } from '@/lib/neon';
+/**
+ * Health Check REST API
+ *
+ * GET /api/health - Check application health status
+ *
+ * Requirements: 5.3 - Consistent API response format
+ * Requirements: 6.1, 6.2 - Repository pattern for database operations
+ */
+
+import { NextRequest } from 'next/server';
+import { BaseRepositoryImpl } from '@/lib/repositories/base.repository';
 import { withRateLimit, rateLimiters } from '@/lib/rate-limit';
+import { createSuccessResponse, createErrorResponse } from '@/lib/api/response';
 
 export async function GET(request: NextRequest) {
   return withRateLimit(request, rateLimiters.health, async () => {
     try {
-      // Check database connection
-      await sql`SELECT 1 as test`;
+      // Check database connection using repository pattern (Requirements: 6.1, 6.2)
+      const isHealthy = await BaseRepositoryImpl.checkHealth();
 
-      // Check Redis connection (if using Redis)
-      // You can add Redis health check here if needed
+      if (!isHealthy) {
+        throw new Error('Database connection failed');
+      }
 
       const healthStatus = {
         status: 'healthy',
@@ -18,21 +29,22 @@ export async function GET(request: NextRequest) {
         environment: process.env.NODE_ENV || 'development',
         uptime: process.uptime(),
         database: 'connected',
-        // redis: 'connected', // Add if using Redis
       };
 
-      return NextResponse.json(healthStatus, { status: 200 });
+      return createSuccessResponse({ health: healthStatus });
     } catch (error) {
       console.error('Health check failed:', error);
 
-      const healthStatus = {
-        status: 'unhealthy',
-        timestamp: new Date().toISOString(),
-        error: error instanceof Error ? error.message : 'Unknown error',
-        environment: process.env.NODE_ENV || 'development',
-      };
-
-      return NextResponse.json(healthStatus, { status: 503 });
+      return createErrorResponse(
+        'HEALTH_CHECK_FAILED',
+        '健康检查失败',
+        {
+          status: 'unhealthy',
+          timestamp: new Date().toISOString(),
+          environment: process.env.NODE_ENV || 'development',
+        },
+        503
+      );
     }
   });
 }

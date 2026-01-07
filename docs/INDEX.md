@@ -1,6 +1,6 @@
 # QMS 文档索引 / QMS Documentation Index
 
-**最后更新 / Last Updated**: 2025-12-11  
+**最后更新 / Last Updated**: 2026-01-07  
 **版本 / Version**: 1.1.0
 
 ---
@@ -9,7 +9,7 @@
 
 QMS（被子管理系统）采用简洁的 REST API 架构：
 
-- **前端**: Next.js 16 + React Query
+- **前端**: Next.js 16 + React 19 + React Query
 - **后端**: Next.js API Routes (REST API)
 - **数据库**: Neon PostgreSQL
 - **部署**: Vercel
@@ -25,15 +25,21 @@ React Components → Custom Hooks → React Query → fetch API → Next.js API 
 ```
 docs/
 ├── INDEX.md              # 本文件 - 文档索引
-├── guides/               # 实现指南
-├── UI_OPTIMIZATION.md    # UI 优化文档
-├── REFACTORING.md        # 重构文档
-├── DEPLOYMENT_SUMMARY.md # 部署总结
+├── README.md             # 文档说明
 ├── PROJECT_SUMMARY.md    # 项目总结
+├── DEPLOYMENT_SUMMARY.md # 部署总结
 ├── BACKUP_QUICK_START.md # 备份快速开始
 ├── BACKUP_RESTORE_GUIDE.md # 备份恢复指南
 ├── PRODUCTION_TESTING_CHECKLIST.md # 生产测试清单
-└── README.md             # 文档说明
+└── guides/               # 实现指南
+    ├── INITIALIZE-DATABASE.md
+    ├── AUTH_IMPLEMENTATION_SUMMARY.md
+    ├── AUTH_TEST_GUIDE.md
+    ├── PASSWORD-MIGRATION-GUIDE.md
+    ├── SECURITY_AUDIT_SUMMARY.md
+    ├── VERCEL-ENV-SETUP.md
+    ├── VERCEL_DEPLOYMENT_GUIDE.md
+    └── USAGE_TRACKING_IMPLEMENTATION.md
 
 根目录文档:
 ├── README.md             # 项目说明（英文）
@@ -68,7 +74,6 @@ docs/
 - [AUTH_IMPLEMENTATION_SUMMARY.md](./guides/AUTH_IMPLEMENTATION_SUMMARY.md) - 认证实现
 - [AUTH_TEST_GUIDE.md](./guides/AUTH_TEST_GUIDE.md) - 认证测试指南
 - [SECURITY_AUDIT_SUMMARY.md](./guides/SECURITY_AUDIT_SUMMARY.md) - 安全审计
-- [CACHE-FIX-GUIDE.md](./guides/CACHE-FIX-GUIDE.md) - 缓存修复指南
 
 #### 部署
 
@@ -79,13 +84,11 @@ docs/
 #### 使用追踪
 
 - [USAGE_TRACKING_IMPLEMENTATION.md](./guides/USAGE_TRACKING_IMPLEMENTATION.md) - 使用追踪实现
-- [USAGE_TRACKING_AUTO_IMPLEMENTATION.md](./guides/USAGE_TRACKING_AUTO_IMPLEMENTATION.md) - 自动化实现
-- [USAGE_TRACKING_AUTO_LOGIC.md](./guides/USAGE_TRACKING_AUTO_LOGIC.md) - 逻辑说明
 
 ### 📝 技术文档
 
-- [UI_OPTIMIZATION.md](./UI_OPTIMIZATION.md) - UI 优化方案和规范
-- [REFACTORING.md](./REFACTORING.md) - 代码重构记录
+- [PROJECT_SUMMARY.md](./PROJECT_SUMMARY.md) - 项目架构和功能总结
+- [DEPLOYMENT_SUMMARY.md](./DEPLOYMENT_SUMMARY.md) - 部署配置和说明
 
 ### 💾 备份与恢复
 
@@ -125,6 +128,6 @@ docs/
 
 ---
 
-**文档索引版本**: 4.0  
-**最后更新**: 2025-12-11  
-**维护者**: Sean Li
+**文档索引版本**: 5.0  
+**最后更新**: 2026-01-07  
+**维护者**: QMS Team

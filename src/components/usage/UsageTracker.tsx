@@ -37,6 +37,7 @@ import { useStartUsage, useEndUsage } from '@/hooks/useQuilts';
 import { useToastContext } from '@/hooks/useToast';
 import { Loading } from '@/components/ui/loading';
 import { Play, Square, Clock, Calendar, MapPin, FileText } from 'lucide-react';
+import { useLanguage } from '@/lib/language-provider';
 
 const startUsageSchema = z.object({
   usageType: z.enum(['REGULAR', 'GUEST', 'SPECIAL_OCCASION', 'SEASONAL_ROTATION']),
@@ -98,6 +99,8 @@ const CONDITION_OPTIONS = [
 ];
 
 export function UsageTracker({ quilt, onUsageChange }: UsageTrackerProps) {
+  const { language, t } = useLanguage();
+  const locale = language === 'zh' ? 'zh-CN' : 'en-US';
   const [showStartDialog, setShowStartDialog] = useState(false);
   const [showEndDialog, setShowEndDialog] = useState(false);
   const toast = useToastContext();
@@ -213,7 +216,8 @@ export function UsageTracker({ quilt, onUsageChange }: UsageTrackerProps) {
                 <div className="flex items-center space-x-2 text-blue-700">
                   <Calendar className="w-4 h-4" />
                   <span>
-                    Started: {new Date(quilt.currentUsage.startedAt).toLocaleDateString()}
+                    {t('dashboardSpecific.startedUsing')}:{' '}
+                    {new Date(quilt.currentUsage.startedAt).toLocaleDateString(locale)}
                   </span>
                 </div>
                 <div className="flex items-center space-x-2 text-blue-700">

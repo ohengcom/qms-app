@@ -8,6 +8,7 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Toaster } from '@/components/ui/toaster';
 import { Toaster as SonnerToaster } from 'sonner';
 import { GlobalErrorHandler } from '@/components/GlobalErrorHandler';
+import { AccessibilityAudit } from '@/components/AccessibilityAudit';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -42,6 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <ConditionalLayout>{children}</ConditionalLayout>
               <Toaster />
               <SonnerToaster position="top-right" richColors closeButton />
+              {process.env.NODE_ENV === 'development' && <AccessibilityAudit />}
             </QueryProvider>
           </LanguageProvider>
         </ErrorBoundary>

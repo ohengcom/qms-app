@@ -78,22 +78,22 @@ export default function AnalyticsPage() {
   const [period, setPeriod] = useState<'30days' | '90days' | '365days' | 'all'>('365days');
   const [filter, setFilter] = useState<'all' | 'keep' | 'low_usage' | 'consider_removal'>('all');
 
-  // Extract data
-  const quilts = (quiltsData as any)?.json?.quilts || quiltsData?.quilts || [];
-  const usageRecords = (usageData as any)?.json || usageData || [];
+  // Extract data with proper types
+  const quilts = quiltsData?.quilts || [];
+  const usageRecords = usageData || [];
 
   // Calculate statistics
   const allStats = useMemo(() => {
     if (quilts.length === 0 || usageRecords.length === 0) return [];
 
     const stats = calculateAllQuiltsUsageStats(
-      quilts.map((q: any) => ({
+      quilts.map(q => ({
         id: q.id,
         name: q.name,
         itemNumber: q.itemNumber,
         season: q.season,
       })),
-      usageRecords.map((r: any) => ({
+      usageRecords.map(r => ({
         id: r.id,
         quiltId: r.quiltId,
         startDate: new Date(r.startedAt),
@@ -537,7 +537,10 @@ export default function AnalyticsPage() {
                   </CardDescription>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Select value={period} onValueChange={(v: any) => setPeriod(v)}>
+                  <Select
+                    value={period}
+                    onValueChange={(v: '30days' | '90days' | '365days' | 'all') => setPeriod(v)}
+                  >
                     <SelectTrigger className="w-32">
                       <SelectValue />
                     </SelectTrigger>
@@ -555,7 +558,12 @@ export default function AnalyticsPage() {
                     </SelectContent>
                   </Select>
 
-                  <Select value={filter} onValueChange={(v: any) => setFilter(v)}>
+                  <Select
+                    value={filter}
+                    onValueChange={(v: 'all' | 'keep' | 'low_usage' | 'consider_removal') =>
+                      setFilter(v)
+                    }
+                  >
                     <SelectTrigger className="w-40">
                       <SelectValue />
                     </SelectTrigger>

@@ -343,3 +343,27 @@ export function sanitizeRequestBody(body: unknown): Record<string, unknown> {
 
   return sanitized;
 }
+
+/**
+ * Sanitize string fields in an object while preserving other types
+ * This is useful for API request bodies where we want to sanitize
+ * user-provided strings but keep dates, numbers, etc. intact
+ */
+export function sanitizeApiInput<T extends Record<string, unknown>>(input: T): T {
+  const result = { ...input } as Record<string, unknown>;
+
+  for (const [key, value] of Object.entries(result)) {
+    if (typeof value === 'string') {
+      // Sanitize string values to prevent XSS
+      result[key] = sanitizeString(value);
+    } else if (Array.isArray(value)) {
+      // Sanitize string items in arrays
+      result[key] = value.map(item => (typeof item === 'string' ? sanitizeString(item) : item));
+    } else if (value && typeof value === 'object' && !(value instanceof Date)) {
+      // Recursively sanitize nested objects (but not Date objects)
+      result[key] = sanitizeApiInput(value as Record<string, unknown>);
+    }
+  }
+
+  return result as T;
+}

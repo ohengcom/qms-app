@@ -4,13 +4,12 @@
  * GET /api/settings/database-stats - Get database statistics
  *
  * Requirements: 1.2, 1.3 - REST API for settings
+ * Requirements: 5.3 - Consistent API response format
  */
 
-import { NextResponse } from 'next/server';
 import { quiltRepository } from '@/lib/repositories/quilt.repository';
 import { usageRepository } from '@/lib/repositories/usage.repository';
-import { createError, ErrorCodes } from '@/lib/error-handler';
-import { dbLogger } from '@/lib/logger';
+import { createSuccessResponse, createInternalErrorResponse } from '@/lib/api/response';
 
 /**
  * GET /api/settings/database-stats
@@ -27,17 +26,16 @@ export async function GET() {
     const usageRecords = await usageRepository.findAll();
     const activeUsage = await usageRepository.getAllActive();
 
-    return NextResponse.json({
-      totalQuilts: quilts.length,
-      totalUsageRecords: usageRecords.length,
-      activeUsage: activeUsage.length,
-      provider: 'Neon Serverless PostgreSQL',
-      connected: true,
+    return createSuccessResponse({
+      stats: {
+        totalQuilts: quilts.length,
+        totalUsageRecords: usageRecords.length,
+        activeUsage: activeUsage.length,
+        provider: 'Neon Serverless PostgreSQL',
+        connected: true,
+      },
     });
   } catch (error) {
-    dbLogger.error('Failed to fetch database stats', { error });
-    return NextResponse.json(createError(ErrorCodes.INTERNAL_ERROR, '获取数据库统计失败'), {
-      status: 500,
-    });
+    return createInternalErrorResponse('获取数据库统计失败', error);
   }
 }
