@@ -167,7 +167,7 @@ async function fetchSystemInfo(): Promise<SystemInfo> {
 
   // Handle new unified API response format
   if (result.success && result.data) {
-    return result.data.info || result.data;
+    return result.data.systemInfo || result.data;
   }
 
   return result;
