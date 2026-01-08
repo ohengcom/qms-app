@@ -69,16 +69,16 @@ export function WeatherForecastWidget({ className }: WeatherForecastProps) {
   const getWeatherIcon = (iconCode: string, size: string = 'w-8 h-8') => {
     if (iconCode.includes('01')) return <Sun className={`${size} text-yellow-500`} />;
     if (iconCode.includes('02') || iconCode.includes('03'))
-      return <Cloud className={`${size} text-gray-500`} />;
+      return <Cloud className={`${size} text-muted-foreground`} />;
     if (iconCode.includes('09') || iconCode.includes('10'))
       return <CloudRain className={`${size} text-blue-500`} />;
     if (iconCode.includes('13')) return <Snowflake className={`${size} text-blue-200`} />;
-    return <Cloud className={`${size} text-gray-500`} />;
+    return <Cloud className={`${size} text-muted-foreground`} />;
   };
 
   const getTempTrend = (current: number, next: number) => {
     const diff = next - current;
-    if (Math.abs(diff) < 2) return <Minus className="w-4 h-4 text-gray-400" />;
+    if (Math.abs(diff) < 2) return <Minus className="w-4 h-4 text-muted-foreground" />;
     if (diff > 0) return <TrendingUp className="w-4 h-4 text-red-500" />;
     return <TrendingDown className="w-4 h-4 text-blue-500" />;
   };
@@ -124,8 +124,8 @@ export function WeatherForecastWidget({ className }: WeatherForecastProps) {
       <CardContent className="pt-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-gray-600" />
-            <h3 className="text-lg font-semibold text-gray-900">
+            <MapPin className="w-5 h-5 text-muted-foreground" />
+            <h3 className="text-lg font-semibold text-foreground">
               {language === 'zh' ? '上海 · 未来7天天气' : 'Shanghai · 7-Day Forecast'}
             </h3>
           </div>
@@ -146,26 +146,26 @@ export function WeatherForecastWidget({ className }: WeatherForecastProps) {
                 key={day.date}
                 className={`text-center p-3 rounded-lg transition-all ${
                   isToday
-                    ? 'bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-300 shadow-md'
-                    : 'bg-gray-50 hover:bg-gray-100'
+                    ? 'bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 border-2 border-blue-300 dark:border-blue-700 shadow-md'
+                    : 'bg-muted hover:bg-muted/80'
                 }`}
               >
-                <div className="text-xs font-medium text-gray-600 mb-1">
+                <div className="text-xs font-medium text-muted-foreground mb-1">
                   {isToday ? t('common.today') : dayName}
                 </div>
-                <div className="text-xs text-gray-500 mb-2">{monthDay}</div>
+                <div className="text-xs text-muted-foreground mb-2">{monthDay}</div>
                 <div className="flex justify-center mb-2">
                   {day.icon ? (
                     getWeatherIcon(day.icon, 'w-10 h-10')
                   ) : (
-                    <Cloud className="w-10 h-10 text-gray-400" />
+                    <Cloud className="w-10 h-10 text-muted-foreground" />
                   )}
                 </div>
-                <div className="text-sm font-bold text-gray-900 mb-1">
+                <div className="text-sm font-bold text-foreground mb-1">
                   {Math.round(day.maxTemp)}°
                 </div>
-                <div className="text-xs text-gray-500 mb-2">{Math.round(day.minTemp)}°</div>
-                <div className="text-xs text-gray-600 truncate" title={day.description}>
+                <div className="text-xs text-muted-foreground mb-2">{Math.round(day.minTemp)}°</div>
+                <div className="text-xs text-muted-foreground truncate" title={day.description}>
                   {day.description}
                 </div>
                 {idx < forecast.length - 1 && (
@@ -178,7 +178,7 @@ export function WeatherForecastWidget({ className }: WeatherForecastProps) {
           })}
         </div>
 
-        <div className="mt-4 text-xs text-gray-400 text-center">
+        <div className="mt-4 text-xs text-muted-foreground text-center">
           {language === 'zh' ? '数据来源：Open-Meteo' : 'Data source: Open-Meteo'}
         </div>
       </CardContent>

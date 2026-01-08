@@ -307,7 +307,7 @@ export function UsageTracker({ quilt, onUsageChange }: UsageTrackerProps) {
                                 <SelectItem key={option.value} value={option.value}>
                                   <div>
                                     <div className="font-medium">{option.label}</div>
-                                    <div className="text-xs text-gray-500">
+                                    <div className="text-xs text-muted-foreground">
                                       {option.description}
                                     </div>
                                   </div>
@@ -388,7 +388,7 @@ export function UsageTracker({ quilt, onUsageChange }: UsageTrackerProps) {
         ) : (
           // Not in use - show start usage button
           <div className="text-center py-4">
-            <p className="text-gray-500 mb-4">
+            <p className="text-muted-foreground mb-4">
               This quilt is not currently being tracked for usage.
             </p>
 
@@ -426,7 +426,9 @@ export function UsageTracker({ quilt, onUsageChange }: UsageTrackerProps) {
                                 <SelectItem key={type.value} value={type.value}>
                                   <div>
                                     <div className="font-medium">{type.label}</div>
-                                    <div className="text-xs text-gray-500">{type.description}</div>
+                                    <div className="text-xs text-muted-foreground">
+                                      {type.description}
+                                    </div>
                                   </div>
                                 </SelectItem>
                               ))}

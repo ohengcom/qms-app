@@ -67,11 +67,11 @@ export function WeatherWidget({ className }: WeatherWidgetProps) {
   const getWeatherIcon = (iconCode: string) => {
     if (iconCode.includes('01')) return <Sun className="w-8 h-8 text-yellow-500" />;
     if (iconCode.includes('02') || iconCode.includes('03'))
-      return <Cloud className="w-8 h-8 text-gray-500" />;
+      return <Cloud className="w-8 h-8 text-muted-foreground" />;
     if (iconCode.includes('09') || iconCode.includes('10'))
       return <CloudRain className="w-8 h-8 text-blue-500" />;
     if (iconCode.includes('13')) return <Snowflake className="w-8 h-8 text-blue-200" />;
-    return <Cloud className="w-8 h-8 text-gray-500" />;
+    return <Cloud className="w-8 h-8 text-muted-foreground" />;
   };
 
   if (isLoading) {
@@ -142,18 +142,18 @@ export function WeatherWidget({ className }: WeatherWidgetProps) {
             {weather.icon ? (
               getWeatherIcon(weather.icon)
             ) : (
-              <Cloud className="w-8 h-8 text-gray-400" />
+              <Cloud className="w-8 h-8 text-muted-foreground" />
             )}
             <div>
               <div className="text-2xl font-bold">{formatTemperature(weather.temperature)}</div>
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-muted-foreground">
                 体感 {formatTemperature(weather.feelsLike)}
               </div>
             </div>
           </div>
           <div className="text-right">
             <div className="text-sm font-medium">{weather.description || '未知'}</div>
-            <div className="text-xs text-gray-500">
+            <div className="text-xs text-muted-foreground">
               {getTemperatureDescription(weather.temperature)}
             </div>
           </div>
@@ -164,28 +164,28 @@ export function WeatherWidget({ className }: WeatherWidgetProps) {
           <div className="flex items-center gap-2">
             <Droplets className="w-4 h-4 text-blue-500" />
             <div>
-              <div className="text-xs text-gray-500">湿度</div>
+              <div className="text-xs text-muted-foreground">湿度</div>
               <div className="font-medium">{weather.humidity}%</div>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Wind className="w-4 h-4 text-gray-500" />
+            <Wind className="w-4 h-4 text-muted-foreground" />
             <div>
-              <div className="text-xs text-gray-500">风速</div>
+              <div className="text-xs text-muted-foreground">风速</div>
               <div className="font-medium">{weather.windSpeed} m/s</div>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <Thermometer className="w-4 h-4 text-red-500" />
             <div>
-              <div className="text-xs text-gray-500">气压</div>
+              <div className="text-xs text-muted-foreground">气压</div>
               <div className="font-medium">{weather.pressure} hPa</div>
             </div>
           </div>
         </div>
 
         {/* Last Updated */}
-        <div className="text-xs text-gray-400 text-center">数据来源：Open-Meteo</div>
+        <div className="text-xs text-muted-foreground text-center">数据来源：Open-Meteo</div>
       </CardContent>
     </Card>
   );

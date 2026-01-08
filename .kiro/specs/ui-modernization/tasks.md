@@ -114,12 +114,12 @@
   - [x] 9.2 更新 Settings 页面使用 Switch
     - Settings 页面使用 Select 组件，无需替换
     - _Requirements: 5.1_
-  - [ ] 9.3 更新所有组件支持 dark mode
+  - [x] 9.3 更新所有组件支持 dark mode
     - 检查并更新硬编码的颜色值
     - 使用 CSS 变量替代
     - _Requirements: 1.5, 1.6_
 
-- [ ] 10. Checkpoint - 验证组件更新
+- [x] 10. Checkpoint - 验证组件更新
   - 确保 Settings 页面 Switch 正常
   - 确保所有页面在 dark mode 下显示正确
 

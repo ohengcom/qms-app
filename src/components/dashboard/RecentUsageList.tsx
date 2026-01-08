@@ -54,19 +54,19 @@ export function RecentUsageList({
     return (
       <Card className="animate-pulse">
         <CardHeader>
-          <div className="h-6 bg-gray-200 rounded w-1/2"></div>
-          <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+          <div className="h-6 bg-muted rounded w-1/2"></div>
+          <div className="h-4 bg-muted rounded w-3/4"></div>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {Array.from({ length: 5 }).map((_, i) => (
               <div key={i} className="flex items-center space-x-4">
-                <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
+                <div className="w-10 h-10 bg-muted rounded-full"></div>
                 <div className="flex-1 space-y-2">
-                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                  <div className="h-4 bg-muted rounded w-3/4"></div>
+                  <div className="h-3 bg-muted rounded w-1/2"></div>
                 </div>
-                <div className="w-20 h-8 bg-gray-200 rounded"></div>
+                <div className="w-20 h-8 bg-muted rounded"></div>
               </div>
             ))}
           </div>
@@ -139,7 +139,7 @@ export function RecentUsageList({
             {quilts.slice(0, 8).map(item => (
               <div
                 key={`${item.quilt.id}-${item.date}`}
-                className="flex items-center justify-between p-3 rounded-lg border border-gray-100 hover:border-gray-200 hover:bg-gray-50 transition-all duration-200"
+                className="flex items-center justify-between p-3 rounded-lg border border-border hover:border-border hover:bg-muted transition-all duration-200"
               >
                 <div className="flex items-center space-x-3">
                   {/* Quilt Avatar */}
@@ -154,7 +154,7 @@ export function RecentUsageList({
                   {/* Activity Details */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2">
-                      <p className="text-sm font-medium text-gray-900 truncate">
+                      <p className="text-sm font-medium text-foreground truncate">
                         {item.quilt.name}
                       </p>
                       <Badge variant="outline" className="text-xs">
@@ -164,12 +164,12 @@ export function RecentUsageList({
 
                     <div className="flex items-center space-x-2 mt-1">
                       {getActivityIcon(item.type, item.isCurrentlyInUse)}
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-muted-foreground">
                         {item.type === 'usage_started' ? 'Started using' : 'Finished using'}
                         {item.duration && ` • ${item.duration} days`}
                       </span>
-                      <span className="text-xs text-gray-400">•</span>
-                      <span className="text-xs text-gray-400">{formatDate(item.date)}</span>
+                      <span className="text-xs text-muted-foreground">•</span>
+                      <span className="text-xs text-muted-foreground">{formatDate(item.date)}</span>
                     </div>
                   </div>
                 </div>
@@ -218,7 +218,7 @@ export function RecentUsageList({
             ))}
 
             {quilts.length > 8 && (
-              <div className="text-center pt-4 border-t border-gray-100">
+              <div className="text-center pt-4 border-t border-border">
                 <Button variant="ghost" size="sm">
                   View All Activity
                   <TrendingUp className="ml-2 h-4 w-4" />
@@ -228,9 +228,11 @@ export function RecentUsageList({
           </div>
         ) : (
           <div className="text-center py-8">
-            <Clock className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-            <p className="text-sm text-gray-500 mb-2">No recent activity</p>
-            <p className="text-xs text-gray-400 mb-4">Start using a quilt to see activity here</p>
+            <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <p className="text-sm text-muted-foreground mb-2">No recent activity</p>
+            <p className="text-xs text-muted-foreground mb-4">
+              Start using a quilt to see activity here
+            </p>
             <Button variant="outline" size="sm">
               <Calendar className="h-4 w-4 mr-2" />
               Browse Quilts

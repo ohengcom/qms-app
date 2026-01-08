@@ -138,7 +138,7 @@ export function UsageCalendar({
 
     // Add empty cells for days before the first day of the month
     for (let i = 0; i < firstDay; i++) {
-      days.push(<div key={`empty-${i}`} className="h-12 border border-gray-100" />);
+      days.push(<div key={`empty-${i}`} className="h-12 border border-border" />);
     }
 
     // Add cells for each day of the month
@@ -154,9 +154,9 @@ export function UsageCalendar({
           type="button"
           key={day}
           className={cn(
-            'h-12 border border-gray-100 p-1 cursor-pointer hover:bg-gray-50 relative text-left',
-            isToday && 'bg-blue-50 border-blue-200',
-            isSelected && 'bg-blue-100 border-blue-300'
+            'h-12 border border-border p-1 cursor-pointer hover:bg-muted relative text-left',
+            isToday && 'bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800',
+            isSelected && 'bg-blue-100 dark:bg-blue-900 border-blue-300 dark:border-blue-700'
           )}
           onClick={() => handleDateClick(day)}
           aria-label={`${MONTHS[currentMonth]} ${day}, ${currentYear}${periodsOnDate.length > 0 ? `, ${periodsOnDate.length} usage period${periodsOnDate.length > 1 ? 's' : ''}` : ''}`}
@@ -177,7 +177,7 @@ export function UsageCalendar({
                 />
               ))}
               {periodsOnDate.length > 3 && (
-                <div className="text-xs text-gray-500">+{periodsOnDate.length - 3}</div>
+                <div className="text-xs text-muted-foreground">+{periodsOnDate.length - 3}</div>
               )}
             </div>
           )}
@@ -186,12 +186,12 @@ export function UsageCalendar({
     }
 
     return (
-      <div className="grid grid-cols-7 gap-0 border border-gray-200 rounded-lg overflow-hidden">
+      <div className="grid grid-cols-7 gap-0 border border-border rounded-lg overflow-hidden">
         {/* Day headers */}
         {DAYS.map(day => (
           <div
             key={day}
-            className="h-8 bg-gray-50 border-b border-gray-200 flex items-center justify-center text-xs font-medium text-gray-600"
+            className="h-8 bg-muted border-b border-border flex items-center justify-center text-xs font-medium text-muted-foreground"
           >
             {day}
           </div>
@@ -225,10 +225,10 @@ export function UsageCalendar({
           type="button"
           key={month}
           className={cn(
-            'p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 text-center',
+            'p-4 border border-border rounded-lg cursor-pointer hover:bg-muted text-center',
             month === new Date().getMonth() &&
               currentYear === new Date().getFullYear() &&
-              'bg-blue-50 border-blue-200'
+              'bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800'
           )}
           onClick={() => {
             setCurrentDate(new Date(currentYear, month, 1));
@@ -237,7 +237,7 @@ export function UsageCalendar({
           aria-label={`${MONTHS[month]} ${currentYear}, ${monthUsage.length} usage period${monthUsage.length !== 1 ? 's' : ''}`}
         >
           <div className="font-medium text-sm">{MONTHS[month]}</div>
-          <div className="text-xs text-gray-500 mt-1">
+          <div className="text-xs text-muted-foreground mt-1">
             {monthUsage.length} period{monthUsage.length !== 1 ? 's' : ''}
           </div>
           {monthUsage.length > 0 && (
@@ -322,19 +322,19 @@ export function UsageCalendar({
         {viewMode === 'month' ? renderMonthView() : renderYearView()}
 
         {/* Legend */}
-        <div className="flex flex-wrap items-center gap-4 pt-4 border-t">
-          <span className="text-sm font-medium text-gray-600">Usage Types:</span>
+        <div className="flex flex-wrap items-center gap-4 pt-4 border-t border-border">
+          <span className="text-sm font-medium text-muted-foreground">Usage Types:</span>
           {Object.entries(USAGE_TYPE_COLORS).map(([type, color]) => (
             <div key={type} className="flex items-center space-x-2">
               <div className={cn('w-3 h-3 rounded-full', color)} />
-              <span className="text-xs text-gray-600">{type.replace('_', ' ')}</span>
+              <span className="text-xs text-muted-foreground">{type.replace('_', ' ')}</span>
             </div>
           ))}
         </div>
 
         {/* Selected Date Details */}
         {selectedDate && selectedDatePeriods.length > 0 && (
-          <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+          <div className="mt-4 p-4 bg-muted rounded-lg">
             <h4 className="font-medium mb-3">
               {selectedDate.toLocaleDateString(locale, {
                 weekday: 'long',
@@ -348,7 +348,7 @@ export function UsageCalendar({
                 <button
                   type="button"
                   key={`${period.id}-${index}`}
-                  className="flex items-center justify-between p-2 bg-white rounded border cursor-pointer hover:bg-gray-50 w-full text-left"
+                  className="flex items-center justify-between p-2 bg-background rounded border border-border cursor-pointer hover:bg-muted w-full text-left"
                   onClick={() => onPeriodSelect?.(period)}
                   aria-label={`${period.usageType.replace('_', ' ')} usage period${period.location ? ` at ${period.location}` : ''}, ${period.endDate ? 'completed' : 'ongoing'}`}
                 >
@@ -366,7 +366,7 @@ export function UsageCalendar({
                         {period.usageType.replace('_', ' ')}
                       </div>
                       {period.location && (
-                        <div className="text-xs text-gray-500 flex items-center">
+                        <div className="text-xs text-muted-foreground flex items-center">
                           <MapPin className="w-3 h-3 mr-1" aria-hidden="true" />
                           {period.location}
                         </div>

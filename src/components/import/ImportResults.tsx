@@ -67,30 +67,30 @@ export function ImportResults({
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center">
               <p className="text-2xl font-bold text-blue-600">{results.summary.totalRows}</p>
-              <p className="text-sm text-gray-600">Total Rows</p>
+              <p className="text-sm text-muted-foreground">Total Rows</p>
             </div>
             <div className="text-center">
               <p className="text-2xl font-bold text-green-600">
                 {results.summary.successfulImports}
               </p>
-              <p className="text-sm text-gray-600">Imported</p>
+              <p className="text-sm text-muted-foreground">Imported</p>
             </div>
             <div className="text-center">
               <p className="text-2xl font-bold text-red-600">{results.errors.length}</p>
-              <p className="text-sm text-gray-600">Errors</p>
+              <p className="text-sm text-muted-foreground">Errors</p>
             </div>
             <div className="text-center">
               <p className="text-2xl font-bold text-amber-600">{results.summary.duplicates}</p>
-              <p className="text-sm text-gray-600">Duplicates</p>
+              <p className="text-sm text-muted-foreground">Duplicates</p>
             </div>
           </div>
 
           <div className="mt-6">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium">Success Rate</span>
-              <span className="text-sm text-gray-600">{successRate}%</span>
+              <span className="text-sm text-muted-foreground">{successRate}%</span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
+            <div className="w-full bg-muted rounded-full h-2">
               <div
                 className={`h-2 rounded-full ${
                   successRate >= 80
@@ -184,7 +184,7 @@ export function ImportResults({
                 </div>
               ))}
               {results.errors.length > 10 && (
-                <p className="text-sm text-gray-600 text-center">
+                <p className="text-sm text-muted-foreground text-center">
                   ... and {results.errors.length - 10} more errors
                 </p>
               )}
@@ -206,7 +206,7 @@ export function ImportResults({
                 <Home className="h-6 w-6" />
                 <div className="text-center">
                   <p className="font-medium">Go to Dashboard</p>
-                  <p className="text-xs text-gray-600">View your updated collection</p>
+                  <p className="text-xs text-muted-foreground">View your updated collection</p>
                 </div>
               </div>
             </Button>
@@ -216,7 +216,7 @@ export function ImportResults({
                 <RotateCcw className="h-6 w-6" />
                 <div className="text-center">
                   <p className="font-medium">Import Another File</p>
-                  <p className="text-xs text-gray-600">Start a new import process</p>
+                  <p className="text-xs text-muted-foreground">Start a new import process</p>
                 </div>
               </div>
             </Button>

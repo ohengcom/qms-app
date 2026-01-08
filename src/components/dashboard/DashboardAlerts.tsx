@@ -31,13 +31,13 @@ export function DashboardAlerts({ alerts, isLoading = false, onDismissAll }: Das
     return (
       <Card className="animate-pulse">
         <CardHeader>
-          <div className="h-6 bg-gray-200 rounded w-1/3"></div>
-          <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+          <div className="h-6 bg-muted rounded w-1/3"></div>
+          <div className="h-4 bg-muted rounded w-2/3"></div>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="h-16 bg-gray-200 rounded"></div>
+              <div key={i} className="h-16 bg-muted rounded"></div>
             ))}
           </div>
         </CardContent>
@@ -58,8 +58,8 @@ export function DashboardAlerts({ alerts, isLoading = false, onDismissAll }: Das
         <CardContent>
           <div className="text-center py-4">
             <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-2" />
-            <p className="text-sm text-gray-600">No alerts or notifications</p>
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-sm text-muted-foreground">No alerts or notifications</p>
+            <p className="text-xs text-muted-foreground mt-1">
               Your quilt management system is operating normally
             </p>
           </div>
@@ -185,10 +185,10 @@ export function DashboardAlerts({ alerts, isLoading = false, onDismissAll }: Das
                 <div className="flex items-start space-x-3 flex-1">
                   <div className="flex-shrink-0 mt-0.5">{getAlertIcon(alert.type)}</div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900">{alert.message}</p>
+                    <p className="text-sm font-medium text-foreground">{alert.message}</p>
                     <div className="flex items-center space-x-2 mt-1">
                       {getPriorityBadge(alert.priority)}
-                      <div className="flex items-center text-xs text-gray-500">
+                      <div className="flex items-center text-xs text-muted-foreground">
                         <Clock className="h-3 w-3 mr-1" />
                         {formatTimestamp(alert.timestamp)}
                       </div>
@@ -223,7 +223,7 @@ export function DashboardAlerts({ alerts, isLoading = false, onDismissAll }: Das
           ))}
 
           {alerts.length > 5 && (
-            <div className="text-center pt-2 border-t border-gray-100">
+            <div className="text-center pt-2 border-t border-border">
               <Button variant="ghost" size="sm" className="text-xs">
                 View All {alerts.length} Alerts
                 <Zap className="ml-2 h-3 w-3" />

@@ -114,7 +114,7 @@ export function ImportUpload({ onFileUpload }: ImportUploadProps) {
           <div
             className={cn(
               'border-2 border-dashed rounded-lg p-8 text-center transition-colors',
-              isDragOver ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400',
+              isDragOver ? 'border-primary bg-primary/10' : 'border-border hover:border-primary/50',
               isUploading && 'opacity-50 pointer-events-none'
             )}
             onDrop={handleDrop}
@@ -124,15 +124,17 @@ export function ImportUpload({ onFileUpload }: ImportUploadProps) {
             aria-label={t('reports.import.uploadTitle')}
           >
             <div className="space-y-4">
-              <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
-                <FileSpreadsheet className="h-8 w-8 text-gray-600" />
+              <div className="mx-auto w-16 h-16 bg-muted rounded-full flex items-center justify-center">
+                <FileSpreadsheet className="h-8 w-8 text-muted-foreground" />
               </div>
 
               <div>
-                <p className="text-lg font-medium text-gray-900">
+                <p className="text-lg font-medium text-foreground">
                   {isUploading ? t('reports.import.processingFile') : t('reports.import.dropFile')}
                 </p>
-                <p className="text-sm text-gray-500 mt-1">{t('reports.import.orClickToBrowse')}</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {t('reports.import.orClickToBrowse')}
+                </p>
               </div>
 
               <div className="flex justify-center">
@@ -172,7 +174,7 @@ export function ImportUpload({ onFileUpload }: ImportUploadProps) {
               <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
               <div>
                 <p className="font-medium">{t('reports.import.supportedFormats')}</p>
-                <p className="text-sm text-gray-600">{t('reports.import.excelFiles')}</p>
+                <p className="text-sm text-muted-foreground">{t('reports.import.excelFiles')}</p>
               </div>
             </div>
 
@@ -180,7 +182,7 @@ export function ImportUpload({ onFileUpload }: ImportUploadProps) {
               <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
               <div>
                 <p className="font-medium">{t('reports.import.maximumFileSize')}</p>
-                <p className="text-sm text-gray-600">{t('reports.import.perFile')}</p>
+                <p className="text-sm text-muted-foreground">{t('reports.import.perFile')}</p>
               </div>
             </div>
 
@@ -188,7 +190,9 @@ export function ImportUpload({ onFileUpload }: ImportUploadProps) {
               <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
               <div>
                 <p className="font-medium">{t('reports.import.expectedColumns')}</p>
-                <p className="text-sm text-gray-600">{t('reports.import.columnDescription')}</p>
+                <p className="text-sm text-muted-foreground">
+                  {t('reports.import.columnDescription')}
+                </p>
               </div>
             </div>
           </div>
@@ -204,7 +208,7 @@ export function ImportUpload({ onFileUpload }: ImportUploadProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2 text-sm text-gray-600">
+          <div className="space-y-2 text-sm text-muted-foreground">
             <p>• {t('reports.import.tip1')}</p>
             <p>• {t('reports.import.tip2')}</p>
           </div>

@@ -23,15 +23,15 @@ export function SeasonalChart({ data, totalQuilts, isLoading = false }: Seasonal
     return (
       <Card className="animate-pulse">
         <CardHeader>
-          <div className="h-6 bg-gray-200 rounded w-1/2"></div>
-          <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+          <div className="h-6 bg-muted rounded w-1/2"></div>
+          <div className="h-4 bg-muted rounded w-3/4"></div>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div className="h-32 bg-gray-200 rounded"></div>
+            <div className="h-32 bg-muted rounded"></div>
             <div className="grid grid-cols-3 gap-4">
               {Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="h-16 bg-gray-200 rounded"></div>
+                <div key={i} className="h-16 bg-muted rounded"></div>
               ))}
             </div>
           </div>
@@ -103,7 +103,7 @@ export function SeasonalChart({ data, totalQuilts, isLoading = false }: Seasonal
                       style={{ height: `${getBarHeight(season.count)}%` }}
                     >
                       <div className="absolute -top-6 left-1/2 transform -translate-x-1/2">
-                        <span className="text-xs font-medium text-gray-700">{season.count}</span>
+                        <span className="text-xs font-medium text-foreground">{season.count}</span>
                       </div>
                     </div>
                   </div>
@@ -118,7 +118,7 @@ export function SeasonalChart({ data, totalQuilts, isLoading = false }: Seasonal
                   <div className={cn('p-2 rounded-full mb-1', season.bgColor)}>
                     <season.icon className={cn('h-4 w-4', season.color)} />
                   </div>
-                  <span className="text-xs text-gray-600 text-center">{season.name}</span>
+                  <span className="text-xs text-muted-foreground text-center">{season.name}</span>
                 </div>
               ))}
             </div>
@@ -142,20 +142,20 @@ export function SeasonalChart({ data, totalQuilts, isLoading = false }: Seasonal
                   </Badge>
                 </div>
                 <div>
-                  <p className="text-lg font-bold text-gray-900">{season.count}</p>
-                  <p className="text-xs text-gray-600">{season.name} Quilts</p>
+                  <p className="text-lg font-bold text-foreground">{season.count}</p>
+                  <p className="text-xs text-muted-foreground">{season.name} Quilts</p>
                 </div>
               </div>
             ))}
           </div>
 
           {/* Insights */}
-          <div className="bg-gray-50 rounded-lg p-4">
+          <div className="bg-muted rounded-lg p-4">
             <div className="flex items-center mb-2">
               <TrendingUp className="h-4 w-4 text-blue-600 mr-2" />
-              <span className="text-sm font-medium text-gray-700">Seasonal Insights</span>
+              <span className="text-sm font-medium text-foreground">Seasonal Insights</span>
             </div>
-            <div className="space-y-1 text-xs text-gray-600">
+            <div className="space-y-1 text-xs text-muted-foreground">
               {maxCount > 0 && (
                 <p>
                   • Most quilts are for{' '}

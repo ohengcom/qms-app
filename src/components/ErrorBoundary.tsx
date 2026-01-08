@@ -71,18 +71,18 @@ export class ErrorBoundary extends Component<Props, State> {
 
       // Default error UI
       return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+        <div className="min-h-screen flex items-center justify-center bg-background px-4">
           <div className="max-w-md w-full">
-            <div className="bg-white border border-red-200 rounded-lg p-8 shadow-lg">
-              <div className="flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mx-auto mb-4">
-                <AlertTriangle className="w-8 h-8 text-red-600" />
+            <div className="bg-card border border-red-200 dark:border-red-900 rounded-lg p-8 shadow-lg">
+              <div className="flex items-center justify-center w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full mx-auto mb-4">
+                <AlertTriangle className="w-8 h-8 text-red-600 dark:text-red-400" />
               </div>
 
-              <h1 className="text-2xl font-bold text-gray-900 text-center mb-2">
+              <h1 className="text-2xl font-bold text-foreground text-center mb-2">
                 出错了 / Something Went Wrong
               </h1>
 
-              <p className="text-gray-600 text-center mb-6">
+              <p className="text-muted-foreground text-center mb-6">
                 应用程序遇到了意外错误。
                 <br />
                 The application encountered an unexpected error.
@@ -94,17 +94,17 @@ export class ErrorBoundary extends Component<Props, State> {
 
               {/* Error details (only in development) */}
               {process.env.NODE_ENV === 'development' && this.state.error && (
-                <div className="mb-6 p-4 bg-gray-50 rounded border border-gray-200">
-                  <p className="text-sm font-semibold text-gray-700 mb-2">Error Details:</p>
-                  <p className="text-xs text-red-600 font-mono break-all">
+                <div className="mb-6 p-4 bg-muted rounded border border-border">
+                  <p className="text-sm font-semibold text-foreground mb-2">Error Details:</p>
+                  <p className="text-xs text-red-600 dark:text-red-400 font-mono break-all">
                     {this.state.error.toString()}
                   </p>
                   {this.state.errorInfo && (
                     <details className="mt-2">
-                      <summary className="text-xs text-gray-600 cursor-pointer">
+                      <summary className="text-xs text-muted-foreground cursor-pointer">
                         Stack Trace
                       </summary>
-                      <pre className="text-xs text-gray-600 mt-2 overflow-auto max-h-40">
+                      <pre className="text-xs text-muted-foreground mt-2 overflow-auto max-h-40">
                         {this.state.errorInfo.componentStack}
                       </pre>
                     </details>

@@ -143,7 +143,7 @@ export function QuiltFilters({
       <div className="flex flex-wrap items-center gap-2">
         {/* Season Filter */}
         <div className="flex items-center space-x-1">
-          <Label className="text-sm text-gray-600">Season:</Label>
+          <Label className="text-sm text-muted-foreground">Season:</Label>
           {SEASON_OPTIONS.map(option => {
             const Icon = option.icon;
             const isActive = localFilters.season === option.value;
@@ -166,7 +166,7 @@ export function QuiltFilters({
 
         {/* Status Filter */}
         <div className="flex items-center space-x-1">
-          <Label className="text-sm text-gray-600">Status:</Label>
+          <Label className="text-sm text-muted-foreground">Status:</Label>
           {STATUS_OPTIONS.map(option => {
             const isActive = localFilters.status === option.value;
             return (
@@ -230,7 +230,7 @@ export function QuiltFilters({
                     <Badge
                       key={location}
                       variant="outline"
-                      className="cursor-pointer hover:bg-gray-100"
+                      className="cursor-pointer hover:bg-muted"
                       onClick={() => updateFilter('location', location)}
                     >
                       {location}
@@ -266,7 +266,7 @@ export function QuiltFilters({
                     <Badge
                       key={brand}
                       variant="outline"
-                      className="cursor-pointer hover:bg-gray-100"
+                      className="cursor-pointer hover:bg-muted"
                       onClick={() => updateFilter('brand', brand)}
                     >
                       {brand}
@@ -283,7 +283,7 @@ export function QuiltFilters({
                 </Label>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <Label className="text-xs text-gray-500">Min Weight</Label>
+                    <Label className="text-xs text-muted-foreground">Min Weight</Label>
                     <Input
                       type="number"
                       placeholder="e.g., 500"
@@ -297,7 +297,7 @@ export function QuiltFilters({
                     />
                   </div>
                   <div>
-                    <Label className="text-xs text-gray-500">Max Weight</Label>
+                    <Label className="text-xs text-muted-foreground">Max Weight</Label>
                     <Input
                       type="number"
                       placeholder="e.g., 2000"
@@ -314,7 +314,7 @@ export function QuiltFilters({
                 <div className="flex flex-wrap gap-1 mt-2">
                   <Badge
                     variant="outline"
-                    className="cursor-pointer hover:bg-gray-100"
+                    className="cursor-pointer hover:bg-muted"
                     onClick={() => {
                       updateFilter('minWeight', 0);
                       updateFilter('maxWeight', 800);
@@ -324,7 +324,7 @@ export function QuiltFilters({
                   </Badge>
                   <Badge
                     variant="outline"
-                    className="cursor-pointer hover:bg-gray-100"
+                    className="cursor-pointer hover:bg-muted"
                     onClick={() => {
                       updateFilter('minWeight', 800);
                       updateFilter('maxWeight', 1500);
@@ -334,7 +334,7 @@ export function QuiltFilters({
                   </Badge>
                   <Badge
                     variant="outline"
-                    className="cursor-pointer hover:bg-gray-100"
+                    className="cursor-pointer hover:bg-muted"
                     onClick={() => {
                       updateFilter('minWeight', 1500);
                       updateFilter('maxWeight', undefined);
@@ -368,7 +368,7 @@ export function QuiltFilters({
 
       {/* Results Count */}
       {totalCount !== undefined && (
-        <div className="text-sm text-gray-500">
+        <div className="text-sm text-muted-foreground">
           {filteredCount !== undefined && filteredCount !== totalCount ? (
             <>
               Showing {filteredCount} of {totalCount} quilts
