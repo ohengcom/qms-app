@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { QueryProvider } from '@/components/providers/QueryProvider';
+import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { LanguageProvider } from '@/lib/language-provider';
 import { ConditionalLayout } from '@/components/layout/ConditionalLayout';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -36,17 +37,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="zh" className="h-full" suppressHydrationWarning>
       <body className={`${inter.className} h-full`} suppressHydrationWarning>
-        <ErrorBoundary>
-          <LanguageProvider>
-            <QueryProvider>
-              <GlobalErrorHandler />
-              <ConditionalLayout>{children}</ConditionalLayout>
-              <Toaster />
-              <SonnerToaster position="top-right" richColors closeButton />
-              {process.env.NODE_ENV === 'development' && <AccessibilityAudit />}
-            </QueryProvider>
-          </LanguageProvider>
-        </ErrorBoundary>
+        <ThemeProvider defaultTheme="system" storageKey="qms-theme">
+          <ErrorBoundary>
+            <LanguageProvider>
+              <QueryProvider>
+                <GlobalErrorHandler />
+                <ConditionalLayout>{children}</ConditionalLayout>
+                <Toaster />
+                <SonnerToaster position="top-right" richColors closeButton />
+                {process.env.NODE_ENV === 'development' && <AccessibilityAudit />}
+              </QueryProvider>
+            </LanguageProvider>
+          </ErrorBoundary>
+        </ThemeProvider>
       </body>
     </html>
   );

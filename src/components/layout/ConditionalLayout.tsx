@@ -1,7 +1,10 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { AppLayout } from './AppLayout';
+import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
+import { AppSidebar } from './AppSidebar';
+import { AppHeader } from './AppHeader';
+import { CommandPalette } from '@/components/CommandPalette';
 
 /**
  * Conditional Layout Wrapper
@@ -18,5 +21,14 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
   }
 
-  return <AppLayout>{children}</AppLayout>;
+  return (
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarInset>
+        <AppHeader />
+        <main className="flex-1 p-4 md:p-6">{children}</main>
+      </SidebarInset>
+      <CommandPalette />
+    </SidebarProvider>
+  );
 }

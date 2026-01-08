@@ -22,6 +22,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import packageJson from '../../../package.json';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 const getNavigation = (t: (key: string) => string) => [
   {
@@ -92,7 +93,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 
   return (
     <div>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
         {/* Mobile sidebar */}
         <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
           <SheetTrigger asChild>
@@ -181,12 +182,12 @@ export function AppLayout({ children }: AppLayoutProps) {
             sidebarCollapsed ? 'lg:w-16' : 'lg:w-64'
           )}
         >
-          <div className="flex flex-col flex-grow border-r border-gray-200 bg-white pt-5 pb-4 overflow-y-auto relative">
+          <div className="flex flex-col flex-grow border-r border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 pt-5 pb-4 overflow-y-auto relative">
             {/* 折叠/展开按钮 */}
             <button
               onClick={toggleSidebar}
               className={cn(
-                'absolute top-1/2 -translate-y-1/2 z-50 flex h-10 w-10 items-center justify-center border border-gray-200 bg-white shadow-md hover:bg-gray-50 hover:shadow-lg transition-all',
+                'absolute top-1/2 -translate-y-1/2 z-50 flex h-10 w-10 items-center justify-center border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-md hover:bg-gray-50 dark:hover:bg-slate-700 hover:shadow-lg transition-all',
                 sidebarCollapsed
                   ? '-right-5 rounded-r-full rounded-l-none pl-1' // 收起时：右半圆贴边
                   : '-right-5 rounded-full' // 展开时：完整圆形
@@ -194,9 +195,9 @@ export function AppLayout({ children }: AppLayoutProps) {
               title={sidebarCollapsed ? t('common.expandSidebar') : t('common.collapseSidebar')}
             >
               {sidebarCollapsed ? (
-                <ChevronRight className="h-6 w-6 text-gray-600" />
+                <ChevronRight className="h-6 w-6 text-gray-600 dark:text-slate-300" />
               ) : (
-                <ChevronLeft className="h-6 w-6 text-gray-600" />
+                <ChevronLeft className="h-6 w-6 text-gray-600 dark:text-slate-300" />
               )}
             </button>
 
@@ -302,7 +303,7 @@ export function AppLayout({ children }: AppLayoutProps) {
           )}
         >
           {/* Top header */}
-          <header className="sticky top-0 z-40 flex h-16 flex-shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
+          <header className="sticky top-0 z-40 flex h-16 flex-shrink-0 items-center gap-x-4 border-b border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
             <Button
               variant="ghost"
               size="sm"
@@ -326,7 +327,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                   <input
                     type="search"
                     placeholder={t('quilts.actions.search')}
-                    className="block w-full rounded-md border-0 bg-gray-50 py-1.5 pl-10 pr-3 text-gray-900 placeholder:text-gray-400 focus:bg-white focus:ring-2 focus:ring-blue-500 sm:text-sm"
+                    className="block w-full rounded-md border-0 bg-gray-50 dark:bg-slate-700 py-1.5 pl-10 pr-3 text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-600 focus:ring-2 focus:ring-blue-500 sm:text-sm"
                     onKeyDown={e => {
                       if (e.key === 'Enter') {
                         const searchTerm = (e.target as HTMLInputElement).value;
@@ -341,8 +342,11 @@ export function AppLayout({ children }: AppLayoutProps) {
 
               {/* Right side */}
               <div className="flex items-center gap-x-4 lg:gap-x-6">
+                {/* Theme Toggle */}
+                <ThemeToggle />
+
                 {/* Separator */}
-                <div className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200" />
+                <div className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200 dark:lg:bg-slate-600" />
 
                 {/* Logout */}
                 <Button
