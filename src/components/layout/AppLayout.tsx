@@ -185,13 +185,13 @@ export function AppLayout({ children }: AppLayoutProps) {
             {/* 折叠/展开按钮 */}
             <button
               onClick={toggleSidebar}
-              className="absolute -right-3 top-20 z-50 flex h-6 w-6 items-center justify-center rounded-full border border-gray-200 bg-white shadow-sm hover:bg-gray-50 transition-colors"
+              className="absolute -right-4 top-1/2 -translate-y-1/2 z-50 flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-white shadow-md hover:bg-gray-50 hover:shadow-lg transition-all"
               title={sidebarCollapsed ? t('common.expandSidebar') : t('common.collapseSidebar')}
             >
               {sidebarCollapsed ? (
-                <ChevronRight className="h-4 w-4 text-gray-500" />
+                <ChevronRight className="h-5 w-5 text-gray-600" />
               ) : (
-                <ChevronLeft className="h-4 w-4 text-gray-500" />
+                <ChevronLeft className="h-5 w-5 text-gray-600" />
               )}
             </button>
 
