@@ -185,13 +185,18 @@ export function AppLayout({ children }: AppLayoutProps) {
             {/* 折叠/展开按钮 */}
             <button
               onClick={toggleSidebar}
-              className="absolute -right-4 top-1/2 -translate-y-1/2 z-50 flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-white shadow-md hover:bg-gray-50 hover:shadow-lg transition-all"
+              className={cn(
+                'absolute top-1/2 -translate-y-1/2 z-50 flex h-10 w-10 items-center justify-center border border-gray-200 bg-white shadow-md hover:bg-gray-50 hover:shadow-lg transition-all',
+                sidebarCollapsed
+                  ? '-right-5 rounded-r-full rounded-l-none pl-1' // 收起时：右半圆贴边
+                  : '-right-5 rounded-full' // 展开时：完整圆形
+              )}
               title={sidebarCollapsed ? t('common.expandSidebar') : t('common.collapseSidebar')}
             >
               {sidebarCollapsed ? (
-                <ChevronRight className="h-5 w-5 text-gray-600" />
+                <ChevronRight className="h-6 w-6 text-gray-600" />
               ) : (
-                <ChevronLeft className="h-5 w-5 text-gray-600" />
+                <ChevronLeft className="h-6 w-6 text-gray-600" />
               )}
             </button>
 
